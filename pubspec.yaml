@@ -1,19 +1,119 @@
 name: expense_tracking_desktop_app
-description: "A new Flutter project."
-publish_to: 'none'
-version: 0.1.0
+description: A comprehensive desktop expense tracking application for small businesses
+publish_to: "none"
+
+version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.2
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+  # State Management
+  provider: ^6.1.1
+  riverpod: ^2.4.9
+  flutter_riverpod: ^2.4.9
+
+  # Database & Local Storage
+  drift: ^2.14.1
+  sqlite3_flutter_libs: ^0.5.18
+  path_provider: ^2.1.1
+  path: ^1.8.3
+
+  # UI Components & Icons
+  cupertino_icons: ^1.0.6
+  flutter_svg: ^2.0.9
+  google_fonts: ^6.1.0
+  intl: ^0.19.0
+
+  # Charts & Data Visualization
+  fl_chart: ^0.65.0
+  syncfusion_flutter_charts: ^24.1.41
+
+  # File Handling & Documents
+  file_picker: ^6.1.1
+  image_picker: ^1.0.7
+  pdf: ^3.10.7
+  printing: ^5.11.1
+  excel: ^4.0.2
+  open_file: ^3.3.2
+
+  # Date & Time
+  table_calendar: ^3.0.9
+  time_range_picker: ^2.2.0
+
+  # Utilities
+  uuid: ^4.2.2
+  equatable: ^2.0.5
+  dartz: ^0.10.1
+  logger: ^2.0.2+1
+  shared_preferences: ^2.2.2
+
+  # UI Enhancements
+  shimmer: ^3.0.0
+  lottie: ^3.0.0
+  flutter_animate: ^4.3.0
+  animations: ^2.0.11
+
+  # Currency & Formatting
+  money2: ^5.1.1
+  currency_picker: ^2.0.20
+
+  # Notifications
+  flutter_local_notifications: ^16.3.0
+
+  # Window Management (Desktop)
+  window_manager: ^0.3.7
+  bitsdojo_window: ^0.1.6
+
+  # Export & Share
+  share_plus: ^7.2.1
+  screenshot: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+
+  # Linting & Code Quality
+  flutter_lints: ^3.0.1
+  very_good_analysis: ^5.1.0
+
+  # Code Generation
+  build_runner: ^2.4.7
+  drift_dev: ^2.14.1
+
+  # Testing
+  mockito: ^5.4.4
+  faker: ^2.1.0
+  integration_test:
+    sdk: flutter
+
+  # Icons
+  flutter_launcher_icons: ^0.13.1
+
+# App Icons Configuration
+flutter_icons:
+  android: false
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+  windows:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
+    icon_size: 256
+  macos:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
+  linux:
+    generate: true
+    image_path: "assets/icons/app_icon.png"
 
 flutter:
   uses-material-design: true
+
+  # Assets
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/logos/
