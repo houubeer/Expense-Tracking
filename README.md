@@ -283,14 +283,6 @@ This project is developed and maintained by a dedicated team of developers:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
-
-For support, questions, or feedback:
-
-- **Issues**: [GitHub Issues](https://github.com/houubeer/Expense-Tracking/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-organization/expense-tracker/discussions)
-- **Email**: support@expensetracker.com
-
 ## Acknowledgments
 
 - Flutter team for the amazing framework
@@ -299,6 +291,6 @@ For support, questions, or feedback:
 
 ---
 
-**Made with ❤️ by the Expense Tracker Team**
+**Made with ❤️ by G12-team 1**
 
 _Empowering small businesses with efficient financial management_
