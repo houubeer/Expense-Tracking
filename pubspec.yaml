@@ -17,7 +17,8 @@ dependencies:
   flutter_riverpod: ^2.4.9
 
   # Database & Local Storage
-  drift: ^2.14.1
+  drift: ^2.29.0
+  drift_flutter: ^0.2.7
   sqlite3_flutter_libs: ^0.5.18
   path_provider: ^2.1.1
   path: ^1.8.3
@@ -82,7 +83,7 @@ dev_dependencies:
 
   # Code Generation
   build_runner: ^2.4.7
-  drift_dev: ^2.14.1
+  drift_dev: ^2.29.0
 
   # Testing
   mockito: ^5.4.4
