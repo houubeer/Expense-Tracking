@@ -6,13 +6,15 @@ import 'package:path/path.dart'
     as p; // To join paths in a platform-safe way (p.join = correct slashes for Windows/Linux/macOS).
 // Import tables and DAOs
 import 'tables/example_table.dart';
+import 'tables/categories_table.dart';
 import 'daos/example_dao.dart';
+import 'daos/category_dao.dart';
 
 part 'app_database.g.dart'; // generated file
 
 @DriftDatabase(
-  tables: [ExampleTable],
-  daos: [ExampleDao],
+  tables: [ExampleTable, Categories],
+  daos: [ExampleDao, CategoryDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

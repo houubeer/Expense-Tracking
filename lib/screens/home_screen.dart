@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/widgets/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/ui/screens/budget_setting_screen.dart';
+import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 
 void main() {
   runApp(const ExpenseTrackerApp());
@@ -21,7 +23,7 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
     Container(), // Dashboard placeholder (will be built dynamically)
     const Center(child: Text("Add Expense")),
     const Center(child: Text("View expenses Screen")),
-    const Center(child: Text("Budgets Screen")),
+    BudgetSettingScreen(database: main_app.database), // Budget Screen
     const Center(child: Text("Categories Screen")),
     const Center(child: Text("Settings Screen")),
   ];
