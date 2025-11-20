@@ -67,30 +67,35 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   0.0,
                   (sum, cat) => sum + cat.budget,
                 );
+                final totalSpent = categories.fold<double>(
+                  0.0,
+                  (sum, cat) => sum + cat.spent,
+                );
+                final remaining = totalBudget - totalSpent;
 
                 return Row(
                   children: [
                     Expanded(
                       child: _buildSummaryCard(
                         'Total Monthly Budget',
-                        '\$${totalBudget.toStringAsFixed(2)}',
-                        const Color(0xFF3B82F6), // Blue
+                        '${totalBudget.toStringAsFixed(2)} DZD',
+                        AppColors.primaryBlue, // Match sidebar color
                       ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: _buildSummaryCard(
                         'Total Spent This Month',
-                        '\$0.00',
-                        const Color(0xFF8B5CF6), // Purple
+                        '${totalSpent.toStringAsFixed(2)} DZD',
+                        const Color(0xFF7C3AED), // Clean purple
                       ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: _buildSummaryCard(
                         'Remaining Budget',
-                        '\$${totalBudget.toStringAsFixed(2)}',
-                        const Color(0xFF14B8A6), // Teal
+                        '${remaining.toStringAsFixed(2)} DZD',
+                        const Color(0xFF059669), // Clean emerald green
                       ),
                     ),
                   ],
@@ -218,7 +223,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Monthly Budget: \$${category.budget.toStringAsFixed(2)}',
+                      'Monthly Budget: ${category.budget.toStringAsFixed(2)} DZD',
                       style: AppTextStyles.bodySmall,
                     ),
                   ],
@@ -240,90 +245,13 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
           const SizedBox(height: 24),
 
-          // Progress section
-          const Text(
-            'Progress',
-            style: AppTextStyles.bodyLarge,
-          ),
-          const SizedBox(height: 12),
-
-          // Progress bar
-          LinearProgressIndicator(
-            value: 0.0,
-            backgroundColor: AppColors.grey300,
-            valueColor: AlwaysStoppedAnimation<Color>(categoryColor),
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
-          ),
+          // Progress bar (removed "Progress" label)
+          _buildProgressBar(category),
 
           const SizedBox(height: 16),
 
           // Stats row
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Spent',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '\$0.00',
-                      style: AppTextStyles.bodyLarge,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Remaining',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '\$${category.budget.toStringAsFixed(2)}',
-                      style: AppTextStyles.bodyLarge,
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Good',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '0.0%',
-                style: AppTextStyles.bodyLarge.copyWith(
-                  color: Colors.green,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
+          _buildStatsRow(category),
         ],
       ),
     );
@@ -342,7 +270,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           ],
           decoration: const InputDecoration(
             labelText: 'Monthly Budget',
-            prefixText: '\$ ',
+            prefixText: 'DZD ',
             border: OutlineInputBorder(),
           ),
         ),
@@ -372,7 +300,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Updated ${category.name} budget to \$${value.toStringAsFixed(2)}',
+                      'Updated ${category.name} budget to ${value.toStringAsFixed(2)} DZD',
                     ),
                     backgroundColor: Colors.green,
                   ),
@@ -384,5 +312,115 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         ],
       ),
     );
+  }
+
+  // Helper method to build progress bar with status color
+  Widget _buildProgressBar(Category category) {
+    final percentage = category.budget > 0 ? (category.spent / category.budget) : 0.0;
+    final statusColor = _getStatusColor(percentage);
+    
+    return LinearProgressIndicator(
+      value: percentage.clamp(0.0, 1.0),
+      backgroundColor: AppColors.grey300,
+      valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+      minHeight: 8,
+      borderRadius: BorderRadius.circular(4),
+    );
+  }
+
+  // Helper method to build stats row with status logic
+  Widget _buildStatsRow(Category category) {
+    final percentage = category.budget > 0 ? (category.spent / category.budget) : 0.0;
+    final remaining = category.budget - category.spent;
+    final status = _getStatusText(percentage);
+    final statusColor = _getStatusColor(percentage);
+    final statusIcon = _getStatusIcon(percentage);
+
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Spent',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${category.spent.toStringAsFixed(2)} DZD',
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Remaining',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.grey,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '${remaining.toStringAsFixed(2)} DZD',
+                style: AppTextStyles.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Icon(
+                statusIcon,
+                color: statusColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                status,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: statusColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          '${(percentage * 100).toStringAsFixed(1)}%',
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: statusColor,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Get status text based on percentage
+  String _getStatusText(double percentage) {
+    if (percentage < 0.5) return 'Good';
+    if (percentage < 0.8) return 'Warning';
+    return 'In Risk';
+  }
+
+  // Get status color based on percentage
+  Color _getStatusColor(double percentage) {
+    if (percentage < 0.5) return const Color(0xFF10B981); // Green
+    if (percentage < 0.8) return const Color(0xFFF59E0B); // Yellow
+    return const Color(0xFFEF4444); // Red
+  }
+
+  // Get status icon based on percentage
+  IconData _getStatusIcon(double percentage) {
+    if (percentage < 0.5) return Icons.check_circle;
+    if (percentage < 0.8) return Icons.warning;
+    return Icons.error;
   }
 }

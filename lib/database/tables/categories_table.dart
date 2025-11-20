@@ -6,5 +6,6 @@ class Categories extends Table {
   IntColumn get color => integer()();
   TextColumn get iconCodePoint => text()();
   RealColumn get budget => real().withDefault(const Constant(0.0))();
+  RealColumn get spent => real().withDefault(const Constant(0.0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

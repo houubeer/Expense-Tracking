@@ -20,15 +20,19 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
-  MigrationStrategy get migrationStrategy => MigrationStrategy(
+  MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => await m.createAll(),
         onUpgrade: (m, from, to) async {
-          if (from == 1) {
+          if (from < 2) {
             // Add categories table
             await m.createTable(categories);
+          }
+          if (from < 3) {
+            // Add spent column to categories
+            await m.addColumn(categories, categories.spent);
           }
         },
       );

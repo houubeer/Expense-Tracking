@@ -5,7 +5,8 @@ import '../tables/categories_table.dart';
 part 'category_dao.g.dart';
 
 @DriftAccessor(tables: [Categories])
-class CategoryDao extends DatabaseAccessor<AppDatabase> with _$CategoryDaoMixin {
+class CategoryDao extends DatabaseAccessor<AppDatabase>
+    with _$CategoryDaoMixin {
   CategoryDao(super.db);
 
   // Watch all categories
@@ -34,4 +35,7 @@ class CategoryDao extends DatabaseAccessor<AppDatabase> with _$CategoryDaoMixin 
   // Delete category
   Future<int> deleteCategory(int id) =>
       (delete(categories)..where((c) => c.id.equals(id))).go();
+
+  // Delete all categories
+  Future<int> deleteAllCategories() => delete(categories).go();
 }
