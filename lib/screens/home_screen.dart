@@ -5,10 +5,6 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/ui/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 
-void main() {
-  runApp(const ExpenseTrackerApp());
-}
-
 class ExpenseTrackerApp extends StatefulWidget {
   const ExpenseTrackerApp({super.key});
 
