@@ -15,7 +15,7 @@ class BudgetDummyData {
         name: 'Food',
         color: 0xFFF97316, // Orange
         iconCodePoint: '${Icons.fastfood.codePoint}',
-        budget: const Value(500.00),
+        budget: const Value(520.00),
         spent: const Value(150.00), // 30% usage
       ),
     );

@@ -28,6 +28,11 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
       (update(categories)..where((c) => c.id.equals(id)))
           .write(CategoriesCompanion(budget: Value(budget)));
 
+  // Update category spent
+  Future<int> updateCategorySpent(int id, double spent) =>
+      (update(categories)..where((c) => c.id.equals(id)))
+          .write(CategoriesCompanion(spent: Value(spent)));
+
   // Update category
   Future<bool> updateCategory(Category category) =>
       update(categories).replace(category);

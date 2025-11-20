@@ -316,9 +316,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Helper method to build progress bar with status color
   Widget _buildProgressBar(Category category) {
-    final percentage = category.budget > 0 ? (category.spent / category.budget) : 0.0;
+    final percentage =
+        category.budget > 0 ? (category.spent / category.budget) : 0.0;
     final statusColor = _getStatusColor(percentage);
-    
+
     return LinearProgressIndicator(
       value: percentage.clamp(0.0, 1.0),
       backgroundColor: AppColors.grey300,
@@ -330,7 +331,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Helper method to build stats row with status logic
   Widget _buildStatsRow(Category category) {
-    final percentage = category.budget > 0 ? (category.spent / category.budget) : 0.0;
+    final percentage =
+        category.budget > 0 ? (category.spent / category.budget) : 0.0;
     final remaining = category.budget - category.spent;
     final status = _getStatusText(percentage);
     final statusColor = _getStatusColor(percentage);
