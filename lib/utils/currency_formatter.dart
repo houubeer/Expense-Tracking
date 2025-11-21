@@ -1,7 +1,8 @@
 /// Utility class for formatting currency values
 class CurrencyFormatter {
   /// Format amount with currency symbol
-  static String format(double amount, {String currency = 'DZD', int decimals = 2}) {
+  static String format(double amount,
+      {String currency = 'DZD', int decimals = 2}) {
     return '${amount.toStringAsFixed(decimals)} $currency';
   }
 

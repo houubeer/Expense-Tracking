@@ -46,42 +46,56 @@ lib/
 ## 📂 Directory Descriptions
 
 ### `/constants`
+
 Contains all app-wide constants including colors, text styles, padding values, and strings. This ensures consistency across the application.
 
 ### `/database`
+
 Houses all database-related code using Drift ORM:
+
 - **daos/**: Data Access Objects for database operations
 - **tables/**: Table schema definitions
 - **seeds/**: Dummy/seed data for development and testing
 
 ### `/models`
+
 Domain models that represent business entities. These are separate from database entities for better separation of concerns.
 
 ### `/screens`
+
 All application screens organized by feature:
+
 - Each major feature has its own subdirectory
 - Keeps related screens together
 - Easy to navigate and maintain
 
 ### `/widgets`
+
 Reusable UI components:
+
 - **common/**: Shared widgets used across multiple screens
 - Feature-specific widgets can be placed in respective feature folders
 
 ### `/services`
+
 Business logic layer that sits between UI and data:
+
 - Handles complex operations
 - Coordinates between multiple data sources
 - Keeps screens clean and focused on UI
 
 ### `/utils`
+
 Utility functions and helpers:
+
 - Formatters
 - Validators
 - Common helper functions
 
 ### `/routes`
+
 Navigation configuration:
+
 - Route names
 - Screen indices
 - Navigation helpers
@@ -89,6 +103,7 @@ Navigation configuration:
 ## 🔄 Import Conventions
 
 Always use absolute imports:
+
 ```dart
 import 'package:expense_tracking_desktop_app/screens/home/home_screen.dart';
 ```
