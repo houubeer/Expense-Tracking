@@ -6,23 +6,35 @@ import 'package:path/path.dart'
     as p; // To join paths in a platform-safe way (p.join = correct slashes for Windows/Linux/macOS).
 // Import tables and DAOs
 import 'tables/example_table.dart';
+import 'tables/categories_table.dart';
 import 'daos/example_dao.dart';
+import 'daos/category_dao.dart';
 
 part 'app_database.g.dart'; // generated file
 
 @DriftDatabase(
-  tables: [ExampleTable],
-  daos: [ExampleDao],
+  tables: [ExampleTable, Categories],
+  daos: [ExampleDao, CategoryDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
-  MigrationStrategy get migrationStrategy => MigrationStrategy(
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
         onCreate: (m) async => await m.createAll(),
-        onUpgrade: (m, from, to) async {},
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            // Add categories table
+            await m.createTable(categories);
+          }
+          if (from < 3) {
+            // Add spent column to categories
+            await m.addColumn(categories, categories.spent);
+          }
+        },
       );
 }
 
