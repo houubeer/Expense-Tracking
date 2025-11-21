@@ -1,74 +1,35 @@
-You are an expert Flutter developer.
-Apply the following UI and logic changes to the Budget screen.
-Follow the instructions precisely and keep the design consistent.
+You are going to create an “Add New Expense” widget that matches the provided screenshot exactly, with the following required modifications:
 
-🔧 REQUIRED CHANGES
-1. Total Monthly Budget Background Color
+🔧 Required Changes
 
-Change the background color of the Total Monthly Budget container/card to match the sidebar color exactly.
+Remove the “Tags” field completely.
 
-Ensure the padding, radius, and shadow remain consistent with the rest of the theme.
+In the Amount field, replace the $ (dollar) symbol with DZD.
 
-2. Improve UI Background Colors
+The Select Category section must be a horizontal sliding selector, identical to the behavior shown in the second screenshot.
 
-Update the Total Spent and Remaining background colors to be cleaner, polished, and consistent with the global UI style.
+For choosing the date, implement a calendar date-picker with a polished, modern UI.
 
-Do NOT use arbitrary colors; use a balanced tone that harmonizes with the sidebar theme.
+The Save Expense button must have a background color matching the primary theme color of the app.
 
-3. Add Dummy Data for Testing
+🗂 Backend Requirements
 
-Create a separate, clearly named dummy data file (e.g. lib/dummy/budget_dummy_data.dart).
+All fields must be connected to the backend.
 
-Populate it with different scenarios so developers can test the progress bar states.
+When the user saves an expense, it must be stored locally in the system’s database.
 
-Make it easy to delete later.
+Ensure clean state management and error handling for all fields.
 
-Dummy data must include:
+🎯 Final Output
 
-Low usage (under 50%)
+Deliver:
 
-Medium usage (50%–80%)
+Complete UI code for the updated Add Expense widget
 
-High usage (over 80%)
+Backend integration steps
 
-4. Budget Status Logic
+Local data-saving implementation
 
-For each category, apply the following logic based on spending vs. budget:
+Any additional helper functions required
 
-Status Rules
-
-GOOD (Green) → spent < 50% of budget
-
-WARNING (Yellow) → spent < 80% of budget
-
-IN RISK (Red) → spent ≥ 80% of budget
-
-Make sure:
-
-The color reflects in the progress bar segment.
-
-The status text changes accordingly.
-
-The style (icon + color + text) stays consistent with the design.
-
-5. Progress Bar Text
-
-Remove the label “progress” completely from all progress bars.
-
-Only show visual progress, percentage, and status if needed.
-
-6. Currency Fix
-
-Replace all “$” or “USD” references in the entire app with “DZD”.
-
-Ensure no dollar symbol remains anywhere (inputs, labels, summaries, hints, calculations).
-
-📌 NOTES
-
-Keep the design consistent with Figma / previous guidelines.
-
-Ensure changes do not break reactive Drift behavior.
-
-Dummy data should not affect production data.
-
-Use clean architecture (separate logic, UI, dummy data).
+Make sure everything is fully functional, visually consistent with the screenshots, and polished.

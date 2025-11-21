@@ -3,6 +3,7 @@ import 'package:expense_tracking_desktop_app/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/screens/budget/budget_setting_screen.dart';
+import 'package:expense_tracking_desktop_app/screens/expense/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 import 'package:fl_chart/fl_chart.dart';
 
@@ -18,7 +19,7 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
 
   late final List<Widget> screens = [
     Container(), // Dashboard placeholder (will be built dynamically)
-    const Center(child: Text("Add Expense")),
+    const AddExpenseScreen(),
     const Center(child: Text("View expenses Screen")),
     BudgetSettingScreen(
       database: main_app.database,
