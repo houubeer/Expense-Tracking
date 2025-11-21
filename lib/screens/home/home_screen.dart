@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/widgets/sidebar.dart';
+import 'package:expense_tracking_desktop_app/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/ui/screens/budget_setting_screen.dart';
+import 'package:expense_tracking_desktop_app/screens/budget/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 import 'package:fl_chart/fl_chart.dart';
 
