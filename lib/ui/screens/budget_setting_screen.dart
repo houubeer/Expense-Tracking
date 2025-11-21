@@ -6,8 +6,10 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 class BudgetSettingScreen extends StatefulWidget {
   final AppDatabase database;
+  final Function(int)? onNavigate;
 
-  const BudgetSettingScreen({required this.database, super.key});
+  const BudgetSettingScreen(
+      {required this.database, this.onNavigate, super.key});
 
   @override
   State<BudgetSettingScreen> createState() => _BudgetSettingScreenState();
@@ -15,6 +17,9 @@ class BudgetSettingScreen extends StatefulWidget {
 
 class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   final Map<int, TextEditingController> _controllers = {};
+  String _searchQuery = '';
+  String _filterStatus = 'All'; // All, Good, Warning, In Risk
+  String _sortBy = 'Name'; // Name, Budget, Spent, Percentage
 
   @override
   void dispose() {
@@ -105,6 +110,11 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
             const SizedBox(height: 32),
 
+            // Search, Filter, and Sort Bar
+            _buildControlsBar(),
+
+            const SizedBox(height: 24),
+
             // Categories List
             Expanded(
               child: StreamBuilder<List<Category>>(
@@ -121,10 +131,31 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     );
                   }
 
+                  // Apply filters and sorting
+                  var filteredCategories = _applyFiltersAndSort(categories);
+
+                  if (filteredCategories.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.filter_list_off,
+                              size: 64, color: AppColors.grey),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No categories match your filters',
+                            style: AppTextStyles.bodyLarge
+                                .copyWith(color: AppColors.grey),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
                   return ListView.builder(
-                    itemCount: categories.length,
+                    itemCount: filteredCategories.length,
                     itemBuilder: (context, index) {
-                      final category = categories[index];
+                      final category = filteredCategories[index];
 
                       if (!_controllers.containsKey(category.id)) {
                         _controllers[category.id] = TextEditingController(
@@ -229,16 +260,38 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   ],
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: () => _showEditDialog(category, controller),
-                icon: const Icon(Icons.edit, size: 18),
-                label: const Text('Edit Budget'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
+              Row(
+                children: [
+                  FilledButton.icon(
+                    onPressed: () {
+                      // Navigate to Add Expense page (index 1)
+                      if (widget.onNavigate != null) {
+                        widget.onNavigate!(1);
+                      }
+                    },
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add Expense'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primaryBlue,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  OutlinedButton.icon(
+                    onPressed: () => _showEditDialog(category, controller),
+                    icon: const Icon(Icons.edit, size: 18),
+                    label: const Text('Edit'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -314,18 +367,43 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     );
   }
 
-  // Helper method to build progress bar with status color
+  // Helper method to build progress bar with status color and percentage overlay
   Widget _buildProgressBar(Category category) {
     final percentage =
         category.budget > 0 ? (category.spent / category.budget) : 0.0;
     final statusColor = _getStatusColor(percentage);
 
-    return LinearProgressIndicator(
-      value: percentage.clamp(0.0, 1.0),
-      backgroundColor: AppColors.grey300,
-      valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-      minHeight: 8,
-      borderRadius: BorderRadius.circular(4),
+    return Stack(
+      children: [
+        Container(
+          height: 32,
+          decoration: BoxDecoration(
+            color: AppColors.grey300,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: percentage.clamp(0.0, 1.0),
+              backgroundColor: Colors.transparent,
+              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+              minHeight: 32,
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Center(
+            child: Text(
+              '${(percentage * 100).toStringAsFixed(1)}%',
+              style: TextStyle(
+                color: percentage > 0.3 ? Colors.white : AppColors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -424,5 +502,192 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     if (percentage < 0.5) return Icons.check_circle;
     if (percentage < 0.8) return Icons.warning;
     return Icons.error;
+  }
+
+  // Build controls bar with search, filter, and sort
+  Widget _buildControlsBar() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Search field
+          Expanded(
+            flex: 2,
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.grey200,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: _searchQuery.isNotEmpty
+                      ? AppColors.primaryBlue
+                      : Colors.transparent,
+                  width: 2,
+                ),
+              ),
+              child: TextField(
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: InputDecoration(
+                  hintText: 'Search categories...',
+                  hintStyle: TextStyle(color: AppColors.grey),
+                  prefixIcon: Icon(Icons.search, color: AppColors.grey),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: AppColors.grey),
+                          onPressed: () => setState(() => _searchQuery = ''),
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Filter dropdown
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.grey200,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.grey300),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _filterStatus,
+                  isExpanded: true,
+                  icon: const Icon(Icons.filter_list),
+                  items: ['All', 'Good', 'Warning', 'In Risk']
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _getFilterIcon(status),
+                                  size: 18,
+                                  color: _getFilterColor(status),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(status),
+                              ],
+                            ),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _filterStatus = value!),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Sort dropdown
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: AppColors.grey200,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.grey300),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _sortBy,
+                  isExpanded: true,
+                  icon: const Icon(Icons.sort),
+                  items: ['Name', 'Budget', 'Spent', 'Percentage']
+                      .map((sort) => DropdownMenuItem(
+                            value: sort,
+                            child: Text('Sort: $sort'),
+                          ))
+                      .toList(),
+                  onChanged: (value) => setState(() => _sortBy = value!),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Apply filters and sorting to categories
+  List<Category> _applyFiltersAndSort(List<Category> categories) {
+    var filtered = categories.where((cat) {
+      // Apply search filter
+      if (_searchQuery.isNotEmpty &&
+          !cat.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
+        return false;
+      }
+
+      // Apply status filter
+      if (_filterStatus != 'All') {
+        final percentage = cat.budget > 0 ? (cat.spent / cat.budget) : 0.0;
+        final status = _getStatusText(percentage);
+        if (status != _filterStatus) {
+          return false;
+        }
+      }
+
+      return true;
+    }).toList();
+
+    // Apply sorting
+    filtered.sort((a, b) {
+      switch (_sortBy) {
+        case 'Budget':
+          return b.budget.compareTo(a.budget);
+        case 'Spent':
+          return b.spent.compareTo(a.spent);
+        case 'Percentage':
+          final aPercentage = a.budget > 0 ? (a.spent / a.budget) : 0.0;
+          final bPercentage = b.budget > 0 ? (b.spent / b.budget) : 0.0;
+          return bPercentage.compareTo(aPercentage);
+        case 'Name':
+        default:
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      }
+    });
+
+    return filtered;
+  }
+
+  // Get icon for filter status
+  IconData _getFilterIcon(String status) {
+    switch (status) {
+      case 'Good':
+        return Icons.check_circle;
+      case 'Warning':
+        return Icons.warning;
+      case 'In Risk':
+        return Icons.error;
+      default:
+        return Icons.filter_list;
+    }
+  }
+
+  // Get color for filter status
+  Color _getFilterColor(String status) {
+    switch (status) {
+      case 'Good':
+        return const Color(0xFF10B981);
+      case 'Warning':
+        return const Color(0xFFF59E0B);
+      case 'In Risk':
+        return const Color(0xFFEF4444);
+      default:
+        return AppColors.grey;
+    }
   }
 }

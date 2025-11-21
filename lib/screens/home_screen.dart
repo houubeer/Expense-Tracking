@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/ui/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
+import 'package:fl_chart/fl_chart.dart';
 
 class ExpenseTrackerApp extends StatefulWidget {
   const ExpenseTrackerApp({super.key});
@@ -19,7 +20,10 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
     Container(), // Dashboard placeholder (will be built dynamically)
     const Center(child: Text("Add Expense")),
     const Center(child: Text("View expenses Screen")),
-    BudgetSettingScreen(database: main_app.database), // Budget Screen
+    BudgetSettingScreen(
+      database: main_app.database,
+      onNavigate: (index) => setState(() => selectedIndex = index),
+    ), // Budget Screen
     const Center(child: Text("Categories Screen")),
     const Center(child: Text("Settings Screen")),
   ];
@@ -185,6 +189,40 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
   }
 
   Widget _budgetOverviewCard() {
+    // Budget data
+    final budgetData = [
+      {
+        'name': 'Office Supplies',
+        'spent': 245.50,
+        'total': 5000.0,
+        'color': AppColors.primaryBlue
+      },
+      {
+        'name': 'Travel',
+        'spent': 500.00,
+        'total': 10000.0,
+        'color': AppColors.purple
+      },
+      {
+        'name': 'Marketing',
+        'spent': 500.00,
+        'total': 15000.0,
+        'color': AppColors.pink
+      },
+      {
+        'name': 'Software & Tools',
+        'spent': 700.0,
+        'total': 8000.0,
+        'color': AppColors.teal
+      },
+      {
+        'name': 'Utilities',
+        'spent': 250.0,
+        'total': 3000.0,
+        'color': AppColors.orange
+      },
+    ];
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: _cardDecoration(),
@@ -192,44 +230,103 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _cardHeader("Budget Overview", "Manage"),
-          const SizedBox(height: 10),
-          _budgetItem("Office Supplies", 245.50, 5000, AppColors.primaryBlue),
-          _budgetItem("Travel", 1850.00, 10000, AppColors.purple),
-          _budgetItem("Marketing", 3500.00, 15000, AppColors.pink),
-          _budgetItem("Software & Tools", 0.0, 8000, AppColors.teal),
-          _budgetItem("Utilities", 0.0, 3000, AppColors.orange),
-        ],
-      ),
-    );
-  }
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                // Pie Chart
+                Expanded(
+                  flex: 2,
+                  child: SizedBox(
+                    height: 220,
+                    child: PieChart(
+                      PieChartData(
+                        sectionsSpace: 2,
+                        centerSpaceRadius: 45,
+                        sections: budgetData.map((data) {
+                          final spent = data['spent'] as double;
+                          final total = data['total'] as double;
+                          final color = data['color'] as Color;
+                          final percentage =
+                              total > 0 ? (spent / total * 100) : 0.0;
 
-  Widget _budgetItem(String title, double spent, double total, Color color) {
-    final progress = spent / total;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(children: [
-                Icon(Icons.circle, size: 10, color: color),
-                const SizedBox(width: 6),
-                Text(title, style: AppTextStyles.bodyLarge),
-              ]),
-              Text(
-                  "\$${spent.toStringAsFixed(2)} / \$${total.toStringAsFixed(0)}",
-                  style: AppTextStyles.bodyLarge),
-            ],
-          ),
-          const SizedBox(height: 4),
-          LinearProgressIndicator(
-            value: progress,
-            color: color,
-            backgroundColor: AppColors.grey300,
-            minHeight: 6,
-            borderRadius: BorderRadius.circular(4),
+                          return PieChartSectionData(
+                            color: color,
+                            value: spent > 0
+                                ? spent
+                                : (total * 0.01), // Show slice even if 0
+                            title: spent > 0
+                                ? '${percentage.toStringAsFixed(0)}%'
+                                : '',
+                            radius: 60,
+                            titleStyle: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 20),
+                // Legend
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: budgetData.map((data) {
+                        final name = data['name'] as String;
+                        final spent = data['spent'] as double;
+                        final total = data['total'] as double;
+                        final color = data['color'] as Color;
+
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      name,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${spent.toStringAsFixed(0)} / ${total.toStringAsFixed(0)} DZD',
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColors.grey,
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -281,7 +378,8 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
               ],
             ),
           ),
-          Text("\$${amount.toStringAsFixed(2)}", style: AppTextStyles.heading3),
+          Text("${amount.toStringAsFixed(2)} DZD",
+              style: AppTextStyles.heading3),
         ],
       ),
     );
