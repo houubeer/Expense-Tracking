@@ -1,26 +1,25 @@
-import 'dart:io'; // For file operations (creating the SQLite file on disk).
-import 'package:drift/drift.dart'; // Core Drift package — lets you define tables, DAOs, queries, etc.
-import 'package:path_provider/path_provider.dart'; // Finds safe folders on the device (like Documents).
+import 'dart:io';
+import 'package:drift/drift.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:drift/native.dart';
-import 'package:path/path.dart'
-    as p; // To join paths in a platform-safe way (p.join = correct slashes for Windows/Linux/macOS).
+import 'package:path/path.dart' as p;
 // Import tables and DAOs
-import 'tables/example_table.dart';
 import 'tables/categories_table.dart';
-import 'daos/example_dao.dart';
+import 'tables/expenses_table.dart';
 import 'daos/category_dao.dart';
+import 'daos/expense_dao.dart';
 
-part 'app_database.g.dart'; // generated file
+part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [ExampleTable, Categories],
-  daos: [ExampleDao, CategoryDao],
+  tables: [Categories, Expenses],
+  daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -33,6 +32,10 @@ class AppDatabase extends _$AppDatabase {
           if (from < 3) {
             // Add spent column to categories
             await m.addColumn(categories, categories.spent);
+          }
+          if (from < 4) {
+            // Add expenses table
+            await m.createTable(expenses);
           }
         },
       );

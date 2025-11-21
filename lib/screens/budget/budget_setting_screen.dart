@@ -41,21 +41,21 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.grey200,
+      backgroundColor: AppColors.background,
       body: Padding(
-        padding: const EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(40.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            const Text(
+            Text(
               'Budget Management',
               style: AppTextStyles.heading1,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Track your spending against monthly budget limits',
-              style: AppTextStyles.bodySmall,
+              style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: 32),
 
@@ -84,7 +84,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       child: _buildSummaryCard(
                         'Total Monthly Budget',
                         '${totalBudget.toStringAsFixed(2)} DZD',
-                        AppColors.primaryBlue, // Match sidebar color
+                        AppColors.primary,
+                        Icons.account_balance_wallet_outlined,
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -92,7 +93,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       child: _buildSummaryCard(
                         'Total Spent This Month',
                         '${totalSpent.toStringAsFixed(2)} DZD',
-                        const Color(0xFF7C3AED), // Clean purple
+                        AppColors.accent,
+                        Icons.shopping_cart_outlined,
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -100,7 +102,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       child: _buildSummaryCard(
                         'Remaining Budget',
                         '${remaining.toStringAsFixed(2)} DZD',
-                        const Color(0xFF059669), // Clean emerald green
+                        AppColors.green,
+                        Icons.account_balance_rounded,
                       ),
                     ),
                   ],
@@ -126,8 +129,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
                   final categories = snapshot.data ?? [];
                   if (categories.isEmpty) {
-                    return const Center(
-                      child: Text('No categories found.'),
+                    return Center(
+                      child: Text(
+                        'No categories found.',
+                        style: AppTextStyles.bodyLarge
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
                     );
                   }
 
@@ -140,12 +147,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.filter_list_off,
-                              size: 64, color: AppColors.grey),
+                              size: 64, color: AppColors.textSecondary),
                           const SizedBox(height: 16),
                           Text(
                             'No categories match your filters',
                             style: AppTextStyles.bodyLarge
-                                .copyWith(color: AppColors.grey),
+                                .copyWith(color: AppColors.textSecondary),
                           ),
                         ],
                       ),
@@ -175,31 +182,49 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String amount, Color color) {
+  Widget _buildSummaryCard(
+      String title, String amount, Color color, IconData icon) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: color,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.white,
-              fontWeight: FontWeight.w500,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Text(
             amount,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -215,11 +240,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
+            color: AppColors.primary.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -234,7 +260,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: categoryColor.withValues(alpha: 0.1),
+                  color: categoryColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -272,10 +298,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Add Expense'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.primaryBlue,
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
@@ -285,9 +315,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     icon: const Icon(Icons.edit, size: 18),
                     label: const Text('Edit'),
                     style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textPrimary,
+                      side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
@@ -298,7 +333,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
           const SizedBox(height: 24),
 
-          // Progress bar (removed "Progress" label)
+          // Progress bar
           _buildProgressBar(category),
 
           const SizedBox(height: 16),
@@ -314,23 +349,37 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Edit Budget for ${category.name}'),
+        backgroundColor: AppColors.surface,
+        title: Text('Edit Budget for ${category.name}',
+            style: AppTextStyles.heading3),
         content: TextField(
           controller: controller,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
           ],
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'Monthly Budget',
             prefixText: 'DZD ',
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: AppColors.primary),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           FilledButton(
             onPressed: () async {
@@ -339,7 +388,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Budget cannot be negative'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.red,
                   ),
                 );
                 return;
@@ -355,11 +404,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     content: Text(
                       'Updated ${category.name} budget to ${value.toStringAsFixed(2)} DZD',
                     ),
-                    backgroundColor: Colors.green,
+                    backgroundColor: AppColors.green,
                   ),
                 );
               }
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+            ),
             child: const Text('Save'),
           ),
         ],
@@ -376,9 +428,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     return Stack(
       children: [
         Container(
-          height: 32,
+          height: 24,
           decoration: BoxDecoration(
-            color: AppColors.grey300,
+            color: AppColors.background,
             borderRadius: BorderRadius.circular(8),
           ),
           child: ClipRRect(
@@ -387,7 +439,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               value: percentage.clamp(0.0, 1.0),
               backgroundColor: Colors.transparent,
               valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-              minHeight: 32,
+              minHeight: 24,
             ),
           ),
         ),
@@ -396,9 +448,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: Text(
               '${(percentage * 100).toStringAsFixed(1)}%',
               style: TextStyle(
-                color: percentage > 0.3 ? Colors.white : AppColors.black,
+                color: percentage > 0.5 ? Colors.white : AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 12,
               ),
             ),
           ),
@@ -424,14 +476,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             children: [
               Text(
                 'Spent',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.grey,
-                ),
+                style: AppTextStyles.caption,
               ),
               const SizedBox(height: 4),
               Text(
                 '${category.spent.toStringAsFixed(2)} DZD',
-                style: AppTextStyles.bodyLarge,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -442,14 +494,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             children: [
               Text(
                 'Remaining',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.grey,
-                ),
+                style: AppTextStyles.caption,
               ),
               const SizedBox(height: 4),
               Text(
                 '${remaining.toStringAsFixed(2)} DZD',
-                style: AppTextStyles.bodyLarge,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -460,23 +512,17 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Icon(
                 statusIcon,
                 color: statusColor,
-                size: 20,
+                size: 18,
               ),
               const SizedBox(width: 8),
               Text(
                 status,
-                style: AppTextStyles.bodyLarge.copyWith(
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: statusColor,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
-          ),
-        ),
-        Text(
-          '${(percentage * 100).toStringAsFixed(1)}%',
-          style: AppTextStyles.bodyLarge.copyWith(
-            color: statusColor,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -492,9 +538,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Get status color based on percentage
   Color _getStatusColor(double percentage) {
-    if (percentage < 0.5) return const Color(0xFF10B981); // Green
-    if (percentage < 0.8) return const Color(0xFFF59E0B); // Yellow
-    return const Color(0xFFEF4444); // Red
+    if (percentage < 0.5) return AppColors.green;
+    if (percentage < 0.8) return AppColors.orange;
+    return AppColors.red;
   }
 
   // Get status icon based on percentage
@@ -509,11 +555,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
+            color: AppColors.primary.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -527,24 +574,26 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(24),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: _searchQuery.isNotEmpty
-                      ? AppColors.primaryBlue
-                      : Colors.transparent,
-                  width: 2,
+                      ? AppColors.primary
+                      : AppColors.border,
+                  width: 1,
                 ),
               ),
               child: TextField(
                 onChanged: (value) => setState(() => _searchQuery = value),
                 decoration: InputDecoration(
                   hintText: 'Search categories...',
-                  hintStyle: TextStyle(color: AppColors.grey),
-                  prefixIcon: Icon(Icons.search, color: AppColors.grey),
+                  hintStyle: TextStyle(color: AppColors.textSecondary),
+                  prefixIcon:
+                      Icon(Icons.search, color: AppColors.textSecondary),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: Icon(Icons.clear, color: AppColors.grey),
+                          icon:
+                              Icon(Icons.clear, color: AppColors.textSecondary),
                           onPressed: () => setState(() => _searchQuery = ''),
                         )
                       : null,
@@ -561,15 +610,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.grey300),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _filterStatus,
                   isExpanded: true,
                   icon: const Icon(Icons.filter_list),
+                  dropdownColor: AppColors.surface,
                   items: ['All', 'Good', 'Warning', 'In Risk']
                       .map((status) => DropdownMenuItem(
                             value: status,
@@ -581,7 +631,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                                   color: _getFilterColor(status),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(status),
+                                Text(status, style: AppTextStyles.bodyMedium),
                               ],
                             ),
                           ))
@@ -597,19 +647,21 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: AppColors.grey200,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.grey300),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.border),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: _sortBy,
                   isExpanded: true,
                   icon: const Icon(Icons.sort),
+                  dropdownColor: AppColors.surface,
                   items: ['Name', 'Budget', 'Spent', 'Percentage']
                       .map((sort) => DropdownMenuItem(
                             value: sort,
-                            child: Text('Sort: $sort'),
+                            child: Text('Sort: $sort',
+                                style: AppTextStyles.bodyMedium),
                           ))
                       .toList(),
                   onChanged: (value) => setState(() => _sortBy = value!),
@@ -681,13 +733,13 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   Color _getFilterColor(String status) {
     switch (status) {
       case 'Good':
-        return const Color(0xFF10B981);
+        return AppColors.green;
       case 'Warning':
-        return const Color(0xFFF59E0B);
+        return AppColors.orange;
       case 'In Risk':
-        return const Color(0xFFEF4444);
+        return AppColors.red;
       default:
-        return AppColors.grey;
+        return AppColors.textSecondary;
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:expense_tracking_desktop_app/screens/home/home_screen.dart';
+import 'package:expense_tracking_desktop_app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/seeds/budget_dummy_data.dart';

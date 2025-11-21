@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 /// Budget category model for UI representation
-/// This is separate from the database Category class
 class BudgetCategory {
   final String name;
   final double spent;

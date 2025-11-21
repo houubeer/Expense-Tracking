@@ -13,53 +13,69 @@ class Sidebar extends StatelessWidget {
   });
 
   static const List<Map<String, dynamic>> _items = [
-    {"icon": Icons.home, "label": "Home"},
-    {"icon": Icons.add_circle, "label": "Add expense"},
-    {"icon": Icons.list_alt, "label": "View expenses"},
-    {"icon": Icons.pie_chart, "label": "Budgets"},
-    {"icon": Icons.label, "label": "Categories"},
-    {"icon": Icons.settings, "label": "Settings"},
+    {"icon": Icons.dashboard_rounded, "label": "Dashboard"},
+    {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense"},
+    {"icon": Icons.list_alt_rounded, "label": "Transactions"},
+    {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets"},
+    {"icon": Icons.label_outline_rounded, "label": "Categories"},
+    {"icon": Icons.settings_outlined, "label": "Settings"},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.2,
-      color: AppColors.primaryBlue,
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      width: 280,
+      color: AppColors.primary, // Slate 900
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Section - Centered
-          Center(
-            child: Column(
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(32, 40, 32, 40),
+            child: Row(
               children: [
-                Text(
-                  "ExpenseTracker",
-                  style: AppTextStyles.heading3.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  child: const Icon(Icons.account_balance_wallet,
+                      color: Colors.white, size: 24),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  "Track your spending with ease",
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.85),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Expense",
+                        style: AppTextStyles.heading3.copyWith(
+                          color: AppColors.white,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        "Manager",
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textTertiary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 40),
 
-          // Navigation Items with better spacing
+          // Navigation
           Expanded(
             child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 8),
+              separatorBuilder: (context, index) => const SizedBox(height: 4),
               itemBuilder: (context, i) => _SidebarTile(
                 icon: _items[i]["icon"] as IconData,
                 label: _items[i]["label"] as String,
@@ -68,6 +84,8 @@ class Sidebar extends StatelessWidget {
               ),
             ),
           ),
+
+
         ],
       ),
     );
@@ -96,6 +114,9 @@ class _SidebarTileState extends State<_SidebarTile> {
 
   @override
   Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
+    final isHovered = _isHovered;
+
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
@@ -103,42 +124,37 @@ class _SidebarTileState extends State<_SidebarTile> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
-            color: widget.isSelected
-                ? AppColors.white.withValues(alpha: 0.2)
-                : _isHovered
-                    ? AppColors.white.withValues(alpha: 0.1)
+            color: isSelected
+                ? AppColors.accent
+                : isHovered
+                    ? AppColors.primaryLight.withOpacity(0.5)
                     : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            border: widget.isSelected
-                ? Border.all(
-                    color: AppColors.white.withValues(alpha: 0.3), width: 1)
-                : null,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeInOut,
-                child: Icon(
-                  widget.icon,
-                  color: AppColors.white,
-                  size: _isHovered || widget.isSelected ? 26 : 24,
-                ),
+              Icon(
+                widget.icon,
+                color: isSelected
+                    ? AppColors.white
+                    : isHovered
+                        ? AppColors.white
+                        : AppColors.textTertiary,
+                size: 22,
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.white,
-                    fontWeight:
-                        widget.isSelected ? FontWeight.w600 : FontWeight.normal,
-                    fontSize: _isHovered || widget.isSelected ? 16 : 15,
-                  ),
+              const SizedBox(width: 12),
+              Text(
+                widget.label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: isSelected
+                      ? AppColors.white
+                      : isHovered
+                          ? AppColors.white
+                          : AppColors.textTertiary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ],
