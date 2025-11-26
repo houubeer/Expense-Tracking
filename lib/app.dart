@@ -18,7 +18,10 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
   int selectedIndex = 0;
 
   late final List<Widget> screens = [
-    HomeScreen(onNavigate: (index) => setState(() => selectedIndex = index)), // Dashboard
+    HomeScreen(
+      onNavigate: (index) => setState(() => selectedIndex = index),
+      database: main_app.database,
+    ), // Dashboard
     AddExpenseScreen(
       database: main_app.database,
       onNavigate: (index) => setState(() => selectedIndex = index),
@@ -31,7 +34,7 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
       database: main_app.database,
       onNavigate: (index) => setState(() => selectedIndex = index),
     ), // Budget Screen
-    const Center(child: Text("Categories Screen")),
+
     const Center(child: Text("Settings Screen")),
   ];
 
