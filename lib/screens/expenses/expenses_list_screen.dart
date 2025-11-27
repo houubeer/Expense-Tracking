@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 
 class ExpensesListScreen extends StatefulWidget {
   final AppDatabase database;
-  final Function(int)? onNavigate;
+  final Function(int, {int? categoryId})? onNavigate;
 
   const ExpensesListScreen({required this.database, this.onNavigate, super.key});
 

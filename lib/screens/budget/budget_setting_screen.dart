@@ -7,7 +7,7 @@ import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
   final AppDatabase database;
-  final Function(int)? onNavigate;
+  final Function(int, {int? categoryId})? onNavigate;
 
   const BudgetSettingScreen(
       {required this.database, this.onNavigate, super.key});
@@ -266,7 +266,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     onPressed: () {
                       // Navigate to Add Expense page (index 1)
                       if (widget.onNavigate != null) {
-                        widget.onNavigate!(1);
+                        widget.onNavigate!(1, categoryId: category.id);
                       }
                     },
                     icon: const Icon(Icons.add, size: 18),
