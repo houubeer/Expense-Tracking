@@ -44,6 +44,15 @@ class BudgetService {
     }
   }
 
+  /// Remove expense from category
+  Future<void> removeExpenseFromCategory(int categoryId, double amount) async {
+    final category = await _database.categoryDao.getCategoryById(categoryId);
+    if (category != null) {
+      final newSpent = (category.spent - amount).clamp(0.0, double.infinity);
+      await _database.categoryDao.updateCategorySpent(categoryId, newSpent);
+    }
+  }
+
   /// Check if category is over budget
   Future<bool> isCategoryOverBudget(int categoryId) async {
     final category = await _database.categoryDao.getCategoryById(categoryId);

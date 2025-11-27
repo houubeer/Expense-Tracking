@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/screens/expenses/edit_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/widgets/dialogs/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../repositories/expense_repository.dart';
@@ -89,7 +90,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.05),
+                    color: AppColors.primary.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -223,7 +224,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.1),
+                  color: categoryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
@@ -309,6 +310,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }
