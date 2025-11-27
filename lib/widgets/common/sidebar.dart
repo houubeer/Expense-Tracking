@@ -130,7 +130,7 @@ class _SidebarTileState extends State<_SidebarTile> {
             color: isSelected
                 ? AppColors.accent
                 : isHovered
-                    ? AppColors.primaryLight.withOpacity(0.5)
+                    ? AppColors.primaryLight.withValues(alpha: 0.5)
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),

@@ -192,7 +192,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -206,7 +206,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
@@ -245,7 +245,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -260,7 +260,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: categoryColor.withOpacity(0.1),
+                  color: categoryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -383,9 +383,11 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           ),
           FilledButton(
             onPressed: () async {
+              final navigator = Navigator.of(context);
+              final messenger = ScaffoldMessenger.of(context);
               final value = double.tryParse(controller.text) ?? 0.0;
               if (value < 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   const SnackBar(
                     content: Text('Budget cannot be negative'),
                     backgroundColor: AppColors.red,
@@ -398,8 +400,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   .updateCategoryBudget(category.id, value);
 
               if (mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
+                navigator.pop();
+                messenger.showSnackBar(
                   SnackBar(
                     content: Text(
                       'Updated ${category.name} budget to ${value.toStringAsFixed(2)} DZD',
@@ -560,7 +562,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

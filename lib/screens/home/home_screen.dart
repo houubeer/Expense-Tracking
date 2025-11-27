@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: color, size: 20),
@@ -151,8 +151,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: trend.startsWith('+')
-                      ? AppColors.green.withOpacity(0.1)
-                      : AppColors.red.withOpacity(0.1),
+                      ? AppColors.green.withValues(alpha: 0.1)
+                      : AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -234,8 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       final spent = data['spent'] as double;
                       final total = data['total'] as double;
                       final color = data['color'] as Color;
-                      final percentage =
-                          total > 0 ? (spent / total * 100) : 0.0;
+
 
                       return PieChartSectionData(
                         color: color,
@@ -348,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
+            color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(Icons.receipt_long_rounded,
@@ -406,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.05),
+            color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -454,11 +453,11 @@ class _QuickActionCardState extends State<_QuickActionCard> {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: _isHovered ? AppColors.accent.withOpacity(0.3) : AppColors.border,
+              color: _isHovered ? AppColors.accent.withValues(alpha: 0.3) : AppColors.border,
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(_isHovered ? 0.1 : 0.05),
+                color: AppColors.primary.withValues(alpha: _isHovered ? 0.1 : 0.05),
                 blurRadius: _isHovered ? 12 : 8,
                 offset: Offset(0, _isHovered ? 6 : 4),
               ),
@@ -473,7 +472,7 @@ class _QuickActionCardState extends State<_QuickActionCard> {
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: widget.color.withOpacity(_isHovered ? 0.2 : 0.1),
+                  color: widget.color.withValues(alpha: _isHovered ? 0.2 : 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(

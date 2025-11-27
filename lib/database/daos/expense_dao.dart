@@ -46,6 +46,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   // Delete expense
   Future<int> deleteExpense(int id) =>
       (delete(expenses)..where((e) => e.id.equals(id))).go();
+
+  // Get expense by id
+  Future<Expense?> getExpenseById(int id) =>
+      (select(expenses)..where((e) => e.id.equals(id))).getSingleOrNull();
 }
 
 class ExpenseWithCategory {
