@@ -3,6 +3,7 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/widgets/dialogs/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
 
 class ExpensesListScreen extends StatefulWidget {
@@ -169,9 +170,16 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     final categoryColor = Color(item.category.color);
     final dateStr = DateFormat('MMM dd, yyyy').format(item.expense.date);
     
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (context) => ExpenseDetailDialog(expenseWithCategory: item),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
         children: [
           // Date
           Expanded(
@@ -260,6 +268,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -288,7 +297,21 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             onPressed: () async {
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
-              await widget.database.expenseDao.deleteExpense(expenseId);
+              
+              // Get expense details before deletion
+              final expense = await widget.database.expenseDao.getExpenseById(expenseId);
+              if (expense != null) {
+                // Update category spent amount
+                final category = await widget.database.categoryDao.getCategoryById(expense.categoryId);
+                if (category != null) {
+                  final newSpent = (category.spent - expense.amount).clamp(0.0, double.infinity);
+                  await widget.database.categoryDao.updateCategorySpent(expense.categoryId, newSpent);
+                }
+                
+                // Delete the expense
+                await widget.database.expenseDao.deleteExpense(expenseId);
+              }
+              
               if (mounted) {
                 navigator.pop();
                 messenger.showSnackBar(
