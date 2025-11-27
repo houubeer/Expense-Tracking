@@ -34,12 +34,14 @@ class ExpenseDetailDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Header
             Row(
               children: [
@@ -205,6 +207,8 @@ class ExpenseDetailDialog extends StatelessWidget {
               ),
             ),
           ],
+        ),
+          ),
         ),
       ),
     );
