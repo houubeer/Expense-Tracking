@@ -15,7 +15,7 @@ class Sidebar extends StatelessWidget {
   static const List<Map<String, dynamic>> _items = [
     {"icon": Icons.dashboard_rounded, "label": "Dashboard"},
     {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense"},
-    {"icon": Icons.list_alt_rounded, "label": "Transactions"},
+    {"icon": Icons.receipt_long_rounded, "label": "View Expenses"},
     {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets"},
     {"icon": Icons.label_outline_rounded, "label": "Categories"},
     {"icon": Icons.settings_outlined, "label": "Settings"},
@@ -25,7 +25,16 @@ class Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 280,
-      color: AppColors.primary, // Slate 900
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary,
+            AppColors.primaryDark,
+          ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -34,33 +43,49 @@ class Sidebar extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(32, 40, 32, 40),
             child: Row(
               children: [
+                // Logo Image
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.accent,
-                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accentLight.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(Icons.account_balance_wallet,
-                      color: Colors.white, size: 24),
+                  padding: const EdgeInsets.all(8),
+                  child: Image.asset(
+                    'assets/images/raseedi_logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Expense",
+                        "Raseedi",
                         style: AppTextStyles.heading3.copyWith(
                           color: AppColors.white,
-                          fontSize: 18,
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        "Manager",
+                        "Pro",
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textTertiary,
-                          fontSize: 12,
+                          color: AppColors.accentLight,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.5,
                         ),
                       ),
                     ],
@@ -84,8 +109,6 @@ class Sidebar extends StatelessWidget {
               ),
             ),
           ),
-
-
         ],
       ),
     );
@@ -128,9 +151,9 @@ class _SidebarTileState extends State<_SidebarTile> {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.accent
+                ? AppColors.primaryLight.withOpacity(0.4)
                 : isHovered
-                    ? AppColors.primaryLight.withOpacity(0.5)
+                    ? AppColors.primaryLight.withOpacity(0.2)
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
           ),
