@@ -17,7 +17,7 @@ class Sidebar extends StatelessWidget {
     {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense"},
     {"icon": Icons.list_alt_rounded, "label": "Transactions"},
     {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets"},
-    {"icon": Icons.label_outline_rounded, "label": "Categories"},
+
     {"icon": Icons.settings_outlined, "label": "Settings"},
   ];
 
