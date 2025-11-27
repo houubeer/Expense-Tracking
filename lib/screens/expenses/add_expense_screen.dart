@@ -8,8 +8,14 @@ import '../../repositories/expense_repository.dart';
 class AddExpenseScreen extends StatefulWidget {
   final AppDatabase database;
   final Function(int)? onNavigate;
+  final int? preSelectedCategoryId;
 
-  const AddExpenseScreen({required this.database, this.onNavigate, super.key});
+  const AddExpenseScreen({
+    required this.database,
+    this.onNavigate,
+    this.preSelectedCategoryId,
+    super.key,
+  });
 
   @override
   State<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -27,6 +33,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   void initState() {
     super.initState();
     _repository = ExpenseRepository(widget.database);
+    _selectedCategoryId = widget.preSelectedCategoryId;
   }
 
   @override

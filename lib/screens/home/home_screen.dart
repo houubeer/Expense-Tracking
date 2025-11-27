@@ -97,53 +97,67 @@ class _HomeScreenState extends State<HomeScreen> {
               stream: budgetRepository.watchActiveCategoryBudgets(),
               builder: (context, budgetSnapshot) {
                 return StreamBuilder<double>(
-                  stream: budgetRepository.watchTotalSpent(),
-                  builder: (context, spentSnapshot) {
-                    final activeCategories = budgetSnapshot.data?.length ?? 0;
-                    final totalExpenses = spentSnapshot.data ?? 0.0;
-                    final dailyAverage = totalExpenses / 30;
+                  stream: budgetRepository.watchTotalBudget(),
+                  builder: (context, totalBudgetSnapshot) {
+                    return StreamBuilder<double>(
+                      stream: budgetRepository.watchTotalSpent(),
+                      builder: (context, spentSnapshot) {
+                        final activeCategories =
+                            budgetSnapshot.data?.length ?? 0;
+                        final totalBudget = totalBudgetSnapshot.data ?? 0.0;
+                        final totalExpenses = spentSnapshot.data ?? 0.0;
+                        final totalBalance = totalBudget - totalExpenses;
+                        final dailyAverage = totalExpenses / 30;
 
-                    return LayoutBuilder(builder: (context, constraints) {
-                      final width = constraints.maxWidth;
-                      final isDesktop = width > 1000;
-                      final cardWidth =
-                          isDesktop ? (width - 60) / 4 : (width - 20) / 2;
+                        return LayoutBuilder(builder: (context, constraints) {
+                          final width = constraints.maxWidth;
+                          final isDesktop = width > 1000;
+                          final cardWidth =
+                              isDesktop ? (width - 60) / 4 : (width - 20) / 2;
 
-                      return Wrap(
-                        spacing: 20,
-                        runSpacing: 20,
-                        children: [
-                          _statCard(
-                              "Total Balance",
-                              "${(520000 - totalExpenses).toStringAsFixed(0)} DZD",
-                              "+2.5%",
-                              Icons.account_balance_wallet_outlined,
-                              AppColors.accent,
-                              cardWidth),
-                          _statCard(
-                              "Number of Categories",
-                              "$activeCategories Active",
-                              activeCategories > 0 ? "+$activeCategories" : "0",
-                              Icons.category_outlined,
-                              AppColors.purple,
-                              cardWidth),
-                          _statCard(
-                              "Expenses",
-                              "${totalExpenses.toStringAsFixed(0)} DZD",
-                              "-5%",
-                              Icons.arrow_downward_rounded,
-                              AppColors.red,
-                              cardWidth),
-                          _statCard(
-                              "Daily Avg Spending",
-                              "${dailyAverage.toStringAsFixed(0)} DZD",
-                              "-2%",
-                              Icons.trending_down_rounded,
-                              AppColors.teal,
-                              cardWidth),
-                        ],
-                      );
-                    });
+                          return Wrap(
+                            spacing: 20,
+                            runSpacing: 20,
+                            children: [
+                              _statCard(
+                                  "Total Balance",
+                                  "${totalBalance.toStringAsFixed(0)} DZD",
+                                  totalBalance >= 0
+                                      ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
+                                      : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
+                                  Icons.account_balance_wallet_outlined,
+                                  totalBalance >= 0
+                                      ? AppColors.accent
+                                      : AppColors.red,
+                                  cardWidth),
+                              _statCard(
+                                  "Number of Categories",
+                                  "$activeCategories Active",
+                                  activeCategories > 0
+                                      ? "+$activeCategories"
+                                      : "0",
+                                  Icons.category_outlined,
+                                  AppColors.purple,
+                                  cardWidth),
+                              _statCard(
+                                  "Expenses",
+                                  "${totalExpenses.toStringAsFixed(0)} DZD",
+                                  "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
+                                  Icons.arrow_downward_rounded,
+                                  AppColors.red,
+                                  cardWidth),
+                              _statCard(
+                                  "Daily Avg Spending",
+                                  "${dailyAverage.toStringAsFixed(0)} DZD",
+                                  "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
+                                  Icons.trending_down_rounded,
+                                  AppColors.teal,
+                                  cardWidth),
+                            ],
+                          );
+                        });
+                      },
+                    );
                   },
                 );
               },
@@ -285,51 +299,59 @@ class _HomeScreenState extends State<HomeScreen> {
               final top5Budgets = activeBudgets.take(5).toList();
               final otherBudgets = activeBudgets.skip(5).toList();
 
-              // Calculate "Others" total
+              // Prepare pie chart data - only categories with expenses
+              final pieChartData =
+                  top5Budgets.where((b) => b.totalSpent > 0).toList();
+
+              // Calculate "Others" total - only if they have expenses
               double othersSpent = 0;
               double othersTotal = 0;
               for (var budget in otherBudgets) {
-                othersSpent += budget.totalSpent;
+                if (budget.totalSpent > 0) {
+                  othersSpent += budget.totalSpent;
+                }
                 othersTotal += budget.category.budget;
               }
-
-              // Prepare pie chart data
-              final pieChartData = List<CategoryBudgetView>.from(top5Budgets);
 
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Pie Chart
+                  // Pie Chart - Expenses Only
                   SizedBox(
                     height: 220,
                     width: 220,
-                    child: PieChart(
-                      PieChartData(
-                        sectionsSpace: 2,
-                        centerSpaceRadius: 75,
-                        sections: [
-                          ...pieChartData.map((budgetView) {
-                            return PieChartSectionData(
-                              color: Color(budgetView.category.color),
-                              value: budgetView.totalSpent > 0
-                                  ? budgetView.totalSpent
-                                  : (budgetView.category.budget * 0.01),
-                              title: '',
-                              radius: 22,
-                            );
-                          }),
-                          if (otherBudgets.isNotEmpty)
-                            PieChartSectionData(
-                              color: AppColors.textTertiary,
-                              value: othersSpent > 0
-                                  ? othersSpent
-                                  : (othersTotal * 0.01),
-                              title: '',
-                              radius: 22,
+                    child: pieChartData.isEmpty && othersSpent == 0
+                        ? Center(
+                            child: Text(
+                              'No expenses yet',
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
-                        ],
-                      ),
-                    ),
+                          )
+                        : PieChart(
+                            PieChartData(
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 75,
+                              sections: [
+                                ...pieChartData.map((budgetView) {
+                                  return PieChartSectionData(
+                                    color: Color(budgetView.category.color),
+                                    value: budgetView.totalSpent,
+                                    title: '',
+                                    radius: 22,
+                                  );
+                                }),
+                                if (othersSpent > 0)
+                                  PieChartSectionData(
+                                    color: AppColors.textTertiary,
+                                    value: othersSpent,
+                                    title: '',
+                                    radius: 22,
+                                  ),
+                              ],
+                            ),
+                          ),
                   ),
                   const SizedBox(width: 32),
                   // Scrollable Legend
@@ -570,7 +592,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         for (int i = 0; i < recentExpenses.length; i++) ...[
                           _expenseItem(
-                            recentExpenses[i].expense.description,
+                            _truncateDescription(
+                                recentExpenses[i].expense.description),
                             recentExpenses[i].category.name,
                             _formatDate(recentExpenses[i].expense.date),
                             recentExpenses[i].expense.amount,
@@ -604,6 +627,14 @@ class _HomeScreenState extends State<HomeScreen> {
       'Dec'
     ];
     return '${months[date.month - 1]} ${date.day}';
+  }
+
+  String _truncateDescription(String description, {int maxWords = 4}) {
+    final words = description.split(' ');
+    if (words.length <= maxWords) {
+      return description;
+    }
+    return '${words.take(maxWords).join(' ')}...';
   }
 
   Widget _expenseItem(String title, String category, String date, double amount,

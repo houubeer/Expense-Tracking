@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
-import 'package:expense_tracking_desktop_app/screens/expenses/edit_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/widgets/dialogs/expense_detail_dialog.dart';
@@ -9,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../repositories/expense_repository.dart';
 import '../../widgets/success_snackbar.dart';
+import '../../widgets/expense_form_widget.dart';
 
 class ExpensesListScreen extends StatefulWidget {
   final AppDatabase database;
@@ -24,6 +24,8 @@ class ExpensesListScreen extends StatefulWidget {
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
   late ExpenseRepository _repository;
   String _searchQuery = '';
+  int? _selectedCategoryFilter;
+  DateTime? _selectedDateFilter;
 
   @override
   void initState() {
@@ -81,32 +83,183 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Search Bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+            // Search Bar and Filters Row
+            Row(
+              children: [
+                // Search Bar
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      onChanged: (value) =>
+                          setState(() => _searchQuery = value),
+                      decoration: InputDecoration(
+                        hintText: 'Search transactions...',
+                        hintStyle: TextStyle(color: AppColors.textSecondary),
+                        prefixIcon:
+                            Icon(Icons.search, color: AppColors.textSecondary),
+                        border: InputBorder.none,
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
                   ),
-                ],
-              ),
-              child: TextField(
-                onChanged: (value) => setState(() => _searchQuery = value),
-                decoration: InputDecoration(
-                  hintText: 'Search transactions...',
-                  hintStyle: TextStyle(color: AppColors.textSecondary),
-                  prefixIcon:
-                      Icon(Icons.search, color: AppColors.textSecondary),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-              ),
+                const SizedBox(width: 16),
+                // Category Filter
+                Expanded(
+                  flex: 2,
+                  child: StreamBuilder<List<Category>>(
+                    stream: widget.database.categoryDao.watchAllCategories(),
+                    builder: (context, snapshot) {
+                      final categories = snapshot.data ?? [];
+                      return Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<int?>(
+                            value: _selectedCategoryFilter,
+                            hint: Row(
+                              children: [
+                                Icon(Icons.filter_list,
+                                    color: AppColors.textSecondary, size: 20),
+                                const SizedBox(width: 8),
+                                Text('Category',
+                                    style: TextStyle(
+                                        color: AppColors.textSecondary)),
+                              ],
+                            ),
+                            isExpanded: true,
+                            items: [
+                              DropdownMenuItem<int?>(
+                                value: null,
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.clear,
+                                        color: AppColors.textSecondary,
+                                        size: 20),
+                                    const SizedBox(width: 8),
+                                    Text('All Categories'),
+                                  ],
+                                ),
+                              ),
+                              ...categories.map((category) {
+                                return DropdownMenuItem<int?>(
+                                  value: category.id,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: Color(category.color),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(category.name),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _selectedCategoryFilter = value);
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Date Filter
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.border),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: InkWell(
+                      onTap: () async {
+                        final DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDateFilter ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101),
+                        );
+                        if (picked != null) {
+                          setState(() => _selectedDateFilter = picked);
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Row(
+                          children: [
+                            Icon(Icons.calendar_today,
+                                color: AppColors.textSecondary, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _selectedDateFilter == null
+                                    ? 'Date'
+                                    : DateFormat('MMM dd, yyyy')
+                                        .format(_selectedDateFilter!),
+                                style: TextStyle(
+                                  color: _selectedDateFilter == null
+                                      ? AppColors.textSecondary
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            if (_selectedDateFilter != null)
+                              GestureDetector(
+                                onTap: () =>
+                                    setState(() => _selectedDateFilter = null),
+                                child: Icon(Icons.close,
+                                    color: AppColors.textSecondary, size: 18),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
 
@@ -152,13 +305,26 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
                   // Filter expenses
                   final filteredExpenses = expenses.where((item) {
+                    // Search filter
                     final matchesSearch = item.expense.description
                             .toLowerCase()
                             .contains(_searchQuery.toLowerCase()) ||
                         item.category.name
                             .toLowerCase()
                             .contains(_searchQuery.toLowerCase());
-                    return matchesSearch;
+
+                    // Category filter
+                    final matchesCategory = _selectedCategoryFilter == null ||
+                        item.category.id == _selectedCategoryFilter;
+
+                    // Date filter
+                    final matchesDate = _selectedDateFilter == null ||
+                        (item.expense.date.year == _selectedDateFilter!.year &&
+                            item.expense.date.month ==
+                                _selectedDateFilter!.month &&
+                            item.expense.date.day == _selectedDateFilter!.day);
+
+                    return matchesSearch && matchesCategory && matchesDate;
                   }).toList();
 
                   if (filteredExpenses.isEmpty) {
@@ -202,114 +368,122 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
     final categoryColor = Color(item.category.color);
     final dateStr = DateFormat('MMM dd, yyyy').format(item.expense.date);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
-        children: [
-          // Date
-          Expanded(
-            flex: 2,
-            child: Text(
-              dateStr,
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.textPrimary),
+    return InkWell(
+      onTap: () => _showExpenseDetail(item),
+      hoverColor: AppColors.primary.withValues(alpha: 0.03),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Row(
+          children: [
+            // Date
+            Expanded(
+              flex: 2,
+              child: Text(
+                dateStr,
+                style: AppTextStyles.bodyMedium
+                    .copyWith(color: AppColors.textPrimary),
+              ),
             ),
-          ),
-          // Category
-          Expanded(
-            flex: 2,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: categoryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _getIconFromCodePoint(item.category.iconCodePoint),
-                      color: categoryColor,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      item.category.name,
-                      style: AppTextStyles.caption.copyWith(
+            // Category
+            Expanded(
+              flex: 2,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: categoryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getIconFromCodePoint(item.category.iconCodePoint),
                         color: categoryColor,
-                        fontWeight: FontWeight.w600,
+                        size: 16,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Description
-          Expanded(
-            flex: 3,
-            child: Text(
-              item.expense.description,
-              style: AppTextStyles.bodyMedium,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          // Amount
-          Expanded(
-            flex: 2,
-            child: Text(
-              "${item.expense.amount.toStringAsFixed(2)}",
-              style: AppTextStyles.bodyMedium.copyWith(
-                fontWeight: FontWeight.w500,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ),
-          // Actions
-          SizedBox(
-            width: 100,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit_outlined,
-                      size: 20, color: AppColors.primary),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditExpenseScreen(
-                          database: widget.database,
-                          expenseWithCategory: item,
+                      const SizedBox(width: 8),
+                      Text(
+                        item.category.name,
+                        style: AppTextStyles.caption.copyWith(
+                          color: categoryColor,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    );
-                    if (result == true) {
-                      setState(() {
-                        // Trigger rebuild to show updated data
-                        // StreamBuilder will handle it, but setState ensures UI refresh if needed
-                      });
-                    }
-                  },
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 16),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline,
-                      size: 20, color: AppColors.red),
-                  onPressed: () => _confirmDelete(item),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            // Description
+            Expanded(
+              flex: 3,
+              child: Text(
+                item.expense.description,
+                style: AppTextStyles.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // Amount
+            Expanded(
+              flex: 2,
+              child: Text(
+                "${item.expense.amount.toStringAsFixed(2)}",
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+            // Actions
+            SizedBox(
+              width: 100,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined,
+                        size: 20, color: AppColors.primary),
+                    onPressed: () => _showEditExpenseDialog(item),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline,
+                        size: 20, color: AppColors.red),
+                    onPressed: () => _confirmDelete(item),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showExpenseDetail(ExpenseWithCategory item) {
+    showDialog(
+      context: context,
+      builder: (context) => ExpenseDetailDialog(
+        expenseWithCategory: item,
+      ),
+    );
+  }
+
+  void _showEditExpenseDialog(ExpenseWithCategory item) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _EditExpenseDialog(
+        database: widget.database,
+        expenseWithCategory: item,
       ),
     );
   }
@@ -366,6 +540,157 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             child: const Text('Delete'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditExpenseDialog extends StatefulWidget {
+  final AppDatabase database;
+  final ExpenseWithCategory expenseWithCategory;
+
+  const _EditExpenseDialog({
+    required this.database,
+    required this.expenseWithCategory,
+  });
+
+  @override
+  State<_EditExpenseDialog> createState() => _EditExpenseDialogState();
+}
+
+class _EditExpenseDialogState extends State<_EditExpenseDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _amountController;
+  late TextEditingController _descriptionController;
+  late DateTime _selectedDate;
+  int? _selectedCategoryId;
+  late ExpenseRepository _repository;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = ExpenseRepository(widget.database);
+    final expense = widget.expenseWithCategory.expense;
+    _amountController = TextEditingController(text: expense.amount.toString());
+    _descriptionController = TextEditingController(text: expense.description);
+    _selectedDate = expense.date;
+    _selectedCategoryId = expense.categoryId;
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updateExpense() async {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedCategoryId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a category'),
+            backgroundColor: AppColors.red,
+          ),
+        );
+        return;
+      }
+
+      final amount = double.parse(_amountController.text);
+      final description = _descriptionController.text;
+
+      final originalExpense = widget.expenseWithCategory.expense;
+      final updatedExpense = originalExpense.copyWith(
+        amount: amount,
+        description: description,
+        date: _selectedDate,
+        categoryId: _selectedCategoryId!,
+      );
+
+      await _repository.updateExpense(updatedExpense);
+
+      if (mounted) {
+        Navigator.pop(context);
+        SuccessSnackbar.show(context, 'Expense updated successfully');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Edit Transaction', style: AppTextStyles.heading3),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            const Divider(color: AppColors.border),
+            const SizedBox(height: 24),
+            Expanded(
+              child: SingleChildScrollView(
+                child: ExpenseFormWidget(
+                  database: widget.database,
+                  formKey: _formKey,
+                  amountController: _amountController,
+                  descriptionController: _descriptionController,
+                  selectedDate: _selectedDate,
+                  selectedCategoryId: _selectedCategoryId,
+                  onDateChanged: (date) => setState(() => _selectedDate = date),
+                  onCategoryChanged: (categoryId) =>
+                      setState(() => _selectedCategoryId = categoryId),
+                  onSubmit: () {}, // Handled by dialog buttons
+                  onReset: () {}, // Handled by dialog buttons
+                  isEditing: true,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.textSecondary,
+                  ),
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: _updateExpense,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Update Expense'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -155,6 +155,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
       ),
     );
   }
+
 // 3leh sir 3leh
   Widget _buildSummaryCard(
       String title, String amount, Color color, IconData icon) {
@@ -198,7 +199,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           const SizedBox(height: 16),
           Text(
             amount,
-            style: AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
+            style:
+                AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
           ),
         ],
       ),
@@ -329,75 +331,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   void _showEditDialog(Category category, TextEditingController controller) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text('Edit Budget for ${category.name}',
-            style: AppTextStyles.heading3),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-          ],
-          decoration: InputDecoration(
-            labelText: 'Monthly Budget',
-            prefixText: 'DZD ',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.border),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primary),
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary)),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final navigator = Navigator.of(context);
-              final messenger = ScaffoldMessenger.of(context);
-              final value = double.tryParse(controller.text) ?? 0.0;
-              if (value < 0) {
-                messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Budget cannot be negative'),
-                    backgroundColor: AppColors.red,
-                  ),
-                );
-                return;
-              }
-
-              await widget.database.categoryDao
-                  .updateCategoryBudget(category.id, value);
-
-              if (mounted) {
-                navigator.pop();
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Updated ${category.name} budget to ${value.toStringAsFixed(2)} DZD',
-                    ),
-                    backgroundColor: AppColors.green,
-                  ),
-                );
-              }
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
-            ),
-            child: const Text('Save'),
-          ),
-        ],
+      builder: (context) => _EditCategoryDialog(
+        database: widget.database,
+        category: category,
+        budgetController: controller,
       ),
     );
   }
@@ -752,7 +689,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: budgetController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
               ],
@@ -789,7 +727,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       children: colors.map((color) {
                         final isSelected = selectedColor == color.value;
                         return InkWell(
-                          onTap: () => setState(() => selectedColor = color.value),
+                          onTap: () =>
+                              setState(() => selectedColor = color.value),
                           borderRadius: BorderRadius.circular(20),
                           child: Container(
                             width: 40,
@@ -798,11 +737,13 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                               color: color,
                               shape: BoxShape.circle,
                               border: isSelected
-                                  ? Border.all(color: AppColors.textPrimary, width: 2)
+                                  ? Border.all(
+                                      color: AppColors.textPrimary, width: 2)
                                   : null,
                             ),
                             child: isSelected
-                                ? const Icon(Icons.check, color: Colors.white, size: 20)
+                                ? const Icon(Icons.check,
+                                    color: Colors.white, size: 20)
                                 : null,
                           ),
                         );
@@ -837,9 +778,11 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: icons.map((icon) {
-                        final isSelected = selectedIcon == icon.codePoint.toString();
+                        final isSelected =
+                            selectedIcon == icon.codePoint.toString();
                         return InkWell(
-                          onTap: () => setState(() => selectedIcon = icon.codePoint.toString()),
+                          onTap: () => setState(
+                              () => selectedIcon = icon.codePoint.toString()),
                           borderRadius: BorderRadius.circular(8),
                           child: Container(
                             padding: const EdgeInsets.all(8),
@@ -854,7 +797,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                             ),
                             child: Icon(
                               icon,
-                              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
                               size: 24,
                             ),
                           ),
@@ -870,16 +815,17 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           FilledButton(
             onPressed: () async {
               if (nameController.text.isEmpty) {
                 return;
               }
-              
+
               final budget = double.tryParse(budgetController.text) ?? 0.0;
-              
+
               await widget.database.categoryDao.insertCategory(
                 CategoriesCompanion.insert(
                   name: nameController.text,
@@ -920,7 +866,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel',
+                style: TextStyle(color: AppColors.textSecondary)),
           ),
           FilledButton(
             onPressed: () async {
@@ -939,6 +886,296 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: const Text('Delete'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _EditCategoryDialog extends StatefulWidget {
+  final AppDatabase database;
+  final Category category;
+  final TextEditingController budgetController;
+
+  const _EditCategoryDialog({
+    required this.database,
+    required this.category,
+    required this.budgetController,
+  });
+
+  @override
+  State<_EditCategoryDialog> createState() => _EditCategoryDialogState();
+}
+
+class _EditCategoryDialogState extends State<_EditCategoryDialog> {
+  late Color _selectedColor;
+  late IconData _selectedIcon;
+
+  // Common category colors
+  final List<Color> _categoryColors = [
+    const Color(0xFFEC4899), // Pink
+    const Color(0xFF9333EA), // Purple
+    const Color(0xFF06B6D4), // Teal
+    const Color(0xFF6366F1), // Indigo
+    const Color(0xFFF59E0B), // Amber
+    const Color(0xFF10B981), // Green
+    const Color(0xFFA855F7), // Light Purple
+    const Color(0xFFFBBF24), // Light Amber
+    const Color(0xFF22D3EE), // Light Cyan
+    const Color(0xFFF472B6), // Light Pink
+    const Color(0xFFEF4444), // Red
+    const Color(0xFF3B82F6), // Blue
+  ];
+
+  // Common category icons
+  final List<IconData> _categoryIcons = [
+    Icons.category,
+    Icons.shopping_cart,
+    Icons.restaurant,
+    Icons.local_gas_station,
+    Icons.home,
+    Icons.directions_car,
+    Icons.flight,
+    Icons.hotel,
+    Icons.medical_services,
+    Icons.school,
+    Icons.fitness_center,
+    Icons.devices,
+    Icons.subscriptions,
+    Icons.lightbulb,
+    Icons.build,
+    Icons.shopping_bag,
+    Icons.local_cafe,
+    Icons.sports_esports,
+    Icons.music_note,
+    Icons.pets,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedColor = Color(widget.category.color);
+    _selectedIcon = _getIconFromCodePoint(widget.category.iconCodePoint);
+  }
+
+  IconData _getIconFromCodePoint(String codePointStr) {
+    try {
+      final codePoint = int.parse(codePointStr);
+      return IconData(codePoint, fontFamily: 'MaterialIcons');
+    } catch (e) {
+      return Icons.category;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
+        padding: const EdgeInsets.all(32),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Edit ${widget.category.name}',
+                      style: AppTextStyles.heading3),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                    color: AppColors.textSecondary,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Divider(color: AppColors.border),
+              const SizedBox(height: 24),
+
+              // Budget Field
+              TextField(
+                controller: widget.budgetController,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
+                decoration: InputDecoration(
+                  labelText: 'Monthly Budget',
+                  prefixText: 'DZD ',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AppColors.primary),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Color Picker
+              Text('Color', style: AppTextStyles.label),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: _categoryColors.map((color) {
+                  final isSelected = color.value == _selectedColor.value;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedColor = color),
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.textPrimary
+                              : Colors.transparent,
+                          width: 3,
+                        ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: color.withOpacity(0.4),
+                                  blurRadius: 8,
+                                  spreadRadius: 2,
+                                ),
+                              ]
+                            : [],
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check,
+                              color: Colors.white, size: 24)
+                          : null,
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+
+              // Icon Picker
+              Text('Icon', style: AppTextStyles.label),
+              const SizedBox(height: 12),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _categoryIcons.map((icon) {
+                      final isSelected =
+                          icon.codePoint == _selectedIcon.codePoint;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedIcon = icon),
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? _selectedColor.withOpacity(0.2)
+                                : AppColors.background,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isSelected
+                                  ? _selectedColor
+                                  : AppColors.border,
+                              width: 2,
+                            ),
+                          ),
+                          child: Icon(
+                            icon,
+                            color: isSelected
+                                ? _selectedColor
+                                : AppColors.textSecondary,
+                            size: 24,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Action Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final navigator = Navigator.of(context);
+                      final messenger = ScaffoldMessenger.of(context);
+                      final value =
+                          double.tryParse(widget.budgetController.text) ?? 0.0;
+                      if (value < 0) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Budget cannot be negative'),
+                            backgroundColor: AppColors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Update category with new values
+                      final updatedCategory = widget.category.copyWith(
+                        budget: value,
+                        color: _selectedColor.value,
+                        iconCodePoint: _selectedIcon.codePoint.toString(),
+                      );
+
+                      await widget.database.categoryDao
+                          .updateCategory(updatedCategory);
+
+                      if (mounted) {
+                        navigator.pop();
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Updated ${widget.category.name}',
+                            ),
+                            backgroundColor: AppColors.green,
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Save Changes'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
