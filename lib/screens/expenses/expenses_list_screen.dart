@@ -311,7 +311,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           ),
         ],
       ),
-      ),
     );
   }
 

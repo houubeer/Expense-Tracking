@@ -20,7 +20,6 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
   late final List<Widget> screens = [
     HomeScreen(
       onNavigate: (index) => setState(() => selectedIndex = index),
-      database: main_app.database,
     ), // Dashboard
     AddExpenseScreen(
       database: main_app.database,
