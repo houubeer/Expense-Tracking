@@ -1,3 +1,4 @@
+// QA Verified: Delete + Update Expense Flow
 import 'package:drift/native.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
