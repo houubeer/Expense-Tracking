@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import '../../constants/colors.dart';
 import '../../constants/text_styles.dart';
 import '../../database/app_database.dart';
-import '../../database/daos/category_dao.dart';
 
 class ExpenseFormWidget extends StatefulWidget {
   final AppDatabase database;
@@ -254,49 +253,44 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                   return null;
                 },
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
 
-              // Actions
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
+              // Action Buttons
+              if (!widget.isEditing)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton.icon(
                       onPressed: widget.onReset,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reset'),
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        foregroundColor: AppColors.textSecondary,
                         side: const BorderSide(color: AppColors.border),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Text(
-                        widget.isEditing ? 'Cancel' : 'Reset',
-                        style: AppTextStyles.button
-                            .copyWith(color: AppColors.textSecondary),
-                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
                       onPressed: widget.onSubmit,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Expense'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        elevation: 2,
-                      ),
-                      child: Text(
-                        widget.isEditing ? 'Update Expense' : 'Save Expense',
-                        style: AppTextStyles.button,
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

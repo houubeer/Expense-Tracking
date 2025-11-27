@@ -16,26 +16,46 @@ class ExpenseTrackerApp extends StatefulWidget {
 
 class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
   int selectedIndex = 0;
+  int? selectedCategoryId;
 
-  late final List<Widget> screens = [
-    HomeScreen(
-      onNavigate: (index) => setState(() => selectedIndex = index),
-    ), // Dashboard
-    AddExpenseScreen(
-      database: main_app.database,
-      onNavigate: (index) => setState(() => selectedIndex = index),
-    ), // Add Expense
-    ExpensesListScreen(
-      database: main_app.database,
-      onNavigate: (index) => setState(() => selectedIndex = index),
-    ), // Expenses List
-    BudgetSettingScreen(
-      database: main_app.database,
-      onNavigate: (index) => setState(() => selectedIndex = index),
-    ), // Budget Screen
-
-    const Center(child: Text("Settings Screen")),
-  ];
+  Widget _getScreen(int index) {
+    switch (index) {
+      case 0:
+        return HomeScreen(
+          onNavigate: (index) => setState(() {
+            selectedIndex = index;
+            selectedCategoryId = null;
+          }),
+        );
+      case 1:
+        return AddExpenseScreen(
+          database: main_app.database,
+          onNavigate: (index) => setState(() {
+            selectedIndex = index;
+            selectedCategoryId = null;
+          }),
+          preSelectedCategoryId: selectedCategoryId,
+        );
+      case 2:
+        return ExpensesListScreen(
+          database: main_app.database,
+          onNavigate: (index, {int? categoryId}) => setState(() {
+            selectedIndex = index;
+            selectedCategoryId = categoryId;
+          }),
+        );
+      case 3:
+        return BudgetSettingScreen(
+          database: main_app.database,
+          onNavigate: (index, {int? categoryId}) => setState(() {
+            selectedIndex = index;
+            selectedCategoryId = categoryId;
+          }),
+        );
+      default:
+        return const Center(child: Text("Unknown Screen"));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +78,7 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
                   },
                 ),
                 Expanded(
-                  child: screens[selectedIndex],
+                  child: _getScreen(selectedIndex),
                 ),
               ],
             ),
