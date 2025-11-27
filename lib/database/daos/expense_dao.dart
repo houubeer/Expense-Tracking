@@ -12,7 +12,9 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   // Watch all expenses
   Stream<List<Expense>> watchAllExpenses() {
     return (select(expenses)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)
+          ]))
         .watch();
   }
 
@@ -47,9 +49,42 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   Future<int> deleteExpense(int id) =>
       (delete(expenses)..where((e) => e.id.equals(id))).go();
 
-  // Get expense by id
-  Future<Expense?> getExpenseById(int id) =>
-      (select(expenses)..where((e) => e.id.equals(id))).getSingleOrNull();
+  // Watch aggregated expenses by category (for budget tracking)
+  Stream<Map<int, double>> watchExpensesSumByCategory() {
+    final query = selectOnly(expenses)
+      ..addColumns([expenses.categoryId, expenses.amount.sum()]);
+    query.groupBy([expenses.categoryId]);
+
+    return query.watch().map((rows) {
+      final result = <int, double>{};
+      for (final row in rows) {
+        final categoryId = row.read(expenses.categoryId);
+        final sum = row.read(expenses.amount.sum()) ?? 0.0;
+        if (categoryId != null) {
+          result[categoryId] = sum;
+        }
+      }
+      return result;
+    });
+  }
+
+  // Get total expenses by category (non-reactive)
+  Future<Map<int, double>> getExpensesSumByCategory() async {
+    final query = selectOnly(expenses)
+      ..addColumns([expenses.categoryId, expenses.amount.sum()]);
+    query.groupBy([expenses.categoryId]);
+
+    final rows = await query.get();
+    final result = <int, double>{};
+    for (final row in rows) {
+      final categoryId = row.read(expenses.categoryId);
+      final sum = row.read(expenses.amount.sum()) ?? 0.0;
+      if (categoryId != null) {
+        result[categoryId] = sum;
+      }
+    }
+    return result;
+  }
 }
 
 class ExpenseWithCategory {

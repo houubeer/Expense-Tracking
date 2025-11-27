@@ -1,8 +1,5 @@
-import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
+import 'connection/connection.dart' as impl;
 // Import tables and DAOs
 import 'tables/categories_table.dart';
 import 'tables/expenses_table.dart';
@@ -17,6 +14,7 @@ part 'app_database.g.dart';
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+  AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
   int get schemaVersion => 4;
@@ -38,13 +36,8 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(expenses);
           }
         },
+        beforeOpen: (details) async {
+          await customStatement('PRAGMA foreign_keys = ON');
+        },
       );
-}
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final dbFile = File(p.join(dir.path, 'expense_tracker.sqlite'));
-    return NativeDatabase(dbFile);
-  });
 }
