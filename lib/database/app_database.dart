@@ -13,8 +13,7 @@ part 'app_database.g.dart';
   daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(impl.connect());
-  
+  AppDatabase() : super(_openConnection());
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
   @override
