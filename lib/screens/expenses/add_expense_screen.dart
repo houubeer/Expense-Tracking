@@ -70,9 +70,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Expense added successfully'),
+          SnackBar(
+            content: const Text('Expense added successfully'),
             backgroundColor: AppColors.green,
+            action: SnackBarAction(
+              label: 'View Expenses',
+              textColor: Colors.white,
+              onPressed: () {
+                widget.onNavigate?.call(2); // Navigate to Expenses List
+              },
+            ),
           ),
         );
         _resetForm();

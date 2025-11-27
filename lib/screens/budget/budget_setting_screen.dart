@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
   final AppDatabase database;
@@ -48,67 +49,40 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Text(
-              'Budget Management',
-              style: AppTextStyles.heading1,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Track your spending against monthly budget limits',
-              style: AppTextStyles.bodyMedium,
-            ),
-            const SizedBox(height: 32),
-
-            // Budget Summary Cards
-            StreamBuilder<List<Category>>(
-              stream: widget.database.categoryDao.watchAllCategories(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox();
-                }
-
-                final categories = snapshot.data!;
-                final totalBudget = categories.fold<double>(
-                  0.0,
-                  (sum, cat) => sum + cat.budget,
-                );
-                final totalSpent = categories.fold<double>(
-                  0.0,
-                  (sum, cat) => sum + cat.spent,
-                );
-                final remaining = totalBudget - totalSpent;
-
-                return Row(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _buildSummaryCard(
-                        'Total Monthly Budget',
-                        '${totalBudget.toStringAsFixed(2)} DZD',
-                        AppColors.primary,
-                        Icons.account_balance_wallet_outlined,
-                      ),
+                    Text(
+                      'Budget Management',
+                      style: AppTextStyles.heading1,
                     ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: _buildSummaryCard(
-                        'Total Spent This Month',
-                        '${totalSpent.toStringAsFixed(2)} DZD',
-                        AppColors.accent,
-                        Icons.shopping_cart_outlined,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: _buildSummaryCard(
-                        'Remaining Budget',
-                        '${remaining.toStringAsFixed(2)} DZD',
-                        AppColors.green,
-                        Icons.account_balance_rounded,
-                      ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Manage your categories and budget limits',
+                      style: AppTextStyles.bodyMedium,
                     ),
                   ],
-                );
-              },
+                ),
+                FilledButton.icon(
+                  onPressed: () => _showAddCategoryDialog(),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Add Category'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 32),
@@ -325,6 +299,13 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () => _deleteCategory(category),
+                    icon: const Icon(Icons.delete_outline, size: 20),
+                    color: AppColors.red,
+                    tooltip: 'Delete Category',
                   ),
                 ],
               ),
@@ -741,5 +722,222 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
       default:
         return AppColors.textSecondary;
     }
+  }
+
+  void _showAddCategoryDialog() {
+    final nameController = TextEditingController();
+    final budgetController = TextEditingController();
+    int selectedColor = AppColors.primary.value;
+    String selectedIcon = '57744'; // Default icon code point
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Add New Category', style: AppTextStyles.heading3),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Category Name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: budgetController,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+              ],
+              decoration: InputDecoration(
+                labelText: 'Monthly Budget',
+                prefixText: 'DZD ',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            // Color Selection
+            StatefulBuilder(
+              builder: (context, setState) {
+                final List<Color> colors = [
+                  AppColors.primary,
+                  AppColors.accent,
+                  AppColors.green,
+                  AppColors.red,
+                  AppColors.orange,
+                  Colors.purple,
+                  Colors.teal,
+                  Colors.pink,
+                ];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Color', style: AppTextStyles.label),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: colors.map((color) {
+                        final isSelected = selectedColor == color.value;
+                        return InkWell(
+                          onTap: () => setState(() => selectedColor = color.value),
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: color,
+                              shape: BoxShape.circle,
+                              border: isSelected
+                                  ? Border.all(color: AppColors.textPrimary, width: 2)
+                                  : null,
+                            ),
+                            child: isSelected
+                                ? const Icon(Icons.check, color: Colors.white, size: 20)
+                                : null,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            // Icon Selection
+            StatefulBuilder(
+              builder: (context, setState) {
+                final List<IconData> icons = [
+                  Icons.category,
+                  Icons.home,
+                  Icons.restaurant,
+                  Icons.directions_car,
+                  Icons.shopping_bag,
+                  Icons.medical_services,
+                  Icons.school,
+                  Icons.flight,
+                  Icons.sports_esports,
+                  Icons.pets,
+                ];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Icon', style: AppTextStyles.label),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: icons.map((icon) {
+                        final isSelected = selectedIcon == icon.codePoint.toString();
+                        return InkWell(
+                          onTap: () => setState(() => selectedIcon = icon.codePoint.toString()),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                              border: isSelected
+                                  ? Border.all(color: AppColors.primary)
+                                  : Border.all(color: AppColors.border),
+                            ),
+                            child: Icon(
+                              icon,
+                              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                              size: 24,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () async {
+              if (nameController.text.isEmpty) {
+                return;
+              }
+              
+              final budget = double.tryParse(budgetController.text) ?? 0.0;
+              
+              await widget.database.categoryDao.insertCategory(
+                CategoriesCompanion.insert(
+                  name: nameController.text,
+                  budget: Value(budget),
+                  color: selectedColor,
+                  iconCodePoint: selectedIcon,
+                ),
+              );
+
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Category added successfully'),
+                    backgroundColor: AppColors.green,
+                  ),
+                );
+              }
+            },
+            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteCategory(Category category) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: Text('Delete Category', style: AppTextStyles.heading3),
+        content: Text(
+          'Are you sure you want to delete "${category.name}"? This action cannot be undone.',
+          style: AppTextStyles.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          FilledButton(
+            onPressed: () async {
+              await widget.database.categoryDao.deleteCategory(category.id);
+              if (mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Category deleted'),
+                    backgroundColor: AppColors.red,
+                  ),
+                );
+              }
+            },
+            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 }
