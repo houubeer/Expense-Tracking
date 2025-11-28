@@ -68,8 +68,6 @@ GoRouter createRouter(AppDatabase database) {
                 builder: (context, state) {
                   final categoryId = state.uri.queryParameters['categoryId'];
                   return AddExpenseScreen(
-                    expenseService: expenseService,
-                    categoryRepository: categoryRepository,
                     preSelectedCategoryId:
                         categoryId != null ? int.tryParse(categoryId) : null,
                   );

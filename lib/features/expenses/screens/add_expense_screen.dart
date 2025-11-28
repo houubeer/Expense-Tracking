@@ -1,31 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' as drift;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
-class AddExpenseScreen extends StatefulWidget {
-  final ExpenseService expenseService;
-  final CategoryRepository categoryRepository;
+class AddExpenseScreen extends ConsumerStatefulWidget {
   final int? preSelectedCategoryId;
 
   const AddExpenseScreen({
-    required this.expenseService,
-    required this.categoryRepository,
     this.preSelectedCategoryId,
     super.key,
   });
 
   @override
-  State<AddExpenseScreen> createState() => _AddExpenseScreenState();
+  ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
 }
 
-class _AddExpenseScreenState extends State<AddExpenseScreen> {
+class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -46,44 +40,28 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   }
 
   Future<void> _saveExpense() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedCategoryId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a category'),
-            backgroundColor: AppColors.red,
-          ),
-        );
-        return;
-      }
+    if (!_formKey.currentState!.validate()) return;
 
-      final amount = double.parse(_amountController.text);
-      final description = _descriptionController.text;
-
-      final expense = ExpensesCompanion(
-        amount: drift.Value(amount),
-        description: drift.Value(description),
-        date: drift.Value(_selectedDate),
-        categoryId: drift.Value(_selectedCategoryId!),
+    if (_selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select a category'),
+          backgroundColor: AppColors.red,
+        ),
       );
-
-      await widget.expenseService.createExpense(expense);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppStrings.msgExpenseAdded),
-            backgroundColor: AppColors.green,
-            action: SnackBarAction(
-              label: AppStrings.navViewExpenses,
-              textColor: Colors.white,
-              onPressed: () => context.go(AppRoutes.viewExpenses),
-            ),
-          ),
-        );
-        _resetForm();
-      }
+      return;
     }
+
+    final viewModel = ref.read(addExpenseViewModelProvider.notifier);
+    final amount = double.parse(_amountController.text);
+    final description = _descriptionController.text;
+
+    await viewModel.submitExpense(
+      amount: amount,
+      description: description,
+      date: _selectedDate,
+      categoryId: _selectedCategoryId!,
+    );
   }
 
   void _resetForm() {
@@ -91,17 +69,46 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     _descriptionController.clear();
     setState(() {
       _selectedDate = DateTime.now();
-      _selectedCategoryId = null;
+      _selectedCategoryId = widget.preSelectedCategoryId;
     });
+    ref.read(addExpenseViewModelProvider.notifier).resetState();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AddExpenseState>(
+      addExpenseViewModelProvider,
+      (previous, next) {
+        if (next.isSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(next.successMessage ?? AppStrings.msgExpenseAdded),
+              backgroundColor: AppColors.green,
+              action: SnackBarAction(
+                label: AppStrings.navViewExpenses,
+                textColor: Colors.white,
+                onPressed: () => context.go(AppRoutes.viewExpenses),
+              ),
+            ),
+          );
+          _resetForm();
+        } else if (next.isError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(next.errorMessage ?? 'An error occurred'),
+              backgroundColor: AppColors.red,
+            ),
+          );
+        }
+      },
+    );
+
+    final state = ref.watch(addExpenseViewModelProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
         child: ExpenseFormWidget(
-          categoryRepository: widget.categoryRepository,
           formKey: _formKey,
           amountController: _amountController,
           descriptionController: _descriptionController,
@@ -109,8 +116,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           selectedCategoryId: _selectedCategoryId,
           onDateChanged: (date) => setState(() => _selectedDate = date),
           onCategoryChanged: (id) => setState(() => _selectedCategoryId = id),
-          onSubmit: _saveExpense,
+          onSubmit: state.isSubmitting ? null : _saveExpense,
           onReset: _resetForm,
+          isSubmitting: state.isSubmitting,
         ),
       ),
     );

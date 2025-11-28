@@ -26,8 +26,8 @@ class ExpenseSearchBar extends StatelessWidget {
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
@@ -38,8 +38,7 @@ class ExpenseSearchBar extends StatelessWidget {
           hintStyle: TextStyle(color: AppColors.textSecondary),
           prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
           border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
         ),
       ),
     );

@@ -68,7 +68,9 @@ class ExpenseListState {
   }
 
   bool get hasActiveFilters =>
-      searchQuery.isNotEmpty || selectedCategoryId != null || selectedDate != null;
+      searchQuery.isNotEmpty ||
+      selectedCategoryId != null ||
+      selectedDate != null;
 
   bool get isEmpty => filteredExpenses.isEmpty;
 }

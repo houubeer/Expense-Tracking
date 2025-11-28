@@ -61,8 +61,8 @@ class ExpenseFilters extends ConsumerWidget {
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
@@ -127,8 +127,8 @@ class ExpenseFilters extends ConsumerWidget {
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
