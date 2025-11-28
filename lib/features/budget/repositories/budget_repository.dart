@@ -2,9 +2,11 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budget_repository.dart';
+
 /// Repository that combines category and expense data to provide
 /// a reactive stream of budget information for the UI
-class BudgetRepository {
+class BudgetRepository implements IBudgetRepository {
   final AppDatabase _database;
 
   BudgetRepository(this._database);

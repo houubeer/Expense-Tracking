@@ -1,9 +1,11 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
 
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
+
 /// Repository for managing category operations
 /// Abstracts database access from UI layer
-class CategoryRepository {
+class CategoryRepository implements ICategoryRepository {
   final CategoryDao _categoryDao;
 
   CategoryRepository(AppDatabase database)
