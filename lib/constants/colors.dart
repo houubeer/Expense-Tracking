@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Brand Colors - Deep Blue Theme
-  static const primary =
-      Color.fromARGB(255, 40, 68, 139); // Deep Blue (requested)
+  static const primary = Color(0xFF28448B); // Deep Blue
   static const primaryLight = Color(0xFF3d5a9e); // Lighter Blue
   static const primaryDark = Color(0xFF1a2a52); // Darker Blue for gradient
   static const accent = Color(0xFF6366F1); // Vibrant Indigo
