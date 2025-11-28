@@ -49,7 +49,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppColors.primary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.textInverse,
               onSurface: AppColors.textPrimary,
             ),
           ),
@@ -281,7 +281,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                       label: const Text('Add Expense'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.textInverse,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(

@@ -9,7 +9,7 @@ class SuccessSnackbar extends SnackBar {
   }) : super(
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white),
+              const Icon(Icons.check_circle, color: AppColors.textInverse),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(

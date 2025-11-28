@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: const Text("Add Expense"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.textInverse,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 16),
                     shape: RoundedRectangleBorder(

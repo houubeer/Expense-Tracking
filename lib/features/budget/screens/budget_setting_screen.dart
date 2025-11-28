@@ -907,18 +907,16 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
 
   // Common category colors
   final List<Color> _categoryColors = [
-    const Color(0xFFEC4899), // Pink
-    const Color(0xFF9333EA), // Purple
-    const Color(0xFF06B6D4), // Teal
-    const Color(0xFF6366F1), // Indigo
-    const Color(0xFFF59E0B), // Amber
-    const Color(0xFF10B981), // Green
-    const Color(0xFFA855F7), // Light Purple
-    const Color(0xFFFBBF24), // Light Amber
-    const Color(0xFF22D3EE), // Light Cyan
-    const Color(0xFFF472B6), // Light Pink
-    const Color(0xFFEF4444), // Red
-    const Color(0xFF3B82F6), // Blue
+    AppColors.purple,
+    AppColors.teal,
+    AppColors.accent,
+    AppColors.orange,
+    AppColors.green,
+    AppColors.red,
+    AppColors.primary,
+    AppColors.primaryLight,
+    AppColors.accentLight,
+    AppColors.primaryDark,
   ];
 
   // Common category icons

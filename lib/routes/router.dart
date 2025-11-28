@@ -7,6 +7,7 @@ import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/colors.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -89,7 +90,7 @@ class _ErrorScreen extends StatelessWidget {
             const Icon(
               Icons.error_outline,
               size: 80,
-              color: Colors.red,
+              color: AppColors.red,
             ),
             const SizedBox(height: 16),
             const Text(
