@@ -6,9 +6,10 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 
 class ExpenseFormWidget extends StatefulWidget {
-  final AppDatabase database;
+  final CategoryRepository categoryRepository;
   final GlobalKey<FormState> formKey;
   final TextEditingController amountController;
   final TextEditingController descriptionController;
@@ -22,7 +23,7 @@ class ExpenseFormWidget extends StatefulWidget {
 
   const ExpenseFormWidget({
     super.key,
-    required this.database,
+    required this.categoryRepository,
     required this.formKey,
     required this.amountController,
     required this.descriptionController,
@@ -142,7 +143,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
               Text(AppStrings.labelCategory, style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
-                stream: widget.database.categoryDao.watchAllCategories(),
+                stream: widget.categoryRepository.watchAllCategories(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());

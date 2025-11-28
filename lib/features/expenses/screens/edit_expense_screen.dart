@@ -6,14 +6,17 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 
 class EditExpenseScreen extends StatefulWidget {
-  final AppDatabase database;
+  final ExpenseRepository expenseRepository;
+  final CategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
   final Function(int)? onNavigate;
 
   const EditExpenseScreen({
-    required this.database,
+    required this.expenseRepository,
+    required this.categoryRepository,
     required this.expenseWithCategory,
     this.onNavigate,
     super.key,
@@ -29,12 +32,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   late TextEditingController _descriptionController;
   late DateTime _selectedDate;
   int? _selectedCategoryId;
-  late ExpenseRepository _repository;
 
   @override
   void initState() {
     super.initState();
-    _repository = ExpenseRepository(widget.database);
     final expense = widget.expenseWithCategory.expense;
     _amountController = TextEditingController(text: expense.amount.toString());
     _descriptionController = TextEditingController(text: expense.description);
@@ -74,7 +75,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         categoryId: _selectedCategoryId!,
       );
 
-      await _repository.updateExpense(updatedExpense);
+      await widget.expenseRepository.updateExpense(updatedExpense);
 
       // We might need to handle category budget updates (subtract old, add new)
       // For now, we'll assume the simple update is enough or the logic is handled elsewhere.
@@ -116,7 +117,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       ),
       body: Center(
         child: ExpenseFormWidget(
-          database: widget.database,
+          categoryRepository: widget.categoryRepository,
           formKey: _formKey,
           amountController: _amountController,
           descriptionController: _descriptionController,

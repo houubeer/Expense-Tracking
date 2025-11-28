@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -11,9 +12,9 @@ import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
-  final AppDatabase database;
+  final CategoryRepository categoryRepository;
 
-  const BudgetSettingScreen({required this.database, super.key});
+  const BudgetSettingScreen({required this.categoryRepository, super.key});
 
   @override
   State<BudgetSettingScreen> createState() => _BudgetSettingScreenState();
@@ -98,7 +99,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             // Categories List
             Expanded(
               child: StreamBuilder<List<Category>>(
-                stream: widget.database.categoryDao.watchAllCategories(),
+                stream: widget.categoryRepository.watchAllCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -282,7 +283,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     showDialog(
       context: context,
       builder: (context) => _EditCategoryDialog(
-        database: widget.database,
+        categoryRepository: widget.categoryRepository,
         category: category,
         budgetController: controller,
       ),
@@ -787,7 +788,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
               final budget = double.tryParse(budgetController.text) ?? 0.0;
 
-              await widget.database.categoryDao.insertCategory(
+              await widget.categoryRepository.insertCategory(
                 CategoriesCompanion.insert(
                   name: nameController.text,
                   budget: Value(budget),
@@ -832,7 +833,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           ),
           FilledButton(
             onPressed: () async {
-              await widget.database.categoryDao.deleteCategory(category.id);
+              await widget.categoryRepository.deleteCategory(category.id);
               if (mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -853,12 +854,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 }
 
 class _EditCategoryDialog extends StatefulWidget {
-  final AppDatabase database;
+  final CategoryRepository categoryRepository;
   final Category category;
   final TextEditingController budgetController;
 
   const _EditCategoryDialog({
-    required this.database,
+    required this.categoryRepository,
     required this.category,
     required this.budgetController,
   });
@@ -1105,7 +1106,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                         iconCodePoint: _selectedIcon.codePoint.toString(),
                       );
 
-                      await widget.database.categoryDao
+                      await widget.categoryRepository
                           .updateCategory(updatedCategory);
 
                       if (mounted) {

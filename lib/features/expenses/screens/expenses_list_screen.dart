@@ -11,21 +11,26 @@ import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_d
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class ExpensesListScreen extends StatefulWidget {
-  final AppDatabase database;
+  final ExpenseRepository expenseRepository;
+  final CategoryRepository categoryRepository;
 
-  const ExpensesListScreen({required this.database, super.key});
+  const ExpensesListScreen({
+    required this.expenseRepository,
+    required this.categoryRepository,
+    super.key,
+  });
 
   @override
   State<ExpensesListScreen> createState() => _ExpensesListScreenState();
 }
 
 class _ExpensesListScreenState extends State<ExpensesListScreen> {
-  late ExpenseRepository _repository;
   String _searchQuery = '';
   int? _selectedCategoryFilter;
   DateTime? _selectedDateFilter;
@@ -33,7 +38,6 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   @override
   void initState() {
     super.initState();
-    _repository = ExpenseRepository(widget.database);
   }
 
   @override
@@ -124,7 +128,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 Expanded(
                   flex: 2,
                   child: StreamBuilder<List<Category>>(
-                    stream: widget.database.categoryDao.watchAllCategories(),
+                    stream: widget.categoryRepository.watchAllCategories(),
                     builder: (context, snapshot) {
                       final categories = snapshot.data ?? [];
                       return Container(
@@ -310,7 +314,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             // Expenses List
             Expanded(
               child: StreamBuilder<List<ExpenseWithCategory>>(
-                stream: _repository.watchExpensesWithCategory(),
+                stream: widget.expenseRepository.watchExpensesWithCategory(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -498,7 +502,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => _EditExpenseDialog(
-        database: widget.database,
+        expenseRepository: widget.expenseRepository,
+        categoryRepository: widget.categoryRepository,
         expenseWithCategory: item,
       ),
     );
@@ -529,7 +534,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           FilledButton(
             onPressed: () async {
               Navigator.pop(context); // Close dialog first
-              await _repository.deleteExpense(item.expense.id);
+              await widget.expenseRepository.deleteExpense(item.expense.id);
 
               if (mounted) {
                 SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
@@ -547,7 +552,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                     // However, autoIncrement columns usually don't let you insert explicit values easily
                     // without specific mode. Let's stick to re-creating it.
                   );
-                  await _repository.insertExpense(expense);
+                  await widget.expenseRepository.insertExpense(expense);
                 });
               }
             },
@@ -561,11 +566,13 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 }
 
 class _EditExpenseDialog extends StatefulWidget {
-  final AppDatabase database;
+  final ExpenseRepository expenseRepository;
+  final CategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
 
   const _EditExpenseDialog({
-    required this.database,
+    required this.expenseRepository,
+    required this.categoryRepository,
     required this.expenseWithCategory,
   });
 
@@ -579,12 +586,10 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
   late TextEditingController _descriptionController;
   late DateTime _selectedDate;
   int? _selectedCategoryId;
-  late ExpenseRepository _repository;
 
   @override
   void initState() {
     super.initState();
-    _repository = ExpenseRepository(widget.database);
     final expense = widget.expenseWithCategory.expense;
     _amountController = TextEditingController(text: expense.amount.toString());
     _descriptionController = TextEditingController(text: expense.description);
@@ -622,7 +627,7 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
         categoryId: _selectedCategoryId!,
       );
 
-      await _repository.updateExpense(updatedExpense);
+      await widget.expenseRepository.updateExpense(updatedExpense);
 
       if (mounted) {
         Navigator.pop(context);
@@ -663,7 +668,7 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
             Expanded(
               child: SingleChildScrollView(
                 child: ExpenseFormWidget(
-                  database: widget.database,
+                  categoryRepository: widget.categoryRepository,
                   formKey: _formKey,
                   amountController: _amountController,
                   descriptionController: _descriptionController,
