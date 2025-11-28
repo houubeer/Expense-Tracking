@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
-import 'package:expense_tracking_desktop_app/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 
 class AddExpenseScreen extends StatefulWidget {
