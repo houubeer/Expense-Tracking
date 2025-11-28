@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class Sidebar extends StatelessWidget {
   final String currentPath;

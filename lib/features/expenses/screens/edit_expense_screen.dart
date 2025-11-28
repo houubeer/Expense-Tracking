@@ -112,8 +112,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text('Edit Transaction',
-            style: AppTextStyles.heading3),
+        title: Text('Edit Transaction', style: AppTextStyles.heading3),
       ),
       body: Center(
         child: ExpenseFormWidget(

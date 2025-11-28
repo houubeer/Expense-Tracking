@@ -9,7 +9,7 @@ import 'package:expense_tracking_desktop_app/features/budget/models/category_bud
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
-import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {

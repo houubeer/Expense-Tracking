@@ -10,7 +10,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
-import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class ExpensesListScreen extends StatefulWidget {
   final AppDatabase database;
