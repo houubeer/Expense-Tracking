@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
+import 'package:expense_tracking_desktop_app/utils/sorting/category_sort_factory.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
@@ -82,7 +83,7 @@ class BudgetViewModel extends ChangeNotifier {
     await _repository.deleteCategory(categoryId);
   }
 
-  /// Private filtering and sorting logic
+  /// Private filtering and sorting logic using Strategy Pattern (Open/Closed Principle)
   List<Category> _applyFiltersAndSort(
     List<Category> categories,
     BudgetFilter filter,
@@ -108,24 +109,9 @@ class BudgetViewModel extends ChangeNotifier {
       return true;
     }).toList();
 
-    // Apply sorting
-    filtered.sort((a, b) {
-      switch (filter.sortBy) {
-        case 'Budget':
-          return b.budget.compareTo(a.budget);
-        case 'Spent':
-          return b.spent.compareTo(a.spent);
-        case 'Percentage':
-          final aPercentage =
-              BudgetStatusCalculator.calculatePercentage(a.spent, a.budget);
-          final bPercentage =
-              BudgetStatusCalculator.calculatePercentage(b.spent, b.budget);
-          return bPercentage.compareTo(aPercentage);
-        case 'Name':
-        default:
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      }
-    });
+    // Apply sorting using Strategy Pattern
+    final sortStrategy = CategorySortFactory.getStrategy(filter.sortBy);
+    filtered.sort(sortStrategy.compare);
 
     return filtered;
   }
