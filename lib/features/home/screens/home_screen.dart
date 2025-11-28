@@ -12,6 +12,7 @@ import 'package:expense_tracking_desktop_app/features/budget/models/category_bud
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/budget_overview_card.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/recent_expenses_card.dart';
+import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard_view_model.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<ExpenseWithCategory> recentExpenses = [];
+  final _viewModel = DashboardViewModel();
 
   @override
   void initState() {
@@ -110,19 +112,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     return StreamBuilder<double>(
                       stream: widget.budgetRepository.watchTotalSpent(),
                       builder: (context, spentSnapshot) {
-                        final activeCategories =
-                            budgetSnapshot.data?.length ?? 0;
-                        final totalBudget = totalBudgetSnapshot.data ?? 0.0;
-                        final totalExpenses = spentSnapshot.data ?? 0.0;
-                        final totalBalance = totalBudget - totalExpenses;
-                        final dailyAverage = totalExpenses / 30;
+                        // Calculate stats using ViewModel
+                        final stats = _viewModel.calculateStats(
+                          activeCategories: budgetSnapshot.data?.length ?? 0,
+                          totalBudget: totalBudgetSnapshot.data ?? 0.0,
+                          totalExpenses: spentSnapshot.data ?? 0.0,
+                        );
 
                         return LayoutBuilder(builder: (context, constraints) {
                           final width = constraints.maxWidth;
                           final isDesktop = width > AppConfig.desktopBreakpoint;
-                          final cardWidth = isDesktop
-                              ? (width - 60) / 4
-                              : (width - AppSpacing.xlMinorOffset) / 2;
+                          final cardWidth =
+                              _viewModel.calculateCardWidth(width, isDesktop);
 
                           return Wrap(
                             spacing: AppSpacing.xlMinor,
@@ -131,22 +132,16 @@ class _HomeScreenState extends State<HomeScreen> {
                               StatCard(
                                 title: "Total Balance",
                                 value:
-                                    "${totalBalance.toStringAsFixed(0)} ${AppStrings.currency}",
-                                trend: totalBalance >= 0
-                                    ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
-                                    : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
+                                    "${stats.totalBalance.toStringAsFixed(0)} ${AppStrings.currency}",
+                                trend: stats.balanceTrend,
                                 icon: Icons.account_balance_wallet_outlined,
-                                color: totalBalance >= 0
-                                    ? AppColors.accent
-                                    : AppColors.red,
+                                color: stats.balanceColor,
                                 width: cardWidth,
                               ),
                               StatCard(
                                 title: "Number of Categories",
-                                value: "$activeCategories Active",
-                                trend: activeCategories > 0
-                                    ? "+$activeCategories"
-                                    : "0",
+                                value: "${stats.activeCategories} Active",
+                                trend: stats.categoriesTrend,
                                 icon: Icons.category_outlined,
                                 color: AppColors.purple,
                                 width: cardWidth,
@@ -154,9 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               StatCard(
                                 title: "Expenses",
                                 value:
-                                    "${totalExpenses.toStringAsFixed(0)} ${AppStrings.currency}",
-                                trend:
-                                    "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
+                                    "${stats.totalExpenses.toStringAsFixed(0)} ${AppStrings.currency}",
+                                trend: stats.expenseTrend,
                                 icon: Icons.arrow_downward_rounded,
                                 color: AppColors.red,
                                 width: cardWidth,
@@ -164,9 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               StatCard(
                                 title: "Daily Avg Spending",
                                 value:
-                                    "${dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
-                                trend:
-                                    "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
+                                    "${stats.dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
+                                trend: stats.dailyAverageTrend,
                                 icon: Icons.trending_down_rounded,
                                 color: AppColors.teal,
                                 width: cardWidth,

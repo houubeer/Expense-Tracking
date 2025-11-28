@@ -44,8 +44,8 @@ class BudgetViewModel {
 
       // Apply status filter
       if (filter.statusFilter != 'All') {
-        final percentage = BudgetStatusCalculator.calculatePercentage(
-            cat.spent, cat.budget);
+        final percentage =
+            BudgetStatusCalculator.calculatePercentage(cat.spent, cat.budget);
         final status = BudgetStatusCalculator.getStatusText(percentage);
         if (status != filter.statusFilter) {
           return false;
@@ -63,10 +63,10 @@ class BudgetViewModel {
         case 'Spent':
           return b.spent.compareTo(a.spent);
         case 'Percentage':
-          final aPercentage = BudgetStatusCalculator.calculatePercentage(
-              a.spent, a.budget);
-          final bPercentage = BudgetStatusCalculator.calculatePercentage(
-              b.spent, b.budget);
+          final aPercentage =
+              BudgetStatusCalculator.calculatePercentage(a.spent, a.budget);
+          final bPercentage =
+              BudgetStatusCalculator.calculatePercentage(b.spent, b.budget);
           return bPercentage.compareTo(aPercentage);
         case 'Name':
         default:

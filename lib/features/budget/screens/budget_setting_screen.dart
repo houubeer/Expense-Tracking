@@ -438,21 +438,26 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
               ),
               child: TextField(
                 onChanged: (value) {
-                  ref.read(budgetFilterProvider.notifier).state =
-                      ref.read(budgetFilterProvider).copyWith(searchQuery: value);
+                  ref.read(budgetFilterProvider.notifier).state = ref
+                      .read(budgetFilterProvider)
+                      .copyWith(searchQuery: value);
                 },
                 decoration: InputDecoration(
                   hintText: AppStrings.hintSearchCategories,
                   hintStyle: AppTextStyles.bodyMedium,
                   prefixIcon:
                       Icon(Icons.search, color: AppColors.textSecondary),
-                  suffixIcon: ref.watch(budgetFilterProvider).searchQuery.isNotEmpty
+                  suffixIcon: ref
+                          .watch(budgetFilterProvider)
+                          .searchQuery
+                          .isNotEmpty
                       ? IconButton(
                           icon:
                               Icon(Icons.clear, color: AppColors.textSecondary),
                           onPressed: () {
-                            ref.read(budgetFilterProvider.notifier).state =
-                                ref.read(budgetFilterProvider).copyWith(searchQuery: '');
+                            ref.read(budgetFilterProvider.notifier).state = ref
+                                .read(budgetFilterProvider)
+                                .copyWith(searchQuery: '');
                           },
                         )
                       : null,
@@ -492,8 +497,8 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
                                 Icon(
                                   BudgetStatusCalculator.getFilterIcon(status),
                                   size: AppSpacing.iconXs,
-                                  color:
-                                      BudgetStatusCalculator.getFilterColor(status),
+                                  color: BudgetStatusCalculator.getFilterColor(
+                                      status),
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(status, style: AppTextStyles.bodyMedium),
@@ -502,8 +507,9 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
                           ))
                       .toList(),
                   onChanged: (value) {
-                    ref.read(budgetFilterProvider.notifier).state =
-                        ref.read(budgetFilterProvider).copyWith(statusFilter: value!);
+                    ref.read(budgetFilterProvider.notifier).state = ref
+                        .read(budgetFilterProvider)
+                        .copyWith(statusFilter: value!);
                   },
                 ),
               ),
