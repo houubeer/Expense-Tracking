@@ -310,10 +310,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           child: Center(
             child: Text(
               '${(percentage * 100).toStringAsFixed(1)}%',
-              style: TextStyle(
+              style: AppTextStyles.progressPercentage.copyWith(
                 color: percentage > 0.5 ? Colors.white : AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
               ),
             ),
           ),
@@ -450,7 +448,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 onChanged: (value) => setState(() => _searchQuery = value),
                 decoration: InputDecoration(
                   hintText: 'Search categories...',
-                  hintStyle: TextStyle(color: AppColors.textSecondary),
+                  hintStyle: AppTextStyles.bodyMedium,
                   prefixIcon:
                       Icon(Icons.search, color: AppColors.textSecondary),
                   suffixIcon: _searchQuery.isNotEmpty
@@ -758,8 +756,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
           ),
           FilledButton(
             onPressed: () async {
@@ -809,8 +806,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
           ),
           FilledButton(
             onPressed: () async {

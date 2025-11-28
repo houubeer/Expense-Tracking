@@ -145,8 +145,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                                     color: AppColors.textSecondary, size: 20),
                                 const SizedBox(width: 8),
                                 Text('Category',
-                                    style: TextStyle(
-                                        color: AppColors.textSecondary)),
+                                    style: AppTextStyles.bodyMedium),
                               ],
                             ),
                             isExpanded: true,
@@ -235,7 +234,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                                     ? 'Date'
                                     : DateFormat('MMM dd, yyyy')
                                         .format(_selectedDateFilter!),
-                                style: TextStyle(
+                                style: AppTextStyles.bodyMedium.copyWith(
                                   color: _selectedDateFilter == null
                                       ? AppColors.textSecondary
                                       : AppColors.textPrimary,
@@ -504,8 +503,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text('Cancel', style: AppTextStyles.bodyMedium),
           ),
           FilledButton(
             onPressed: () async {

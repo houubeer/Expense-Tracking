@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 class SuccessSnackbar extends SnackBar {
   SuccessSnackbar({
@@ -14,10 +15,7 @@ class SuccessSnackbar extends SnackBar {
               Expanded(
                 child: Text(
                   message,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.snackbarText,
                 ),
               ),
             ],
