@@ -1,58 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_provider.dart';
+import 'package:rxdart/rxdart.dart';
 
-/// Dashboard statistics model
-class DashboardStats {
-  final int activeCategories;
-  final double totalBudget;
-  final double totalExpenses;
-  final double totalBalance;
-  final double dailyAverage;
+class DashboardViewModel extends ChangeNotifier {
+  final BudgetRepository _budgetRepository;
+  final ExpenseService _expenseService;
 
-  DashboardStats({
-    required this.activeCategories,
-    required this.totalBudget,
-    required this.totalExpenses,
-    required this.totalBalance,
-    required this.dailyAverage,
-  });
+  DashboardViewModel(this._budgetRepository, this._expenseService);
 
-  /// Calculate balance percentage trend
-  String get balanceTrend {
-    if (totalBudget <= 0) return "0.0%";
-    final percentage = (totalBalance / totalBudget) * 100;
-    return totalBalance >= 0
-        ? "+${percentage.toStringAsFixed(1)}%"
-        : "-${percentage.abs().toStringAsFixed(1)}%";
+  /// Combines all streams into a single DashboardState stream
+  /// This flattens the nested StreamBuilders into one clean stream
+  Stream<DashboardState> watchDashboardState() {
+    return Rx.combineLatest4(
+      _budgetRepository.watchActiveCategoryBudgets(),
+      _budgetRepository.watchTotalBudget(),
+      _budgetRepository.watchTotalSpent(),
+      _expenseService.watchExpensesWithCategory(),
+      (
+        List<CategoryBudgetView> budgets,
+        double totalBudget,
+        double totalExpenses,
+        List<ExpenseWithCategory> expenses,
+      ) {
+        // All calculations happen here, UI just displays
+        return DashboardState.fromData(
+          budgets: budgets,
+          totalBudget: totalBudget,
+          totalExpenses: totalExpenses,
+          expenses: expenses,
+        );
+      },
+    );
   }
 
-  /// Get balance color based on value
-  Color get balanceColor =>
-      totalBalance >= 0 ? AppColors.accent : AppColors.red;
-
-  /// Calculate expense percentage trend
-  String get expenseTrend {
-    if (totalBudget <= 0) return "0.0%";
-    return "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%";
-  }
-
-  /// Calculate daily average percentage trend
-  String get dailyAverageTrend {
-    if (totalBudget <= 0) return "0.0%";
-    final dailyBudget = totalBudget / 30;
-    return "-${((dailyAverage / dailyBudget) * 100).toStringAsFixed(1)}%";
-  }
-
-  /// Calculate categories trend
-  String get categoriesTrend {
-    return activeCategories > 0 ? "+$activeCategories" : "0";
-  }
-}
-
-/// ViewModel for dashboard/home screen calculations
-class DashboardViewModel {
-  /// Calculate dashboard statistics from raw data
-  DashboardStats calculateStats({
+  /// Calculate dashboard statistics from raw data (legacy)
+  DashboardState calculateStats({
     required int activeCategories,
     required double totalBudget,
     required double totalExpenses,
@@ -60,17 +46,24 @@ class DashboardViewModel {
     final totalBalance = totalBudget - totalExpenses;
     final dailyAverage = totalExpenses / 30;
 
-    return DashboardStats(
+    return DashboardState(
       activeCategories: activeCategories,
       totalBudget: totalBudget,
       totalExpenses: totalExpenses,
       totalBalance: totalBalance,
       dailyAverage: dailyAverage,
+      recentExpenses: const [],
+      budgetData: const [],
     );
   }
 
   /// Calculate card width based on screen constraints
   double calculateCardWidth(double screenWidth, bool isDesktop) {
-    return isDesktop ? (screenWidth - 60) / 4 : (screenWidth - 28) / 2;
+    return isDesktop ? (screenWidth - 60) / 4 : (screenWidth - 20) / 2;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
