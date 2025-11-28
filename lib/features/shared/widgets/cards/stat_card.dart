@@ -49,12 +49,14 @@ class StatCard extends StatelessWidget {
       padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.surface,
-        borderRadius: BorderRadius.circular(borderRadius ?? AppSpacing.radiusLg),
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? AppSpacing.radiusLg),
         border: Border.all(color: borderColor ?? AppColors.border),
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: AppConfig.shadowOpacity),
+                  color: AppColors.primary
+                      .withValues(alpha: AppConfig.shadowOpacity),
                   blurRadius: AppConfig.shadowBlurRadiusLarge,
                   offset: const Offset(0, AppConfig.shadowOffsetYLarge),
                 ),

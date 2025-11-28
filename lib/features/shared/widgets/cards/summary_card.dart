@@ -44,12 +44,14 @@ class SummaryCard extends StatelessWidget {
       padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: backgroundColor ?? AppColors.surface,
-        borderRadius: BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
         border: Border.all(color: borderColor ?? AppColors.border),
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: AppConfig.shadowOpacity),
+                  color: AppColors.primary
+                      .withValues(alpha: AppConfig.shadowOpacity),
                   blurRadius: AppConfig.shadowBlurRadiusLarge,
                   offset: const Offset(0, AppConfig.shadowOffsetYLarge),
                 ),
@@ -99,7 +101,8 @@ class SummaryCard extends StatelessWidget {
     if (onTap != null) {
       return InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
         child: cardContent,
       );
     }

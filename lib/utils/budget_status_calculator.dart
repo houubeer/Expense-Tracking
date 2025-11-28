@@ -18,63 +18,68 @@ class BudgetStatusCalculator {
   }
 
   /// Get status text based on percentage used
-  String getStatusText(double percentage) {
-    final strategy = _config?.getStrategy(percentage) ??
-        BudgetStatusFactory.getStrategy(percentage);
+  static String getStatusText(double percentage) {
+    final strategy = BudgetStatusFactory.getStrategy(percentage);
     return strategy.statusText;
   }
 
   /// Get status color based on percentage used
-  Color getStatusColor(double percentage) {
-    final strategy = _config?.getStrategy(percentage) ??
-        BudgetStatusFactory.getStrategy(percentage);
+  static Color getStatusColor(double percentage) {
+    final strategy = BudgetStatusFactory.getStrategy(percentage);
     return strategy.statusColor;
   }
 
   /// Get status icon based on percentage used
-  IconData getStatusIcon(double percentage) {
+  static IconData getStatusIcon(double percentage) {
+    final strategy = BudgetStatusFactory.getStrategy(percentage);
+    return strategy.statusIcon;
+  }
+
+  /// Get filter icon for status dropdown
+  static IconData getFilterIcon(String status) {
+    final strategy = BudgetStatusFactory.getStrategyByText(status);
+    return strategy?.statusIcon ?? Icons.filter_list;
+  }
+
+  /// Get filter color for status dropdown
+  static Color getFilterColor(String status) {
+    final strategy = BudgetStatusFactory.getStrategyByText(status);
+    return strategy?.statusColor ?? AppColors.textSecondary;
+  }
+
+  // Instance methods using custom configuration
+  /// Get status text with custom config
+  String getStatusTextWithConfig(double percentage) {
+    final strategy = _config?.getStrategy(percentage) ??
+        BudgetStatusFactory.getStrategy(percentage);
+    return strategy.statusText;
+  }
+
+  /// Get status color with custom config
+  Color getStatusColorWithConfig(double percentage) {
+    final strategy = _config?.getStrategy(percentage) ??
+        BudgetStatusFactory.getStrategy(percentage);
+    return strategy.statusColor;
+  }
+
+  /// Get status icon with custom config
+  IconData getStatusIconWithConfig(double percentage) {
     final strategy = _config?.getStrategy(percentage) ??
         BudgetStatusFactory.getStrategy(percentage);
     return strategy.statusIcon;
   }
 
-  /// Get filter icon for status dropdown
-  IconData getFilterIcon(String status) {
+  /// Get filter icon with custom config
+  IconData getFilterIconWithConfig(String status) {
     final strategy = _config?.getStrategyByText(status) ??
         BudgetStatusFactory.getStrategyByText(status);
     return strategy?.statusIcon ?? Icons.filter_list;
   }
 
-  /// Get filter color for status dropdown
-  Color getFilterColor(String status) {
+  /// Get filter color with custom config
+  Color getFilterColorWithConfig(String status) {
     final strategy = _config?.getStrategyByText(status) ??
         BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusColor ?? AppColors.textSecondary;
-  }
-
-  // Static methods for backward compatibility
-  static String getStatusTextStatic(double percentage) {
-    final strategy = BudgetStatusFactory.getStrategy(percentage);
-    return strategy.statusText;
-  }
-
-  static Color getStatusColorStatic(double percentage) {
-    final strategy = BudgetStatusFactory.getStrategy(percentage);
-    return strategy.statusColor;
-  }
-
-  static IconData getStatusIconStatic(double percentage) {
-    final strategy = BudgetStatusFactory.getStrategy(percentage);
-    return strategy.statusIcon;
-  }
-
-  static IconData getFilterIconStatic(String status) {
-    final strategy = BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusIcon ?? Icons.filter_list;
-  }
-
-  static Color getFilterColorStatic(String status) {
-    final strategy = BudgetStatusFactory.getStrategyByText(status);
     return strategy?.statusColor ?? AppColors.textSecondary;
   }
 }

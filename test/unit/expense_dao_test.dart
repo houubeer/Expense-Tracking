@@ -65,7 +65,7 @@ void main() {
       categoryId: const Value(1),
     );
 
-    final id = await dao.insertExpense(expense);
+    await dao.insertExpense(expense);
     final original = (await dao.getAllExpenses()).first;
 
     final updatedExpense = original.copyWith(

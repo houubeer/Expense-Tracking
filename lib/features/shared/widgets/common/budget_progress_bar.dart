@@ -30,7 +30,7 @@ class BudgetProgressBar extends StatelessWidget {
 
     // Use injected calculator if provided, otherwise use default logic
     if (statusCalculator != null) {
-      return statusCalculator!.getStatusColor(percentage);
+      return statusCalculator!.getStatusColorWithConfig(percentage);
     }
 
     // Fallback to hardcoded logic for backward compatibility
@@ -51,7 +51,8 @@ class BudgetProgressBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: borderRadius ?? BorderRadius.circular(AppSpacing.radiusSm),
+          borderRadius:
+              borderRadius ?? BorderRadius.circular(AppSpacing.radiusSm),
           child: LinearProgressIndicator(
             value: percentage,
             backgroundColor: backgroundColor ?? AppColors.border,
