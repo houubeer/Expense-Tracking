@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import '../../repositories/expense_repository.dart';
 
@@ -84,7 +85,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               label: 'View Expenses',
               textColor: Colors.white,
               onPressed: () {
-                widget.onNavigate?.call(2); // Navigate to Expenses List
+                widget.onNavigate?.call(ScreenIndex.viewExpenses);
               },
             ),
           ),

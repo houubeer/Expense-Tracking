@@ -9,6 +9,7 @@ import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 ElevatedButton.icon(
-                  onPressed: () => widget.onNavigate(1),
+                  onPressed: () => widget.onNavigate(ScreenIndex.addExpense),
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text("Add Expense"),
                   style: ElevatedButton.styleFrom(
@@ -207,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SectionHeader(
             title: "Budget Overview",
             actionText: "Manage Budgets",
-            onActionPressed: () => widget.onNavigate(3),
+            onActionPressed: () => widget.onNavigate(ScreenIndex.budgets),
           ),
           const SizedBox(height: 24),
           // Use StreamBuilder for reactive budget updates
@@ -538,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SectionHeader(
             title: "Recent Expenses",
             actionText: "View All",
-            onActionPressed: () => widget.onNavigate(2),
+            onActionPressed: () => widget.onNavigate(ScreenIndex.viewExpenses),
           ),
           const SizedBox(height: 16),
           // Scrollable expenses list

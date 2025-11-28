@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
@@ -266,9 +267,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 children: [
                   FilledButton.icon(
                     onPressed: () {
-                      // Navigate to Add Expense page (index 1)
+                      // Navigate to Add Expense page
                       if (widget.onNavigate != null) {
-                        widget.onNavigate!(1, categoryId: category.id);
+                        widget.onNavigate!(ScreenIndex.addExpense, categoryId: category.id);
                       }
                     },
                     icon: const Icon(Icons.add, size: 18),

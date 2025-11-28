@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
@@ -63,7 +64,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 ElevatedButton.icon(
                   onPressed: () {
                     if (widget.onNavigate != null) {
-                      widget.onNavigate!(1); // Navigate to Add Expense
+                      widget.onNavigate!(ScreenIndex.addExpense);
                     }
                   },
                   icon: const Icon(Icons.add, size: 18),
