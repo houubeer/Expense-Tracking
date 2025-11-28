@@ -8,8 +8,7 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final ExpenseService _expenseService;
 
-  AddExpenseViewModel(this._expenseService)
-      : super(AddExpenseState.initial());
+  AddExpenseViewModel(this._expenseService) : super(AddExpenseState.initial());
 
   /// Submit expense to database
   Future<void> submitExpense({
@@ -47,7 +46,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
   /// Update existing expense
   Future<void> updateExpense({
-    required int expenseId,
+    required Expense oldExpense,
     required double amount,
     required String description,
     required DateTime date,
@@ -56,16 +55,16 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     state = state.copyWith(status: SubmissionStatus.submitting);
 
     try {
-      final expense = Expense(
-        id: expenseId,
+      final newExpense = Expense(
+        id: oldExpense.id,
         amount: amount,
         description: description,
         date: date,
         categoryId: categoryId,
-        createdAt: DateTime.now(), // Will be preserved by update
+        createdAt: oldExpense.createdAt,
       );
 
-      await _expenseService.updateExpense(expense);
+      await _expenseService.updateExpense(oldExpense, newExpense);
 
       state = state.copyWith(
         status: SubmissionStatus.success,

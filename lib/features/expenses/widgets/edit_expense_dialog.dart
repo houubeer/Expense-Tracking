@@ -114,7 +114,6 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
             Expanded(
               child: SingleChildScrollView(
                 child: ExpenseFormWidget(
-                  categoryRepository: widget.categoryRepository,
                   formKey: _formKey,
                   amountController: _amountController,
                   descriptionController: _descriptionController,

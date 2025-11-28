@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/expense_list_provider.dart';
 
@@ -66,7 +66,7 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
   }
 
   /// Delete expense with undo support
-  Future<void> deleteExpense(int expenseId) async {
-    await _expenseService.deleteExpense(expenseId);
+  Future<void> deleteExpense(Expense expense) async {
+    await _expenseService.deleteExpense(expense);
   }
 }

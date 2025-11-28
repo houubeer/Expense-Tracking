@@ -136,7 +136,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               Text(AppStrings.labelCategory, style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
-                stream: ref.watch(categoryRepositoryProvider).watchAllCategories(),
+                stream:
+                    ref.watch(categoryRepositoryProvider).watchAllCategories(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());

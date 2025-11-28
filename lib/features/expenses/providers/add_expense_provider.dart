@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart' as drift;
-import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/view_models/add_expense_view_model.dart';
 

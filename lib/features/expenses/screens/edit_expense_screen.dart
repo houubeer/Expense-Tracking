@@ -110,7 +110,6 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       ),
       body: Center(
         child: ExpenseFormWidget(
-          categoryRepository: widget.categoryRepository,
           formKey: _formKey,
           amountController: _amountController,
           descriptionController: _descriptionController,

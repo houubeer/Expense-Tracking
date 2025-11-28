@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
@@ -85,73 +86,68 @@ class BudgetOverviewCard extends StatelessWidget {
           width: 220,
           child: pieChartData.isEmpty && othersSpent == 0
               ? Center(
-                            child: Text(
-                              AppStrings.msgNoExpensesYet,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          )
-                        : PieChart(
-                            PieChartData(
-                              sectionsSpace: 2,
-                              centerSpaceRadius: 75,
-                              sections: [
-                                ...pieChartData.map((budgetView) {
-                                  return PieChartSectionData(
-                                    color: Color(budgetView.category.color),
-                                    value: budgetView.totalSpent,
-                                    title: '',
-                                    radius: 22,
-                                  );
-                                }),
-                                if (othersSpent > 0)
-                                  PieChartSectionData(
-                                    color: AppColors.textTertiary,
-                                    value: othersSpent,
-                                    title: '',
-                                    radius: 22,
-                                  ),
-                              ],
-                            ),
-                          ),
-                  ),
-                  const SizedBox(width: AppSpacing.xxl),
-                  // Scrollable Legend
-                  Expanded(
-                    child: SizedBox(
-                      height: 220,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Top 5 budgets
-                            ...top5Budgets.map((budgetView) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: _BudgetLegendItem(budgetView: budgetView),
-                              );
-                            }),
-                            // Others section
-                            if (otherBudgets.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: _OthersLegendItem(
-                                  otherBudgets: otherBudgets,
-                                  othersSpent: othersSpent,
-                                  othersTotal: othersTotal,
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
+                  child: Text(
+                    AppStrings.msgNoExpensesYet,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
+                )
+              : PieChart(
+                  PieChartData(
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 75,
+                    sections: [
+                      ...pieChartData.map((budgetView) {
+                        return PieChartSectionData(
+                          color: Color(budgetView.category.color),
+                          value: budgetView.totalSpent,
+                          title: '',
+                          radius: 22,
+                        );
+                      }),
+                      if (othersSpent > 0)
+                        PieChartSectionData(
+                          color: AppColors.textTertiary,
+                          value: othersSpent,
+                          title: '',
+                          radius: 22,
+                        ),
+                    ],
+                  ),
+                ),
+        ),
+        const SizedBox(width: AppSpacing.xxl),
+        // Scrollable Legend
+        Expanded(
+          child: SizedBox(
+            height: 220,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Top 5 budgets
+                  ...top5Budgets.map((budgetView) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _BudgetLegendItem(budgetView: budgetView),
+                    );
+                  }),
+                  // Others section
+                  if (otherBudgets.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _OthersLegendItem(
+                        otherBudgets: otherBudgets,
+                        othersSpent: othersSpent,
+                        othersTotal: othersTotal,
+                      ),
+                    ),
                 ],
-              );
-            },
+              ),
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

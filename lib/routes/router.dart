@@ -8,27 +8,16 @@ import 'package:expense_tracking_desktop_app/features/budget/screens/budget_sett
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Creates the app router with the provided database instance
 GoRouter createRouter(AppDatabase database) {
-  // Initialize repositories
-  final budgetRepository = BudgetRepository(database);
+  // TODO: Remove these when all screens are refactored to use Riverpod providers
+  // Currently needed for BudgetSettingScreen which hasn't been refactored yet
   final categoryRepository = CategoryRepository(database);
-  final expenseRepository = ExpenseRepository(database);
-
-  // Initialize services with database for transactions
-  final expenseService = ExpenseService(
-    expenseRepository,
-    categoryRepository,
-    database,
-  );
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
