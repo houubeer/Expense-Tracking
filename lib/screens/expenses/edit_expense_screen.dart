@@ -5,7 +5,7 @@ import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
-import '../../repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/repositories/expense_repository.dart';
 
 class EditExpenseScreen extends StatefulWidget {
   final AppDatabase database;

@@ -7,7 +7,7 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
-import '../../repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
