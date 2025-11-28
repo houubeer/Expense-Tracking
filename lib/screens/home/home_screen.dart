@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/models/category_budget_view.dart';
-import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
@@ -13,30 +13,28 @@ import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
-  final Function(int) onNavigate;
+  final AppDatabase database;
 
-  const HomeScreen({super.key, required this.onNavigate});
+  const HomeScreen({super.key, required this.database});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late AppDatabase database;
   late BudgetRepository budgetRepository;
   List<ExpenseWithCategory> recentExpenses = [];
 
   @override
   void initState() {
     super.initState();
-    database = main_app.database;
-    budgetRepository = BudgetRepository(database);
+    budgetRepository = BudgetRepository(widget.database);
     _loadRecentExpenses();
   }
 
   Future<void> _loadRecentExpenses() async {
     // Get recent expenses with category info
-    final expensesStream = database.expenseDao.watchExpensesWithCategory();
+    final expensesStream = widget.database.expenseDao.watchExpensesWithCategory();
     expensesStream.listen((expenseList) {
       if (mounted) {
         setState(() {
@@ -78,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 ElevatedButton.icon(
-                  onPressed: () => widget.onNavigate(ScreenIndex.addExpense),
+                  onPressed: () => context.go(AppRoutes.addExpense),
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text("Add Expense"),
                   style: ElevatedButton.styleFrom(
@@ -208,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SectionHeader(
             title: "Budget Overview",
             actionText: "Manage Budgets",
-            onActionPressed: () => widget.onNavigate(ScreenIndex.budgets),
+            onActionPressed: () => context.go(AppRoutes.budgets),
           ),
           const SizedBox(height: 24),
           // Use StreamBuilder for reactive budget updates
@@ -539,7 +537,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SectionHeader(
             title: "Recent Expenses",
             actionText: "View All",
-            onActionPressed: () => widget.onNavigate(ScreenIndex.viewExpenses),
+            onActionPressed: () => context.go(AppRoutes.viewExpenses),
           ),
           const SizedBox(height: 16),
           // Scrollable expenses list

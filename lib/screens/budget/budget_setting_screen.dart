@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
   final AppDatabase database;
-  final Function(int, {int? categoryId})? onNavigate;
 
   const BudgetSettingScreen(
-      {required this.database, this.onNavigate, super.key});
+      {required this.database, super.key});
 
   @override
   State<BudgetSettingScreen> createState() => _BudgetSettingScreenState();
@@ -266,12 +265,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Row(
                 children: [
                   FilledButton.icon(
-                    onPressed: () {
-                      // Navigate to Add Expense page
-                      if (widget.onNavigate != null) {
-                        widget.onNavigate!(ScreenIndex.addExpense, categoryId: category.id);
-                      }
-                    },
+                    onPressed: () => context.go('/expenses/add'),
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Add Expense'),
                     style: FilledButton.styleFrom(
