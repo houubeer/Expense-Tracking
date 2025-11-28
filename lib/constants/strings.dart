@@ -63,11 +63,15 @@ class AppStrings {
   static const String hintSearchExpenses = 'Search expenses...';
 
   // Descriptions
-  static const String descManageBudgets = 'Manage your categories and budget limits';
-  static const String descDeleteCategory = 'Are you sure you want to delete "{name}"? This action cannot be undone.';
-  static const String descDeleteTransaction = 'Are you sure you want to delete this transaction? This action cannot be undone.';
+  static const String descManageBudgets =
+      'Manage your categories and budget limits';
+  static const String descDeleteCategory =
+      'Are you sure you want to delete "{name}"? This action cannot be undone.';
+  static const String descDeleteTransaction =
+      'Are you sure you want to delete this transaction? This action cannot be undone.';
   static const String descNoCategoriesFound = 'No categories found.';
-  static const String descNoMatchingCategories = 'No categories match your filters';
+  static const String descNoMatchingCategories =
+      'No categories match your filters';
 
   // Filter options
   static const String filterAll = 'All';

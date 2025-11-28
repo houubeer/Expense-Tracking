@@ -33,15 +33,23 @@ class AppSpacing {
   static const EdgeInsets paddingXxl = EdgeInsets.all(xxl);
   static const EdgeInsets paddingXxxl = EdgeInsets.all(xxxl);
 
-  static const EdgeInsets paddingHorizontalSm = EdgeInsets.symmetric(horizontal: sm);
-  static const EdgeInsets paddingHorizontalMd = EdgeInsets.symmetric(horizontal: md);
-  static const EdgeInsets paddingHorizontalLg = EdgeInsets.symmetric(horizontal: lg);
-  static const EdgeInsets paddingHorizontalXl = EdgeInsets.symmetric(horizontal: xl);
+  static const EdgeInsets paddingHorizontalSm =
+      EdgeInsets.symmetric(horizontal: sm);
+  static const EdgeInsets paddingHorizontalMd =
+      EdgeInsets.symmetric(horizontal: md);
+  static const EdgeInsets paddingHorizontalLg =
+      EdgeInsets.symmetric(horizontal: lg);
+  static const EdgeInsets paddingHorizontalXl =
+      EdgeInsets.symmetric(horizontal: xl);
 
-  static const EdgeInsets paddingVerticalSm = EdgeInsets.symmetric(vertical: sm);
-  static const EdgeInsets paddingVerticalMd = EdgeInsets.symmetric(vertical: md);
-  static const EdgeInsets paddingVerticalLg = EdgeInsets.symmetric(vertical: lg);
-  static const EdgeInsets paddingVerticalXl = EdgeInsets.symmetric(vertical: xl);
+  static const EdgeInsets paddingVerticalSm =
+      EdgeInsets.symmetric(vertical: sm);
+  static const EdgeInsets paddingVerticalMd =
+      EdgeInsets.symmetric(vertical: md);
+  static const EdgeInsets paddingVerticalLg =
+      EdgeInsets.symmetric(vertical: lg);
+  static const EdgeInsets paddingVerticalXl =
+      EdgeInsets.symmetric(vertical: xl);
 
   // Common SizedBox spacing
   static const SizedBox verticalSpaceXs = SizedBox(height: xs);

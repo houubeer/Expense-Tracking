@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/durations.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class Sidebar extends StatelessWidget {
   final String currentPath;
@@ -14,10 +17,26 @@ class Sidebar extends StatelessWidget {
   });
 
   static const List<Map<String, dynamic>> _items = [
-    {"icon": Icons.dashboard_rounded, "label": "Dashboard", "path": AppRoutes.home},
-    {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense", "path": AppRoutes.addExpense},
-    {"icon": Icons.receipt_long_rounded, "label": "View Expenses", "path": AppRoutes.viewExpenses},
-    {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets", "path": AppRoutes.budgets},
+    {
+      "icon": Icons.dashboard_rounded,
+      "label": AppStrings.navDashboard,
+      "path": AppRoutes.home
+    },
+    {
+      "icon": Icons.add_circle_outline_rounded,
+      "label": AppStrings.navAddExpense,
+      "path": AppRoutes.addExpense
+    },
+    {
+      "icon": Icons.receipt_long_rounded,
+      "label": AppStrings.navViewExpenses,
+      "path": AppRoutes.viewExpenses
+    },
+    {
+      "icon": Icons.pie_chart_outline_rounded,
+      "label": AppStrings.navBudgets,
+      "path": AppRoutes.budgets
+    },
   ];
 
   @override
@@ -39,7 +58,7 @@ class Sidebar extends StatelessWidget {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(32, 40, 32, 40),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.xxxl, AppSpacing.xxl, AppSpacing.xxxl),
             child: Row(
               children: [
                 // Logo Image
@@ -48,7 +67,7 @@ class Sidebar extends StatelessWidget {
                   height: 48,
                   decoration: BoxDecoration(
                     color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppSpacing.borderRadiusLg,
                     boxShadow: [
                       BoxShadow(
                         color: AppColors.accentLight.withOpacity(0.3),
@@ -57,13 +76,13 @@ class Sidebar extends StatelessWidget {
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.all(8),
+                  padding: AppSpacing.paddingSm,
                   child: Image.asset(
                     'assets/images/raseedi_logo.png',
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +96,7 @@ class Sidebar extends StatelessWidget {
                           letterSpacing: -0.5,
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         "Pro",
                         style: AppTextStyles.bodySmall.copyWith(
@@ -97,9 +116,9 @@ class Sidebar extends StatelessWidget {
           // Navigation
           Expanded(
             child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               itemCount: _items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 4),
+              separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.xs),
               itemBuilder: (context, i) {
                 final itemPath = _items[i]["path"] as String;
                 // Check if current path starts with item path (for nested routes)
@@ -110,7 +129,7 @@ class Sidebar extends StatelessWidget {
                 } else {
                   isSelected = currentPath.startsWith(itemPath);
                 }
-                
+
                 return _SidebarTile(
                   icon: _items[i]["icon"] as IconData,
                   label: _items[i]["label"] as String,
@@ -158,15 +177,15 @@ class _SidebarTileState extends State<_SidebarTile> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          duration: AppDurations.fast,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.primaryLight.withOpacity(0.4)
                 : isHovered
                     ? AppColors.primaryLight.withOpacity(0.2)
                     : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppSpacing.borderRadiusSm,
           ),
           child: Row(
             children: [
@@ -179,7 +198,7 @@ class _SidebarTileState extends State<_SidebarTile> {
                         : AppColors.textTertiary,
                 size: 22,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Text(
                 widget.label,
                 style: AppTextStyles.bodyMedium.copyWith(
