@@ -108,7 +108,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   if (categories.isEmpty) {
                     return Center(
                       child: Text(
-                        'No categories found.',
+                        AppStrings.descNoCategoriesFound,
                         style: AppTextStyles.bodyLarge
                             .copyWith(color: AppColors.textSecondary),
                       ),
@@ -125,9 +125,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         children: [
                           Icon(Icons.filter_list_off,
                               size: 64, color: AppColors.textSecondary),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.lg),
                           Text(
-                            'No categories match your filters',
+                            AppStrings.descNoMatchingCategories,
                             style: AppTextStyles.bodyLarge
                                 .copyWith(color: AppColors.textSecondary),
                           ),
@@ -165,17 +165,17 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     final categoryColor = Color(category.color);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: AppConfig.shadowBlurRadius,
+            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
@@ -186,18 +186,18 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: categoryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 ),
                 child: Icon(
                   iconData,
                   color: categoryColor,
-                  size: 28,
+                  size: AppSpacing.iconLg,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,9 +206,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       category.name,
                       style: AppTextStyles.heading3,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
-                      'Monthly Budget: ${category.budget.toStringAsFixed(2)} DZD',
+                      '${AppStrings.labelMonthlyBudget}: ${category.budget.toStringAsFixed(2)} ${AppStrings.currency}',
                       style: AppTextStyles.bodySmall,
                     ),
                   ],
@@ -217,42 +217,42 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Row(
                 children: [
                   FilledButton.icon(
-                    onPressed: () => context.go('/expenses/add'),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Add Expense'),
+                    onPressed: () => context.go(AppRoutes.addExpense),
+                    icon: const Icon(Icons.add, size: AppSpacing.iconXs),
+                    label: Text(AppStrings.btnAddExpense),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.md,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   OutlinedButton.icon(
                     onPressed: () => _showEditDialog(category, controller),
-                    icon: const Icon(Icons.edit, size: 18),
-                    label: const Text('Edit'),
+                    icon: const Icon(Icons.edit, size: AppSpacing.iconXs),
+                    label: Text(AppStrings.btnEdit),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textPrimary,
                       side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.md,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   IconButton(
                     onPressed: () => _deleteCategory(category),
-                    icon: const Icon(Icons.delete_outline, size: 20),
+                    icon: const Icon(Icons.delete_outline, size: AppSpacing.iconSm),
                     color: AppColors.red,
                     tooltip: 'Delete Category',
                   ),
@@ -261,12 +261,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             ],
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
 
           // Progress bar
           _buildProgressBar(category),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
 
           // Stats row
           _buildStatsRow(category),
@@ -340,12 +340,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Spent',
+                AppStrings.labelSpent,
                 style: AppTextStyles.caption,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
-                '${category.spent.toStringAsFixed(2)} DZD',
+                '${category.spent.toStringAsFixed(2)} ${AppStrings.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -358,12 +358,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Remaining',
+                AppStrings.labelRemaining,
                 style: AppTextStyles.caption,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
-                '${remaining.toStringAsFixed(2)} DZD',
+                '${remaining.toStringAsFixed(2)} ${AppStrings.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -377,9 +377,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               Icon(
                 statusIcon,
                 color: statusColor,
-                size: 18,
+                size: AppSpacing.iconXs,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 status,
                 style: AppTextStyles.bodyMedium.copyWith(
@@ -396,9 +396,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Get status text based on percentage
   String _getStatusText(double percentage) {
-    if (percentage < 0.5) return 'Good';
-    if (percentage < 0.8) return 'Warning';
-    return 'In Risk';
+    if (percentage < 0.5) return AppStrings.statusGood;
+    if (percentage < 0.8) return AppStrings.statusWarning;
+    return AppStrings.statusInRisk;
   }
 
   // Get status color based on percentage
@@ -418,16 +418,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   // Build controls bar with search, filter, and sort
   Widget _buildControlsBar() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.xl - 4),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            blurRadius: AppConfig.shadowBlurRadiusMd,
+            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
@@ -440,7 +440,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               height: 48,
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(
                   color: _searchQuery.isNotEmpty
                       ? AppColors.primary
@@ -451,7 +451,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               child: TextField(
                 onChanged: (value) => setState(() => _searchQuery = value),
                 decoration: InputDecoration(
-                  hintText: 'Search categories...',
+                  hintText: AppStrings.hintSearchCategories,
                   hintStyle: AppTextStyles.bodyMedium,
                   prefixIcon:
                       Icon(Icons.search, color: AppColors.textSecondary),
@@ -464,19 +464,19 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                       : null,
                   border: InputBorder.none,
                   contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.xl - 4, vertical: 14),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           // Filter dropdown
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(color: AppColors.border),
               ),
               child: DropdownButtonHideUnderline(
@@ -485,17 +485,17 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   isExpanded: true,
                   icon: const Icon(Icons.filter_list),
                   dropdownColor: AppColors.surface,
-                  items: ['All', 'Good', 'Warning', 'In Risk']
+                  items: [AppStrings.filterAll, AppStrings.statusGood, AppStrings.statusWarning, AppStrings.statusInRisk]
                       .map((status) => DropdownMenuItem(
                             value: status,
                             child: Row(
                               children: [
                                 Icon(
                                   _getFilterIcon(status),
-                                  size: 18,
+                                  size: AppSpacing.iconXs,
                                   color: _getFilterColor(status),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: AppSpacing.sm),
                                 Text(status, style: AppTextStyles.bodyMedium),
                               ],
                             ),
@@ -506,14 +506,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           // Sort dropdown
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(color: AppColors.border),
               ),
               child: DropdownButtonHideUnderline(
@@ -522,7 +522,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   isExpanded: true,
                   icon: const Icon(Icons.sort),
                   dropdownColor: AppColors.surface,
-                  items: ['Name', 'Budget', 'Spent', 'Percentage']
+                  items: [AppStrings.filterSortByName, AppStrings.filterSortByBudget, AppStrings.filterSortBySpent, AppStrings.filterSortByPercentage]
                       .map((sort) => DropdownMenuItem(
                             value: sort,
                             child: Text('Sort: $sort',
@@ -647,7 +647,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             // Color Selection
             StatefulBuilder(
               builder: (context, setState) {
@@ -664,17 +664,17 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Color', style: AppTextStyles.label),
-                    const SizedBox(height: 8),
+                    Text(AppStrings.labelColor, style: AppTextStyles.label),
+                    const SizedBox(height: AppSpacing.sm),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
                       children: colors.map((color) {
                         final isSelected = selectedColor == color.value;
                         return InkWell(
                           onTap: () =>
                               setState(() => selectedColor = color.value),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
                           child: Container(
                             width: 40,
                             height: 40,
@@ -688,7 +688,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                             ),
                             child: isSelected
                                 ? const Icon(Icons.check,
-                                    color: Colors.white, size: 20)
+                                    color: Colors.white, size: AppSpacing.iconXs + 2)
                                 : null,
                           ),
                         );
@@ -698,7 +698,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             // Icon Selection
             StatefulBuilder(
               builder: (context, setState) {
@@ -717,25 +717,25 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Icon', style: AppTextStyles.label),
-                    const SizedBox(height: 8),
+                    Text(AppStrings.labelIcon, style: AppTextStyles.label),
+                    const SizedBox(height: AppSpacing.sm),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
                       children: icons.map((icon) {
                         final isSelected =
                             selectedIcon == icon.codePoint.toString();
                         return InkWell(
                           onTap: () => setState(
                               () => selectedIcon = icon.codePoint.toString()),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                           child: Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(AppSpacing.sm),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColors.primary.withOpacity(0.1)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                               border: isSelected
                                   ? Border.all(color: AppColors.primary)
                                   : Border.all(color: AppColors.border),
@@ -745,7 +745,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                               color: isSelected
                                   ? AppColors.primary
                                   : AppColors.textSecondary,
-                              size: 24,
+                              size: AppSpacing.iconMd,
                             ),
                           ),
                         );
@@ -760,7 +760,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+            child: Text(AppStrings.btnCancel, style: AppTextStyles.bodyMedium),
           ),
           FilledButton(
             onPressed: () async {
@@ -783,14 +783,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Category added successfully'),
+                    content: Text(AppStrings.msgCategoryAdded),
                     backgroundColor: AppColors.green,
                   ),
                 );
               }
             },
             style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-            child: const Text('Add'),
+            child: const Text(AppStrings.btnAdd),
           ),
         ],
       ),
@@ -802,15 +802,15 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text('Delete Category', style: AppTextStyles.heading3),
+        title: Text(AppStrings.titleDeleteCategory, style: AppTextStyles.heading3),
         content: Text(
-          'Are you sure you want to delete "${category.name}"? This action cannot be undone.',
+          AppStrings.descDeleteCategory.replaceAll('{name}', category.name),
           style: AppTextStyles.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: AppTextStyles.bodyMedium),
+            child: Text(AppStrings.btnCancel, style: AppTextStyles.bodyMedium),
           ),
           FilledButton(
             onPressed: () async {
@@ -819,14 +819,14 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Category deleted'),
+                    content: Text(AppStrings.msgCategoryDeleted),
                     backgroundColor: AppColors.red,
                   ),
                 );
               }
             },
             style: FilledButton.styleFrom(backgroundColor: AppColors.red),
-            child: const Text('Delete'),
+            child: const Text(AppStrings.btnDelete),
           ),
         ],
       ),
@@ -912,11 +912,11 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
     return Dialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       ),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(AppSpacing.xxxl - 8),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -934,9 +934,9 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl - 8),
               const Divider(color: AppColors.border),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl - 8),
 
               // Budget Field
               TextField(
@@ -947,30 +947,30 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                 ],
                 decoration: InputDecoration(
-                  labelText: 'Monthly Budget',
-                  prefixText: 'DZD ',
+                  labelText: AppStrings.labelMonthlyBudget,
+                  prefixText: AppStrings.currencyPrefix,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     borderSide: const BorderSide(color: AppColors.primary),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl - 8),
 
               // Color Picker
-              Text('Color', style: AppTextStyles.label),
-              const SizedBox(height: 12),
+              Text(AppStrings.labelColor, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.md),
               Wrap(
-                spacing: 12,
-                runSpacing: 12,
+                spacing: AppSpacing.md,
+                runSpacing: AppSpacing.md,
                 children: _categoryColors.map((color) {
                   final isSelected = color.value == _selectedColor.value;
                   return GestureDetector(
@@ -999,23 +999,23 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                       ),
                       child: isSelected
                           ? const Icon(Icons.check,
-                              color: Colors.white, size: 24)
+                              color: Colors.white, size: AppSpacing.iconMd)
                           : null,
                     ),
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xxl - 8),
 
               // Icon Picker
-              Text('Icon', style: AppTextStyles.label),
-              const SizedBox(height: 12),
+              Text(AppStrings.labelIcon, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.md),
               Container(
                 constraints: const BoxConstraints(maxHeight: 200),
                 child: SingleChildScrollView(
                   child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
                     children: _categoryIcons.map((icon) {
                       final isSelected =
                           icon.codePoint == _selectedIcon.codePoint;
@@ -1028,7 +1028,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                             color: isSelected
                                 ? _selectedColor.withOpacity(0.2)
                                 : AppColors.background,
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                             border: Border.all(
                               color: isSelected
                                   ? _selectedColor
@@ -1041,7 +1041,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                             color: isSelected
                                 ? _selectedColor
                                 : AppColors.textSecondary,
-                            size: 24,
+                            size: AppSpacing.iconMd,
                           ),
                         ),
                       );
@@ -1049,7 +1049,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxxl),
 
               // Action Buttons
               Row(
@@ -1060,9 +1060,9 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
                     ),
-                    child: const Text('Cancel'),
+                    child: const Text(AppStrings.btnCancel),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   ElevatedButton(
                     onPressed: () async {
                       final navigator = Navigator.of(context);
@@ -1072,7 +1072,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                       if (value < 0) {
                         messenger.showSnackBar(
                           const SnackBar(
-                            content: Text('Budget cannot be negative'),
+                            content: Text(AppStrings.errBudgetNegative),
                             backgroundColor: AppColors.red,
                           ),
                         );
@@ -1094,7 +1094,7 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                         messenger.showSnackBar(
                           SnackBar(
                             content: Text(
-                              'Updated ${widget.category.name}',
+                              '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
                             ),
                             backgroundColor: AppColors.green,
                           ),
@@ -1105,12 +1105,12 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
+                          horizontal: AppSpacing.xxl - 8, vertical: AppSpacing.md),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
-                    child: const Text('Save Changes'),
+                    child: const Text(AppStrings.btnSaveChanges),
                   ),
                 ],
               ),
