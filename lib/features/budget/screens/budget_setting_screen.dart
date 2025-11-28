@@ -228,7 +228,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         vertical: AppSpacing.md,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
                   ),
@@ -245,14 +246,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         vertical: AppSpacing.md,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   IconButton(
                     onPressed: () => _deleteCategory(category),
-                    icon: const Icon(Icons.delete_outline, size: AppSpacing.iconSm),
+                    icon: const Icon(Icons.delete_outline,
+                        size: AppSpacing.iconSm),
                     color: AppColors.red,
                     tooltip: 'Delete Category',
                   ),
@@ -463,8 +466,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         )
                       : null,
                   border: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.xl - 4, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl - 4, vertical: 14),
                 ),
               ),
             ),
@@ -485,7 +488,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   isExpanded: true,
                   icon: const Icon(Icons.filter_list),
                   dropdownColor: AppColors.surface,
-                  items: [AppStrings.filterAll, AppStrings.statusGood, AppStrings.statusWarning, AppStrings.statusInRisk]
+                  items: [
+                    AppStrings.filterAll,
+                    AppStrings.statusGood,
+                    AppStrings.statusWarning,
+                    AppStrings.statusInRisk
+                  ]
                       .map((status) => DropdownMenuItem(
                             value: status,
                             child: Row(
@@ -522,7 +530,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   isExpanded: true,
                   icon: const Icon(Icons.sort),
                   dropdownColor: AppColors.surface,
-                  items: [AppStrings.filterSortByName, AppStrings.filterSortByBudget, AppStrings.filterSortBySpent, AppStrings.filterSortByPercentage]
+                  items: [
+                    AppStrings.filterSortByName,
+                    AppStrings.filterSortByBudget,
+                    AppStrings.filterSortBySpent,
+                    AppStrings.filterSortByPercentage
+                  ]
                       .map((sort) => DropdownMenuItem(
                             value: sort,
                             child: Text('Sort: $sort',
@@ -674,7 +687,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         return InkWell(
                           onTap: () =>
                               setState(() => selectedColor = color.value),
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusXl + 4),
                           child: Container(
                             width: 40,
                             height: 40,
@@ -688,7 +702,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                             ),
                             child: isSelected
                                 ? const Icon(Icons.check,
-                                    color: Colors.white, size: AppSpacing.iconXs + 2)
+                                    color: Colors.white,
+                                    size: AppSpacing.iconXs + 2)
                                 : null,
                           ),
                         );
@@ -728,14 +743,16 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                         return InkWell(
                           onTap: () => setState(
                               () => selectedIcon = icon.codePoint.toString()),
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                           child: Container(
                             padding: const EdgeInsets.all(AppSpacing.sm),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? AppColors.primary.withOpacity(0.1)
                                   : Colors.transparent,
-                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                              borderRadius:
+                                  BorderRadius.circular(AppSpacing.radiusSm),
                               border: isSelected
                                   ? Border.all(color: AppColors.primary)
                                   : Border.all(color: AppColors.border),
@@ -802,7 +819,8 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(AppStrings.titleDeleteCategory, style: AppTextStyles.heading3),
+        title:
+            Text(AppStrings.titleDeleteCategory, style: AppTextStyles.heading3),
         content: Text(
           AppStrings.descDeleteCategory.replaceAll('{name}', category.name),
           style: AppTextStyles.bodyMedium,
@@ -1028,7 +1046,8 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                             color: isSelected
                                 ? _selectedColor.withOpacity(0.2)
                                 : AppColors.background,
-                            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                            borderRadius:
+                                BorderRadius.circular(AppSpacing.radiusSm),
                             border: Border.all(
                               color: isSelected
                                   ? _selectedColor
@@ -1105,9 +1124,11 @@ class _EditCategoryDialogState extends State<_EditCategoryDialog> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xxl - 8, vertical: AppSpacing.md),
+                          horizontal: AppSpacing.xxl - 8,
+                          vertical: AppSpacing.md),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                     ),
                     child: const Text(AppStrings.btnSaveChanges),

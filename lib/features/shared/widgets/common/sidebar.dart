@@ -58,7 +58,8 @@ class Sidebar extends StatelessWidget {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.xxxl, AppSpacing.xxl, AppSpacing.xxxl),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.xxxl,
+                AppSpacing.xxl, AppSpacing.xxxl),
             child: Row(
               children: [
                 // Logo Image
@@ -118,7 +119,8 @@ class Sidebar extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               itemCount: _items.length,
-              separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.xs),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: AppSpacing.xs),
               itemBuilder: (context, i) {
                 final itemPath = _items[i]["path"] as String;
                 // Check if current path starts with item path (for nested routes)
@@ -178,7 +180,8 @@ class _SidebarTileState extends State<_SidebarTile> {
         onTap: widget.onTap,
         child: AnimatedContainer(
           duration: AppDurations.fast,
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(
+              vertical: AppSpacing.md, horizontal: AppSpacing.lg),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.primaryLight.withOpacity(0.4)

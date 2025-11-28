@@ -55,7 +55,8 @@ class StatCard extends StatelessWidget {
                 child: Icon(icon, color: color, size: AppSpacing.iconSm),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: trend.startsWith('+')
                       ? AppColors.green.withValues(alpha: 0.1)

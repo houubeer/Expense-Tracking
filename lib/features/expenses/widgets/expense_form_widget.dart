@@ -172,15 +172,18 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                       filled: true,
                       fillColor: AppColors.surface,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.primary),
                       ),
                     ),
@@ -272,7 +275,8 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                         ),
                       ),
                     ),
@@ -287,7 +291,8 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                         ),
                       ),
                     ),

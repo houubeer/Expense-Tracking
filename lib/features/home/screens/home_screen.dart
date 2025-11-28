@@ -118,8 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         return LayoutBuilder(builder: (context, constraints) {
                           final width = constraints.maxWidth;
                           final isDesktop = width > AppConfig.desktopBreakpoint;
-                          final cardWidth =
-                              isDesktop ? (width - 60) / 4 : (width - AppSpacing.xl + 4) / 2;
+                          final cardWidth = isDesktop
+                              ? (width - 60) / 4
+                              : (width - AppSpacing.xl + 4) / 2;
 
                           return Wrap(
                             spacing: AppSpacing.xl - 4,
@@ -363,7 +364,8 @@ class _HomeScreenState extends State<HomeScreen> {
               BoxShadow(
                 color: color.withOpacity(0.3),
                 blurRadius: AppConfig.shadowBlurRadiusSm,
-                offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                offset:
+                    Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
               ),
             ],
           ),
@@ -487,7 +489,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         // Show breakdown
         Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.xl, top: AppSpacing.sm),
+          padding:
+              const EdgeInsets.only(left: AppSpacing.xl, top: AppSpacing.sm),
           child: Column(
             children: otherBudgets.map((budget) {
               return Padding(
@@ -560,7 +563,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             iconColor: Color(recentExpenses[i].category.color),
                           ),
                           if (i < recentExpenses.length - 1)
-                            const Divider(height: AppSpacing.xl, color: AppColors.border),
+                            const Divider(
+                                height: AppSpacing.xl, color: AppColors.border),
                         ],
                       ],
                     ),

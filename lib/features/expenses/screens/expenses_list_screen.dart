@@ -89,7 +89,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 Expanded(
                   flex: 3,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -98,7 +99,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                         BoxShadow(
                           color: AppColors.primary.withValues(alpha: 0.05),
                           blurRadius: AppConfig.shadowBlurRadiusMd,
-                          offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                          offset: Offset(
+                              AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
                         ),
                       ],
                     ),
@@ -126,16 +128,19 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                     builder: (context, snapshot) {
                       final categories = snapshot.data ?? [];
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg),
                         decoration: BoxDecoration(
                           color: AppColors.surface,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusLg),
                           border: Border.all(color: AppColors.border),
                           boxShadow: [
                             BoxShadow(
                               color: AppColors.primary.withValues(alpha: 0.05),
                               blurRadius: AppConfig.shadowBlurRadiusMd,
-                              offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                              offset: Offset(AppConfig.shadowOffsetX,
+                                  AppConfig.shadowOffsetY),
                             ),
                           ],
                         ),
@@ -145,7 +150,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                             hint: Row(
                               children: [
                                 Icon(Icons.filter_list,
-                                    color: AppColors.textSecondary, size: AppSpacing.iconSm),
+                                    color: AppColors.textSecondary,
+                                    size: AppSpacing.iconSm),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(AppStrings.labelCategory,
                                     style: AppTextStyles.bodyMedium),
@@ -199,7 +205,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 Expanded(
                   flex: 2,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -208,7 +215,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                         BoxShadow(
                           color: AppColors.primary.withValues(alpha: 0.05),
                           blurRadius: AppConfig.shadowBlurRadiusMd,
-                          offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                          offset: Offset(
+                              AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
                         ),
                       ],
                     ),
@@ -225,11 +233,13 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                         }
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                         child: Row(
                           children: [
                             Icon(Icons.calendar_today,
-                                color: AppColors.textSecondary, size: AppSpacing.iconSm),
+                                color: AppColors.textSecondary,
+                                size: AppSpacing.iconSm),
                             const SizedBox(width: AppSpacing.sm),
                             Expanded(
                               child: Text(
@@ -249,7 +259,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                                 onTap: () =>
                                     setState(() => _selectedDateFilter = null),
                                 child: Icon(Icons.close,
-                                    color: AppColors.textSecondary, size: AppSpacing.iconXs),
+                                    color: AppColors.textSecondary,
+                                    size: AppSpacing.iconXs),
                               ),
                           ],
                         ),
@@ -263,23 +274,29 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 
             // Table Header
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg, vertical: AppSpacing.md),
               decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: AppColors.border)),
               ),
               child: Row(
                 children: [
                   Expanded(
-                      flex: 2, child: Text(AppStrings.labelDate, style: AppTextStyles.label)),
+                      flex: 2,
+                      child: Text(AppStrings.labelDate,
+                          style: AppTextStyles.label)),
                   Expanded(
                       flex: 2,
-                      child: Text(AppStrings.labelCategory, style: AppTextStyles.label)),
+                      child: Text(AppStrings.labelCategory,
+                          style: AppTextStyles.label)),
                   Expanded(
                       flex: 3,
-                      child: Text(AppStrings.labelDescription, style: AppTextStyles.label)),
+                      child: Text(AppStrings.labelDescription,
+                          style: AppTextStyles.label)),
                   Expanded(
                       flex: 2,
-                      child: Text(AppStrings.labelAmount, style: AppTextStyles.label)),
+                      child: Text(AppStrings.labelAmount,
+                          style: AppTextStyles.label)),
                   SizedBox(
                       width: 100,
                       child: Text('Actions',
@@ -370,7 +387,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       onTap: () => _showExpenseDetail(item),
       hoverColor: AppColors.primary.withValues(alpha: 0.03),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
         child: Row(
           children: [
             // Date
@@ -388,8 +406,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md, vertical: 6),
                   decoration: BoxDecoration(
                     color: categoryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSpacing.xl - 4),
@@ -500,7 +518,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: Text(AppStrings.titleDeleteTransaction, style: AppTextStyles.heading3),
+        title: Text(AppStrings.titleDeleteTransaction,
+            style: AppTextStyles.heading3),
         content: Text(AppStrings.descDeleteTransaction),
         actions: [
           TextButton(
@@ -629,7 +648,8 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppStrings.titleEditExpense, style: AppTextStyles.heading3),
+                Text(AppStrings.titleEditExpense,
+                    style: AppTextStyles.heading3),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),

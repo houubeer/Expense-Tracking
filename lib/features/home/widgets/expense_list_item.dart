@@ -30,7 +30,8 @@ class ExpenseListItem extends StatelessWidget {
             color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
-          child: Icon(Icons.receipt_long_rounded, color: iconColor, size: AppSpacing.iconSm),
+          child: Icon(Icons.receipt_long_rounded,
+              color: iconColor, size: AppSpacing.iconSm),
         ),
         const SizedBox(width: AppSpacing.lg),
         Expanded(
