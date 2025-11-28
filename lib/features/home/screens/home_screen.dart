@@ -40,8 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadRecentExpenses() async {
     // Get recent expenses with category info
-    final expensesStream =
-        widget.expenseRepository.watchExpensesWithCategory();
+    final expensesStream = widget.expenseRepository.watchExpensesWithCategory();
     expensesStream.listen((expenseList) {
       if (mounted) {
         setState(() {
@@ -90,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textInverse,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xl - 4, vertical: AppSpacing.lg),
+                        horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
@@ -123,15 +122,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           final isDesktop = width > AppConfig.desktopBreakpoint;
                           final cardWidth = isDesktop
                               ? (width - 60) / 4
-                              : (width - AppSpacing.xl + 4) / 2;
+                              : (width - AppSpacing.xlMinorOffset) / 2;
 
                           return Wrap(
-                            spacing: AppSpacing.xl - 4,
-                            runSpacing: AppSpacing.xl - 4,
+                            spacing: AppSpacing.xlMinor,
+                            runSpacing: AppSpacing.xlMinor,
                             children: [
                               StatCard(
                                 title: "Total Balance",
-                                value: "${totalBalance.toStringAsFixed(0)} DZD",
+                                value: "${totalBalance.toStringAsFixed(0)} ${AppStrings.currency}",
                                 trend: totalBalance >= 0
                                     ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
                                     : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
@@ -154,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               StatCard(
                                 title: "Expenses",
                                 value:
-                                    "${totalExpenses.toStringAsFixed(0)} DZD",
+                                    "${totalExpenses.toStringAsFixed(0)} ${AppStrings.currency}",
                                 trend:
                                     "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
                                 icon: Icons.arrow_downward_rounded,
@@ -163,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               StatCard(
                                 title: "Daily Avg Spending",
-                                value: "${dailyAverage.toStringAsFixed(0)} DZD",
+                                value: "${dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
                                 trend:
                                     "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
                                 icon: Icons.trending_down_rounded,
@@ -219,7 +218,8 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: AppSpacing.xl),
           // Use StreamBuilder for reactive budget updates
           StreamBuilder<List<CategoryBudgetView>>(
-            stream: widget.budgetRepository.watchCategoryBudgetsSortedBySpending(),
+            stream:
+                widget.budgetRepository.watchCategoryBudgetsSortedBySpending(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -409,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 2),
               Text(
-                '${budgetView.totalSpent.toStringAsFixed(0)} / ${budgetView.category.budget.toStringAsFixed(0)} DZD',
+                '${budgetView.totalSpent.toStringAsFixed(0)} / ${budgetView.category.budget.toStringAsFixed(0)} ${AppStrings.currency}',
                 style: AppTextStyles.caption.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 10,
@@ -479,7 +479,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${othersSpent.toStringAsFixed(0)} / ${othersTotal.toStringAsFixed(0)} DZD',
+                    '${othersSpent.toStringAsFixed(0)} / ${othersTotal.toStringAsFixed(0)} ${AppStrings.currency}',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.textSecondary,
                       fontSize: 10,

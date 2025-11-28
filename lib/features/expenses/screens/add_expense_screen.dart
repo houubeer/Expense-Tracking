@@ -70,8 +70,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       await widget.expenseRepository.insertExpense(expense);
 
       // Update category spent amount
-      final category = await widget.categoryRepository
-          .getCategoryById(_selectedCategoryId!);
+      final category =
+          await widget.categoryRepository.getCategoryById(_selectedCategoryId!);
       if (category != null) {
         await widget.categoryRepository
             .updateCategorySpent(category.id, category.spent + amount);

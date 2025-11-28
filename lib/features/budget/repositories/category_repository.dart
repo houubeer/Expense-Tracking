@@ -6,7 +6,8 @@ import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
 class CategoryRepository {
   final CategoryDao _categoryDao;
 
-  CategoryRepository(AppDatabase database) : _categoryDao = database.categoryDao;
+  CategoryRepository(AppDatabase database)
+      : _categoryDao = database.categoryDao;
 
   /// Watch all categories with reactive updates
   Stream<List<Category>> watchAllCategories() {
