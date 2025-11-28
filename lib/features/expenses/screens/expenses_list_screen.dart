@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/widgets/dialogs/expense_detail_dialog.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
-import '../../repositories/expense_repository.dart';
-import '../../widgets/success_snackbar.dart';
-import '../../widgets/expense_form_widget.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 
 class ExpensesListScreen extends StatefulWidget {
   final AppDatabase database;
-  final Function(int, {int? categoryId})? onNavigate;
 
-  const ExpensesListScreen(
-      {required this.database, this.onNavigate, super.key});
+  const ExpensesListScreen({required this.database, super.key});
 
   @override
   State<ExpensesListScreen> createState() => _ExpensesListScreenState();
@@ -61,11 +61,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                   ],
                 ),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    if (widget.onNavigate != null) {
-                      widget.onNavigate!(1); // Navigate to Add Expense
-                    }
-                  },
+                  onPressed: () => context.go(AppRoutes.addExpense),
                   icon: const Icon(Icons.add, size: 18),
                   label: const Text("Add Expense"),
                   style: ElevatedButton.styleFrom(

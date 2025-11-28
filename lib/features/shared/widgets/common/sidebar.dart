@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 
 class Sidebar extends StatelessWidget {
-  final int selectedIndex;
-  final Function(int) onDestinationSelected;
+  final String currentPath;
+  final Function(String) onDestinationSelected;
 
   const Sidebar({
     super.key,
-    required this.selectedIndex,
+    required this.currentPath,
     required this.onDestinationSelected,
   });
 
   static const List<Map<String, dynamic>> _items = [
-    {"icon": Icons.dashboard_rounded, "label": "Dashboard"},
-    {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense"},
-    {"icon": Icons.receipt_long_rounded, "label": "View Expenses"},
-    {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets"},
+    {"icon": Icons.dashboard_rounded, "label": "Dashboard", "path": AppRoutes.home},
+    {"icon": Icons.add_circle_outline_rounded, "label": "Add Expense", "path": AppRoutes.addExpense},
+    {"icon": Icons.receipt_long_rounded, "label": "View Expenses", "path": AppRoutes.viewExpenses},
+    {"icon": Icons.pie_chart_outline_rounded, "label": "Budgets", "path": AppRoutes.budgets},
   ];
 
   @override
@@ -99,12 +100,24 @@ class Sidebar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _items.length,
               separatorBuilder: (context, index) => const SizedBox(height: 4),
-              itemBuilder: (context, i) => _SidebarTile(
-                icon: _items[i]["icon"] as IconData,
-                label: _items[i]["label"] as String,
-                isSelected: selectedIndex == i,
-                onTap: () => onDestinationSelected(i),
-              ),
+              itemBuilder: (context, i) {
+                final itemPath = _items[i]["path"] as String;
+                // Check if current path starts with item path (for nested routes)
+                // Special case for root '/' to match exactly or be the only one if others don't match
+                bool isSelected = false;
+                if (itemPath == '/') {
+                  isSelected = currentPath == '/';
+                } else {
+                  isSelected = currentPath.startsWith(itemPath);
+                }
+                
+                return _SidebarTile(
+                  icon: _items[i]["icon"] as IconData,
+                  label: _items[i]["label"] as String,
+                  isSelected: isSelected,
+                  onTap: () => onDestinationSelected(itemPath),
+                );
+              },
             ),
           ),
         ],

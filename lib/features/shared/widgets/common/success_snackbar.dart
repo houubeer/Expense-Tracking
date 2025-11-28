@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/colors.dart';
 
 class SuccessSnackbar extends SnackBar {
   SuccessSnackbar({

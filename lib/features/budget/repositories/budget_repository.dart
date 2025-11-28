@@ -1,5 +1,5 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:rxdart/rxdart.dart';
 
 /// Repository that combines category and expense data to provide
