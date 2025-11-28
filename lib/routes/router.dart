@@ -23,8 +23,12 @@ GoRouter createRouter(AppDatabase database) {
   final categoryRepository = CategoryRepository(database);
   final expenseRepository = ExpenseRepository(database);
 
-  // Initialize services
-  final expenseService = ExpenseService(expenseRepository, categoryRepository);
+  // Initialize services with database for transactions
+  final expenseService = ExpenseService(
+    expenseRepository,
+    categoryRepository,
+    database,
+  );
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,

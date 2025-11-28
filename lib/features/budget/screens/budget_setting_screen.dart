@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
+import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
@@ -13,20 +15,18 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:drift/drift.dart' hide Column;
 
-class BudgetSettingScreen extends StatefulWidget {
+class BudgetSettingScreen extends ConsumerStatefulWidget {
   final CategoryRepository categoryRepository;
 
   const BudgetSettingScreen({required this.categoryRepository, super.key});
 
   @override
-  State<BudgetSettingScreen> createState() => _BudgetSettingScreenState();
+  ConsumerState<BudgetSettingScreen> createState() =>
+      _BudgetSettingScreenState();
 }
 
-class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
+class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   final Map<int, TextEditingController> _controllers = {};
-  String _searchQuery = '';
-  String _filterStatus = 'All'; // All, Good, Warning, In Risk
-  String _sortBy = 'Name'; // Name, Budget, Spent, Percentage
 
   @override
   void dispose() {
@@ -118,8 +118,11 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                     );
                   }
 
-                  // Apply filters and sorting
-                  var filteredCategories = _applyFiltersAndSort(categories);
+                  // Apply filters and sorting using ViewModel
+                  final filter = ref.watch(budgetFilterProvider);
+                  final viewModel = ref.read(budgetViewModelProvider);
+                  final filteredCategories =
+                      viewModel.applyFiltersAndSort(categories, filter);
 
                   if (filteredCategories.isEmpty) {
                     return Center(
@@ -427,24 +430,30 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(
-                  color: _searchQuery.isNotEmpty
+                  color: ref.watch(budgetFilterProvider).searchQuery.isNotEmpty
                       ? AppColors.primary
                       : AppColors.border,
                   width: 1,
                 ),
               ),
               child: TextField(
-                onChanged: (value) => setState(() => _searchQuery = value),
+                onChanged: (value) {
+                  ref.read(budgetFilterProvider.notifier).state =
+                      ref.read(budgetFilterProvider).copyWith(searchQuery: value);
+                },
                 decoration: InputDecoration(
                   hintText: AppStrings.hintSearchCategories,
                   hintStyle: AppTextStyles.bodyMedium,
                   prefixIcon:
                       Icon(Icons.search, color: AppColors.textSecondary),
-                  suffixIcon: _searchQuery.isNotEmpty
+                  suffixIcon: ref.watch(budgetFilterProvider).searchQuery.isNotEmpty
                       ? IconButton(
                           icon:
                               Icon(Icons.clear, color: AppColors.textSecondary),
-                          onPressed: () => setState(() => _searchQuery = ''),
+                          onPressed: () {
+                            ref.read(budgetFilterProvider.notifier).state =
+                                ref.read(budgetFilterProvider).copyWith(searchQuery: '');
+                          },
                         )
                       : null,
                   border: InputBorder.none,
@@ -466,7 +475,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: _filterStatus,
+                  value: ref.watch(budgetFilterProvider).statusFilter,
                   isExpanded: true,
                   icon: const Icon(Icons.filter_list),
                   dropdownColor: AppColors.surface,
@@ -492,7 +501,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                             ),
                           ))
                       .toList(),
-                  onChanged: (value) => setState(() => _filterStatus = value!),
+                  onChanged: (value) {
+                    ref.read(budgetFilterProvider.notifier).state =
+                        ref.read(budgetFilterProvider).copyWith(statusFilter: value!);
+                  },
                 ),
               ),
             ),
@@ -509,7 +521,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
-                  value: _sortBy,
+                  value: ref.watch(budgetFilterProvider).sortBy,
                   isExpanded: true,
                   icon: const Icon(Icons.sort),
                   dropdownColor: AppColors.surface,
@@ -525,7 +537,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                                 style: AppTextStyles.bodyMedium),
                           ))
                       .toList(),
-                  onChanged: (value) => setState(() => _sortBy = value!),
+                  onChanged: (value) {
+                    ref.read(budgetFilterProvider.notifier).state =
+                        ref.read(budgetFilterProvider).copyWith(sortBy: value!);
+                  },
                 ),
               ),
             ),
@@ -533,50 +548,6 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         ],
       ),
     );
-  }
-
-  // Apply filters and sorting to categories
-  List<Category> _applyFiltersAndSort(List<Category> categories) {
-    var filtered = categories.where((cat) {
-      // Apply search filter
-      if (_searchQuery.isNotEmpty &&
-          !cat.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
-        return false;
-      }
-
-      // Apply status filter
-      if (_filterStatus != 'All') {
-        final percentage = BudgetStatusCalculator.calculatePercentage(
-            cat.spent, cat.budget);
-        final status = BudgetStatusCalculator.getStatusText(percentage);
-        if (status != _filterStatus) {
-          return false;
-        }
-      }
-
-      return true;
-    }).toList();
-
-    // Apply sorting
-    filtered.sort((a, b) {
-      switch (_sortBy) {
-        case 'Budget':
-          return b.budget.compareTo(a.budget);
-        case 'Spent':
-          return b.spent.compareTo(a.spent);
-        case 'Percentage':
-          final aPercentage = BudgetStatusCalculator.calculatePercentage(
-              a.spent, a.budget);
-          final bPercentage = BudgetStatusCalculator.calculatePercentage(
-              b.spent, b.budget);
-          return bPercentage.compareTo(aPercentage);
-        case 'Name':
-        default:
-          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
-      }
-    });
-
-    return filtered;
   }
 
   void _showAddCategoryDialog() {
