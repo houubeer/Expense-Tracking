@@ -22,6 +22,7 @@ class AppStrings {
   static const String btnUndo = 'Undo';
   static const String btnSaveChanges = 'Save Changes';
   static const String btnAddExpense = 'Add Expense';
+  static const String btnReset = 'Reset';
 
   // Screen titles
   static const String titleAddExpense = 'Add Expense';
@@ -41,6 +42,7 @@ class AppStrings {
   static const String labelDescription = 'Description';
   static const String labelCategoryName = 'Category Name';
   static const String labelMonthlyBudget = 'Monthly Budget';
+  static const String labelBudget = 'Budget';
   static const String labelColor = 'Color';
   static const String labelIcon = 'Icon';
   static const String labelSpent = 'Spent';
@@ -69,6 +71,7 @@ class AppStrings {
   // Hints
   static const String hintSearchCategories = 'Search categories...';
   static const String hintSearchExpenses = 'Search expenses...';
+  static const String hintDescription = 'What was this expense for?';
 
   // Descriptions
   static const String descManageBudgets =

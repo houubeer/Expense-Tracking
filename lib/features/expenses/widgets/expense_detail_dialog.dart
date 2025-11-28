@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseDetailDialog extends StatelessWidget {
@@ -31,13 +33,13 @@ class ExpenseDetailDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       ),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(AppSpacing.xxl),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,18 +48,18 @@ class ExpenseDetailDialog extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
                     color: categoryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   ),
                   child: Icon(
                     _getIconFromCodePoint(category.iconCodePoint),
                     color: categoryColor,
-                    size: 32,
+                    size: AppSpacing.xxl,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +68,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                         'Expense Details',
                         style: AppTextStyles.heading3,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         category.name,
                         style: AppTextStyles.bodyMedium.copyWith(
@@ -84,43 +86,43 @@ class ExpenseDetailDialog extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             const Divider(color: AppColors.border),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // Amount
             _buildDetailRow(
-              'Amount',
-              '${expense.amount.toStringAsFixed(2)} DZD',
+              AppStrings.labelAmount,
+              '${expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
               Icons.attach_money,
               AppColors.green,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl - 4),
 
             // Date
             _buildDetailRow(
-              'Date',
+              AppStrings.labelDate,
               dateStr,
               Icons.calendar_today,
               AppColors.accent,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl - 4),
 
             // Description
             _buildDetailRow(
-              'Description',
+              AppStrings.labelDescription,
               expense.description,
               Icons.description,
               AppColors.purple,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // Budget Info
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
                 color: AppColors.background,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 border: Border.all(color: AppColors.border),
               ),
               child: Column(
@@ -130,7 +132,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                     'Category Budget',
                     style: AppTextStyles.label,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -138,12 +140,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Budget',
+                            AppStrings.labelBudget,
                             style: AppTextStyles.caption,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
-                            '${category.budget.toStringAsFixed(2)} DZD',
+                            '${category.budget.toStringAsFixed(2)} ${AppStrings.currency}',
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -154,12 +156,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Spent',
+                            AppStrings.labelSpent,
                             style: AppTextStyles.caption,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
-                            '${category.spent.toStringAsFixed(2)} DZD',
+                            '${category.spent.toStringAsFixed(2)} ${AppStrings.currency}',
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
                               color: categoryColor,
@@ -171,12 +173,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Remaining',
+                            AppStrings.labelRemaining,
                             style: AppTextStyles.caption,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
-                            '${(category.budget - category.spent).toStringAsFixed(2)} DZD',
+                            '${(category.budget - category.spent).toStringAsFixed(2)} ${AppStrings.currency}',
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
@@ -188,7 +190,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // Close Button
             SizedBox(
@@ -198,12 +200,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   ),
                 ),
-                child: Text('Close', style: AppTextStyles.button),
+                child: Text(AppStrings.btnClose, style: AppTextStyles.button),
               ),
             ),
           ],
@@ -224,14 +226,14 @@ class ExpenseDetailDialog extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
             color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           ),
-          child: Icon(icon, color: iconColor, size: 20),
+          child: Icon(icon, color: iconColor, size: AppSpacing.iconSm),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +242,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                 label,
                 style: AppTextStyles.caption,
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 value,
                 style: AppTextStyles.bodyLarge.copyWith(
