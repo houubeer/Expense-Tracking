@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class EditCategoryDialog extends StatefulWidget {
-  final CategoryRepository categoryRepository;
+  final ICategoryRepository categoryRepository;
   final Category category;
   final TextEditingController budgetController;
 

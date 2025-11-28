@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/snackbars/success_snackbar.dart';
@@ -11,7 +11,7 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class EditExpenseDialog extends StatefulWidget {
   final ExpenseService expenseService;
-  final CategoryRepository categoryRepository;
+  final ICategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
 
   const EditExpenseDialog({

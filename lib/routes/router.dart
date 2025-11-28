@@ -9,6 +9,7 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/common/side
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -17,7 +18,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createRouter(AppDatabase database) {
   // TODO: Remove these when all screens are refactored to use Riverpod providers
   // Currently needed for BudgetSettingScreen which hasn't been refactored yet
-  final categoryRepository = CategoryRepository(database);
+  final ICategoryRepository categoryRepository = CategoryRepository(database);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,

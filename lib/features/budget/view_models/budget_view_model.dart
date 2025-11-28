@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/sorting/category_sort_factory.dart';
 import 'package:drift/drift.dart';
@@ -33,7 +33,7 @@ class BudgetFilter {
 
 /// ViewModel for budget management - handles ALL business logic, DB operations, and state
 class BudgetViewModel extends ChangeNotifier {
-  final CategoryRepository _repository;
+  final ICategoryRepository _repository;
   final Map<int, TextEditingController> _controllers = {};
 
   BudgetViewModel(this._repository);
@@ -128,7 +128,7 @@ class BudgetViewModel extends ChangeNotifier {
 
 /// Provider factory for BudgetViewModel
 final budgetViewModelProvider =
-    Provider.family<BudgetViewModel, CategoryRepository>(
+    Provider.family<BudgetViewModel, ICategoryRepository>(
   (ref, repository) => BudgetViewModel(repository),
 );
 

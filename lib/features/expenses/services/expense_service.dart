@@ -1,13 +1,13 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 
 /// Service layer for expense-related business logic
 /// Handles expense operations and category spent updates with transactional safety
 class ExpenseService {
-  final ExpenseRepository _expenseRepository;
-  final CategoryRepository _categoryRepository;
+  final IExpenseRepository _expenseRepository;
+  final ICategoryRepository _categoryRepository;
   final AppDatabase _database;
 
   ExpenseService(

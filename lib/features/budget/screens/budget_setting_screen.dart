@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_screen_header.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_empty_states.dart';
@@ -15,7 +15,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
-  final CategoryRepository categoryRepository;
+  final ICategoryRepository categoryRepository;
 
   const BudgetSettingScreen({
     required this.categoryRepository,
