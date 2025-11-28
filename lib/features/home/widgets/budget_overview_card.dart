@@ -3,20 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class BudgetOverviewCard extends StatelessWidget {
-  final BudgetRepository budgetRepository;
+  final List<CategoryBudgetView> budgetData;
 
   const BudgetOverviewCard({
     super.key,
-    required this.budgetRepository,
+    required this.budgetData,
   });
 
   @override
@@ -33,71 +31,60 @@ class BudgetOverviewCard extends StatelessWidget {
             onActionPressed: () => context.go(AppRoutes.budgets),
           ),
           const SizedBox(height: AppSpacing.xl),
-          // Use StreamBuilder for reactive budget updates
-          StreamBuilder<List<CategoryBudgetView>>(
-            stream: budgetRepository.watchCategoryBudgetsSortedBySpending(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          _buildBudgetContent(),
+        ],
+      ),
+    );
+  }
 
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              }
+  Widget _buildBudgetContent() {
+    if (budgetData.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xxxl),
+          child: Text(AppStrings.msgNoBudgetsYet),
+        ),
+      );
+    }
 
-              final budgetData = snapshot.data ?? [];
+    // Filter only categories with budgets
+    final activeBudgets = budgetData.where((b) => !b.hasNoBudget).toList();
 
-              if (budgetData.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.xxxl),
-                    child: Text(AppStrings.msgNoBudgetsYet),
-                  ),
-                );
-              }
+    if (activeBudgets.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xxxl),
+          child: Text(AppStrings.msgNoBudgetsYet),
+        ),
+      );
+    }
 
-              // Filter only categories with budgets
-              final activeBudgets =
-                  budgetData.where((b) => !b.hasNoBudget).toList();
+    // Take top 5 and group others
+    final top5Budgets = activeBudgets.take(5).toList();
+    final otherBudgets = activeBudgets.skip(5).toList();
 
-              if (activeBudgets.isEmpty) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.xxxl),
-                    child: Text(AppStrings.msgNoBudgetsYet),
-                  ),
-                );
-              }
+    // Prepare pie chart data - only categories with expenses
+    final pieChartData = top5Budgets.where((b) => b.totalSpent > 0).toList();
 
-              // Take top 5 and group others
-              final top5Budgets = activeBudgets.take(5).toList();
-              final otherBudgets = activeBudgets.skip(5).toList();
+    // Calculate "Others" total - only if they have expenses
+    double othersSpent = 0;
+    double othersTotal = 0;
+    for (var budget in otherBudgets) {
+      if (budget.totalSpent > 0) {
+        othersSpent += budget.totalSpent;
+      }
+      othersTotal += budget.category.budget;
+    }
 
-              // Prepare pie chart data - only categories with expenses
-              final pieChartData =
-                  top5Budgets.where((b) => b.totalSpent > 0).toList();
-
-              // Calculate "Others" total - only if they have expenses
-              double othersSpent = 0;
-              double othersTotal = 0;
-              for (var budget in otherBudgets) {
-                if (budget.totalSpent > 0) {
-                  othersSpent += budget.totalSpent;
-                }
-                othersTotal += budget.category.budget;
-              }
-
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Pie Chart - Expenses Only
-                  SizedBox(
-                    height: 220,
-                    width: 220,
-                    child: pieChartData.isEmpty && othersSpent == 0
-                        ? Center(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Pie Chart - Expenses Only
+        SizedBox(
+          height: 220,
+          width: 220,
+          child: pieChartData.isEmpty && othersSpent == 0
+              ? Center(
                             child: Text(
                               AppStrings.msgNoExpensesYet,
                               style: AppTextStyles.bodyMedium.copyWith(

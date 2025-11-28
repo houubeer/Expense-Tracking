@@ -57,10 +57,7 @@ GoRouter createRouter(AppDatabase database) {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            builder: (context, state) => HomeScreen(
-              budgetRepository: budgetRepository,
-              expenseService: expenseService,
-            ),
+            builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
             path: AppRoutes.viewExpenses,

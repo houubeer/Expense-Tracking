@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
-import 'package:expense_tracking_desktop_app/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
+import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard_view_model.dart';
 
 /// Dashboard state model - holds all computed dashboard data
 class DashboardState {
@@ -32,7 +35,8 @@ class DashboardState {
         : '${percentage.toStringAsFixed(1)}%';
   }
 
-  Color get balanceColor => totalBalance >= 0 ? AppColors.accent : AppColors.red;
+  Color get balanceColor =>
+      totalBalance >= 0 ? AppColors.accent : AppColors.red;
 
   String get expenseTrend {
     if (totalBudget == 0) return '-0.0%';
@@ -45,7 +49,8 @@ class DashboardState {
     return '-${((dailyAverage / dailyBudget) * 100).toStringAsFixed(1)}%';
   }
 
-  String get categoriesTrend => activeCategories > 0 ? '+$activeCategories' : '0';
+  String get categoriesTrend =>
+      activeCategories > 0 ? '+$activeCategories' : '0';
 
   factory DashboardState.loading() {
     return const DashboardState(
@@ -77,3 +82,20 @@ class DashboardState {
     );
   }
 }
+
+/// Dashboard ViewModel Provider
+/// UI watches this provider instead of managing ViewModel manually
+final dashboardViewModelProvider =
+    Provider.autoDispose<DashboardViewModel>((ref) {
+  final budgetRepository = ref.watch(budgetRepositoryProvider);
+  final expenseService = ref.watch(expenseServiceProvider);
+  return DashboardViewModel(budgetRepository, expenseService);
+});
+
+/// Dashboard State Stream Provider
+/// This is what the UI actually watches - a single clean stream
+final dashboardStateProvider =
+    StreamProvider.autoDispose<DashboardState>((ref) {
+  final viewModel = ref.watch(dashboardViewModelProvider);
+  return viewModel.watchDashboardState();
+});
