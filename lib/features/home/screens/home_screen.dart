@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/app_config.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
@@ -54,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Padding(
-      padding: const EdgeInsets.all(40.0),
+      padding: const EdgeInsets.all(AppSpacing.xxxl),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,22 +81,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () => context.go(AppRoutes.addExpense),
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text("Add Expense"),
+                  icon: const Icon(Icons.add, size: AppSpacing.iconXs),
+                  label: Text(AppStrings.btnAddExpense),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textInverse,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
+                        horizontal: AppSpacing.xl - 4, vertical: AppSpacing.lg),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
                     textStyle: AppTextStyles.button,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Quick Stats Row - Using StreamBuilder for reactive updates
             StreamBuilder<List<CategoryBudgetView>>(
@@ -114,13 +117,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         return LayoutBuilder(builder: (context, constraints) {
                           final width = constraints.maxWidth;
-                          final isDesktop = width > 1000;
+                          final isDesktop = width > AppConfig.breakpointDesktop;
                           final cardWidth =
-                              isDesktop ? (width - 60) / 4 : (width - 20) / 2;
+                              isDesktop ? (width - 60) / 4 : (width - AppSpacing.xl + 4) / 2;
 
                           return Wrap(
-                            spacing: 20,
-                            runSpacing: 20,
+                            spacing: AppSpacing.xl - 4,
+                            runSpacing: AppSpacing.xl - 4,
                             children: [
                               StatCard(
                                 title: "Total Balance",
@@ -173,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
 
             Flex(
               direction: screenWidth > 1100 ? Axis.horizontal : Axis.vertical,
@@ -183,8 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   flex: 3,
                   child: _budgetOverviewCard(),
                 ),
-                if (screenWidth > 1100) const SizedBox(width: 24),
-                if (screenWidth <= 1100) const SizedBox(height: 24),
+                if (screenWidth > 1100) const SizedBox(width: AppSpacing.xl),
+                if (screenWidth <= 1100) const SizedBox(height: AppSpacing.xl),
                 Expanded(
                   flex: 2,
                   child: _recentExpensesCard(),
@@ -199,17 +202,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _budgetOverviewCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: _cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionHeader(
-            title: "Budget Overview",
-            actionText: "Manage Budgets",
+            title: AppStrings.titleBudgetOverview,
+            actionText: AppStrings.navManageBudgets,
             onActionPressed: () => context.go(AppRoutes.budgets),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           // Use StreamBuilder for reactive budget updates
           StreamBuilder<List<CategoryBudgetView>>(
             stream: budgetRepository.watchCategoryBudgetsSortedBySpending(),
@@ -227,11 +230,10 @@ class _HomeScreenState extends State<HomeScreen> {
               final budgetData = snapshot.data ?? [];
 
               if (budgetData.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: Text(
-                        "No budgets set yet. Go to Budgets to create one."),
+                    padding: const EdgeInsets.all(AppSpacing.xxxl),
+                    child: Text(AppStrings.msgNoBudgetsYet),
                   ),
                 );
               }
@@ -241,11 +243,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   budgetData.where((b) => !b.hasNoBudget).toList();
 
               if (activeBudgets.isEmpty) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: Text(
-                        "No budgets set yet. Go to Budgets to create one."),
+                    padding: const EdgeInsets.all(AppSpacing.xxxl),
+                    child: Text(AppStrings.msgNoBudgetsYet),
                   ),
                 );
               }
@@ -278,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: pieChartData.isEmpty && othersSpent == 0
                         ? Center(
                             child: Text(
-                              'No expenses yet',
+                              AppStrings.msgNoExpensesYet,
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -308,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                   ),
-                  const SizedBox(width: 32),
+                  const SizedBox(width: AppSpacing.xxl),
                   // Scrollable Legend
                   Expanded(
                     child: SizedBox(
@@ -353,21 +354,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: AppSpacing.md,
+          height: AppSpacing.md,
           decoration: BoxDecoration(
             color: color,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
                 color: color.withOpacity(0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+                blurRadius: AppConfig.shadowBlurRadiusSm,
+                offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,9 +392,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               ClipRRect(
-                borderRadius: BorderRadius.circular(3),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                 child: LinearProgressIndicator(
                   value: budgetView.percentageUsed / 100,
                   backgroundColor: AppColors.surfaceAlt,
@@ -430,14 +431,14 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           children: [
             Container(
-              width: 12,
-              height: 12,
+              width: AppSpacing.md,
+              height: AppSpacing.md,
               decoration: BoxDecoration(
                 color: AppColors.textTertiary,
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,9 +462,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(3),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                     child: LinearProgressIndicator(
                       value: percentage / 100,
                       backgroundColor: AppColors.surfaceAlt,
@@ -486,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         // Show breakdown
         Padding(
-          padding: const EdgeInsets.only(left: 24, top: 8),
+          padding: const EdgeInsets.only(left: AppSpacing.xl, top: AppSpacing.sm),
           child: Column(
             children: otherBudgets.map((budget) {
               return Padding(
@@ -501,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         shape: BoxShape.circle,
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: AppSpacing.sm),
                     Expanded(
                       child: Text(
                         budget.category.name,
@@ -530,22 +531,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _recentExpensesCard() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: _cardDecoration(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SectionHeader(
-            title: "Recent Expenses",
-            actionText: "View All",
+            title: AppStrings.titleRecentExpenses,
+            actionText: AppStrings.navViewAll,
             onActionPressed: () => context.go(AppRoutes.viewExpenses),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           // Scrollable expenses list
           SizedBox(
             height: 300,
             child: recentExpenses.isEmpty
-                ? const Center(child: Text("No expenses yet"))
+                ? Center(child: Text(AppStrings.msgNoExpensesYet))
                 : SingleChildScrollView(
                     child: Column(
                       children: [
@@ -559,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             iconColor: Color(recentExpenses[i].category.color),
                           ),
                           if (i < recentExpenses.length - 1)
-                            const Divider(height: 24, color: AppColors.border),
+                            const Divider(height: AppSpacing.xl, color: AppColors.border),
                         ],
                       ],
                     ),
@@ -598,13 +599,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   BoxDecoration _cardDecoration() => BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: AppConfig.shadowBlurRadiusMd,
+            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       );

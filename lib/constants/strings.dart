@@ -9,6 +9,8 @@ class AppStrings {
   static const String navAddExpense = 'Add Expense';
   static const String navViewExpenses = 'View Expenses';
   static const String navBudgets = 'Budgets';
+  static const String navManageBudgets = 'Manage Budgets';
+  static const String navViewAll = 'View All';
 
   // Common buttons
   static const String btnCancel = 'Cancel';
@@ -19,6 +21,7 @@ class AppStrings {
   static const String btnClose = 'Close';
   static const String btnUndo = 'Undo';
   static const String btnSaveChanges = 'Save Changes';
+  static const String btnAddExpense = 'Add Expense';
 
   // Screen titles
   static const String titleAddExpense = 'Add Expense';
@@ -28,6 +31,8 @@ class AppStrings {
   static const String titleAddCategory = 'Add New Category';
   static const String titleDeleteCategory = 'Delete Category';
   static const String titleDeleteTransaction = 'Delete Transaction';
+  static const String titleBudgetOverview = 'Budget Overview';
+  static const String titleRecentExpenses = 'Recent Expenses';
 
   // Labels
   static const String labelAmount = 'Amount';
@@ -54,6 +59,9 @@ class AppStrings {
   static const String msgExpenseAdded = 'Expense added successfully';
   static const String msgExpenseUpdated = 'Expense updated successfully';
   static const String msgTransactionDeleted = 'Transaction deleted';
+  static const String msgNoExpensesYet = 'No expenses yet';
+  static const String msgNoBudgetsYet =
+      'No budgets set yet. Go to Budgets to create one.';
 
   // Error messages
   static const String errBudgetNegative = 'Budget cannot be negative';

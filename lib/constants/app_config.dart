@@ -12,7 +12,10 @@ class AppConfig {
 
   // Shadow properties
   static const double shadowBlurRadius = 8.0;
+  static const double shadowBlurRadiusSm = 4.0;
+  static const double shadowBlurRadiusMd = 10.0;
   static const double shadowBlurRadiusLarge = 10.0;
+  static const double shadowOffsetX = 0.0;
   static const double shadowOffsetY = 2.0;
   static const double shadowOffsetYLarge = 4.0;
   static const double shadowOpacity = 0.05;
