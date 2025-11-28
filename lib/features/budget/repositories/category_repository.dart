@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
 
 /// Repository for managing category operations
 /// Abstracts database access from UI layer

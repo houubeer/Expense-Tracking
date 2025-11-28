@@ -5,7 +5,6 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
