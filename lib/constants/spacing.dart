@@ -27,6 +27,7 @@ class AppSpacing {
   // Derived spacing values (avoiding arithmetic in usage)
   static const double xlMinor = 20.0; // xl - 4
   static const double xlMinorOffset = 28.0; // xl + 4
+  static const double iconPadding = 10.0; // md - 2
 
   // Common EdgeInsets
   static const EdgeInsets paddingXs = EdgeInsets.all(xs);

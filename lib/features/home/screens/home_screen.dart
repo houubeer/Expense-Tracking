@@ -89,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textInverse,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
+                        horizontal: AppSpacing.xlMinor,
+                        vertical: AppSpacing.lg),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
@@ -130,7 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               StatCard(
                                 title: "Total Balance",
-                                value: "${totalBalance.toStringAsFixed(0)} ${AppStrings.currency}",
+                                value:
+                                    "${totalBalance.toStringAsFixed(0)} ${AppStrings.currency}",
                                 trend: totalBalance >= 0
                                     ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
                                     : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
@@ -162,7 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               StatCard(
                                 title: "Daily Avg Spending",
-                                value: "${dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
+                                value:
+                                    "${dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
                                 trend:
                                     "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
                                 icon: Icons.trending_down_rounded,
