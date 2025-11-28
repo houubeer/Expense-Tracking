@@ -4,7 +4,7 @@ import 'package:expense_tracking_desktop_app/constants/colors.dart';
 /// Service for consistent date picker configuration across the app
 class DatePickerService {
   /// Shows a date picker dialog with consistent theming
-  /// 
+  ///
   /// Returns the selected date or null if cancelled
   static Future<DateTime?> selectDate(
     BuildContext context, {

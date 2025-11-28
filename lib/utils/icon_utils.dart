@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Utility class for icon-related operations
 class IconUtils {
   /// Converts a string code point to an IconData object
-  /// 
+  ///
   /// Returns MaterialIcons.category as fallback if parsing fails
   static IconData fromCodePoint(String codePointStr) {
     try {

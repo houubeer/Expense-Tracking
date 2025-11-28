@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
+import 'package:drift/drift.dart';
 
 /// Filter model for budget categories
 class BudgetFilter {
@@ -29,6 +31,32 @@ class BudgetFilter {
 
 /// ViewModel for budget filtering and sorting logic
 class BudgetViewModel {
+  final CategoryRepository _categoryRepository;
+
+  BudgetViewModel(this._categoryRepository);
+
+  /// Add a new category
+  Future<void> addCategory({
+    required String name,
+    required double budget,
+    required int color,
+    required String iconCodePoint,
+  }) async {
+    await _categoryRepository.insertCategory(
+      CategoriesCompanion.insert(
+        name: name,
+        budget: Value(budget),
+        color: color,
+        iconCodePoint: iconCodePoint,
+      ),
+    );
+  }
+
+  /// Delete a category
+  Future<void> deleteCategory(int categoryId) async {
+    await _categoryRepository.deleteCategory(categoryId);
+  }
+
   /// Apply search, status filter, and sorting to categories
   List<Category> applyFiltersAndSort(
     List<Category> categories,
@@ -80,7 +108,8 @@ class BudgetViewModel {
 
 /// Provider for BudgetViewModel
 final budgetViewModelProvider = Provider<BudgetViewModel>((ref) {
-  return BudgetViewModel();
+  // This will be provided with the repository when needed
+  throw UnimplementedError('BudgetViewModel must be provided with repository');
 });
 
 /// StateProvider for budget filter
