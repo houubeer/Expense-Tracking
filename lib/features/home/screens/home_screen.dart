@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         return LayoutBuilder(builder: (context, constraints) {
                           final width = constraints.maxWidth;
-                          final isDesktop = width > AppConfig.breakpointDesktop;
+                          final isDesktop = width > AppConfig.desktopBreakpoint;
                           final cardWidth =
                               isDesktop ? (width - 60) / 4 : (width - AppSpacing.xl + 4) / 2;
 
