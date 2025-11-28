@@ -12,8 +12,9 @@ class BudgetProgressBar extends StatelessWidget {
   });
 
   Color _getProgressColor() {
-    final percentage = category.budget > 0 ? category.spent / category.budget : 0;
-    
+    final percentage =
+        category.budget > 0 ? category.spent / category.budget : 0;
+
     if (percentage >= 1.0) return AppColors.red;
     if (percentage >= 0.9) return AppColors.orange;
     if (percentage >= 0.75) return AppColors.purple;
@@ -22,8 +23,8 @@ class BudgetProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final percentage = category.budget > 0 
-        ? (category.spent / category.budget).clamp(0.0, 1.0) 
+    final percentage = category.budget > 0
+        ? (category.spent / category.budget).clamp(0.0, 1.0)
         : 0.0;
     final progressColor = _getProgressColor();
 

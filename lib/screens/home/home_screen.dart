@@ -146,8 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               StatCard(
                                 title: "Expenses",
-                                value: "${totalExpenses.toStringAsFixed(0)} DZD",
-                                trend: "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
+                                value:
+                                    "${totalExpenses.toStringAsFixed(0)} DZD",
+                                trend:
+                                    "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
                                 icon: Icons.arrow_downward_rounded,
                                 color: AppColors.red,
                                 width: cardWidth,
@@ -155,7 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               StatCard(
                                 title: "Daily Avg Spending",
                                 value: "${dailyAverage.toStringAsFixed(0)} DZD",
-                                trend: "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
+                                trend:
+                                    "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
                                 icon: Icons.trending_down_rounded,
                                 color: AppColors.teal,
                                 width: cardWidth,
