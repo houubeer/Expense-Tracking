@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/constants/app_config.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:drift/drift.dart' hide Column;
 
 class BudgetSettingScreen extends StatefulWidget {
@@ -43,7 +47,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Padding(
-        padding: const EdgeInsets.all(40.0),
+        padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,41 +59,41 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Budget Management',
+                      AppStrings.titleBudgetManagement,
                       style: AppTextStyles.heading1,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
-                      'Manage your categories and budget limits',
+                      AppStrings.descManageBudgets,
                       style: AppTextStyles.bodyMedium,
                     ),
                   ],
                 ),
                 FilledButton.icon(
                   onPressed: () => _showAddCategoryDialog(),
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Category'),
+                  icon: const Icon(Icons.add, size: AppSpacing.iconXs),
+                  label: Text(AppStrings.btnAddCategory),
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 16,
+                      horizontal: AppSpacing.xl - 4,
+                      vertical: AppSpacing.lg,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Search, Filter, and Sort Bar
             _buildControlsBar(),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // Categories List
             Expanded(

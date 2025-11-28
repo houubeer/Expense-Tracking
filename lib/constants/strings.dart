@@ -23,6 +23,7 @@ class AppStrings {
   static const String btnSaveChanges = 'Save Changes';
   static const String btnAddExpense = 'Add Expense';
   static const String btnReset = 'Reset';
+  static const String btnAddCategory = 'Add Category';
 
   // Screen titles
   static const String titleAddExpense = 'Add Expense';
