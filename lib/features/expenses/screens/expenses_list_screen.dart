@@ -15,8 +15,7 @@ import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
 class ExpensesListScreen extends StatefulWidget {
   final AppDatabase database;
 
-  const ExpensesListScreen(
-      {required this.database, super.key});
+  const ExpensesListScreen({required this.database, super.key});
 
   @override
   State<ExpensesListScreen> createState() => _ExpensesListScreenState();

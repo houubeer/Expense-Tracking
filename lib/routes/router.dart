@@ -18,59 +18,60 @@ GoRouter createRouter(AppDatabase database) {
     initialLocation: AppRoutes.home,
     errorBuilder: (context, state) => const _ErrorScreen(),
     routes: [
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) {
-        return Scaffold(
-          body: Row(
-            children: [
-              Sidebar(
-                currentPath: state.uri.path,
-                onDestinationSelected: (path) {
-                  context.go(path);
+      ShellRoute(
+        navigatorKey: _shellNavigatorKey,
+        builder: (context, state, child) {
+          return Scaffold(
+            body: Row(
+              children: [
+                Sidebar(
+                  currentPath: state.uri.path,
+                  onDestinationSelected: (path) {
+                    context.go(path);
+                  },
+                ),
+                Expanded(
+                  child: child,
+                ),
+              ],
+            ),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            builder: (context, state) => HomeScreen(database: database),
+          ),
+          GoRoute(
+            path: AppRoutes.viewExpenses,
+            builder: (context, state) {
+              return ExpensesListScreen(
+                database: database,
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                builder: (context, state) {
+                  final categoryId = state.uri.queryParameters['categoryId'];
+                  return AddExpenseScreen(
+                    database: database,
+                    preSelectedCategoryId:
+                        categoryId != null ? int.tryParse(categoryId) : null,
+                  );
                 },
-              ),
-              Expanded(
-                child: child,
               ),
             ],
           ),
-        );
-      },
-      routes: [
-        GoRoute(
-          path: AppRoutes.home,
-          builder: (context, state) => HomeScreen(database: database),
-        ),
-        GoRoute(
-          path: AppRoutes.viewExpenses,
-          builder: (context, state) {
-            return ExpensesListScreen(
+          GoRoute(
+            path: AppRoutes.budgets,
+            builder: (context, state) => BudgetSettingScreen(
               database: database,
-            );
-          },
-          routes: [
-            GoRoute(
-              path: 'add',
-              builder: (context, state) {
-                final categoryId = state.uri.queryParameters['categoryId'];
-                return AddExpenseScreen(
-                  database: database,
-                  preSelectedCategoryId: categoryId != null ? int.tryParse(categoryId) : null,
-                );
-              },
             ),
-          ],
-        ),
-        GoRoute(
-          path: AppRoutes.budgets,
-          builder: (context, state) => BudgetSettingScreen(
-            database: database,
           ),
-        ),
-      ],
-    ),
-  ],
+        ],
+      ),
+    ],
   );
 }
 

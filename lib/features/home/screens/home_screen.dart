@@ -34,7 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadRecentExpenses() async {
     // Get recent expenses with category info
-    final expensesStream = widget.database.expenseDao.watchExpensesWithCategory();
+    final expensesStream =
+        widget.database.expenseDao.watchExpensesWithCategory();
     expensesStream.listen((expenseList) {
       if (mounted) {
         setState(() {
