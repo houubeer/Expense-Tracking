@@ -1,0 +1,147 @@
+"Refactor the budget_setting_screen file according to Single Responsibility Principle (SRP).
+This file is doing too many things and must be rewritten to isolate each responsibility into its proper place.
+Use the analysis below as the authoritative list of problems to fix.
+
+❌ Problems (Violations of SRP)
+1. UI Rendering (Screen Layout)
+
+The screen handles:
+
+Scaffold
+
+Header
+
+ListView
+
+Filter bar
+
+Empty states
+
+Padding, text, icons, styles
+
+This is already one full responsibility.
+
+2. Dialog Management
+
+The file includes:
+
+_showEditDialog()
+
+_showAddCategoryDialog()
+
+_deleteCategory()
+
+Each dialog mixes:
+
+Business logic
+
+UI logic
+
+Input validation
+
+StatefulBuilder
+
+Widgets
+
+DB insert/delete logic
+
+That adds three more major responsibilities.
+
+3. Business Logic + Filtering
+
+The screen calls:
+
+filteredCategories = viewModel.applyFiltersAndSort(...)
+
+
+Filtering and sorting belongs entirely in the ViewModel, not UI.
+
+4. Database Logic
+
+The file directly calls:
+
+widget.categoryRepository.insertCategory(...)
+widget.categoryRepository.deleteCategory(...)
+
+
+UI must never touch database logic.
+
+5. Local State Management
+
+You manage TextEditingControllers in a map:
+
+final Map<int, TextEditingController> _controllers = {};
+
+
+Controller lifecycle management is another responsibility.
+
+6. Formatting & Input Validation
+FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+
+
+Validation and formatters → should be separate utilities or services.
+
+7. Styling / Constants Hardcoded
+
+The screen contains too many:
+
+Colors
+
+Text styles
+
+Spacing
+
+UI constants
+
+These should be extracted to theme/constants.
+
+📉 Total:
+
+7 responsibilities inside a single file → severe SRP violation.
+
+⭐ Correct SRP Design
+
+A UI screen should only:
+✔ Render UI
+✔ React to ViewModel state
+
+Nothing more.
+
+🎯 Where Each Responsibility Should Go
+Responsibility	Target Location
+Dialog widgets	/widgets/dialogs/ (separate widget files)
+DB operations	ViewModel or Controller
+Create category logic	ViewModel
+Delete logic	ViewModel
+Filtering & sorting	ViewModel
+TextEditingControllers	Controller class (e.g., BudgetCategoryController)
+📌 Your Task as the Agent
+
+Rewrite the file so that it strictly follows SRP.
+Do all of this:
+
+Move all business logic into ViewModel/Controller.
+
+Move all dialog components into separate widget files.
+
+Remove all database calls from the UI.
+
+Remove filtering/sorting from the UI.
+
+Remove controller management from the UI.
+
+Extract constants/styling.
+
+Make the UI layer clean, simple, and responsible only for rendering.
+
+Produce:
+
+A cleaned, perfect SRP-compliant version of the file
+
+The new folder structure
+
+The separated files (dialogs, controllers, viewmodels)
+
+Explanations for every refactor decision
+
+Refactor the file to 10/10 SRP quality.

@@ -2,27 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
-import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
-import 'package:expense_tracking_desktop_app/features/budget/widgets/add_category_dialog.dart';
-import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
-import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_category_card.dart';
-import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_controls_bar.dart';
 import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_screen_header.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_empty_states.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_controls_bar.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_category_card.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/add_category_dialog.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
-import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
-/// Budget Setting Screen - Displays and manages budget categories
-/// 
-/// Responsibilities (SRP-compliant):
-/// - Render UI layout
-/// - React to ViewModel state
-/// - Delegate actions to ViewModel
 class BudgetSettingScreen extends ConsumerStatefulWidget {
   final CategoryRepository categoryRepository;
 
-  const BudgetSettingScreen({required this.categoryRepository, super.key});
+  const BudgetSettingScreen({
+    required this.categoryRepository,
+    super.key,
+  });
 
   @override
   ConsumerState<BudgetSettingScreen> createState() =>
@@ -31,7 +29,6 @@ class BudgetSettingScreen extends ConsumerStatefulWidget {
 
 class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   late final BudgetViewModel _viewModel;
-  final Map<int, TextEditingController> _controllers = {};
 
   @override
   void initState() {
@@ -41,9 +38,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   @override
   void dispose() {
-    for (var controller in _controllers.values) {
-      controller.dispose();
-    }
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -56,7 +51,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(),
+            BudgetScreenHeader(onAddPressed: _handleAddCategory),
             const SizedBox(height: AppSpacing.xxl),
             const BudgetControlsBar(),
             const SizedBox(height: AppSpacing.xl),
@@ -67,47 +62,11 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.titleBudgetManagement,
-              style: AppTextStyles.heading1,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              AppStrings.descManageBudgets,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ],
-        ),
-        FilledButton.icon(
-          onPressed: _showAddCategoryDialog,
-          icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-          label: Text(AppStrings.btnAddCategory),
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.xl - 4,
-              vertical: AppSpacing.lg,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildCategoriesList() {
+    final filter = ref.watch(budgetFilterProvider);
+
     return StreamBuilder<List<Category>>(
-      stream: widget.categoryRepository.watchAllCategories(),
+      stream: _viewModel.watchFilteredCategories(filter),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -115,69 +74,35 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
         final categories = snapshot.data ?? [];
 
+        if (categories.isEmpty && filter.searchQuery.isEmpty) {
+          return const BudgetEmptyState();
+        }
+
         if (categories.isEmpty) {
-          return _buildEmptyState();
+          return const BudgetNoMatchesState();
         }
 
-        final filter = ref.watch(budgetFilterProvider);
-        final filteredCategories =
-            _viewModel.applyFiltersAndSort(categories, filter);
+        return _buildCategoryList(categories);
+      },
+    );
+  }
 
-        if (filteredCategories.isEmpty) {
-          return _buildNoMatchesState();
-        }
+  Widget _buildCategoryList(List<Category> categories) {
+    return ListView.builder(
+      itemCount: categories.length,
+      itemBuilder: (context, index) {
+        final category = categories[index];
 
-        return ListView.builder(
-          itemCount: filteredCategories.length,
-          itemBuilder: (context, index) {
-            final category = filteredCategories[index];
-            _controllers.putIfAbsent(
-              category.id,
-              () => TextEditingController(
-                text: category.budget.toStringAsFixed(2),
-              ),
-            );
-
-            return BudgetCategoryCard(
-              category: category,
-              onEdit: () => _showEditDialog(category),
-              onDelete: () => _showDeleteDialog(category),
-            );
-          },
+        return BudgetCategoryCard(
+          category: category,
+          onEdit: () => _handleEditCategory(category),
+          onDelete: () => _handleDeleteCategory(category),
         );
       },
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Text(
-        AppStrings.descNoCategoriesFound,
-        style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
-      ),
-    );
-  }
-
-  Widget _buildNoMatchesState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.filter_list_off,
-              size: 64, color: AppColors.textSecondary),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            AppStrings.descNoMatchingCategories,
-            style: AppTextStyles.bodyLarge
-                .copyWith(color: AppColors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Dialog methods - delegate logic to ViewModel
-  void _showAddCategoryDialog() {
+  void _handleAddCategory() {
     showDialog(
       context: context,
       builder: (context) => AddCategoryDialog(
@@ -188,47 +113,40 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
             color: color,
             iconCodePoint: iconCodePoint,
           );
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(AppStrings.msgCategoryAdded),
-                backgroundColor: AppColors.green,
-              ),
-            );
-          }
+          _showSuccessMessage(AppStrings.msgCategoryAdded);
         },
       ),
     );
   }
 
-  void _showEditDialog(Category category) {
+  void _handleEditCategory(Category category) {
     showDialog(
       context: context,
       builder: (context) => EditCategoryDialog(
         categoryRepository: widget.categoryRepository,
         category: category,
-        budgetController: _controllers[category.id]!,
+        budgetController: _viewModel.getController(category),
       ),
     );
   }
 
-  void _showDeleteDialog(Category category) {
+  void _handleDeleteCategory(Category category) {
     showDialog(
       context: context,
       builder: (context) => DeleteCategoryDialog(
         category: category,
         onConfirm: () async {
           await _viewModel.deleteCategory(category.id);
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(AppStrings.msgCategoryDeleted),
-                backgroundColor: AppColors.red,
-              ),
-            );
-          }
+          _showSuccessMessage(AppStrings.msgCategoryDeleted);
         },
       ),
+    );
+  }
+
+  void _showSuccessMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: AppColors.green),
     );
   }
 }

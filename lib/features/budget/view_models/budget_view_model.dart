@@ -3,12 +3,13 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
 
 /// Filter model for budget categories
 class BudgetFilter {
   final String searchQuery;
-  final String statusFilter; // 'All', 'Good', 'Warning', 'In Risk'
-  final String sortBy; // 'Name', 'Budget', 'Spent', 'Percentage'
+  final String statusFilter;
+  final String sortBy;
 
   const BudgetFilter({
     this.searchQuery = '',
@@ -29,20 +30,44 @@ class BudgetFilter {
   }
 }
 
-/// ViewModel for budget filtering and sorting logic
-class BudgetViewModel {
-  final CategoryRepository _categoryRepository;
+/// ViewModel for budget management - handles ALL business logic, DB operations, and state
+class BudgetViewModel extends ChangeNotifier {
+  final CategoryRepository _repository;
+  final Map<int, TextEditingController> _controllers = {};
 
-  BudgetViewModel(this._categoryRepository);
+  BudgetViewModel(this._repository);
 
-  /// Add a new category
+  /// Get TextEditingController for a category
+  /// UI accesses controllers through ViewModel (not managing lifecycle)
+  TextEditingController getController(Category category) {
+    return _controllers.putIfAbsent(
+      category.id,
+      () => TextEditingController(text: category.budget.toStringAsFixed(2)),
+    );
+  }
+
+  /// Stream of all categories from database
+  /// UI subscribes to this instead of accessing repository directly
+  Stream<List<Category>> watchCategories() {
+    return _repository.watchAllCategories();
+  }
+
+  /// Stream of filtered and sorted categories
+  /// ALL filtering/sorting logic is in ViewModel, UI just displays
+  Stream<List<Category>> watchFilteredCategories(BudgetFilter filter) {
+    return watchCategories().map((categories) {
+      return _applyFiltersAndSort(categories, filter);
+    });
+  }
+
+  /// Add a new category (business logic in ViewModel)
   Future<void> addCategory({
     required String name,
     required double budget,
     required int color,
     required String iconCodePoint,
   }) async {
-    await _categoryRepository.insertCategory(
+    await _repository.insertCategory(
       CategoriesCompanion.insert(
         name: name,
         budget: Value(budget),
@@ -52,25 +77,25 @@ class BudgetViewModel {
     );
   }
 
-  /// Delete a category
+  /// Delete a category (business logic in ViewModel)
   Future<void> deleteCategory(int categoryId) async {
-    await _categoryRepository.deleteCategory(categoryId);
+    await _repository.deleteCategory(categoryId);
   }
 
-  /// Apply search, status filter, and sorting to categories
-  List<Category> applyFiltersAndSort(
+  /// Private filtering and sorting logic
+  List<Category> _applyFiltersAndSort(
     List<Category> categories,
     BudgetFilter filter,
   ) {
     // Apply filters
     var filtered = categories.where((cat) {
-      // Apply search filter
+      // Search filter
       if (filter.searchQuery.isNotEmpty &&
           !cat.name.toLowerCase().contains(filter.searchQuery.toLowerCase())) {
         return false;
       }
 
-      // Apply status filter
+      // Status filter
       if (filter.statusFilter != 'All') {
         final percentage =
             BudgetStatusCalculator.calculatePercentage(cat.spent, cat.budget);
@@ -104,13 +129,22 @@ class BudgetViewModel {
 
     return filtered;
   }
+
+  @override
+  void dispose() {
+    // ViewModel manages controller lifecycle, not UI
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
 }
 
-/// Provider for BudgetViewModel
-final budgetViewModelProvider = Provider<BudgetViewModel>((ref) {
-  // This will be provided with the repository when needed
-  throw UnimplementedError('BudgetViewModel must be provided with repository');
-});
+/// Provider factory for BudgetViewModel
+final budgetViewModelProvider =
+    Provider.family<BudgetViewModel, CategoryRepository>(
+  (ref, repository) => BudgetViewModel(repository),
+);
 
 /// StateProvider for budget filter
 final budgetFilterProvider = StateProvider<BudgetFilter>((ref) {

@@ -8,7 +8,8 @@ import 'package:expense_tracking_desktop_app/constants/category_options.dart';
 
 /// Dialog for adding a new budget category
 class AddCategoryDialog extends StatefulWidget {
-  final Function(String name, double budget, int color, String iconCodePoint) onAdd;
+  final Function(String name, double budget, int color, String iconCodePoint)
+      onAdd;
 
   const AddCategoryDialog({
     super.key,
