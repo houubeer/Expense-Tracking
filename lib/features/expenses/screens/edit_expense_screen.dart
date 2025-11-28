@@ -74,7 +74,8 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         categoryId: _selectedCategoryId!,
       );
 
-      await widget.expenseService.updateExpense(originalExpense, updatedExpense);
+      await widget.expenseService
+          .updateExpense(originalExpense, updatedExpense);
 
       if (mounted) {
         SuccessSnackbar.show(context, 'Expense updated successfully');

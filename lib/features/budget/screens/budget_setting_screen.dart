@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
+import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -282,7 +284,7 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
   void _showEditDialog(Category category, TextEditingController controller) {
     showDialog(
       context: context,
-      builder: (context) => _EditCategoryDialog(
+      builder: (context) => EditCategoryDialog(
         categoryRepository: widget.categoryRepository,
         category: category,
         budgetController: controller,
@@ -292,9 +294,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Helper method to build progress bar with status color and percentage overlay
   Widget _buildProgressBar(Category category) {
-    final percentage =
-        category.budget > 0 ? (category.spent / category.budget) : 0.0;
-    final statusColor = _getStatusColor(percentage);
+    final percentage = BudgetStatusCalculator.calculatePercentage(
+        category.spent, category.budget);
+    final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
 
     return Stack(
       children: [
@@ -330,12 +332,12 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
   // Helper method to build stats row with status logic
   Widget _buildStatsRow(Category category) {
-    final percentage =
-        category.budget > 0 ? (category.spent / category.budget) : 0.0;
+    final percentage = BudgetStatusCalculator.calculatePercentage(
+        category.spent, category.budget);
     final remaining = category.budget - category.spent;
-    final status = _getStatusText(percentage);
-    final statusColor = _getStatusColor(percentage);
-    final statusIcon = _getStatusIcon(percentage);
+    final status = BudgetStatusCalculator.getStatusText(percentage);
+    final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
+    final statusIcon = BudgetStatusCalculator.getStatusIcon(percentage);
 
     return Row(
       children: [
@@ -396,27 +398,6 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         ),
       ],
     );
-  }
-
-  // Get status text based on percentage
-  String _getStatusText(double percentage) {
-    if (percentage < 0.5) return AppStrings.statusGood;
-    if (percentage < 0.8) return AppStrings.statusWarning;
-    return AppStrings.statusInRisk;
-  }
-
-  // Get status color based on percentage
-  Color _getStatusColor(double percentage) {
-    if (percentage < 0.5) return AppColors.green;
-    if (percentage < 0.8) return AppColors.orange;
-    return AppColors.red;
-  }
-
-  // Get status icon based on percentage
-  IconData _getStatusIcon(double percentage) {
-    if (percentage < 0.5) return Icons.check_circle;
-    if (percentage < 0.8) return Icons.warning;
-    return Icons.error;
   }
 
   // Build controls bar with search, filter, and sort
@@ -500,9 +481,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
                             child: Row(
                               children: [
                                 Icon(
-                                  _getFilterIcon(status),
+                                  BudgetStatusCalculator.getFilterIcon(status),
                                   size: AppSpacing.iconXs,
-                                  color: _getFilterColor(status),
+                                  color:
+                                      BudgetStatusCalculator.getFilterColor(status),
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(status, style: AppTextStyles.bodyMedium),
@@ -564,8 +546,9 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
 
       // Apply status filter
       if (_filterStatus != 'All') {
-        final percentage = cat.budget > 0 ? (cat.spent / cat.budget) : 0.0;
-        final status = _getStatusText(percentage);
+        final percentage = BudgetStatusCalculator.calculatePercentage(
+            cat.spent, cat.budget);
+        final status = BudgetStatusCalculator.getStatusText(percentage);
         if (status != _filterStatus) {
           return false;
         }
@@ -582,8 +565,10 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
         case 'Spent':
           return b.spent.compareTo(a.spent);
         case 'Percentage':
-          final aPercentage = a.budget > 0 ? (a.spent / a.budget) : 0.0;
-          final bPercentage = b.budget > 0 ? (b.spent / b.budget) : 0.0;
+          final aPercentage = BudgetStatusCalculator.calculatePercentage(
+              a.spent, a.budget);
+          final bPercentage = BudgetStatusCalculator.calculatePercentage(
+              b.spent, b.budget);
           return bPercentage.compareTo(aPercentage);
         case 'Name':
         default:
@@ -592,34 +577,6 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
     });
 
     return filtered;
-  }
-
-  // Get icon for filter status
-  IconData _getFilterIcon(String status) {
-    switch (status) {
-      case 'Good':
-        return Icons.check_circle;
-      case 'Warning':
-        return Icons.warning;
-      case 'In Risk':
-        return Icons.error;
-      default:
-        return Icons.filter_list;
-    }
-  }
-
-  // Get color for filter status
-  Color _getFilterColor(String status) {
-    switch (status) {
-      case 'Good':
-        return AppColors.green;
-      case 'Warning':
-        return AppColors.orange;
-      case 'In Risk':
-        return AppColors.red;
-      default:
-        return AppColors.textSecondary;
-    }
   }
 
   void _showAddCategoryDialog() {
@@ -848,297 +805,6 @@ class _BudgetSettingScreenState extends State<BudgetSettingScreen> {
             child: const Text(AppStrings.btnDelete),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _EditCategoryDialog extends StatefulWidget {
-  final CategoryRepository categoryRepository;
-  final Category category;
-  final TextEditingController budgetController;
-
-  const _EditCategoryDialog({
-    required this.categoryRepository,
-    required this.category,
-    required this.budgetController,
-  });
-
-  @override
-  State<_EditCategoryDialog> createState() => _EditCategoryDialogState();
-}
-
-class _EditCategoryDialogState extends State<_EditCategoryDialog> {
-  late Color _selectedColor;
-  late IconData _selectedIcon;
-
-  // Common category colors
-  final List<Color> _categoryColors = [
-    AppColors.purple,
-    AppColors.teal,
-    AppColors.accent,
-    AppColors.orange,
-    AppColors.green,
-    AppColors.red,
-    AppColors.primary,
-    AppColors.primaryLight,
-    AppColors.accentLight,
-    AppColors.primaryDark,
-  ];
-
-  // Common category icons
-  final List<IconData> _categoryIcons = [
-    Icons.category,
-    Icons.shopping_cart,
-    Icons.restaurant,
-    Icons.local_gas_station,
-    Icons.home,
-    Icons.directions_car,
-    Icons.flight,
-    Icons.hotel,
-    Icons.medical_services,
-    Icons.school,
-    Icons.fitness_center,
-    Icons.devices,
-    Icons.subscriptions,
-    Icons.lightbulb,
-    Icons.build,
-    Icons.shopping_bag,
-    Icons.local_cafe,
-    Icons.sports_esports,
-    Icons.music_note,
-    Icons.pets,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedColor = Color(widget.category.color);
-    _selectedIcon = _getIconFromCodePoint(widget.category.iconCodePoint);
-  }
-
-  IconData _getIconFromCodePoint(String codePointStr) {
-    try {
-      final codePoint = int.parse(codePointStr);
-      return IconData(codePoint, fontFamily: 'MaterialIcons');
-    } catch (e) {
-      return Icons.category;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-      ),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 700),
-        padding: const EdgeInsets.all(AppSpacing.xxxl - 8),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Edit ${widget.category.name}',
-                      style: AppTextStyles.heading3),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                    color: AppColors.textSecondary,
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xxl - 8),
-              const Divider(color: AppColors.border),
-              const SizedBox(height: AppSpacing.xxl - 8),
-
-              // Budget Field
-              TextField(
-                controller: widget.budgetController,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                ],
-                decoration: InputDecoration(
-                  labelText: AppStrings.labelMonthlyBudget,
-                  prefixText: AppStrings.currencyPrefix,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.border),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.primary),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xxl - 8),
-
-              // Color Picker
-              Text(AppStrings.labelColor, style: AppTextStyles.label),
-              const SizedBox(height: AppSpacing.md),
-              Wrap(
-                spacing: AppSpacing.md,
-                runSpacing: AppSpacing.md,
-                children: _categoryColors.map((color) {
-                  final isSelected = color.value == _selectedColor.value;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedColor = color),
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.textPrimary
-                              : Colors.transparent,
-                          width: 3,
-                        ),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                  color: color.withOpacity(0.4),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: isSelected
-                          ? const Icon(Icons.check,
-                              color: Colors.white, size: AppSpacing.iconMd)
-                          : null,
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: AppSpacing.xxl - 8),
-
-              // Icon Picker
-              Text(AppStrings.labelIcon, style: AppTextStyles.label),
-              const SizedBox(height: AppSpacing.md),
-              Container(
-                constraints: const BoxConstraints(maxHeight: 200),
-                child: SingleChildScrollView(
-                  child: Wrap(
-                    spacing: AppSpacing.sm,
-                    runSpacing: AppSpacing.sm,
-                    children: _categoryIcons.map((icon) {
-                      final isSelected =
-                          icon.codePoint == _selectedIcon.codePoint;
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedIcon = icon),
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? _selectedColor.withOpacity(0.2)
-                                : AppColors.background,
-                            borderRadius:
-                                BorderRadius.circular(AppSpacing.radiusSm),
-                            border: Border.all(
-                              color: isSelected
-                                  ? _selectedColor
-                                  : AppColors.border,
-                              width: 2,
-                            ),
-                          ),
-                          child: Icon(
-                            icon,
-                            color: isSelected
-                                ? _selectedColor
-                                : AppColors.textSecondary,
-                            size: AppSpacing.iconMd,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.xxxl),
-
-              // Action Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
-                    ),
-                    child: const Text(AppStrings.btnCancel),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final navigator = Navigator.of(context);
-                      final messenger = ScaffoldMessenger.of(context);
-                      final value =
-                          double.tryParse(widget.budgetController.text) ?? 0.0;
-                      if (value < 0) {
-                        messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text(AppStrings.errBudgetNegative),
-                            backgroundColor: AppColors.red,
-                          ),
-                        );
-                        return;
-                      }
-
-                      // Update category with new values
-                      final updatedCategory = widget.category.copyWith(
-                        budget: value,
-                        color: _selectedColor.value,
-                        iconCodePoint: _selectedIcon.codePoint.toString(),
-                      );
-
-                      await widget.categoryRepository
-                          .updateCategory(updatedCategory);
-
-                      if (mounted) {
-                        navigator.pop();
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
-                            ),
-                            backgroundColor: AppColors.green,
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xxl - 8,
-                          vertical: AppSpacing.md),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusSm),
-                      ),
-                    ),
-                    child: const Text(AppStrings.btnSaveChanges),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -13,6 +13,7 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/utils/formatters/date_formatters.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -561,10 +562,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         for (int i = 0; i < recentExpenses.length; i++) ...[
                           ExpenseListItem(
-                            title: _truncateDescription(
+                            title: DateFormatters.truncateDescription(
                                 recentExpenses[i].expense.description),
                             category: recentExpenses[i].category.name,
-                            date: _formatDate(recentExpenses[i].expense.date),
+                            date: DateFormatters.formatShortDate(
+                                recentExpenses[i].expense.date),
                             amount: recentExpenses[i].expense.amount,
                             iconColor: Color(recentExpenses[i].category.color),
                           ),
@@ -579,32 +581,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${months[date.month - 1]} ${date.day}';
-  }
-
-  String _truncateDescription(String description, {int maxWords = 4}) {
-    final words = description.split(' ');
-    if (words.length <= maxWords) {
-      return description;
-    }
-    return '${words.take(maxWords).join(' ')}...';
   }
 
   BoxDecoration _cardDecoration() => BoxDecoration(

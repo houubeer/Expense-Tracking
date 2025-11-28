@@ -49,7 +49,8 @@ class ExpenseService {
     // If category changed, update both old and new categories
     if (oldCategoryId != newCategoryId) {
       // Subtract from old category
-      final oldCategory = await _categoryRepository.getCategoryById(oldCategoryId);
+      final oldCategory =
+          await _categoryRepository.getCategoryById(oldCategoryId);
       if (oldCategory != null) {
         await _categoryRepository.updateCategorySpent(
           oldCategory.id,
@@ -58,7 +59,8 @@ class ExpenseService {
       }
 
       // Add to new category
-      final newCategory = await _categoryRepository.getCategoryById(newCategoryId);
+      final newCategory =
+          await _categoryRepository.getCategoryById(newCategoryId);
       if (newCategory != null) {
         await _categoryRepository.updateCategorySpent(
           newCategory.id,
@@ -84,7 +86,8 @@ class ExpenseService {
     await _expenseRepository.deleteExpense(expense.id);
 
     // Update category spent (subtract the deleted amount)
-    final category = await _categoryRepository.getCategoryById(expense.categoryId);
+    final category =
+        await _categoryRepository.getCategoryById(expense.categoryId);
     if (category != null) {
       await _categoryRepository.updateCategorySpent(
         category.id,
