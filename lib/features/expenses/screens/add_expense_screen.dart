@@ -5,17 +5,17 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class AddExpenseScreen extends StatefulWidget {
-  final ExpenseRepository expenseRepository;
+  final ExpenseService expenseService;
   final CategoryRepository categoryRepository;
   final int? preSelectedCategoryId;
 
   const AddExpenseScreen({
-    required this.expenseRepository,
+    required this.expenseService,
     required this.categoryRepository,
     this.preSelectedCategoryId,
     super.key,
@@ -67,15 +67,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         categoryId: drift.Value(_selectedCategoryId!),
       );
 
-      await widget.expenseRepository.insertExpense(expense);
-
-      // Update category spent amount
-      final category =
-          await widget.categoryRepository.getCategoryById(_selectedCategoryId!);
-      if (category != null) {
-        await widget.categoryRepository
-            .updateCategorySpent(category.id, category.spent + amount);
-      }
+      await widget.expenseService.createExpense(expense);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

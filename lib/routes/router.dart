@@ -11,6 +11,7 @@ import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -21,6 +22,9 @@ GoRouter createRouter(AppDatabase database) {
   final budgetRepository = BudgetRepository(database);
   final categoryRepository = CategoryRepository(database);
   final expenseRepository = ExpenseRepository(database);
+
+  // Initialize services
+  final expenseService = ExpenseService(expenseRepository, categoryRepository);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -51,14 +55,14 @@ GoRouter createRouter(AppDatabase database) {
             path: AppRoutes.home,
             builder: (context, state) => HomeScreen(
               budgetRepository: budgetRepository,
-              expenseRepository: expenseRepository,
+              expenseService: expenseService,
             ),
           ),
           GoRoute(
             path: AppRoutes.viewExpenses,
             builder: (context, state) {
               return ExpensesListScreen(
-                expenseRepository: expenseRepository,
+                expenseService: expenseService,
                 categoryRepository: categoryRepository,
               );
             },
@@ -68,7 +72,7 @@ GoRouter createRouter(AppDatabase database) {
                 builder: (context, state) {
                   final categoryId = state.uri.queryParameters['categoryId'];
                   return AddExpenseScreen(
-                    expenseRepository: expenseRepository,
+                    expenseService: expenseService,
                     categoryRepository: categoryRepository,
                     preSelectedCategoryId:
                         categoryId != null ? int.tryParse(categoryId) : null,

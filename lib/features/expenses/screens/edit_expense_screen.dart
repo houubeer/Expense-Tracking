@@ -4,17 +4,17 @@ import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 
 class EditExpenseScreen extends StatefulWidget {
-  final ExpenseRepository expenseRepository;
+  final ExpenseService expenseService;
   final CategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
   final Function(int)? onNavigate;
 
   const EditExpenseScreen({
-    required this.expenseRepository,
+    required this.expenseService,
     required this.categoryRepository,
     required this.expenseWithCategory,
     this.onNavigate,
@@ -74,14 +74,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         categoryId: _selectedCategoryId!,
       );
 
-      await widget.expenseRepository.updateExpense(updatedExpense);
-
-      // We might need to handle category budget updates (subtract old, add new)
-      // For now, we'll assume the simple update is enough or the logic is handled elsewhere.
-      // Ideally, we should recalculate spent amounts if category changes or amount changes.
-      // But that's a bit complex for this scope unless required.
-      // The prompt didn't explicitly ask for budget recalculation logic on edit, but it's good practice.
-      // I'll skip complex budget logic for now to focus on the flow.
+      await widget.expenseService.updateExpense(originalExpense, updatedExpense);
 
       if (mounted) {
         SuccessSnackbar.show(context, 'Expense updated successfully');

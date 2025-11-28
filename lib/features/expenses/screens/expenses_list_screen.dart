@@ -10,18 +10,18 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_detail_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class ExpensesListScreen extends StatefulWidget {
-  final ExpenseRepository expenseRepository;
+  final ExpenseService expenseService;
   final CategoryRepository categoryRepository;
 
   const ExpensesListScreen({
-    required this.expenseRepository,
+    required this.expenseService,
     required this.categoryRepository,
     super.key,
   });
@@ -314,7 +314,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
             // Expenses List
             Expanded(
               child: StreamBuilder<List<ExpenseWithCategory>>(
-                stream: widget.expenseRepository.watchExpensesWithCategory(),
+                stream: widget.expenseService.watchExpensesWithCategory(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -502,7 +502,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => _EditExpenseDialog(
-        expenseRepository: widget.expenseRepository,
+        expenseService: widget.expenseService,
         categoryRepository: widget.categoryRepository,
         expenseWithCategory: item,
       ),
@@ -534,7 +534,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
           FilledButton(
             onPressed: () async {
               Navigator.pop(context); // Close dialog first
-              await widget.expenseRepository.deleteExpense(item.expense.id);
+              await widget.expenseService.deleteExpense(item.expense);
 
               if (mounted) {
                 SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
@@ -546,13 +546,8 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                     description: drift.Value(item.expense.description),
                     categoryId: drift.Value(item.expense.categoryId),
                     createdAt: drift.Value(item.expense.createdAt),
-                    // We don't set ID to let it auto-increment, or we could try to force it if needed.
-                    // Usually for undo, a new ID is fine unless order matters strictly by ID.
-                    // But wait, if we want to restore it exactly, we might want the same ID.
-                    // However, autoIncrement columns usually don't let you insert explicit values easily
-                    // without specific mode. Let's stick to re-creating it.
                   );
-                  await widget.expenseRepository.insertExpense(expense);
+                  await widget.expenseService.createExpense(expense);
                 });
               }
             },
@@ -566,12 +561,12 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 }
 
 class _EditExpenseDialog extends StatefulWidget {
-  final ExpenseRepository expenseRepository;
+  final ExpenseService expenseService;
   final CategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
 
   const _EditExpenseDialog({
-    required this.expenseRepository,
+    required this.expenseService,
     required this.categoryRepository,
     required this.expenseWithCategory,
   });
@@ -627,7 +622,7 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
         categoryId: _selectedCategoryId!,
       );
 
-      await widget.expenseRepository.updateExpense(updatedExpense);
+      await widget.expenseService.updateExpense(originalExpense, updatedExpense);
 
       if (mounted) {
         Navigator.pop(context);

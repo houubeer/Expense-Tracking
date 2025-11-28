@@ -7,7 +7,7 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
@@ -17,12 +17,12 @@ import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
   final BudgetRepository budgetRepository;
-  final ExpenseRepository expenseRepository;
+  final ExpenseService expenseService;
 
   const HomeScreen({
     super.key,
     required this.budgetRepository,
-    required this.expenseRepository,
+    required this.expenseService,
   });
 
   @override
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadRecentExpenses() async {
     // Get recent expenses with category info
-    final expensesStream = widget.expenseRepository.watchExpensesWithCategory();
+    final expensesStream = widget.expenseService.watchExpensesWithCategory();
     expensesStream.listen((expenseList) {
       if (mounted) {
         setState(() {
