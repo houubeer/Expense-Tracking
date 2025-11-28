@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class SuccessSnackbar extends SnackBar {
   SuccessSnackbar({
@@ -9,15 +12,12 @@ class SuccessSnackbar extends SnackBar {
   }) : super(
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: Colors.white),
-              const SizedBox(width: 12),
+              const Icon(Icons.check_circle, color: AppColors.textInverse),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
                   message,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.snackbarText,
                 ),
               ),
             ],
@@ -25,11 +25,11 @@ class SuccessSnackbar extends SnackBar {
           backgroundColor: AppColors.green,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
           action: onUndo != null
               ? SnackBarAction(
-                  label: 'UNDO',
+                  label: AppStrings.btnUndo,
                   textColor: Colors.white,
                   onPressed: onUndo,
                 )

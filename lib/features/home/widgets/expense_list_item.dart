@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// A reusable expense list item widget
 class ExpenseListItem extends StatelessWidget {
@@ -24,14 +25,15 @@ class ExpenseListItem extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.md - 2),
           decoration: BoxDecoration(
             color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
-          child: Icon(Icons.receipt_long_rounded, color: iconColor, size: 20),
+          child: Icon(Icons.receipt_long_rounded,
+              color: iconColor, size: AppSpacing.iconSm),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

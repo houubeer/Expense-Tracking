@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 
 /// A reusable budget progress bar widget showing spending vs budget
@@ -31,12 +32,12 @@ class BudgetProgressBar extends StatelessWidget {
     return Column(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
           child: LinearProgressIndicator(
             value: percentage,
             backgroundColor: AppColors.border,
             valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-            minHeight: 8,
+            minHeight: AppSpacing.sm,
           ),
         ),
       ],

@@ -24,12 +24,6 @@ class AppTextStyles {
         color: AppColors.textPrimary,
       );
 
-  static TextStyle get heading4 => GoogleFonts.inter(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
-      );
-
   // Body
   static TextStyle get bodyLarge => GoogleFonts.inter(
         fontSize: 16,
@@ -66,5 +60,17 @@ class AppTextStyles {
         fontSize: 11,
         fontWeight: FontWeight.w500,
         color: AppColors.textTertiary,
+      );
+
+  // Special use cases
+  static TextStyle get progressPercentage => GoogleFonts.inter(
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+      );
+
+  static TextStyle get snackbarText => GoogleFonts.inter(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        color: AppColors.textInverse,
       );
 }

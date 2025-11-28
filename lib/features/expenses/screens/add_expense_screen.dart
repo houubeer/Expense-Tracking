@@ -3,9 +3,10 @@ import 'package:drift/drift.dart' as drift;
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
-import 'package:expense_tracking_desktop_app/routes/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   final AppDatabase database;
@@ -78,10 +79,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Expense added successfully'),
+            content: Text(AppStrings.msgExpenseAdded),
             backgroundColor: AppColors.green,
             action: SnackBarAction(
-              label: 'View Expenses',
+              label: AppStrings.navViewExpenses,
               textColor: Colors.white,
               onPressed: () => context.go(AppRoutes.viewExpenses),
             ),

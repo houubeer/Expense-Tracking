@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
@@ -112,8 +112,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Edit Transaction',
-            style: TextStyle(color: AppColors.textPrimary)),
+        title: Text('Edit Transaction', style: AppTextStyles.heading3),
       ),
       body: Center(
         child: ExpenseFormWidget(

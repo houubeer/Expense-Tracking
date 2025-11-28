@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 
 class ExpenseFormWidget extends StatefulWidget {
@@ -49,7 +51,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
               primary: AppColors.primary,
-              onPrimary: Colors.white,
+              onPrimary: AppColors.textInverse,
               onSurface: AppColors.textPrimary,
             ),
           ),
@@ -76,7 +78,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
     return SingleChildScrollView(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Form(
           key: widget.formKey,
           child: Column(
@@ -86,18 +88,18 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                 widget.isEditing ? 'Edit Expense' : 'Add New Expense',
                 style: AppTextStyles.heading1,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 widget.isEditing
                     ? 'Update the details of your transaction'
                     : 'Enter the details of your transaction',
                 style: AppTextStyles.bodyMedium,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
 
               // Amount Field
-              Text('Amount', style: AppTextStyles.label),
-              const SizedBox(height: 8),
+              Text(AppStrings.labelAmount, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.amountController,
                 keyboardType:
@@ -108,19 +110,19 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                 style: AppTextStyles.bodyLarge,
                 decoration: InputDecoration(
                   hintText: '0.00',
-                  suffixText: 'DZD',
+                  suffixText: AppStrings.currency,
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.primary),
                   ),
                 ),
@@ -134,11 +136,11 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
 
               // Category Dropdown
-              Text('Category', style: AppTextStyles.label),
-              const SizedBox(height: 8),
+              Text(AppStrings.labelCategory, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
                 stream: widget.database.categoryDao.watchAllCategories(),
                 builder: (context, snapshot) {
@@ -156,9 +158,9 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                             Icon(
                               _getIconFromCodePoint(category.iconCodePoint),
                               color: Color(category.color),
-                              size: 20,
+                              size: AppSpacing.iconSm,
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: AppSpacing.md),
                             Text(category.name),
                           ],
                         ),
@@ -170,15 +172,18 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                       filled: true,
                       fillColor: AppColors.surface,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusLg),
                         borderSide: const BorderSide(color: AppColors.primary),
                       ),
                     ),
@@ -220,29 +225,29 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
 
               // Description Field
-              Text('Description', style: AppTextStyles.label),
-              const SizedBox(height: 8),
+              Text(AppStrings.labelDescription, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.descriptionController,
                 maxLines: 3,
                 style: AppTextStyles.bodyLarge,
                 decoration: InputDecoration(
-                  hintText: 'What was this expense for?',
+                  hintText: AppStrings.hintDescription,
                   filled: true,
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     borderSide: const BorderSide(color: AppColors.primary),
                   ),
                 ),
@@ -253,7 +258,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
 
               // Action Buttons
               if (!widget.isEditing)
@@ -263,29 +268,31 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                     OutlinedButton.icon(
                       onPressed: widget.onReset,
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Reset'),
+                      label: Text(AppStrings.btnReset),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.textSecondary,
                         side: const BorderSide(color: AppColors.border),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 16),
+                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: AppSpacing.md),
                     ElevatedButton.icon(
                       onPressed: widget.onSubmit,
                       icon: const Icon(Icons.add),
-                      label: const Text('Add Expense'),
+                      label: Text(AppStrings.btnAddExpense),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppColors.textInverse,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 16),
+                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
                         ),
                       ),
                     ),
