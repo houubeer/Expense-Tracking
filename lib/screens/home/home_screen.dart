@@ -6,6 +6,9 @@ import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
+import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
+import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
+import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -119,40 +122,44 @@ class _HomeScreenState extends State<HomeScreen> {
                             spacing: 20,
                             runSpacing: 20,
                             children: [
-                              _statCard(
-                                  "Total Balance",
-                                  "${totalBalance.toStringAsFixed(0)} DZD",
-                                  totalBalance >= 0
-                                      ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
-                                      : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
-                                  Icons.account_balance_wallet_outlined,
-                                  totalBalance >= 0
-                                      ? AppColors.accent
-                                      : AppColors.red,
-                                  cardWidth),
-                              _statCard(
-                                  "Number of Categories",
-                                  "$activeCategories Active",
-                                  activeCategories > 0
-                                      ? "+$activeCategories"
-                                      : "0",
-                                  Icons.category_outlined,
-                                  AppColors.purple,
-                                  cardWidth),
-                              _statCard(
-                                  "Expenses",
-                                  "${totalExpenses.toStringAsFixed(0)} DZD",
-                                  "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
-                                  Icons.arrow_downward_rounded,
-                                  AppColors.red,
-                                  cardWidth),
-                              _statCard(
-                                  "Daily Avg Spending",
-                                  "${dailyAverage.toStringAsFixed(0)} DZD",
-                                  "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
-                                  Icons.trending_down_rounded,
-                                  AppColors.teal,
-                                  cardWidth),
+                              StatCard(
+                                title: "Total Balance",
+                                value: "${totalBalance.toStringAsFixed(0)} DZD",
+                                trend: totalBalance >= 0
+                                    ? "+${((totalBalance / totalBudget) * 100).toStringAsFixed(1)}%"
+                                    : "-${((totalBalance.abs() / totalBudget) * 100).toStringAsFixed(1)}%",
+                                icon: Icons.account_balance_wallet_outlined,
+                                color: totalBalance >= 0
+                                    ? AppColors.accent
+                                    : AppColors.red,
+                                width: cardWidth,
+                              ),
+                              StatCard(
+                                title: "Number of Categories",
+                                value: "$activeCategories Active",
+                                trend: activeCategories > 0
+                                    ? "+$activeCategories"
+                                    : "0",
+                                icon: Icons.category_outlined,
+                                color: AppColors.purple,
+                                width: cardWidth,
+                              ),
+                              StatCard(
+                                title: "Expenses",
+                                value: "${totalExpenses.toStringAsFixed(0)} DZD",
+                                trend: "-${((totalExpenses / totalBudget) * 100).toStringAsFixed(1)}%",
+                                icon: Icons.arrow_downward_rounded,
+                                color: AppColors.red,
+                                width: cardWidth,
+                              ),
+                              StatCard(
+                                title: "Daily Avg Spending",
+                                value: "${dailyAverage.toStringAsFixed(0)} DZD",
+                                trend: "-${((dailyAverage / (totalBudget / 30)) * 100).toStringAsFixed(1)}%",
+                                icon: Icons.trending_down_rounded,
+                                color: AppColors.teal,
+                                width: cardWidth,
+                              ),
                             ],
                           );
                         });
@@ -187,65 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _statCard(String title, String value, String trend, IconData icon,
-      Color color, double width) {
-    return Container(
-      width: width,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 20),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: trend.startsWith('+')
-                      ? AppColors.green.withValues(alpha: 0.1)
-                      : AppColors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  trend,
-                  style: AppTextStyles.caption.copyWith(
-                    color:
-                        trend.startsWith('+') ? AppColors.green : AppColors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Text(value, style: AppTextStyles.heading2),
-          const SizedBox(height: 4),
-          Text(title, style: AppTextStyles.bodyMedium),
-        ],
-      ),
-    );
-  }
-
   Widget _budgetOverviewCard() {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -253,7 +201,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHeader("Budget Overview", "Manage Budgets"),
+          SectionHeader(
+            title: "Budget Overview",
+            actionText: "Manage Budgets",
+            onActionPressed: () => widget.onNavigate(3),
+          ),
           const SizedBox(height: 24),
           // Use StreamBuilder for reactive budget updates
           StreamBuilder<List<CategoryBudgetView>>(
@@ -580,7 +532,11 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _cardHeader("Recent Expenses", "View All"),
+          SectionHeader(
+            title: "Recent Expenses",
+            actionText: "View All",
+            onActionPressed: () => widget.onNavigate(2),
+          ),
           const SizedBox(height: 16),
           // Scrollable expenses list
           SizedBox(
@@ -591,13 +547,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         for (int i = 0; i < recentExpenses.length; i++) ...[
-                          _expenseItem(
-                            _truncateDescription(
+                          ExpenseListItem(
+                            title: _truncateDescription(
                                 recentExpenses[i].expense.description),
-                            recentExpenses[i].category.name,
-                            _formatDate(recentExpenses[i].expense.date),
-                            recentExpenses[i].expense.amount,
-                            Color(recentExpenses[i].category.color),
+                            category: recentExpenses[i].category.name,
+                            date: _formatDate(recentExpenses[i].expense.date),
+                            amount: recentExpenses[i].expense.amount,
+                            iconColor: Color(recentExpenses[i].category.color),
                           ),
                           if (i < recentExpenses.length - 1)
                             const Divider(height: 24, color: AppColors.border),
@@ -635,64 +591,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return description;
     }
     return '${words.take(maxWords).join(' ')}...';
-  }
-
-  Widget _expenseItem(String title, String category, String date, double amount,
-      Color iconColor) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(Icons.receipt_long_rounded, color: iconColor, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600)),
-              Text("$category • $date", style: AppTextStyles.caption),
-            ],
-          ),
-        ),
-        Text(
-          "-${amount.toStringAsFixed(2)}",
-          style: AppTextStyles.bodyLarge.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _cardHeader(String title, String actionText) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(title, style: AppTextStyles.heading3),
-        TextButton(
-          onPressed: () {
-            if (title.contains("Budget")) {
-              widget.onNavigate(3);
-            } else if (title.contains("Expenses")) {
-              widget.onNavigate(2);
-            }
-          },
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.accent,
-            textStyle: AppTextStyles.label,
-          ),
-          child: Text(actionText),
-        ),
-      ],
-    );
   }
 
   BoxDecoration _cardDecoration() => BoxDecoration(

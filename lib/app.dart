@@ -3,7 +3,7 @@ import 'package:expense_tracking_desktop_app/screens/home/home_screen.dart';
 import 'package:expense_tracking_desktop_app/screens/expenses/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/screens/expenses/expenses_list_screen.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
-import 'package:expense_tracking_desktop_app/widgets/common/sidebar.dart';
+import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/screens/budget/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/main.dart' as main_app;
 

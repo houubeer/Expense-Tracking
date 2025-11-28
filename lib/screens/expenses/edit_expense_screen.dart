@@ -3,8 +3,8 @@ import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
-import 'package:expense_tracking_desktop_app/widgets/expense_form_widget.dart';
-import 'package:expense_tracking_desktop_app/widgets/success_snackbar.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
+import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 import '../../repositories/expense_repository.dart';
 
 class EditExpenseScreen extends StatefulWidget {

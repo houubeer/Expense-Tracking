@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import '../../constants/colors.dart';
-import '../../constants/text_styles.dart';
-import '../../database/app_database.dart';
+import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
 
 class ExpenseFormWidget extends StatefulWidget {
   final AppDatabase database;
