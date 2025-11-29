@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/utils/status/budget_status_factory.dart';
 import 'package:expense_tracking_desktop_app/providers/budget_status_config_provider.dart';
 
@@ -44,7 +43,7 @@ class BudgetStatusCalculator {
   /// Get filter color for status dropdown
   static Color getFilterColor(String status) {
     final strategy = BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusColor ?? AppColors.textSecondary;
+    return strategy?.statusColor ?? const Color(0xFF64748B); // Medium gray fallback
   }
 
   // Instance methods using custom configuration
@@ -80,6 +79,6 @@ class BudgetStatusCalculator {
   Color getFilterColorWithConfig(String status) {
     final strategy = _config?.getStrategyByText(status) ??
         BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusColor ?? AppColors.textSecondary;
+    return strategy?.statusColor ?? const Color(0xFF64748B); // Medium gray fallback
   }
 }
