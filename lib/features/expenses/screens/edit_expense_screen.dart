@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 
 class EditExpenseScreen extends StatefulWidget {
-  final ExpenseService expenseService;
+  final IExpenseService expenseService;
   final ICategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
   final Function(int)? onNavigate;

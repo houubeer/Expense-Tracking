@@ -5,7 +5,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/section_header.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_item.dart';
 import 'package:expense_tracking_desktop_app/utils/formatters/date_formatters.dart';

@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/expense_list_provider.dart';
 
 class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
-  final ExpenseService _expenseService;
+  final IExpenseService _expenseService;
 
   ExpenseListViewModel(this._expenseService)
       : super(ExpenseListState.initial()) {

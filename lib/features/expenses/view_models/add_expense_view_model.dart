@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
-  final ExpenseService _expenseService;
+  final IExpenseService _expenseService;
 
   AddExpenseViewModel(this._expenseService) : super(AddExpenseState.initial());
 

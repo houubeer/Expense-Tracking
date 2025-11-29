@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budget_repository.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DashboardViewModel extends ChangeNotifier {
   final IBudgetRepository _budgetRepository;
-  final ExpenseService _expenseService;
+  final IExpenseService _expenseService;
 
   DashboardViewModel(this._budgetRepository, this._expenseService);
 

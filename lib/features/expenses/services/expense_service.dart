@@ -1,11 +1,11 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 
 /// Service layer for expense-related business logic
 /// Handles expense operations and category spent updates with transactional safety
-class ExpenseService {
+class ExpenseService implements IExpenseService {
   final IExpenseRepository _expenseRepository;
   final ICategoryRepository _categoryRepository;
   final AppDatabase _database;
@@ -16,7 +16,7 @@ class ExpenseService {
     this._database,
   );
 
-  /// Create a new expense and update category spent (with transaction)
+  @override
   Future<int> createExpense(ExpensesCompanion expense) async {
     return await _database.transaction(() async {
       // Insert the expense
@@ -40,7 +40,7 @@ class ExpenseService {
     });
   }
 
-  /// Update an existing expense and recalculate category spent (with transaction)
+  @override
   Future<void> updateExpense(
     Expense oldExpense,
     Expense newExpense,
@@ -90,7 +90,7 @@ class ExpenseService {
     });
   }
 
-  /// Delete an expense and update category spent (with transaction)
+  @override
   Future<void> deleteExpense(Expense expense) async {
     await _database.transaction(() async {
       // Delete the expense
@@ -108,7 +108,7 @@ class ExpenseService {
     });
   }
 
-  // Delegate read operations to repository
+  @override
   Stream<List<ExpenseWithCategory>> watchExpensesWithCategory() {
     return _expenseRepository.watchExpensesWithCategory();
   }

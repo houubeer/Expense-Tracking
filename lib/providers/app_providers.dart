@@ -7,6 +7,7 @@ import 'package:expense_tracking_desktop_app/features/budget/repositories/i_cate
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 
 /// Database provider - the single source of truth
 final databaseProvider = Provider<AppDatabase>((ref) {
@@ -32,7 +33,7 @@ final expenseRepositoryProvider = Provider<IExpenseRepository>((ref) {
 });
 
 /// Expense service provider
-final expenseServiceProvider = Provider<ExpenseService>((ref) {
+final expenseServiceProvider = Provider<IExpenseService>((ref) {
   final database = ref.watch(databaseProvider);
   final expenseRepository = ref.watch(expenseRepositoryProvider);
   final categoryRepository = ref.watch(categoryRepositoryProvider);
