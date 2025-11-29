@@ -34,8 +34,9 @@ class DashboardState {
         : '${percentage.toStringAsFixed(1)}%';
   }
 
-  Color get balanceColor =>
-      totalBalance >= 0 ? const Color(0xFF6366F1) : const Color(0xFFEF4444); // Indigo : Red
+  Color get balanceColor => totalBalance >= 0
+      ? const Color(0xFF6366F1)
+      : const Color(0xFFEF4444); // Indigo : Red
 
   String get expenseTrend {
     if (totalBudget == 0) return '-0.0%';

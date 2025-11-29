@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -25,6 +24,7 @@ class BudgetCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final iconData = IconUtils.fromCodePoint(category.iconCodePoint);
     final categoryColor = Color(category.color);
 
@@ -32,12 +32,12 @@ class BudgetCategoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
             offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
@@ -99,8 +99,6 @@ class BudgetCategoryCard extends StatelessWidget {
               icon: const Icon(Icons.add, size: AppSpacing.iconXs),
               label: Text(AppStrings.btnAddExpense),
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
                   vertical: AppSpacing.md,
@@ -116,8 +114,6 @@ class BudgetCategoryCard extends StatelessWidget {
               icon: const Icon(Icons.edit, size: AppSpacing.iconXs),
               label: Text(AppStrings.btnEdit),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                side: const BorderSide(color: AppColors.border),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
                   vertical: AppSpacing.md,
@@ -131,7 +127,7 @@ class BudgetCategoryCard extends StatelessWidget {
             IconButton(
               onPressed: onDelete,
               icon: const Icon(Icons.delete_outline, size: AppSpacing.iconSm),
-              color: AppColors.red,
+              color: colorScheme.error,
               tooltip: 'Delete Category',
             ),
           ],
@@ -141,41 +137,46 @@ class BudgetCategoryCard extends StatelessWidget {
   }
 
   Widget _buildProgressBar() {
-    final percentage = BudgetStatusCalculator.calculatePercentage(
-      category.spent,
-      category.budget,
-    );
-    final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final percentage = BudgetStatusCalculator.calculatePercentage(
+          category.spent,
+          category.budget,
+        );
+        final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
 
-    return Stack(
-      children: [
-        Container(
-          height: 24,
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: percentage.clamp(0.0, 1.0),
-              backgroundColor: Colors.transparent,
-              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-              minHeight: 24,
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: Center(
-            child: Text(
-              '${(percentage * 100).toStringAsFixed(1)}%',
-              style: AppTextStyles.progressPercentage.copyWith(
-                color: percentage > 0.5 ? Colors.white : AppColors.textPrimary,
+        return Stack(
+          children: [
+            Container(
+              height: 24,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: percentage.clamp(0.0, 1.0),
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                  minHeight: 24,
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+            Positioned.fill(
+              child: Center(
+                child: Text(
+                  '${(percentage * 100).toStringAsFixed(1)}%',
+                  style: AppTextStyles.progressPercentage.copyWith(
+                    color: percentage > 0.5 ? Colors.white : colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

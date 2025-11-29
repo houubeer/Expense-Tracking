@@ -52,7 +52,10 @@ class RecentExpensesCard extends StatelessWidget {
                           ),
                           if (i < recentExpenses.length - 1)
                             Divider(
-                                height: AppSpacing.xl, color: Theme.of(context).colorScheme.outlineVariant),
+                                height: AppSpacing.xl,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant),
                         ],
                       ],
                     ),

@@ -10,7 +10,6 @@ import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_cate
 import 'package:expense_tracking_desktop_app/features/budget/widgets/add_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
@@ -45,8 +44,9 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerLowest,
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Column(
@@ -146,8 +146,9 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   void _showSuccessMessage(String message) {
     if (!mounted) return;
+    final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.green),
+      SnackBar(content: Text(message), backgroundColor: colorScheme.tertiary),
     );
   }
 }

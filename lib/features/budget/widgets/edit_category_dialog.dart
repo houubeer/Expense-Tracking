@@ -245,10 +245,11 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       final value =
                           double.tryParse(widget.budgetController.text) ?? 0.0;
                       if (value < 0) {
+                        final colorScheme = Theme.of(context).colorScheme;
                         messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text(AppStrings.errBudgetNegative),
-                            backgroundColor: AppColors.red,
+                          SnackBar(
+                            content: const Text(AppStrings.errBudgetNegative),
+                            backgroundColor: colorScheme.error,
                           ),
                         );
                         return;
@@ -265,19 +266,20 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           .updateCategory(updatedCategory);
 
                       if (mounted) {
+                        final colorScheme = Theme.of(context).colorScheme;
                         navigator.pop();
                         messenger.showSnackBar(
                           SnackBar(
                             content: Text(
                               '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
                             ),
-                            backgroundColor: AppColors.green,
+                            backgroundColor: colorScheme.tertiary,
                           ),
                         );
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.xxl - 8,

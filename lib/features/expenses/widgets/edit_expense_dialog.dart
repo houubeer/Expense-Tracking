@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/snackbars/success_snackbar.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -51,10 +50,11 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
   Future<void> _updateExpense() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedCategoryId == null) {
+        final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please select a category'),
-            backgroundColor: AppColors.red,
+          SnackBar(
+            content: const Text('Please select a category'),
+            backgroundColor: colorScheme.error,
           ),
         );
         return;
@@ -83,8 +83,9 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       ),
@@ -103,12 +104,12 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
-                  color: AppColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
             const SizedBox(height: AppSpacing.xl),
-            const Divider(color: AppColors.border),
+            Divider(color: colorScheme.outlineVariant),
             const SizedBox(height: AppSpacing.xl),
             Expanded(
               child: SingleChildScrollView(
@@ -134,7 +135,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textSecondary,
+                    foregroundColor: colorScheme.onSurfaceVariant,
                   ),
                   child: Text(AppStrings.btnCancel),
                 ),
@@ -142,7 +143,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                 ElevatedButton(
                   onPressed: _updateExpense,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: colorScheme.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.xl, vertical: AppSpacing.md),
