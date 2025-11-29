@@ -14,8 +14,6 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 
-import 'package:expense_tracking_desktop_app/widgets/shimmer_loader.dart';
-
 class BudgetSettingScreen extends ConsumerStatefulWidget {
   final ICategoryRepository categoryRepository;
 
@@ -73,11 +71,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       stream: _viewModel.watchFilteredCategories(filter),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return ShimmerLoaders.list(
-            context,
-            itemBuilder: ShimmerLoaders.budgetCard,
-            itemCount: 3,
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
         final categories = snapshot.data ?? [];
