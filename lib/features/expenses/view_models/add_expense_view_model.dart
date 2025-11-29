@@ -9,7 +9,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final IExpenseService _expenseService;
 
   AddExpenseViewModel(this._expenseService, int? preSelectedCategoryId)
-      : super(AddExpenseState.initial(preSelectedCategoryId: preSelectedCategoryId));
+      : super(AddExpenseState.initial(
+            preSelectedCategoryId: preSelectedCategoryId));
 
   @override
   void dispose() {
@@ -43,11 +44,6 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     );
   }
 
-  /// Submit expense to database
-  Future<void> submitExpense() async {
-    // Validate controllers have data
-    if (state.amountController.text.isEmpty) return;
-    if (state.selectedCategoryId == null) return;
   /// Submit expense to database
   Future<void> submitExpense() async {
     // Validate controllers have data
