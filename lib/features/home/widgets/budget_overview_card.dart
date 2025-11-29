@@ -12,10 +12,12 @@ import 'package:fl_chart/fl_chart.dart';
 
 class BudgetOverviewCard extends StatelessWidget {
   final List<CategoryBudgetView> budgetData;
+  final int itemsToShow;
 
   const BudgetOverviewCard({
     super.key,
     required this.budgetData,
+    this.itemsToShow = 5, // Default to 5, but can be changed
   });
 
   @override
@@ -60,12 +62,12 @@ class BudgetOverviewCard extends StatelessWidget {
       );
     }
 
-    // Take top 5 and group others
-    final top5Budgets = activeBudgets.take(5).toList();
-    final otherBudgets = activeBudgets.skip(5).toList();
+    // Take top N and group others (configurable limit)
+    final topBudgets = activeBudgets.take(itemsToShow).toList();
+    final otherBudgets = activeBudgets.skip(itemsToShow).toList();
 
     // Prepare pie chart data - only categories with expenses
-    final pieChartData = top5Budgets.where((b) => b.totalSpent > 0).toList();
+    final pieChartData = topBudgets.where((b) => b.totalSpent > 0).toList();
 
     // Calculate "Others" total - only if they have expenses
     double othersSpent = 0;
@@ -125,8 +127,8 @@ class BudgetOverviewCard extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  // Top 5 budgets
-                  ...top5Budgets.map((budgetView) {
+                  // Top N budgets (configurable)
+                  ...topBudgets.map((budgetView) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: _BudgetLegendItem(budgetView: budgetView),

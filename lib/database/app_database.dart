@@ -43,7 +43,8 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
       );
 
   @override
-  Future<T> transaction<T>(Future<T> Function() action, {bool requireNew = false}) async {
+  Future<T> transaction<T>(Future<T> Function() action,
+      {bool requireNew = false}) async {
     return await super.transaction(action, requireNew: requireNew);
   }
 }

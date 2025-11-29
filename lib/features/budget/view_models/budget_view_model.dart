@@ -130,8 +130,7 @@ class BudgetViewModel extends ChangeNotifier {
 }
 
 /// Provider factory for BudgetViewModel
-final budgetViewModelProvider =
-    Provider.autoDispose<BudgetViewModel>((ref) {
+final budgetViewModelProvider = Provider.autoDispose<BudgetViewModel>((ref) {
   final repository = ref.watch(categoryRepositoryProvider);
   return BudgetViewModel(repository, repository);
 });
