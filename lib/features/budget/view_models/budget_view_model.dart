@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_reader.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_writer.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/sorting/category_sort_factory.dart';
 import 'package:drift/drift.dart';
@@ -33,10 +34,11 @@ class BudgetFilter {
 
 /// ViewModel for budget management - handles ALL business logic, DB operations, and state
 class BudgetViewModel extends ChangeNotifier {
-  final ICategoryRepository _repository;
+  final ICategoryReader _categoryReader;
+  final ICategoryWriter _categoryWriter;
   final Map<int, TextEditingController> _controllers = {};
 
-  BudgetViewModel(this._repository);
+  BudgetViewModel(this._categoryReader, this._categoryWriter);
 
   /// Get TextEditingController for a category
   /// UI accesses controllers through ViewModel (not managing lifecycle)
@@ -50,7 +52,7 @@ class BudgetViewModel extends ChangeNotifier {
   /// Stream of all categories from database
   /// UI subscribes to this instead of accessing repository directly
   Stream<List<Category>> watchCategories() {
-    return _repository.watchAllCategories();
+    return _categoryReader.watchAllCategories();
   }
 
   /// Stream of filtered and sorted categories
@@ -68,7 +70,7 @@ class BudgetViewModel extends ChangeNotifier {
     required int color,
     required String iconCodePoint,
   }) async {
-    await _repository.insertCategory(
+    await _categoryWriter.insertCategory(
       CategoriesCompanion.insert(
         name: name,
         budget: Value(budget),
@@ -80,7 +82,7 @@ class BudgetViewModel extends ChangeNotifier {
 
   /// Delete a category (business logic in ViewModel)
   Future<void> deleteCategory(int categoryId) async {
-    await _repository.deleteCategory(categoryId);
+    await _categoryWriter.deleteCategory(categoryId);
   }
 
   /// Private filtering and sorting logic using Strategy Pattern (Open/Closed Principle)
@@ -129,7 +131,7 @@ class BudgetViewModel extends ChangeNotifier {
 /// Provider factory for BudgetViewModel
 final budgetViewModelProvider =
     Provider.family<BudgetViewModel, ICategoryRepository>(
-  (ref, repository) => BudgetViewModel(repository),
+  (ref, repository) => BudgetViewModel(repository, repository),
 );
 
 /// StateProvider for budget filter

@@ -1,15 +1,8 @@
-import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_dashboard_budget_reader.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budget_reader.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budget_analytics.dart';
 
-abstract class IBudgetRepository {
-  Stream<List<CategoryBudgetView>> watchCategoryBudgets();
-  Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(BudgetStatus status);
-  Stream<List<CategoryBudgetView>> watchActiveCategoryBudgets();
-  Stream<List<CategoryBudgetView>> watchCategoryBudgetsSortedBySpending();
-  Stream<List<CategoryBudgetView>> watchTopSpendingCategories(int limit);
-  Stream<double> watchTotalBudget();
-  Stream<double> watchTotalSpent();
-  Stream<double> watchTotalRemaining();
-  Stream<double> watchOverallBudgetHealth();
-  Stream<Map<BudgetStatus, int>> watchCategoryCountByStatus();
-  Future<List<CategoryBudgetView>> getCategoryBudgets();
-}
+/// Complete budget repository interface (ISP - Composition of focused interfaces)
+/// Concrete implementations provide all capabilities, clients depend only on what they need
+abstract class IBudgetRepository
+    implements IDashboardBudgetReader, IBudgetReader, IBudgetAnalytics {}

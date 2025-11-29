@@ -89,6 +89,7 @@ final dashboardViewModelProvider =
     Provider.autoDispose<DashboardViewModel>((ref) {
   final budgetRepository = ref.watch(budgetRepositoryProvider);
   final expenseService = ref.watch(expenseServiceProvider);
+  // DashboardViewModel only needs dashboard-specific budget methods (ISP)
   return DashboardViewModel(budgetRepository, expenseService);
 });
 

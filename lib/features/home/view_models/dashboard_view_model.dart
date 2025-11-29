@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budget_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_dashboard_budget_reader.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
 import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
 class DashboardViewModel extends ChangeNotifier {
-  final IBudgetRepository _budgetRepository;
+  final IDashboardBudgetReader _budgetReader;
   final IExpenseService _expenseService;
 
-  DashboardViewModel(this._budgetRepository, this._expenseService);
+  DashboardViewModel(this._budgetReader, this._expenseService);
 
   /// Combines all streams into a single DashboardState stream
   /// This flattens the nested StreamBuilders into one clean stream
   Stream<DashboardState> watchDashboardState() {
     return Rx.combineLatest4(
-      _budgetRepository.watchActiveCategoryBudgets(),
-      _budgetRepository.watchTotalBudget(),
-      _budgetRepository.watchTotalSpent(),
+      _budgetReader.watchActiveCategoryBudgets(),
+      _budgetReader.watchTotalBudget(),
+      _budgetReader.watchTotalSpent(),
       _expenseService.watchExpensesWithCategory(),
       (
         List<CategoryBudgetView> budgets,

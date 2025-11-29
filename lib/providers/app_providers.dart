@@ -43,5 +43,11 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
   final database = ref.watch(databaseInterfaceProvider);
   final expenseRepository = ref.watch(expenseRepositoryProvider);
   final categoryRepository = ref.watch(categoryRepositoryProvider);
-  return ExpenseService(expenseRepository, categoryRepository, database);
+  // ExpenseService only needs reader and budget manager interfaces (ISP)
+  return ExpenseService(
+    expenseRepository,
+    categoryRepository, // ICategoryRepository implements both interfaces
+    categoryRepository, // Pass same instance for both reader and budget manager
+    database,
+  );
 });
