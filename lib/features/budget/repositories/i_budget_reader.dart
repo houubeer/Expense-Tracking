@@ -4,7 +4,8 @@ import 'package:expense_tracking_desktop_app/features/budget/models/category_bud
 /// For comprehensive budget views and analysis
 abstract class IBudgetReader {
   Stream<List<CategoryBudgetView>> watchCategoryBudgets();
-  Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(BudgetStatus status);
+  Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(
+      BudgetStatus status);
   Stream<List<CategoryBudgetView>> watchCategoryBudgetsSortedBySpending();
   Stream<List<CategoryBudgetView>> watchTopSpendingCategories(int limit);
   Future<List<CategoryBudgetView>> getCategoryBudgets();

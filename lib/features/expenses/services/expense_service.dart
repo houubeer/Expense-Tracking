@@ -82,8 +82,7 @@ class ExpenseService implements IExpenseService {
         }
       } else if (oldAmount != newAmount) {
         // Same category but amount changed
-        final category =
-            await _categoryReader.getCategoryById(newCategoryId);
+        final category = await _categoryReader.getCategoryById(newCategoryId);
         if (category != null) {
           final amountDiff = newAmount - oldAmount;
           await _categoryBudgetManager.updateCategorySpent(

@@ -33,7 +33,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = BudgetViewModel(widget.categoryRepository);
+    _viewModel = BudgetViewModel(widget.categoryRepository, widget.categoryRepository);
   }
 
   @override

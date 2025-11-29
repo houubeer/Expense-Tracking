@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_reader.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_writer.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/sorting/category_sort_factory.dart';
 import 'package:drift/drift.dart';
@@ -130,9 +131,10 @@ class BudgetViewModel extends ChangeNotifier {
 
 /// Provider factory for BudgetViewModel
 final budgetViewModelProvider =
-    Provider.family<BudgetViewModel, ICategoryRepository>(
-  (ref, repository) => BudgetViewModel(repository, repository),
-);
+    Provider.autoDispose<BudgetViewModel>((ref) {
+  final repository = ref.watch(categoryRepositoryProvider);
+  return BudgetViewModel(repository, repository);
+});
 
 /// StateProvider for budget filter
 final budgetFilterProvider = StateProvider<BudgetFilter>((ref) {
