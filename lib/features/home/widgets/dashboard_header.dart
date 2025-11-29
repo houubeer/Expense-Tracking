@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import '../../../widgets/buttons.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -28,20 +27,10 @@ class DashboardHeader extends StatelessWidget {
             ),
           ],
         ),
-        ElevatedButton.icon(
+        PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
-          icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-          label: Text(AppStrings.btnAddExpense),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primary,
-            foregroundColor: colorScheme.onPrimary,
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            ),
-            textStyle: AppTextStyles.button,
-          ),
+          icon: Icons.add,
+          child: Text(AppStrings.btnAddExpense),
         ),
       ],
     );

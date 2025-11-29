@@ -9,6 +9,7 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/common/side
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -107,7 +108,7 @@ class _ErrorScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
+            PrimaryButton(
               onPressed: () => context.go(AppRoutes.home),
               child: const Text('Go to Home'),
             ),

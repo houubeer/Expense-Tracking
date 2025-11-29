@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import '../../../widgets/buttons.dart';
 
 class ExpenseListHeader extends StatelessWidget {
   const ExpenseListHeader({super.key});
@@ -26,18 +26,10 @@ class ExpenseListHeader extends StatelessWidget {
             ),
           ],
         ),
-        ElevatedButton.icon(
+        PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
-          icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-          label: const Text("Add Expense"),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            ),
-            textStyle: AppTextStyles.button,
-          ),
+          icon: Icons.add,
+          child: const Text("Add Expense"),
         ),
       ],
     );

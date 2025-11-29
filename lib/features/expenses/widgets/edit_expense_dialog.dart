@@ -6,6 +6,7 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/snackbars/s
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class EditExpenseDialog extends StatefulWidget {
   final IExpenseService expenseService;
@@ -140,17 +141,8 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                   child: Text(AppStrings.btnCancel),
                 ),
                 const SizedBox(width: AppSpacing.md),
-                ElevatedButton(
+                PrimaryButton(
                   onPressed: _updateExpense,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xl, vertical: AppSpacing.md),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    ),
-                  ),
                   child: Text('Update Expense'),
                 ),
               ],

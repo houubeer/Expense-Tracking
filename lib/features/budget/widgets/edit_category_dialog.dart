@@ -5,6 +5,7 @@ import 'package:expense_tracking_desktop_app/features/budget/repositories/i_cate
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class EditCategoryDialog extends StatefulWidget {
   final ICategoryRepository categoryRepository;
@@ -238,7 +239,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                     child: const Text(AppStrings.btnCancel),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  ElevatedButton(
+                  PrimaryButton(
                     onPressed: () async {
                       final navigator = Navigator.of(context);
                       final messenger = ScaffoldMessenger.of(context);
@@ -278,17 +279,6 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         );
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xxl - 8,
-                          vertical: AppSpacing.md),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusSm),
-                      ),
-                    ),
                     child: const Text(AppStrings.btnSaveChanges),
                   ),
                 ],

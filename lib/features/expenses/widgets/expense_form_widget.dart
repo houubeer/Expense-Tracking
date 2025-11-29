@@ -8,6 +8,7 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class ExpenseFormWidget extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -248,44 +249,19 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    OutlinedButton.icon(
+                    TertiaryButton(
                       onPressed: widget.isSubmitting ? null : widget.onReset,
-                      icon: const Icon(Icons.refresh),
-                      label: Text(AppStrings.btnReset),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                        ),
-                      ),
+                      icon: Icons.refresh,
+                      child: Text(AppStrings.btnReset),
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    ElevatedButton.icon(
+                    PrimaryButton(
                       onPressed: widget.onSubmit,
-                      icon: widget.isSubmitting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Icon(Icons.add),
-                      label: Text(widget.isSubmitting
+                      icon: Icons.add,
+                      isLoading: widget.isSubmitting,
+                      child: Text(widget.isSubmitting
                           ? 'Adding...'
                           : AppStrings.btnAddExpense),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                        ),
-                      ),
                     ),
                   ],
                 ),

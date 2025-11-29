@@ -3,6 +3,7 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import '../../../widgets/buttons.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseDetailDialog extends StatelessWidget {
@@ -196,16 +197,8 @@ class ExpenseDetailDialog extends StatelessWidget {
                 // Close Button
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: PrimaryButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusLg),
-                      ),
-                    ),
                     child:
                         Text(AppStrings.btnClose, style: AppTextStyles.button),
                   ),
