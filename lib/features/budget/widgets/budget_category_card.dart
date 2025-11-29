@@ -169,7 +169,8 @@ class BudgetCategoryCard extends StatelessWidget {
                 child: Text(
                   '${(percentage * 100).toStringAsFixed(1)}%',
                   style: AppTextStyles.progressPercentage.copyWith(
-                    color: percentage > 0.5 ? Colors.white : colorScheme.onSurface,
+                    color:
+                        percentage > 0.5 ? Colors.white : colorScheme.onSurface,
                   ),
                 ),
               ),

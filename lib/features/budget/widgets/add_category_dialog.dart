@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -35,8 +34,9 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       title: Text('Add New Category', style: AppTextStyles.heading3),
       content: SingleChildScrollView(
         child: Column(
@@ -46,9 +46,9 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
             const SizedBox(height: 16),
             _buildBudgetField(),
             const SizedBox(height: AppSpacing.lg),
-            _buildColorPicker(),
+            _buildColorPicker(colorScheme),
             const SizedBox(height: AppSpacing.lg),
-            _buildIconPicker(),
+            _buildIconPicker(colorScheme),
           ],
         ),
       ),
@@ -59,7 +59,6 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         ),
         FilledButton(
           onPressed: _handleAdd,
-          style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
           child: const Text(AppStrings.btnAdd),
         ),
       ],
@@ -95,7 +94,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     );
   }
 
-  Widget _buildColorPicker() {
+  Widget _buildColorPicker(ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,7 +115,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   color: color,
                   shape: BoxShape.circle,
                   border: isSelected
-                      ? Border.all(color: AppColors.textPrimary, width: 2)
+                      ? Border.all(color: colorScheme.onSurface, width: 2)
                       : null,
                 ),
                 child: isSelected
@@ -134,7 +133,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     );
   }
 
-  Widget _buildIconPicker() {
+  Widget _buildIconPicker(ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -156,18 +155,18 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? colorScheme.primary.withOpacity(0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                       border: isSelected
-                          ? Border.all(color: AppColors.primary)
-                          : Border.all(color: AppColors.border),
+                          ? Border.all(color: colorScheme.primary)
+                          : Border.all(color: colorScheme.outlineVariant),
                     ),
                     child: Icon(
                       icon,
                       color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
                       size: AppSpacing.iconMd,
                     ),
                   ),

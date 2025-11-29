@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
@@ -32,8 +31,6 @@ class ExpenseListHeader extends StatelessWidget {
           icon: const Icon(Icons.add, size: AppSpacing.iconXs),
           label: const Text("Add Expense"),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textInverse,
             padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
             shape: RoundedRectangleBorder(

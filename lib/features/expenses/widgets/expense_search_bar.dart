@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
@@ -16,15 +15,16 @@ class ExpenseSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset:
                 const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
@@ -35,8 +35,8 @@ class ExpenseSearchBar extends StatelessWidget {
         onChanged: onSearchChanged,
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchExpenses,
-          hintStyle: TextStyle(color: AppColors.textSecondary),
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
         ),

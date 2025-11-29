@@ -98,7 +98,8 @@ class BudgetControlsBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusFilter(WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
+  Widget _buildStatusFilter(
+      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -142,7 +143,8 @@ class BudgetControlsBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildSortDropdown(WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
+  Widget _buildSortDropdown(
+      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
