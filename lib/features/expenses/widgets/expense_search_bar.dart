@@ -17,19 +17,16 @@ class ExpenseSearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      height: 48,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withValues(alpha: 0.05),
-            blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset:
-                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
-          ),
-        ],
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: searchQuery.isNotEmpty
+              ? colorScheme.primary
+              : colorScheme.outlineVariant,
+          width: 1,
+        ),
       ),
       child: TextField(
         onChanged: onSearchChanged,
@@ -37,8 +34,17 @@ class ExpenseSearchBar extends StatelessWidget {
           hintText: AppStrings.hintSearchExpenses,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
           prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+          suffixIcon: searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
+                  onPressed: () => onSearchChanged(''),
+                )
+              : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: 14,
+          ),
         ),
       ),
     );

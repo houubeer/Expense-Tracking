@@ -16,7 +16,7 @@ class ExpenseListHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Transactions',
+              'View Expenses',
               style: AppTextStyles.heading1,
             ),
             const SizedBox(height: 8),

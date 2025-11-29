@@ -84,7 +84,7 @@ class ExpenseFilters extends ConsumerWidget {
               value: null,
               child: Row(
                 children: [
-                  Icon(Icons.clear,
+                  Icon(Icons.category_outlined,
                       color: colorScheme.onSurfaceVariant,
                       size: AppSpacing.iconSm),
                   const SizedBox(width: AppSpacing.sm),
@@ -136,14 +136,20 @@ class ExpenseFilters extends ConsumerWidget {
       ),
       child: InkWell(
         onTap: () async {
-          final DateTime? picked = await showDatePicker(
+          final DateTimeRange? picked = await showDateRangePicker(
             context: context,
-            initialDate: selectedDate ?? DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2101),
+            initialDateRange: selectedDate != null
+                ? DateTimeRange(
+                    start: selectedDate!,
+                    end: selectedDate!,
+                  )
+                : null,
           );
           if (picked != null) {
-            onDateChanged(picked);
+            // For now, use the start date. You may want to extend your filter to support date ranges
+            onDateChanged(picked.start);
           }
         },
         child: Padding(

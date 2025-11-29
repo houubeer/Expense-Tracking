@@ -46,6 +46,7 @@ class BudgetCategoryCard extends StatelessWidget {
             ),
           ],
         ),
+        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -157,10 +158,10 @@ class BudgetCategoryCard extends StatelessWidget {
               height: 24,
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 child: LinearProgressIndicator(
                   value: percentage.clamp(0.0, 1.0),
                   backgroundColor: Colors.transparent,

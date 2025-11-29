@@ -188,13 +188,21 @@ class _SidebarTileState extends State<_SidebarTile> {
             duration: AppDurations.fast,
             padding: const EdgeInsets.symmetric(
                 vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+            margin: isSelected
+                ? const EdgeInsets.only(right: AppSpacing.lg)
+                : EdgeInsets.zero,
             decoration: BoxDecoration(
               color: isSelected
                   ? colorScheme.primaryContainer.withOpacity(0.4)
                   : isHovered
                       ? colorScheme.primaryContainer.withOpacity(0.2)
                       : Colors.transparent,
-              borderRadius: AppSpacing.borderRadiusSm,
+              borderRadius: isSelected
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(AppSpacing.radiusMd),
+                      bottomLeft: Radius.circular(AppSpacing.radiusMd),
+                    )
+                  : BorderRadius.circular(AppSpacing.radiusSm),
             ),
             child: Row(
               children: [
