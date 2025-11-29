@@ -1,4 +1,5 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/database/i_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
@@ -8,7 +9,7 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 class ExpenseService implements IExpenseService {
   final IExpenseRepository _expenseRepository;
   final ICategoryRepository _categoryRepository;
-  final AppDatabase _database;
+  final IDatabase _database;
 
   ExpenseService(
     this._expenseRepository,
