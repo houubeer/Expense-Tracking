@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -22,9 +21,10 @@ class BudgetOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: _cardDecoration(),
+      decoration: _cardDecoration(colorScheme),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -79,19 +79,22 @@ class BudgetOverviewCard extends StatelessWidget {
       othersTotal += budget.category.budget;
     }
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Pie Chart - Expenses Only
-        SizedBox(
-          height: 220,
-          width: 220,
-          child: pieChartData.isEmpty && othersSpent == 0
-              ? Center(
-                  child: Text(
-                    AppStrings.msgNoExpensesYet,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Pie Chart - Expenses Only
+            SizedBox(
+              height: 220,
+              width: 220,
+              child: pieChartData.isEmpty && othersSpent == 0
+                  ? Center(
+                      child: Text(
+                        AppStrings.msgNoExpensesYet,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 )
@@ -110,7 +113,7 @@ class BudgetOverviewCard extends StatelessWidget {
                       }),
                       if (othersSpent > 0)
                         PieChartSectionData(
-                          color: AppColors.textTertiary,
+                          color: colorScheme.onSurfaceVariant,
                           value: othersSpent,
                           title: '',
                           radius: 22,
@@ -151,15 +154,17 @@ class BudgetOverviewCard extends StatelessWidget {
         ),
       ],
     );
+      },
+    );
   }
 
-  BoxDecoration _cardDecoration() => BoxDecoration(
-        color: AppColors.surface,
+  BoxDecoration _cardDecoration(ColorScheme colorScheme) => BoxDecoration(
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
@@ -175,6 +180,7 @@ class _BudgetLegendItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Color(budgetView.category.color);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -206,7 +212,7 @@ class _BudgetLegendItem extends StatelessWidget {
                     budgetView.category.name,
                     style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   Text(
@@ -223,7 +229,7 @@ class _BudgetLegendItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                 child: LinearProgressIndicator(
                   value: budgetView.percentageUsed / 100,
-                  backgroundColor: AppColors.surfaceAlt,
+                  backgroundColor: colorScheme.surfaceContainerHighest,
                   color: color,
                   minHeight: 6,
                 ),
@@ -232,7 +238,7 @@ class _BudgetLegendItem extends StatelessWidget {
               Text(
                 '${budgetView.totalSpent.toStringAsFixed(0)} / ${budgetView.category.budget.toStringAsFixed(0)} ${AppStrings.currency}',
                 style: AppTextStyles.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: 10,
                 ),
               ),
@@ -257,6 +263,7 @@ class _OthersLegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final percentage =
         othersTotal > 0 ? (othersSpent / othersTotal * 100) : 0.0;
 
@@ -268,8 +275,8 @@ class _OthersLegendItem extends StatelessWidget {
             Container(
               width: AppSpacing.md,
               height: AppSpacing.md,
-              decoration: const BoxDecoration(
-                color: AppColors.textTertiary,
+              decoration: BoxDecoration(
+                color: colorScheme.onSurfaceVariant,
                 shape: BoxShape.circle,
               ),
             ),
@@ -285,14 +292,14 @@ class _OthersLegendItem extends StatelessWidget {
                         'Others (${otherBudgets.length})',
                         style: AppTextStyles.bodySmall.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       Text(
                         '${percentage.toStringAsFixed(1)}%',
                         style: AppTextStyles.caption.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: AppColors.textTertiary,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -302,8 +309,8 @@ class _OthersLegendItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                     child: LinearProgressIndicator(
                       value: percentage / 100,
-                      backgroundColor: AppColors.surfaceAlt,
-                      color: AppColors.textTertiary,
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                      color: colorScheme.onSurfaceVariant,
                       minHeight: 6,
                     ),
                   ),
@@ -311,7 +318,7 @@ class _OthersLegendItem extends StatelessWidget {
                   Text(
                     '${othersSpent.toStringAsFixed(0)} / ${othersTotal.toStringAsFixed(0)} ${AppStrings.currency}',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                       fontSize: 10,
                     ),
                   ),
@@ -343,7 +350,7 @@ class _OthersLegendItem extends StatelessWidget {
                       child: Text(
                         budget.category.name,
                         style: AppTextStyles.caption.copyWith(
-                          color: AppColors.textSecondary,
+                          color: colorScheme.onSurfaceVariant,
                           fontSize: 10,
                         ),
                       ),
@@ -351,7 +358,7 @@ class _OthersLegendItem extends StatelessWidget {
                     Text(
                       '${budget.percentageUsed.toStringAsFixed(0)}%',
                       style: AppTextStyles.caption.copyWith(
-                        color: AppColors.textTertiary,
+                        color: colorScheme.onSurfaceVariant,
                         fontSize: 10,
                       ),
                     ),

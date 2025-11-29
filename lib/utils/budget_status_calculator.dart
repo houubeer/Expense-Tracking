@@ -43,7 +43,8 @@ class BudgetStatusCalculator {
   /// Get filter color for status dropdown
   static Color getFilterColor(String status) {
     final strategy = BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusColor ?? const Color(0xFF64748B); // Medium gray fallback
+    return strategy?.statusColor ??
+        const Color(0xFF64748B); // Medium gray fallback
   }
 
   // Instance methods using custom configuration
@@ -79,6 +80,7 @@ class BudgetStatusCalculator {
   Color getFilterColorWithConfig(String status) {
     final strategy = _config?.getStrategyByText(status) ??
         BudgetStatusFactory.getStrategyByText(status);
-    return strategy?.statusColor ?? const Color(0xFF64748B); // Medium gray fallback
+    return strategy?.statusColor ??
+        const Color(0xFF64748B); // Medium gray fallback
   }
 }

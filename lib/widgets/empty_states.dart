@@ -47,7 +47,7 @@ class EmptyStateWidget extends StatelessWidget {
               },
             ),
             const SizedBox(height: AppSpacing.xl),
-            
+
             // Title
             Text(
               title,
@@ -58,7 +58,7 @@ class EmptyStateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.md),
-            
+
             // Message
             Text(
               message,
@@ -68,7 +68,7 @@ class EmptyStateWidget extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 3,
             ),
-            
+
             // Optional action button
             if (action != null) ...[
               const SizedBox(height: AppSpacing.xxl),
@@ -175,7 +175,8 @@ class EmptyFilteredState extends StatelessWidget {
     return EmptyStateWidget(
       icon: Icons.filter_list_off_outlined,
       title: 'No Matching Items',
-      message: 'No items match the current filters. Try adjusting your filters.',
+      message:
+          'No items match the current filters. Try adjusting your filters.',
       action: onClearFilters != null
           ? TextButton.icon(
               onPressed: onClearFilters,

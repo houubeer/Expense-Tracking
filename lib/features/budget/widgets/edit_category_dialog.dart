@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -29,16 +28,16 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
 
   // Common category colors
   final List<Color> _categoryColors = [
-    AppColors.purple,
-    AppColors.teal,
-    AppColors.accent,
-    AppColors.orange,
-    AppColors.green,
-    AppColors.red,
-    AppColors.primary,
-    AppColors.primaryLight,
-    AppColors.accentLight,
-    AppColors.primaryDark,
+    const Color(0xFF9333EA), // Purple
+    const Color(0xFF06B6D4), // Teal
+    const Color(0xFF6366F1), // Indigo
+    const Color(0xFFF59E0B), // Orange
+    const Color(0xFF10B981), // Green
+    const Color(0xFFEF4444), // Red
+    const Color(0xFF28448B), // Blue
+    const Color(0xFF3d5a9e), // Light Blue
+    const Color(0xFF818CF8), // Light Indigo
+    const Color(0xFF1a2a52), // Dark Blue
   ];
 
   // Common category icons
@@ -83,8 +82,9 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       ),
@@ -104,12 +104,12 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.xxl - 8),
-              const Divider(color: AppColors.border),
+              Divider(color: colorScheme.outlineVariant),
               const SizedBox(height: AppSpacing.xxl - 8),
 
               // Budget Field
@@ -125,15 +125,15 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   prefixText: AppStrings.currencyPrefix,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outline),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outline),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderSide: BorderSide(color: colorScheme.primary),
                   ),
                 ),
               ),
@@ -157,7 +157,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: isSelected
-                              ? AppColors.textPrimary
+                              ? colorScheme.onSurface
                               : Colors.transparent,
                           width: 3,
                         ),
@@ -201,13 +201,13 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? _selectedColor.withOpacity(0.2)
-                                : AppColors.background,
+                                : colorScheme.surfaceContainerHighest,
                             borderRadius:
                                 BorderRadius.circular(AppSpacing.radiusSm),
                             border: Border.all(
                               color: isSelected
                                   ? _selectedColor
-                                  : AppColors.border,
+                                  : colorScheme.outlineVariant,
                               width: 2,
                             ),
                           ),
@@ -215,7 +215,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                             icon,
                             color: isSelected
                                 ? _selectedColor
-                                : AppColors.textSecondary,
+                                : colorScheme.onSurfaceVariant,
                             size: AppSpacing.iconMd,
                           ),
                         ),
@@ -233,7 +233,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      foregroundColor: AppColors.textSecondary,
+                      foregroundColor: colorScheme.onSurfaceVariant,
                     ),
                     child: const Text(AppStrings.btnCancel),
                   ),

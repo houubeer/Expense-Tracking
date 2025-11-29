@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard_view_model.dart';
 
@@ -36,7 +35,7 @@ class DashboardState {
   }
 
   Color get balanceColor =>
-      totalBalance >= 0 ? AppColors.accent : AppColors.red;
+      totalBalance >= 0 ? const Color(0xFF6366F1) : const Color(0xFFEF4444); // Indigo : Red
 
   String get expenseTrend {
     if (totalBudget == 0) return '-0.0%';

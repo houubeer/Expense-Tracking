@@ -7,7 +7,6 @@ import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 
@@ -83,15 +82,16 @@ class _ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               size: 80,
-              color: AppColors.red,
+              color: colorScheme.error,
             ),
             const SizedBox(height: 16),
             const Text(
