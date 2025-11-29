@@ -264,7 +264,8 @@ class _ExpenseRow extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: Icon(Icons.edit_outlined,
-                        size: AppSpacing.iconSm, color: colorScheme.primary,
+                        size: AppSpacing.iconSm,
+                        color: colorScheme.primary,
                         semanticLabel: 'Edit'),
                     onPressed: onEdit,
                     padding: EdgeInsets.zero,
@@ -274,7 +275,8 @@ class _ExpenseRow extends StatelessWidget {
                   const SizedBox(width: AppSpacing.lg),
                   IconButton(
                     icon: Icon(Icons.delete_outline,
-                        size: AppSpacing.iconSm, color: colorScheme.error,
+                        size: AppSpacing.iconSm,
+                        color: colorScheme.error,
                         semanticLabel: 'Delete'),
                     onPressed: onDelete,
                     padding: EdgeInsets.zero,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// A reusable success snackbar widget with optional undo functionality
 class SuccessSnackbar {
@@ -20,7 +21,7 @@ class SuccessSnackbar {
               color: colorScheme.onSecondary,
               size: 20,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
                 message,

@@ -206,7 +206,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                       children: [
                         Icon(Icons.calendar_today,
                             color: colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.md),
                         Text(
                           DateFormat('MMM dd, yyyy')
                               .format(widget.selectedDate),

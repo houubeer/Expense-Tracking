@@ -32,10 +32,13 @@ class ExpenseSearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchExpenses,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
+          prefixIcon: Icon(Icons.search,
+              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant, semanticLabel: 'Clear search'),
+                  icon: Icon(Icons.clear,
+                      color: colorScheme.onSurfaceVariant,
+                      semanticLabel: 'Clear search'),
                   onPressed: () => onSearchChanged(''),
                 )
               : null,

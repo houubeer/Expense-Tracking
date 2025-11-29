@@ -78,10 +78,13 @@ class BudgetControlsBar extends ConsumerWidget {
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchCategories,
           hintStyle: AppTextStyles.bodyMedium,
-          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
+          prefixIcon: Icon(Icons.search,
+              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
           suffixIcon: filter.searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant, semanticLabel: 'Clear search'),
+                  icon: Icon(Icons.clear,
+                      color: colorScheme.onSurfaceVariant,
+                      semanticLabel: 'Clear search'),
                   onPressed: () {
                     ref.read(budgetFilterProvider.notifier).state =
                         filter.copyWith(searchQuery: '');

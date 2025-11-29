@@ -119,7 +119,8 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onEdit,
-              icon: const Icon(Icons.edit, size: AppSpacing.iconXs, semanticLabel: 'Edit'),
+              icon: const Icon(Icons.edit,
+                  size: AppSpacing.iconXs, semanticLabel: 'Edit'),
               label: Text(AppStrings.btnEdit),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
@@ -134,7 +135,8 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: AppSpacing.iconSm, semanticLabel: 'Delete category'),
+              icon: const Icon(Icons.delete_outline,
+                  size: AppSpacing.iconSm, semanticLabel: 'Delete category'),
               color: colorScheme.error,
               tooltip: 'Delete Category',
             ),

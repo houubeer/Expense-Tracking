@@ -73,7 +73,8 @@ class ExpenseFilters extends ConsumerWidget {
           hint: Row(
             children: [
               Icon(Icons.filter_list,
-                  color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm,
+                  color: colorScheme.onSurfaceVariant,
+                  size: AppSpacing.iconSm,
                   semanticLabel: 'Filter'),
               const SizedBox(width: AppSpacing.sm),
               Text(AppStrings.labelCategory, style: AppTextStyles.bodyMedium),
