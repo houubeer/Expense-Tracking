@@ -21,63 +21,11 @@ class AddExpenseScreen extends ConsumerStatefulWidget {
 
 class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _amountController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-  int? _selectedCategoryId;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedCategoryId = widget.preSelectedCategoryId;
-  }
-
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _saveExpense() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a category'),
-          backgroundColor: AppColors.red,
-        ),
-      );
-      return;
-    }
-
-    final viewModel = ref.read(addExpenseViewModelProvider.notifier);
-    final amount = double.parse(_amountController.text);
-    final description = _descriptionController.text;
-
-    await viewModel.submitExpense(
-      amount: amount,
-      description: description,
-      date: _selectedDate,
-      categoryId: _selectedCategoryId!,
-    );
-  }
-
-  void _resetForm() {
-    _amountController.clear();
-    _descriptionController.clear();
-    setState(() {
-      _selectedDate = DateTime.now();
-      _selectedCategoryId = widget.preSelectedCategoryId;
-    });
-    ref.read(addExpenseViewModelProvider.notifier).resetState();
-  }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<AddExpenseState>(
-      addExpenseViewModelProvider,
+      addExpenseViewModelProvider(widget.preSelectedCategoryId),
       (previous, next) {
         if (next.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -91,7 +39,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               ),
             ),
           );
-          _resetForm();
+          // Reset form after successful submission
+          ref
+              .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
+                  .notifier)
+              .resetForm(preSelectedCategoryId: widget.preSelectedCategoryId);
         } else if (next.isError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -103,21 +55,39 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       },
     );
 
-    final state = ref.watch(addExpenseViewModelProvider);
+    final state =
+        ref.watch(addExpenseViewModelProvider(widget.preSelectedCategoryId));
+    final viewModel = ref.read(
+        addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Center(
         child: ExpenseFormWidget(
           formKey: _formKey,
-          amountController: _amountController,
-          descriptionController: _descriptionController,
-          selectedDate: _selectedDate,
-          selectedCategoryId: _selectedCategoryId,
-          onDateChanged: (date) => setState(() => _selectedDate = date),
-          onCategoryChanged: (id) => setState(() => _selectedCategoryId = id),
-          onSubmit: state.isSubmitting ? null : _saveExpense,
-          onReset: _resetForm,
+          amountController: state.amountController,
+          descriptionController: state.descriptionController,
+          selectedDate: state.selectedDate,
+          selectedCategoryId: state.selectedCategoryId,
+          onDateChanged: viewModel.updateDate,
+          onCategoryChanged: viewModel.updateCategory,
+          onSubmit: state.isSubmitting
+              ? null
+              : () async {
+                  if (_formKey.currentState!.validate() &&
+                      state.selectedCategoryId != null) {
+                    await viewModel.submitExpense();
+                  } else if (state.selectedCategoryId == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please select a category'),
+                        backgroundColor: AppColors.red,
+                      ),
+                    );
+                  }
+                },
+          onReset: () => viewModel.resetForm(
+              preSelectedCategoryId: widget.preSelectedCategoryId),
           isSubmitting: state.isSubmitting,
         ),
       ),

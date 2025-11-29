@@ -8,24 +8,64 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final IExpenseService _expenseService;
 
-  AddExpenseViewModel(this._expenseService) : super(AddExpenseState.initial());
+  AddExpenseViewModel(this._expenseService, int? preSelectedCategoryId)
+      : super(AddExpenseState.initial(preSelectedCategoryId: preSelectedCategoryId));
+
+  @override
+  void dispose() {
+    state.amountController.dispose();
+    state.descriptionController.dispose();
+    super.dispose();
+  }
+
+  /// Update selected date
+  void updateDate(DateTime date) {
+    state = state.copyWith(selectedDate: date);
+  }
+
+  /// Update selected category
+  void updateCategory(int? categoryId) {
+    state = state.copyWith(
+      selectedCategoryId: categoryId,
+      clearCategoryId: categoryId == null,
+    );
+  }
+
+  /// Reset form to initial state
+  void resetForm({int? preSelectedCategoryId}) {
+    state.amountController.clear();
+    state.descriptionController.clear();
+    state = state.copyWith(
+      status: SubmissionStatus.idle,
+      selectedDate: DateTime.now(),
+      selectedCategoryId: preSelectedCategoryId,
+      clearCategoryId: preSelectedCategoryId == null,
+    );
+  }
 
   /// Submit expense to database
-  Future<void> submitExpense({
-    required double amount,
-    required String description,
-    required DateTime date,
-    required int categoryId,
-  }) async {
+  Future<void> submitExpense() async {
+    // Validate controllers have data
+    if (state.amountController.text.isEmpty) return;
+    if (state.selectedCategoryId == null) return;
+  /// Submit expense to database
+  Future<void> submitExpense() async {
+    // Validate controllers have data
+    if (state.amountController.text.isEmpty) return;
+    if (state.selectedCategoryId == null) return;
+
     // Set submitting status
     state = state.copyWith(status: SubmissionStatus.submitting);
 
     try {
+      final amount = double.parse(state.amountController.text);
+      final description = state.descriptionController.text;
+
       final expense = ExpensesCompanion(
         amount: drift.Value(amount),
         description: drift.Value(description),
-        date: drift.Value(date),
-        categoryId: drift.Value(categoryId),
+        date: drift.Value(state.selectedDate),
+        categoryId: drift.Value(state.selectedCategoryId!),
       );
 
       await _expenseService.createExpense(expense);
@@ -47,20 +87,22 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   /// Update existing expense
   Future<void> updateExpense({
     required Expense oldExpense,
-    required double amount,
-    required String description,
-    required DateTime date,
-    required int categoryId,
   }) async {
+    if (state.amountController.text.isEmpty) return;
+    if (state.selectedCategoryId == null) return;
+
     state = state.copyWith(status: SubmissionStatus.submitting);
 
     try {
+      final amount = double.parse(state.amountController.text);
+      final description = state.descriptionController.text;
+
       final newExpense = Expense(
         id: oldExpense.id,
         amount: amount,
         description: description,
-        date: date,
-        categoryId: categoryId,
+        date: state.selectedDate,
+        categoryId: state.selectedCategoryId!,
         createdAt: oldExpense.createdAt,
       );
 
@@ -78,9 +120,10 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     }
   }
 
-  /// Reset form state to idle
+  /// Reset state (deprecated - use resetForm)
+  @deprecated
   void resetState() {
-    state = AddExpenseState.initial();
+    resetForm();
   }
 
   /// Validate form data (returns error message or null)

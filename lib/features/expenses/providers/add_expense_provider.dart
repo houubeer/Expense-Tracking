@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/view_models/add_expense_view_model.dart';
@@ -15,26 +16,49 @@ class AddExpenseState {
   final SubmissionStatus status;
   final String? errorMessage;
   final String? successMessage;
+  final TextEditingController amountController;
+  final TextEditingController descriptionController;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
 
-  const AddExpenseState({
+  AddExpenseState({
     required this.status,
     this.errorMessage,
     this.successMessage,
+    required this.amountController,
+    required this.descriptionController,
+    required this.selectedDate,
+    this.selectedCategoryId,
   });
 
-  factory AddExpenseState.initial() {
-    return const AddExpenseState(status: SubmissionStatus.idle);
+  factory AddExpenseState.initial({int? preSelectedCategoryId}) {
+    return AddExpenseState(
+      status: SubmissionStatus.idle,
+      amountController: TextEditingController(),
+      descriptionController: TextEditingController(),
+      selectedDate: DateTime.now(),
+      selectedCategoryId: preSelectedCategoryId,
+    );
   }
 
   AddExpenseState copyWith({
     SubmissionStatus? status,
     String? errorMessage,
     String? successMessage,
+    DateTime? selectedDate,
+    int? selectedCategoryId,
+    bool clearCategoryId = false,
   }) {
     return AddExpenseState(
       status: status ?? this.status,
       errorMessage: errorMessage,
       successMessage: successMessage,
+      amountController: amountController,
+      descriptionController: descriptionController,
+      selectedDate: selectedDate ?? this.selectedDate,
+      selectedCategoryId: clearCategoryId
+          ? null
+          : (selectedCategoryId ?? this.selectedCategoryId),
     );
   }
 
@@ -45,10 +69,10 @@ class AddExpenseState {
 }
 
 /// ViewModel Provider - manages form submission and state
-final addExpenseViewModelProvider =
-    StateNotifierProvider.autoDispose<AddExpenseViewModel, AddExpenseState>(
-  (ref) {
+final addExpenseViewModelProvider = StateNotifierProvider.autoDispose
+    .family<AddExpenseViewModel, AddExpenseState, int?>(
+  (ref, preSelectedCategoryId) {
     final expenseService = ref.watch(expenseServiceProvider);
-    return AddExpenseViewModel(expenseService);
+    return AddExpenseViewModel(expenseService, preSelectedCategoryId);
   },
 );
