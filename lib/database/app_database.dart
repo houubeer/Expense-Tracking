@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'connection/connection.dart' as impl;
+import 'package:expense_tracking_desktop_app/database/i_database.dart';
 // Import tables and DAOs
 import 'tables/categories_table.dart';
 import 'tables/expenses_table.dart';
@@ -12,7 +13,7 @@ part 'app_database.g.dart';
   tables: [Categories, Expenses],
   daos: [CategoryDao, ExpenseDao],
 )
-class AppDatabase extends _$AppDatabase {
+class AppDatabase extends _$AppDatabase implements IDatabase {
   AppDatabase() : super(impl.connect());
   AppDatabase.forTesting(QueryExecutor e) : super(e);
 
@@ -40,4 +41,10 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );
+
+  @override
+  Future<T> transaction<T>(Future<T> Function() action,
+      {bool requireNew = false}) async {
+    return await super.transaction(action, requireNew: requireNew);
+  }
 }

@@ -8,12 +8,18 @@ import 'package:expense_tracking_desktop_app/features/budget/screens/budget_sett
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
+import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Creates the app router with the provided database instance
 GoRouter createRouter(AppDatabase database) {
+  // TODO: Remove these when all screens are refactored to use Riverpod providers
+  // Currently needed for BudgetSettingScreen which hasn't been refactored yet
+  final ICategoryRepository categoryRepository = CategoryRepository(database);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.home,
@@ -41,22 +47,17 @@ GoRouter createRouter(AppDatabase database) {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            builder: (context, state) => HomeScreen(database: database),
+            builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
             path: AppRoutes.viewExpenses,
-            builder: (context, state) {
-              return ExpensesListScreen(
-                database: database,
-              );
-            },
+            builder: (context, state) => const ExpensesListScreen(),
             routes: [
               GoRoute(
                 path: 'add',
                 builder: (context, state) {
                   final categoryId = state.uri.queryParameters['categoryId'];
                   return AddExpenseScreen(
-                    database: database,
                     preSelectedCategoryId:
                         categoryId != null ? int.tryParse(categoryId) : null,
                   );
@@ -67,7 +68,7 @@ GoRouter createRouter(AppDatabase database) {
           GoRoute(
             path: AppRoutes.budgets,
             builder: (context, state) => BudgetSettingScreen(
-              database: database,
+              categoryRepository: categoryRepository,
             ),
           ),
         ],

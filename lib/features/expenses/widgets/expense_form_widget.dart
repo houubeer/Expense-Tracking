@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
+import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
 
-class ExpenseFormWidget extends StatefulWidget {
-  final AppDatabase database;
+class ExpenseFormWidget extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController amountController;
   final TextEditingController descriptionController;
@@ -16,13 +18,13 @@ class ExpenseFormWidget extends StatefulWidget {
   final int? selectedCategoryId;
   final Function(DateTime) onDateChanged;
   final Function(int?) onCategoryChanged;
-  final VoidCallback onSubmit;
+  final VoidCallback? onSubmit;
   final VoidCallback onReset;
   final bool isEditing;
+  final bool isSubmitting;
 
   const ExpenseFormWidget({
     super.key,
-    required this.database,
     required this.formKey,
     required this.amountController,
     required this.descriptionController,
@@ -33,13 +35,14 @@ class ExpenseFormWidget extends StatefulWidget {
     required this.onSubmit,
     required this.onReset,
     this.isEditing = false,
+    this.isSubmitting = false,
   });
 
   @override
-  State<ExpenseFormWidget> createState() => _ExpenseFormWidgetState();
+  ConsumerState<ExpenseFormWidget> createState() => _ExpenseFormWidgetState();
 }
 
-class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
+class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -61,15 +64,6 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
     );
     if (picked != null && picked != widget.selectedDate) {
       widget.onDateChanged(picked);
-    }
-  }
-
-  IconData _getIconFromCodePoint(String codePointStr) {
-    try {
-      final codePoint = int.parse(codePointStr);
-      return IconData(codePoint, fontFamily: 'MaterialIcons');
-    } catch (e) {
-      return Icons.category;
     }
   }
 
@@ -142,7 +136,8 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
               Text(AppStrings.labelCategory, style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
-                stream: widget.database.categoryDao.watchAllCategories(),
+                stream:
+                    ref.watch(categoryRepositoryProvider).watchAllCategories(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
@@ -156,7 +151,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                         child: Row(
                           children: [
                             Icon(
-                              _getIconFromCodePoint(category.iconCodePoint),
+                              IconUtils.fromCodePoint(category.iconCodePoint),
                               color: Color(category.color),
                               size: AppSpacing.iconSm,
                             ),
@@ -266,7 +261,7 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     OutlinedButton.icon(
-                      onPressed: widget.onReset,
+                      onPressed: widget.isSubmitting ? null : widget.onReset,
                       icon: const Icon(Icons.refresh),
                       label: Text(AppStrings.btnReset),
                       style: OutlinedButton.styleFrom(
@@ -283,8 +278,20 @@ class _ExpenseFormWidgetState extends State<ExpenseFormWidget> {
                     const SizedBox(width: AppSpacing.md),
                     ElevatedButton.icon(
                       onPressed: widget.onSubmit,
-                      icon: const Icon(Icons.add),
-                      label: Text(AppStrings.btnAddExpense),
+                      icon: widget.isSubmitting
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Icon(Icons.add),
+                      label: Text(widget.isSubmitting
+                          ? 'Adding...'
+                          : AppStrings.btnAddExpense),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.textInverse,

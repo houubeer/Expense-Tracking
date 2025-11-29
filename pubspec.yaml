@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
 
   # State Management
-  provider: ^6.1.1
   riverpod: ^2.4.9
   flutter_riverpod: ^2.4.9
   rxdart: ^0.27.7
@@ -26,53 +25,13 @@ dependencies:
 
   # UI Components & Icons
   cupertino_icons: ^1.0.6
-  flutter_svg: ^2.0.9
   google_fonts: ^6.1.0
   intl: ^0.19.0
 
   # Charts & Data Visualization
   fl_chart: ^0.65.0
-  syncfusion_flutter_charts: ^24.1.41
 
-  # File Handling & Documents
-  file_picker: ^5.5.0
-  image_picker: ^1.0.7
-  pdf: ^3.10.7
-  printing: ^5.11.1
-  excel: ^4.0.2
-  open_file: ^3.3.2
-
-  # Date & Time
-  table_calendar: ^3.0.9
-  time_range_picker: ^2.2.0
-
-  # Utilities
-  uuid: ^4.2.2
-  equatable: ^2.0.5
-  dartz: ^0.10.1
-  logger: ^2.0.2+1
-  shared_preferences: ^2.2.2
-
-  # UI Enhancements
-  shimmer: ^3.0.0
-  lottie: ^3.0.0
-  flutter_animate: ^4.3.0
-  animations: ^2.0.11
-
-  # Currency & Formatting
-  money2: ^5.1.1
-  currency_picker: ^2.0.20
-
-  # Notifications
-  flutter_local_notifications: ^16.3.0
-
-  # Window Management (Desktop)
-  window_manager: ^0.3.7
-  bitsdojo_window: ^0.1.6
-
-  # Export & Share
-  share_plus: ^7.2.1
-  screenshot: ^2.1.0
+  # Navigation
   go_router: ^17.0.0
 
 dev_dependencies:
@@ -88,8 +47,6 @@ dev_dependencies:
   drift_dev: ^2.29.0
 
   # Testing
-  mockito: ^5.4.4
-  faker: ^2.1.0
   integration_test:
     sdk: flutter
 
