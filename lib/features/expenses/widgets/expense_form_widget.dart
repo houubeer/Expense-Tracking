@@ -184,16 +184,16 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
 
               // Date Picker
               Text('Date', style: AppTextStyles.label),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               InkWell(
                 onTap: () => _selectDate(context),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
                   decoration: BoxDecoration(
                     color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: Row(

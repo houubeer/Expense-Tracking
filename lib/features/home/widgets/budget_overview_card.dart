@@ -133,14 +133,14 @@ class BudgetOverviewCard extends StatelessWidget {
                       // Top N budgets (configurable)
                       ...topBudgets.map((budgetView) {
                         return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
                           child: _BudgetLegendItem(budgetView: budgetView),
                         );
                       }),
                       // Others section
                       if (otherBudgets.isNotEmpty)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.only(bottom: AppSpacing.md),
                           child: _OthersLegendItem(
                             otherBudgets: otherBudgets,
                             othersSpent: othersSpent,
@@ -334,7 +334,7 @@ class _OthersLegendItem extends StatelessWidget {
           child: Column(
             children: otherBudgets.map((budget) {
               return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: Row(
                   children: [
                     Container(
