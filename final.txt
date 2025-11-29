@@ -1,0 +1,558 @@
+Objective: Refactor the Expense Tracking Desktop App to achieve 10/10 compliance across all SOLID principles.
+
+Current State: 9.3/10 overall Target State: 10/10 overall
+
+📋 Overview
+You are tasked with implementing the final improvements to achieve perfect SOLID compliance. The application is already at 9.3/10, with most principles at 9.5/10 or higher. The main work focuses on improving the Open/Closed Principle (OCP) from 7/10 to 10/10, and making minor refinements to other principles.
+
+🎯 Phase 1: Open/Closed Principle (OCP) - 7/10 → 10/10
+Task 1.1: Implement Budget Status Strategy Pattern
+Current Issue: 
+BudgetStatusCalculator
+ has hardcoded thresholds (0.5, 0.8) that cannot be changed without modifying the class.
+
+File: 
+lib/utils/budget_status_calculator.dart
+
+Solution: Create a strategy pattern for budget status calculation.
+
+Step 1: Create Strategy Interface
+Create: lib/features/budget/strategies/i_budget_status_strategy.dart
+
+import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
+/// Strategy interface for budget status calculation (OCP compliance)
+/// Allows different threshold configurations without modifying existing code
+abstract class IBudgetStatusStrategy {
+  /// Calculate budget status based on percentage used
+  BudgetStatus getStatus(double percentageUsed);
+  
+  /// Get color for a given status
+  Color getColor(BudgetStatus status);
+  
+  /// Get icon for a given status
+  IconData getIcon(BudgetStatus status);
+  
+  /// Get text description for a given status
+  String getText(BudgetStatus status);
+}
+Step 2: Create Default Strategy
+Create: lib/features/budget/strategies/default_budget_status_strategy.dart
+
+import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/budget/strategies/i_budget_status_strategy.dart';
+/// Default budget status strategy with configurable thresholds
+class DefaultBudgetStatusStrategy implements IBudgetStatusStrategy {
+  final double moderateThreshold;  // Default: 0.5 (50%)
+  final double warningThreshold;   // Default: 0.75 (75%)
+  final double criticalThreshold;  // Default: 0.9 (90%)
+  
+  const DefaultBudgetStatusStrategy({
+    this.moderateThreshold = 0.5,
+    this.warningThreshold = 0.75,
+    this.criticalThreshold = 0.9,
+  });
+  
+  @override
+  BudgetStatus getStatus(double percentageUsed) {
+    if (percentageUsed >= 1.0) return BudgetStatus.exceeded;
+    if (percentageUsed >= criticalThreshold) return BudgetStatus.critical;
+    if (percentageUsed >= warningThreshold) return BudgetStatus.warning;
+    if (percentageUsed >= moderateThreshold) return BudgetStatus.moderate;
+    return BudgetStatus.good;
+  }
+  
+  @override
+  Color getColor(BudgetStatus status) {
+    switch (status) {
+      case BudgetStatus.good:
+        return AppColors.green;
+      case BudgetStatus.moderate:
+        return AppColors.blue;
+      case BudgetStatus.warning:
+        return AppColors.orange;
+      case BudgetStatus.critical:
+      case BudgetStatus.exceeded:
+        return AppColors.red;
+      case BudgetStatus.noBudget:
+        return AppColors.textSecondary;
+    }
+  }
+  
+  @override
+  IconData getIcon(BudgetStatus status) {
+    switch (status) {
+      case BudgetStatus.good:
+        return Icons.check_circle;
+      case BudgetStatus.moderate:
+        return Icons.info;
+      case BudgetStatus.warning:
+        return Icons.warning;
+      case BudgetStatus.critical:
+      case BudgetStatus.exceeded:
+        return Icons.error;
+      case BudgetStatus.noBudget:
+        return Icons.filter_list;
+    }
+  }
+  
+  @override
+  String getText(BudgetStatus status) {
+    switch (status) {
+      case BudgetStatus.good:
+        return AppStrings.statusGood;
+      case BudgetStatus.moderate:
+        return 'Moderate';
+      case BudgetStatus.warning:
+        return AppStrings.statusWarning;
+      case BudgetStatus.critical:
+        return 'Critical';
+      case BudgetStatus.exceeded:
+        return AppStrings.statusInRisk;
+      case BudgetStatus.noBudget:
+        return 'No Budget';
+    }
+  }
+}
+Step 3: Create Provider for Strategy
+Update: 
+lib/providers/app_providers.dart
+
+Add:
+
+import 'package:expense_tracking_desktop_app/features/budget/strategies/i_budget_status_strategy.dart';
+import 'package:expense_tracking_desktop_app/features/budget/strategies/default_budget_status_strategy.dart';
+/// Budget status strategy provider - allows runtime configuration
+final budgetStatusStrategyProvider = Provider<IBudgetStatusStrategy>((ref) {
+  return const DefaultBudgetStatusStrategy();
+  // Can be overridden for different threshold configurations:
+  // return const DefaultBudgetStatusStrategy(
+  //   moderateThreshold: 0.6,
+  //   warningThreshold: 0.8,
+  //   criticalThreshold: 0.95,
+  // );
+});
+Step 4: Refactor BudgetStatusCalculator
+Update: 
+lib/utils/budget_status_calculator.dart
+
+import 'package:expense_tracking_desktop_app/features/budget/strategies/i_budget_status_strategy.dart';
+/// Utility class for budget status calculations using strategy pattern
+/// Now delegates to IBudgetStatusStrategy for OCP compliance
+class BudgetStatusCalculator {
+  final IBudgetStatusStrategy _strategy;
+  
+  const BudgetStatusCalculator(this._strategy);
+  
+  /// Calculate the percentage of budget used
+  static double calculatePercentage(double spent, double budget) {
+    if (budget <= 0) return 0.0;
+    return spent / budget;
+  }
+  
+  /// Get status using injected strategy
+  BudgetStatus getStatus(double percentage) {
+    return _strategy.getStatus(percentage);
+  }
+  
+  /// Get color using injected strategy
+  Color getColor(BudgetStatus status) {
+    return _strategy.getColor(status);
+  }
+  
+  /// Get icon using injected strategy
+  IconData getIcon(BudgetStatus status) {
+    return _strategy.getIcon(status);
+  }
+  
+  /// Get text using injected strategy
+  String getText(BudgetStatus status) {
+    return _strategy.getText(status);
+  }
+}
+Step 5: Update Consumers
+Update: All files using 
+BudgetStatusCalculator
+ to inject the strategy:
+
+// In widgets/ViewModels that use BudgetStatusCalculator
+class BudgetViewModel extends ChangeNotifier {
+  final IBudgetStatusStrategy _statusStrategy;
+  
+  BudgetViewModel(this._repository, this._statusStrategy);
+  
+  // Use strategy instead of static methods
+  final calculator = BudgetStatusCalculator(_statusStrategy);
+  final status = calculator.getStatus(percentage);
+}
+Task 1.2: Make Widget Limits Configurable
+Current Issue: 
+BudgetOverviewCard
+ has hardcoded "Top 5" limit.
+
+File: 
+lib/features/home/widgets/budget_overview_card.dart
+
+Solution: Add configurable parameter.
+
+Update BudgetOverviewCard
+class BudgetOverviewCard extends StatelessWidget {
+  final List<CategoryBudgetView> budgetData;
+  final int itemsToShow;  // NEW: Configurable limit
+  
+  const BudgetOverviewCard({
+    super.key,
+    required this.budgetData,
+    this.itemsToShow = 5,  // Default to 5, but can be changed
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    // ... existing code ...
+    
+    // Replace hardcoded take(5) with configurable limit
+    final topBudgets = activeBudgets.take(itemsToShow).toList();
+    final otherBudgets = activeBudgets.skip(itemsToShow).toList();
+    
+    // ... rest of implementation
+  }
+}
+Update HomeScreen to Use Configurable Limit
+// In HomeScreen, make it responsive
+BudgetOverviewCard(
+  budgetData: state.budgetData,
+  itemsToShow: screenWidth > 1400 ? 10 : 5,  // More items on larger screens
+)
+Task 1.3: Implement Icon/Color Registry Pattern
+Current Issue: 
+CategoryIcons
+ and 
+CategoryColors
+ are static lists that cannot be extended.
+
+File: 
+lib/constants/category_options.dart
+
+Solution: Create registry pattern.
+
+Step 1: Create Icon Registry
+Create: lib/features/budget/services/icon_registry.dart
+
+import 'package:flutter/material.dart';
+/// Registry for category icons (OCP compliance)
+/// Allows adding new icons without modifying existing code
+class IconRegistry {
+  static final IconRegistry _instance = IconRegistry._internal();
+  factory IconRegistry() => _instance;
+  IconRegistry._internal();
+  
+  final List<IconData> _icons = [
+    // Default icons
+    Icons.shopping_cart,
+    Icons.restaurant,
+    Icons.local_gas_station,
+    Icons.home,
+    Icons.medical_services,
+    Icons.school,
+    Icons.sports_esports,
+    Icons.flight,
+    Icons.shopping_bag,
+    Icons.coffee,
+    Icons.fitness_center,
+    Icons.pets,
+    Icons.child_care,
+    Icons.phone_android,
+    Icons.computer,
+    Icons.music_note,
+    Icons.movie,
+    Icons.book,
+  ];
+  
+  /// Get all registered icons
+  List<IconData> get icons => List.unmodifiable(_icons);
+  
+  /// Register a new icon (extends without modification)
+  void registerIcon(IconData icon) {
+    if (!_icons.contains(icon)) {
+      _icons.add(icon);
+    }
+  }
+  
+  /// Register multiple icons
+  void registerIcons(List<IconData> icons) {
+    for (final icon in icons) {
+      registerIcon(icon);
+    }
+  }
+}
+Step 2: Create Color Registry
+Create: lib/features/budget/services/color_registry.dart
+
+import 'package:flutter/material.dart';
+/// Registry for category colors (OCP compliance)
+class ColorRegistry {
+  static final ColorRegistry _instance = ColorRegistry._internal();
+  factory ColorRegistry() => _instance;
+  ColorRegistry._internal();
+  
+  final List<Color> _colors = [
+    const Color(0xFF6366F1), // Indigo
+    const Color(0xFFEC4899), // Pink
+    const Color(0xFF8B5CF6), // Purple
+    const Color(0xFF14B8A6), // Teal
+    const Color(0xFFF59E0B), // Amber
+    const Color(0xFFEF4444), // Red
+    const Color(0xFF10B981), // Green
+    const Color(0xFF3B82F6), // Blue
+    const Color(0xFFF97316), // Orange
+  ];
+  
+  List<Color> get colors => List.unmodifiable(_colors);
+  
+  void registerColor(Color color) {
+    if (!_colors.contains(color)) {
+      _colors.add(color);
+    }
+  }
+  
+  void registerColors(List<Color> colors) {
+    for (final color in colors) {
+      registerColor(color);
+    }
+  }
+}
+Step 3: Update CategoryOptions
+Update: 
+lib/constants/category_options.dart
+
+import 'package:expense_tracking_desktop_app/features/budget/services/icon_registry.dart';
+import 'package:expense_tracking_desktop_app/features/budget/services/color_registry.dart';
+/// Category options using registry pattern (OCP compliance)
+class CategoryIcons {
+  static List<IconData> get icons => IconRegistry().icons;
+}
+class CategoryColors {
+  static List<Color> get colors => ColorRegistry().colors;
+}
+🎯 Phase 2: Single Responsibility Principle (SRP) - 9.8/10 → 10/10
+Task 2.1: Extract Form State to ViewModel
+Current Issue: 
+AddExpenseScreen
+ manages local form state (TextEditingController).
+
+File: 
+lib/features/expenses/screens/add_expense_screen.dart
+
+Solution: Move form state to ViewModel.
+
+Step 1: Update AddExpenseViewModel
+Update: 
+lib/features/expenses/view_models/add_expense_view_model.dart
+
+class AddExpenseState {
+  final double? amount;
+  final String description;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
+  final bool isSubmitting;
+  final bool isSuccess;
+  final String? errorMessage;
+  final String? successMessage;
+  
+  // Add form state
+  AddExpenseState({
+    this.amount,
+    this.description = '',
+    DateTime? selectedDate,
+    this.selectedCategoryId,
+    this.isSubmitting = false,
+    this.isSuccess = false,
+    this.errorMessage,
+    this.successMessage,
+  }) : selectedDate = selectedDate ?? DateTime.now();
+  
+  AddExpenseState copyWith({
+    double? amount,
+    String? description,
+    DateTime? selectedDate,
+    int? selectedCategoryId,
+    bool? isSubmitting,
+    bool? isSuccess,
+    String? errorMessage,
+    String? successMessage,
+  }) {
+    return AddExpenseState(
+      amount: amount ?? this.amount,
+      description: description ?? this.description,
+      selectedDate: selectedDate ?? this.selectedDate,
+      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      isSubmitting: isSubmitting ?? this.isSubmitting,
+      isSuccess: isSuccess ?? this.isSuccess,
+      errorMessage: errorMessage,
+      successMessage: successMessage,
+    );
+  }
+}
+class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
+  final IExpenseService _expenseService;
+  
+  AddExpenseViewModel(this._expenseService) : super(AddExpenseState());
+  
+  void setAmount(double amount) {
+    state = state.copyWith(amount: amount);
+  }
+  
+  void setDescription(String description) {
+    state = state.copyWith(description: description);
+  }
+  
+  void setDate(DateTime date) {
+    state = state.copyWith(selectedDate: date);
+  }
+  
+  void setCategory(int categoryId) {
+    state = state.copyWith(selectedCategoryId: categoryId);
+  }
+  
+  // ... rest of implementation
+}
+🎯 Phase 3: Liskov Substitution Principle (LSP) - 9.5/10 → 10/10
+Task 3.1: Add Interface Contract Documentation
+Current Issue: Interfaces lack explicit preconditions and postconditions.
+
+Solution: Add comprehensive documentation to all interfaces.
+
+Example: Document IExpenseRepository
+Update: 
+lib/features/expenses/repositories/i_expense_repository.dart
+
+/// Repository interface for expense data operations
+/// 
+/// Contract Guarantees:
+/// - All methods are idempotent where applicable
+/// - Failed operations throw exceptions (never return null for errors)
+/// - Successful operations always return valid data
+abstract class IExpenseRepository {
+  /// Watch all expenses with their category information
+  /// 
+  /// Preconditions: None
+  /// Postconditions: 
+  /// - Returns a stream that emits whenever expenses change
+  /// - Stream never completes unless repository is disposed
+  /// - Empty list is emitted if no expenses exist (never null)
+  /// 
+  /// Invariants:
+  /// - Each expense in the list has a valid category
+  /// - List is ordered by date (newest first)
+  Stream<List<ExpenseWithCategory>> watchExpensesWithCategory();
+  
+  /// Insert a new expense
+  /// 
+  /// Preconditions:
+  /// - expense.amount must be >= 0
+  /// - expense.categoryId must reference an existing category
+  /// - expense.description must not be empty
+  /// 
+  /// Postconditions:
+  /// - Returns the ID of the newly created expense
+  /// - ID is always > 0
+  /// - Expense is immediately visible in watchExpensesWithCategory()
+  /// 
+  /// Throws:
+  /// - ArgumentError if preconditions are violated
+  /// - DatabaseException if insertion fails
+  Future<int> insertExpense(ExpensesCompanion expense);
+  
+  // ... document other methods similarly
+}
+Apply this pattern to:
+
+ICategoryRepository
+ and all split interfaces
+IBudgetRepository
+ and all split interfaces
+IExpenseService
+IDatabase
+🎯 Phase 4: Interface Segregation Principle (ISP) - 9.5/10 → 10/10
+Task 4.1: Split IBudgetReader Further (Optional)
+Current Issue: 
+IBudgetReader
+ has 5 methods (could be more focused).
+
+Solution: Split into two interfaces if clients have distinct needs.
+
+Option 1: Keep as-is (Acceptable)
+If all clients use most of the 5 methods, keep 
+IBudgetReader
+ as-is.
+
+Option 2: Split Further
+If some clients only need basic reads vs. filtered reads:
+
+Create: lib/features/budget/repositories/i_budget_data_provider.dart
+
+abstract class IBudgetDataProvider {
+  Stream<List<CategoryBudgetView>> watchCategoryBudgets();
+  Future<List<CategoryBudgetView>> getCategoryBudgets();
+}
+Create: lib/features/budget/repositories/i_budget_query_provider.dart
+
+abstract class IBudgetQueryProvider {
+  Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(BudgetStatus status);
+  Stream<List<CategoryBudgetView>> watchCategoryBudgetsSortedBySpending();
+  Stream<List<CategoryBudgetView>> watchTopSpendingCategories(int limit);
+}
+🎯 Phase 5: Dependency Inversion Principle (DIP) - 9.5/10 → 10/10
+Task 5.1: Abstract Repository Constructors (Optional)
+Current Issue: Repository constructors take 
+AppDatabase
+ (concrete type).
+
+Solution: Inject DAOs directly or use factory pattern.
+
+Option 1: Inject DAOs
+Update: 
+lib/features/expenses/repositories/expense_repository.dart
+
+class ExpenseRepository implements IExpenseRepository {
+  final ExpenseDao _expenseDao;  // Inject DAO, not database
+  
+  ExpenseRepository(this._expenseDao);  // Pure dependency injection
+  
+  // Implementation unchanged
+}
+Update Provider:
+
+final expenseRepositoryProvider = Provider<IExpenseRepository>((ref) {
+  final database = ref.watch(databaseProvider);
+  return ExpenseRepository(database.expenseDao);  // Inject DAO
+});
+✅ Verification Checklist
+After implementing all changes, verify:
+
+SRP (10/10)
+ All form state moved to ViewModels
+ No UI components contain business logic
+ Each class has exactly one reason to change
+OCP (10/10)
+ Budget status thresholds are configurable via strategy
+ Widget limits are parameterized
+ Icon/color registries allow extension without modification
+ No hardcoded values that prevent extension
+LSP (10/10)
+ All interfaces have documented contracts
+ Preconditions, postconditions, and invariants specified
+ All implementations fulfill contracts
+ISP (10/10)
+ No client depends on unused methods
+ All interfaces are focused and cohesive
+ Optional: 
+IBudgetReader
+ split if needed
+DIP (10/10)
+ All high-level modules depend on abstractions
+ Optional: Repository constructors take DAOs instead of database
+ No concrete dependencies in business logic

@@ -38,7 +38,9 @@ class HomeScreen extends ConsumerWidget {
                         flex: 3,
                         child: BudgetOverviewCard(
                           budgetData: state.budgetData,
-                          itemsToShow: screenWidth > 1400 ? 8 : 5, // More items on larger screens
+                          itemsToShow: screenWidth > 1400
+                              ? 8
+                              : 5, // More items on larger screens
                         ),
                       ),
                       if (screenWidth > 1100)
