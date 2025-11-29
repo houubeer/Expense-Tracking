@@ -43,7 +43,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildNameField(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             _buildBudgetField(),
             const SizedBox(height: AppSpacing.lg),
             _buildColorPicker(colorScheme),

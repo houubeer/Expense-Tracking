@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 
 class ExpenseSearchBar extends StatelessWidget {
   final String searchQuery;
@@ -33,10 +32,10 @@ class ExpenseSearchBar extends StatelessWidget {
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchExpenses,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+          prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant),
+                  icon: Icon(Icons.clear, color: colorScheme.onSurfaceVariant, semanticLabel: 'Clear search'),
                   onPressed: () => onSearchChanged(''),
                 )
               : null,

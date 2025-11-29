@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import '../../../widgets/buttons.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -20,7 +21,7 @@ class DashboardHeader extends StatelessWidget {
               'Dashboard',
               style: AppTextStyles.heading1,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Overview of your financial health',
               style: AppTextStyles.bodyMedium,

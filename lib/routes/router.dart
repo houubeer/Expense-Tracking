@@ -7,6 +7,7 @@ import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
@@ -122,7 +123,7 @@ class _ErrorScreen extends StatelessWidget {
               size: 80,
               color: colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               '404 - Page Not Found',
               style: TextStyle(
@@ -130,12 +131,12 @@ class _ErrorScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             const Text(
               'The page you are looking for does not exist.',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             PrimaryButton(
               onPressed: () => context.go(AppRoutes.home),
               child: const Text('Go to Home'),

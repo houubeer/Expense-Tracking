@@ -82,7 +82,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close, semanticLabel: 'Close'),
                       onPressed: () => Navigator.of(context).pop(),
                       color: colorScheme.onSurfaceVariant,
                       tooltip: 'Close',
