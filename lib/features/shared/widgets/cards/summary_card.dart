@@ -42,44 +42,44 @@ class SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final cardContent = MergeSemantics(
-      child: Container(
-        padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
-        decoration: BoxDecoration(
-          color: backgroundColor ?? colorScheme.surface,
-          borderRadius:
-              BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
-          border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
-          boxShadow: showShadow
-              ? [
-                  BoxShadow(
-                    color: colorScheme.primary
-                        .withValues(alpha: AppConfig.shadowOpacity),
-                    blurRadius: AppConfig.shadowBlurRadiusLarge,
-                    offset: const Offset(0, AppConfig.shadowOffsetYLarge),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.iconPadding),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: iconSize ?? AppSpacing.iconSm,
-                  ),
+        child: Container(
+      padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? colorScheme.surface,
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
+        border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
+        boxShadow: showShadow
+            ? [
+                BoxShadow(
+                  color: colorScheme.primary
+                      .withValues(alpha: AppConfig.shadowOpacity),
+                  blurRadius: AppConfig.shadowBlurRadiusLarge,
+                  offset: const Offset(0, AppConfig.shadowOffsetYLarge),
                 ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Text(
+              ]
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.iconPadding),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: iconSize ?? AppSpacing.iconSm,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
                   title,
                   style: titleStyle ??
                       AppTextStyles.bodyMedium.copyWith(
@@ -98,7 +98,7 @@ class SummaryCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
 
     if (onTap != null) {
       return AnimatedHoverCard(

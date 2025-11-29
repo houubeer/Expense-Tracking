@@ -21,8 +21,6 @@ class ExpenseTrackerApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'ExpenseTracker',
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Respects system theme preference
       ),
     );
   }

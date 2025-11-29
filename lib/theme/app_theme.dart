@@ -10,23 +10,23 @@ class AppTheme {
     const lightColorScheme = ColorScheme(
       brightness: Brightness.light,
 
-      // Primary colors
-      primary: Color(0xFF6750A4), // Material 3 purple
+      // Primary colors - Deep Blue Theme
+      primary: Color(0xFF28448B), // Deep Blue
       onPrimary: Color(0xFFFFFFFF),
-      primaryContainer: Color(0xFFEADDFF),
-      onPrimaryContainer: Color(0xFF21005D),
+      primaryContainer: Color(0xFF3d5a9e), // Lighter Blue
+      onPrimaryContainer: Color(0xFF1a2a52), // Darker Blue
 
-      // Secondary colors
-      secondary: Color(0xFF625B71),
+      // Secondary colors - Vibrant Indigo
+      secondary: Color(0xFF6366F1), // Vibrant Indigo
       onSecondary: Color(0xFFFFFFFF),
-      secondaryContainer: Color(0xFFE8DEF8),
-      onSecondaryContainer: Color(0xFF1D192B),
+      secondaryContainer: Color(0xFF818CF8), // Light Indigo
+      onSecondaryContainer: Color(0xFF1e1b4b),
 
-      // Tertiary colors
-      tertiary: Color(0xFF7D5260),
+      // Tertiary colors - Emerald Green
+      tertiary: Color(0xFF10B981), // Emerald
       onTertiary: Color(0xFFFFFFFF),
-      tertiaryContainer: Color(0xFFFFD8E4),
-      onTertiaryContainer: Color(0xFF31111D),
+      tertiaryContainer: Color(0xFF6ee7b7),
+      onTertiaryContainer: Color(0xFF065f46),
 
       // Error colors
       error: Color(0xFFB3261E),
@@ -275,50 +275,50 @@ class AppTheme {
     const darkColorScheme = ColorScheme(
       brightness: Brightness.dark,
 
-      // Primary colors
-      primary: Color(0xFFD0BCFF),
-      onPrimary: Color(0xFF381E72),
-      primaryContainer: Color(0xFF4F378B),
-      onPrimaryContainer: Color(0xFFEADDFF),
+      // Primary colors - Deep Blue Dark Theme
+      primary: Color(0xFF4A5F9D), // Lighter blue for dark mode
+      onPrimary: Color(0xFFFFFFFF),
+      primaryContainer: Color(0xFF2A3A6B), // Darker blue container
+      onPrimaryContainer: Color(0xFFB8C5E0),
 
-      // Secondary colors
-      secondary: Color(0xFFCCC2DC),
-      onSecondary: Color(0xFF332D41),
-      secondaryContainer: Color(0xFF4A4458),
-      onSecondaryContainer: Color(0xFFE8DEF8),
+      // Secondary colors - Indigo for dark mode
+      secondary: Color(0xFF8B92E8), // Lighter indigo
+      onSecondary: Color(0xFF1a1a2e),
+      secondaryContainer: Color(0xFF4A4E8C),
+      onSecondaryContainer: Color(0xFFD6D8F5),
 
-      // Tertiary colors
-      tertiary: Color(0xFFEFB8C8),
-      onTertiary: Color(0xFF492532),
-      tertiaryContainer: Color(0xFF633B48),
-      onTertiaryContainer: Color(0xFFFFD8E4),
+      // Tertiary colors - Emerald for dark mode
+      tertiary: Color(0xFF34D399), // Lighter emerald
+      onTertiary: Color(0xFF003D2B),
+      tertiaryContainer: Color(0xFF10B981),
+      onTertiaryContainer: Color(0xFFA7F3D0),
 
       // Error colors
-      error: Color(0xFFF2B8B5),
-      onError: Color(0xFF601410),
+      error: Color(0xFFFF6B6B),
+      onError: Color(0xFF370B0B),
       errorContainer: Color(0xFF8C1D18),
-      onErrorContainer: Color(0xFFF9DEDC),
+      onErrorContainer: Color(0xFFFFDADA),
 
-      // Background colors
-      background: Color(0xFF1C1B1F),
-      onBackground: Color(0xFFE6E1E5),
+      // Background colors - Dark gray
+      background: Color(0xFF1A1A1A),
+      onBackground: Color(0xFFE5E5E5),
 
-      // Surface colors
-      surface: Color(0xFF1C1B1F),
-      onSurface: Color(0xFFE6E1E5),
-      surfaceVariant: Color(0xFF49454F),
-      onSurfaceVariant: Color(0xFFCAC4D0),
+      // Surface colors - Slightly lighter than background
+      surface: Color(0xFF242424),
+      onSurface: Color(0xFFE5E5E5),
+      surfaceVariant: Color(0xFF2F2F2F),
+      onSurfaceVariant: Color(0xFFB8B8B8),
 
       // Outline colors
-      outline: Color(0xFF938F99),
-      outlineVariant: Color(0xFF49454F),
+      outline: Color(0xFF525252),
+      outlineVariant: Color(0xFF3A3A3A),
 
       // Shadow and other colors
       shadow: Color(0xFF000000),
       scrim: Color(0xFF000000),
-      inverseSurface: Color(0xFFE6E1E5),
-      onInverseSurface: Color(0xFF313033),
-      inversePrimary: Color(0xFF6750A4),
+      inverseSurface: Color(0xFFE5E5E5),
+      onInverseSurface: Color(0xFF1A1A1A),
+      inversePrimary: Color(0xFF28448B),
     );
 
     return ThemeData(

@@ -50,7 +50,8 @@ GoRouter createRouter(AppDatabase database) {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const HomeScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);
               },
             ),
@@ -60,11 +61,13 @@ GoRouter createRouter(AppDatabase database) {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const ExpensesListScreen(),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 const begin = Offset(0.05, 0.0);
                 const end = Offset.zero;
                 const curve = Curves.easeInOut;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
                 return SlideTransition(
                   position: offsetAnimation,
@@ -83,12 +86,14 @@ GoRouter createRouter(AppDatabase database) {
                       preSelectedCategoryId:
                           categoryId != null ? int.tryParse(categoryId) : null,
                     ),
-                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
                       return FadeTransition(
                         opacity: animation,
                         child: ScaleTransition(
                           scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-                            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                            CurvedAnimation(
+                                parent: animation, curve: Curves.easeOutCubic),
                           ),
                           child: child,
                         ),
@@ -106,11 +111,13 @@ GoRouter createRouter(AppDatabase database) {
               child: BudgetSettingScreen(
                 categoryRepository: categoryRepository,
               ),
-              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
                 const begin = Offset(0.05, 0.0);
                 const end = Offset.zero;
                 const curve = Curves.easeInOut;
-                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
                 var offsetAnimation = animation.drive(tween);
                 return SlideTransition(
                   position: offsetAnimation,

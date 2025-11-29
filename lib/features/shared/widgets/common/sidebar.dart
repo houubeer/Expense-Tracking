@@ -41,6 +41,7 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       width: 280,
       decoration: BoxDecoration(
@@ -202,8 +203,8 @@ class _SidebarTileState extends State<_SidebarTile> {
                   color: isSelected
                       ? colorScheme.onPrimary
                       : isHovered
-                          ? colorScheme.onPrimary
-                          : colorScheme.onSurfaceVariant,
+                          ? colorScheme.onPrimary.withOpacity(0.9)
+                          : colorScheme.onPrimary.withOpacity(0.65),
                   size: 22,
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -213,8 +214,8 @@ class _SidebarTileState extends State<_SidebarTile> {
                     color: isSelected
                         ? colorScheme.onPrimary
                         : isHovered
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurfaceVariant,
+                            ? colorScheme.onPrimary.withOpacity(0.9)
+                            : colorScheme.onPrimary.withOpacity(0.65),
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),

@@ -25,7 +25,6 @@ class AnimatedHoverCard extends StatefulWidget {
 
 class _AnimatedHoverCardState extends State<AnimatedHoverCard>
     with SingleTickerProviderStateMixin {
-  bool _isHovered = false;
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
@@ -53,8 +52,7 @@ class _AnimatedHoverCardState extends State<AnimatedHoverCard>
 
   void _onHoverChanged(bool isHovered) {
     if (!widget.enableHoverEffect) return;
-    
-    setState(() => _isHovered = isHovered);
+
     if (isHovered) {
       _controller.forward();
     } else {

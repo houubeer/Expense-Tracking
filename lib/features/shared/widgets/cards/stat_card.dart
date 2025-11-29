@@ -45,40 +45,40 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return MergeSemantics(
-      child: Container(
-        width: width,
-        padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
-        decoration: BoxDecoration(
-          color: backgroundColor ?? colorScheme.surface,
-          borderRadius:
-              BorderRadius.circular(borderRadius ?? AppSpacing.radiusLg),
-          border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
-          boxShadow: showShadow
-              ? [
-                  BoxShadow(
-                    color: colorScheme.primary
-                        .withValues(alpha: AppConfig.shadowOpacity),
-                    blurRadius: AppConfig.shadowBlurRadiusLarge,
-                    offset: const Offset(0, AppConfig.shadowOffsetYLarge),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.iconPadding),
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  ),
-                  child: Icon(icon, color: color, size: AppSpacing.iconSm),
+        child: Container(
+      width: width,
+      padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: backgroundColor ?? colorScheme.surface,
+        borderRadius:
+            BorderRadius.circular(borderRadius ?? AppSpacing.radiusLg),
+        border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
+        boxShadow: showShadow
+            ? [
+                BoxShadow(
+                  color: colorScheme.primary
+                      .withValues(alpha: AppConfig.shadowOpacity),
+                  blurRadius: AppConfig.shadowBlurRadiusLarge,
+                  offset: const Offset(0, AppConfig.shadowOffsetYLarge),
                 ),
-                if (showTrend)
+              ]
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.iconPadding),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                ),
+                child: Icon(icon, color: color, size: AppSpacing.iconSm),
+              ),
+              if (showTrend)
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
@@ -107,6 +107,6 @@ class StatCard extends StatelessWidget {
           Text(title, style: titleStyle ?? AppTextStyles.bodyMedium),
         ],
       ),
-    );
+    ));
   }
 }
