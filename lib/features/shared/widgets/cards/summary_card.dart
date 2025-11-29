@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 /// A configurable summary card widget for displaying summary information with an icon
 /// Uses composition to allow customization of appearance and behavior
@@ -100,10 +101,9 @@ class SummaryCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return InkWell(
+      return AnimatedHoverCard(
+        scale: 1.015,
         onTap: onTap,
-        borderRadius:
-            BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
         child: cardContent,
       );
     }

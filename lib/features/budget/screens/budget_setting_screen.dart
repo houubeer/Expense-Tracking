@@ -12,6 +12,7 @@ import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_catego
 import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
   final ICategoryRepository categoryRepository;
@@ -94,10 +95,13 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       itemBuilder: (context, index) {
         final category = categories[index];
 
-        return BudgetCategoryCard(
-          category: category,
-          onEdit: () => _handleEditCategory(category),
-          onDelete: () => _handleDeleteCategory(category),
+        return FadeInListItem(
+          index: index,
+          child: BudgetCategoryCard(
+            category: category,
+            onEdit: () => _handleEditCategory(category),
+            onDelete: () => _handleDeleteCategory(category),
+          ),
         );
       },
     );

@@ -127,8 +127,8 @@ class ExpenseTable extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(
-      BuildContext context, WidgetRef ref, ExpenseWithCategory item, ColorScheme colorScheme) {
+  void _confirmDelete(BuildContext context, WidgetRef ref,
+      ExpenseWithCategory item, ColorScheme colorScheme) {
     final expenseService = ref.read(expenseServiceProvider);
 
     showDialog(

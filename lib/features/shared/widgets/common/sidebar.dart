@@ -215,7 +215,8 @@ class _SidebarTileState extends State<_SidebarTile> {
                         : isHovered
                             ? colorScheme.onPrimary
                             : colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
               ],

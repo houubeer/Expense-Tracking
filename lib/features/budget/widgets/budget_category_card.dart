@@ -8,6 +8,7 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 /// Card widget displaying a budget category with its details and actions
 class BudgetCategoryCard extends StatelessWidget {
@@ -28,30 +29,33 @@ class BudgetCategoryCard extends StatelessWidget {
     final iconData = IconUtils.fromCodePoint(category.iconCodePoint);
     final categoryColor = Color(category.color);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: colorScheme.outlineVariant),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.primary.withValues(alpha: 0.05),
-            blurRadius: AppConfig.shadowBlurRadius,
-            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, iconData, categoryColor),
-          const SizedBox(height: AppSpacing.xl),
-          _buildProgressBar(),
-          const SizedBox(height: AppSpacing.lg),
-          _buildStatsRow(),
-        ],
+    return AnimatedHoverCard(
+      scale: 1.01,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+          border: Border.all(color: colorScheme.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.primary.withValues(alpha: 0.05),
+              blurRadius: AppConfig.shadowBlurRadius,
+              offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context, iconData, categoryColor),
+            const SizedBox(height: AppSpacing.xl),
+            _buildProgressBar(),
+            const SizedBox(height: AppSpacing.lg),
+            _buildStatsRow(),
+          ],
+        ),
       ),
     );
   }
@@ -61,6 +65,7 @@ class BudgetCategoryCard extends StatelessWidget {
     IconData iconData,
     Color categoryColor,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(

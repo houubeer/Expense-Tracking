@@ -157,8 +157,8 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   label: 'Category icon${isSelected ? ", selected" : ""}',
                   selected: isSelected,
                   child: InkWell(
-                    onTap: () =>
-                        setState(() => _selectedIcon = icon.codePoint.toString()),
+                    onTap: () => setState(
+                        () => _selectedIcon = icon.codePoint.toString()),
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     child: Container(
                       padding: const EdgeInsets.all(AppSpacing.sm),
@@ -166,7 +166,8 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                         color: isSelected
                             ? colorScheme.primary.withOpacity(0.1)
                             : Colors.transparent,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                         border: isSelected
                             ? Border.all(color: colorScheme.primary)
                             : Border.all(color: colorScheme.outlineVariant),

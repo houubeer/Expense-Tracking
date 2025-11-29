@@ -47,19 +47,53 @@ GoRouter createRouter(AppDatabase database) {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const HomeScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
           ),
           GoRoute(
             path: AppRoutes.viewExpenses,
-            builder: (context, state) => const ExpensesListScreen(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ExpensesListScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(0.05, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: FadeTransition(opacity: animation, child: child),
+                );
+              },
+            ),
             routes: [
               GoRoute(
                 path: 'add',
-                builder: (context, state) {
+                pageBuilder: (context, state) {
                   final categoryId = state.uri.queryParameters['categoryId'];
-                  return AddExpenseScreen(
-                    preSelectedCategoryId:
-                        categoryId != null ? int.tryParse(categoryId) : null,
+                  return CustomTransitionPage(
+                    key: state.pageKey,
+                    child: AddExpenseScreen(
+                      preSelectedCategoryId:
+                          categoryId != null ? int.tryParse(categoryId) : null,
+                    ),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: ScaleTransition(
+                          scale: Tween<double>(begin: 0.95, end: 1.0).animate(
+                            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                          ),
+                          child: child,
+                        ),
+                      );
+                    },
                   );
                 },
               ),
@@ -67,8 +101,22 @@ GoRouter createRouter(AppDatabase database) {
           ),
           GoRoute(
             path: AppRoutes.budgets,
-            builder: (context, state) => BudgetSettingScreen(
-              categoryRepository: categoryRepository,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: BudgetSettingScreen(
+                categoryRepository: categoryRepository,
+              ),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                const begin = Offset(0.05, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: FadeTransition(opacity: animation, child: child),
+                );
+              },
             ),
           ),
         ],

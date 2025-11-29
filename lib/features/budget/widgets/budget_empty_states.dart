@@ -13,7 +13,8 @@ class BudgetEmptyState extends StatelessWidget {
     return Center(
       child: Text(
         AppStrings.descNoCategoriesFound,
-        style: AppTextStyles.bodyLarge.copyWith(color: colorScheme.onSurfaceVariant),
+        style: AppTextStyles.bodyLarge
+            .copyWith(color: colorScheme.onSurfaceVariant),
       ),
     );
   }

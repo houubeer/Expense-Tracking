@@ -50,7 +50,8 @@ class ExpenseFilters extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryDropdown(List<Category> categories, ColorScheme colorScheme) {
+  Widget _buildCategoryDropdown(
+      List<Category> categories, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -84,7 +85,8 @@ class ExpenseFilters extends ConsumerWidget {
               child: Row(
                 children: [
                   Icon(Icons.clear,
-                      color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm),
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconSm),
                   const SizedBox(width: AppSpacing.sm),
                   const Text('All Categories'),
                 ],
@@ -167,7 +169,8 @@ class ExpenseFilters extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => onDateChanged(null),
                   child: Icon(Icons.close,
-                      color: colorScheme.onSurfaceVariant, size: AppSpacing.iconXs),
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconXs),
                 ),
             ],
           ),
