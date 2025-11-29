@@ -7,9 +7,10 @@ import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -47,19 +48,40 @@ GoRouter createRouter(AppDatabase database) {
         routes: [
           GoRoute(
             path: AppRoutes.home,
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const HomeScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
           ),
           GoRoute(
             path: AppRoutes.viewExpenses,
-            builder: (context, state) => const ExpensesListScreen(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const ExpensesListScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
             routes: [
               GoRoute(
                 path: 'add',
-                builder: (context, state) {
+                pageBuilder: (context, state) {
                   final categoryId = state.uri.queryParameters['categoryId'];
-                  return AddExpenseScreen(
-                    preSelectedCategoryId:
-                        categoryId != null ? int.tryParse(categoryId) : null,
+                  return CustomTransitionPage(
+                    key: state.pageKey,
+                    child: AddExpenseScreen(
+                      preSelectedCategoryId:
+                          categoryId != null ? int.tryParse(categoryId) : null,
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
                   );
                 },
               ),
@@ -67,8 +89,15 @@ GoRouter createRouter(AppDatabase database) {
           ),
           GoRoute(
             path: AppRoutes.budgets,
-            builder: (context, state) => BudgetSettingScreen(
-              categoryRepository: categoryRepository,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: BudgetSettingScreen(
+                categoryRepository: categoryRepository,
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
             ),
           ),
         ],
@@ -83,17 +112,18 @@ class _ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline,
               size: 80,
-              color: AppColors.red,
+              color: colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               '404 - Page Not Found',
               style: TextStyle(
@@ -101,13 +131,13 @@ class _ErrorScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             const Text(
               'The page you are looking for does not exist.',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+            const SizedBox(height: AppSpacing.xl),
+            PrimaryButton(
               onPressed: () => context.go(AppRoutes.home),
               child: const Text('Go to Home'),
             ),

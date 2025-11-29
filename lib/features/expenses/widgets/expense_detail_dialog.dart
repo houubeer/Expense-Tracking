@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import '../../../widgets/buttons.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseDetailDialog extends StatelessWidget {
@@ -25,13 +25,14 @@ class ExpenseDetailDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final expense = expenseWithCategory.expense;
     final category = expenseWithCategory.category;
     final categoryColor = Color(category.color);
     final dateStr = DateFormat('EEEE, MMMM dd, yyyy').format(expense.date);
 
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
       ),
@@ -81,14 +82,15 @@ class ExpenseDetailDialog extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close, semanticLabel: 'Close'),
                       onPressed: () => Navigator.of(context).pop(),
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
+                      tooltip: 'Close',
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xl),
-                const Divider(color: AppColors.border),
+                Divider(color: colorScheme.outlineVariant),
                 const SizedBox(height: AppSpacing.xl),
 
                 // Amount
@@ -96,7 +98,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                   AppStrings.labelAmount,
                   '${expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
                   Icons.attach_money,
-                  AppColors.green,
+                  colorScheme.tertiary,
                 ),
                 const SizedBox(height: AppSpacing.xl - 4),
 
@@ -105,7 +107,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                   AppStrings.labelDate,
                   dateStr,
                   Icons.calendar_today,
-                  AppColors.accent,
+                  colorScheme.secondary,
                 ),
                 const SizedBox(height: AppSpacing.xl - 4),
 
@@ -114,7 +116,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                   AppStrings.labelDescription,
                   expense.description,
                   Icons.description,
-                  AppColors.purple,
+                  colorScheme.secondary,
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
@@ -122,9 +124,9 @@ class ExpenseDetailDialog extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: AppColors.background,
+                    color: colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: colorScheme.outlineVariant),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,18 +198,8 @@ class ExpenseDetailDialog extends StatelessWidget {
                 // Close Button
                 SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
+                  child: PrimaryButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusLg),
-                      ),
-                    ),
                     child:
                         Text(AppStrings.btnClose, style: AppTextStyles.button),
                   ),

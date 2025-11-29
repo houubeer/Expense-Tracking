@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/utils/status/i_budget_status_strategy.dart';
 import 'package:expense_tracking_desktop_app/utils/status/configurable_budget_status_strategy.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Configuration for budget status strategies
@@ -17,20 +16,20 @@ class BudgetStatusConfig {
       strategies: [
         ConfigurableBudgetStatusStrategy.atRisk(
           statusText: AppStrings.statusInRisk,
-          statusColor: AppColors.red,
+          statusColor: const Color(0xFFEF4444), // Red
           statusIcon: Icons.error,
           minThreshold: 0.8,
         ),
         ConfigurableBudgetStatusStrategy.warning(
           statusText: AppStrings.statusWarning,
-          statusColor: AppColors.orange,
+          statusColor: const Color(0xFFF59E0B), // Orange
           statusIcon: Icons.warning,
           minThreshold: 0.5,
           maxThreshold: 0.8,
         ),
         ConfigurableBudgetStatusStrategy.good(
           statusText: AppStrings.statusGood,
-          statusColor: AppColors.green,
+          statusColor: const Color(0xFF10B981), // Green
           statusIcon: Icons.check_circle,
           maxThreshold: 0.5,
         ),
@@ -44,20 +43,20 @@ class BudgetStatusConfig {
       strategies: [
         ConfigurableBudgetStatusStrategy.atRisk(
           statusText: AppStrings.statusInRisk,
-          statusColor: AppColors.red,
+          statusColor: const Color(0xFFEF4444), // Red
           statusIcon: Icons.error,
           minThreshold: 0.7, // Risk at 70% instead of 80%
         ),
         ConfigurableBudgetStatusStrategy.warning(
           statusText: AppStrings.statusWarning,
-          statusColor: AppColors.orange,
+          statusColor: const Color(0xFFF59E0B), // Orange
           statusIcon: Icons.warning,
           minThreshold: 0.4, // Warning at 40% instead of 50%
           maxThreshold: 0.7,
         ),
         ConfigurableBudgetStatusStrategy.good(
           statusText: AppStrings.statusGood,
-          statusColor: AppColors.green,
+          statusColor: const Color(0xFF10B981), // Green
           statusIcon: Icons.check_circle,
           maxThreshold: 0.4,
         ),
@@ -71,20 +70,20 @@ class BudgetStatusConfig {
       strategies: [
         ConfigurableBudgetStatusStrategy.atRisk(
           statusText: AppStrings.statusInRisk,
-          statusColor: AppColors.red,
+          statusColor: const Color(0xFFEF4444), // Red
           statusIcon: Icons.error,
           minThreshold: 0.9, // Risk at 90% instead of 80%
         ),
         ConfigurableBudgetStatusStrategy.warning(
           statusText: AppStrings.statusWarning,
-          statusColor: AppColors.orange,
+          statusColor: const Color(0xFFF59E0B), // Orange
           statusIcon: Icons.warning,
           minThreshold: 0.6, // Warning at 60% instead of 50%
           maxThreshold: 0.9,
         ),
         ConfigurableBudgetStatusStrategy.good(
           statusText: AppStrings.statusGood,
-          statusColor: AppColors.green,
+          statusColor: const Color(0xFF10B981), // Green
           statusIcon: Icons.check_circle,
           maxThreshold: 0.6,
         ),

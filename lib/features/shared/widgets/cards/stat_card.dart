@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
@@ -44,18 +43,20 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final colorScheme = Theme.of(context).colorScheme;
+    return MergeSemantics(
+        child: Container(
       width: width,
       padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surface,
+        color: backgroundColor ?? colorScheme.surface,
         borderRadius:
             BorderRadius.circular(borderRadius ?? AppSpacing.radiusLg),
-        border: Border.all(color: borderColor ?? AppColors.border),
+        border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: AppColors.primary
+                  color: colorScheme.primary
                       .withValues(alpha: AppConfig.shadowOpacity),
                   blurRadius: AppConfig.shadowBlurRadiusLarge,
                   offset: const Offset(0, AppConfig.shadowOffsetYLarge),
@@ -83,8 +84,8 @@ class StatCard extends StatelessWidget {
                       horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                   decoration: BoxDecoration(
                     color: trend.startsWith('+')
-                        ? AppColors.green.withValues(alpha: 0.1)
-                        : AppColors.red.withValues(alpha: 0.1),
+                        ? colorScheme.tertiary.withValues(alpha: 0.1)
+                        : colorScheme.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   ),
                   child: Text(
@@ -92,8 +93,8 @@ class StatCard extends StatelessWidget {
                     style: trendStyle ??
                         AppTextStyles.caption.copyWith(
                           color: trend.startsWith('+')
-                              ? AppColors.green
-                              : AppColors.red,
+                              ? colorScheme.tertiary
+                              : colorScheme.error,
                           fontWeight: FontWeight.bold,
                         ),
                   ),
@@ -106,6 +107,6 @@ class StatCard extends StatelessWidget {
           Text(title, style: titleStyle ?? AppTextStyles.bodyMedium),
         ],
       ),
-    );
+    ));
   }
 }

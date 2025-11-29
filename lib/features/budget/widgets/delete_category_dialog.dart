@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
@@ -17,8 +16,9 @@ class DeleteCategoryDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       title: Text(
         AppStrings.titleDeleteCategory,
         style: AppTextStyles.heading3,
@@ -37,7 +37,7 @@ class DeleteCategoryDialog extends StatelessWidget {
             onConfirm();
             Navigator.pop(context);
           },
-          style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+          style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
           child: const Text(AppStrings.btnDelete),
         ),
       ],

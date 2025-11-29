@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -20,9 +19,10 @@ class RecentExpensesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: _cardDecoration(),
+      decoration: _cardDecoration(colorScheme),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -51,8 +51,11 @@ class RecentExpensesCard extends StatelessWidget {
                             iconColor: Color(recentExpenses[i].category.color),
                           ),
                           if (i < recentExpenses.length - 1)
-                            const Divider(
-                                height: AppSpacing.xl, color: AppColors.border),
+                            Divider(
+                                height: AppSpacing.xl,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant),
                         ],
                       ],
                     ),
@@ -63,13 +66,13 @@ class RecentExpensesCard extends StatelessWidget {
     );
   }
 
-  BoxDecoration _cardDecoration() => BoxDecoration(
-        color: AppColors.surface,
+  BoxDecoration _cardDecoration(ColorScheme colorScheme) => BoxDecoration(
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -9,6 +8,7 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 /// Card widget displaying a budget category with its details and actions
 class BudgetCategoryCard extends StatelessWidget {
@@ -25,33 +25,38 @@ class BudgetCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final iconData = IconUtils.fromCodePoint(category.iconCodePoint);
     final categoryColor = Color(category.color);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: AppConfig.shadowBlurRadius,
-            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, iconData, categoryColor),
-          const SizedBox(height: AppSpacing.xl),
-          _buildProgressBar(),
-          const SizedBox(height: AppSpacing.lg),
-          _buildStatsRow(),
-        ],
+    return AnimatedHoverCard(
+      scale: 1.01,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+          border: Border.all(color: colorScheme.outlineVariant),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.primary.withValues(alpha: 0.05),
+              blurRadius: AppConfig.shadowBlurRadius,
+              offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context, iconData, categoryColor),
+            const SizedBox(height: AppSpacing.xl),
+            _buildProgressBar(),
+            const SizedBox(height: AppSpacing.lg),
+            _buildStatsRow(),
+          ],
+        ),
       ),
     );
   }
@@ -61,6 +66,7 @@ class BudgetCategoryCard extends StatelessWidget {
     IconData iconData,
     Color categoryColor,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(
@@ -95,12 +101,12 @@ class BudgetCategoryCard extends StatelessWidget {
         Row(
           children: [
             FilledButton.icon(
-              onPressed: () => context.go(AppRoutes.addExpense),
+              onPressed: () => context.go(
+                '${AppRoutes.addExpense}?categoryId=${category.id}',
+              ),
               icon: const Icon(Icons.add, size: AppSpacing.iconXs),
               label: Text(AppStrings.btnAddExpense),
               style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
                   vertical: AppSpacing.md,
@@ -113,11 +119,10 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onEdit,
-              icon: const Icon(Icons.edit, size: AppSpacing.iconXs),
+              icon: const Icon(Icons.edit,
+                  size: AppSpacing.iconXs, semanticLabel: 'Edit'),
               label: Text(AppStrings.btnEdit),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textPrimary,
-                side: const BorderSide(color: AppColors.border),
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
                   vertical: AppSpacing.md,
@@ -130,8 +135,9 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: AppSpacing.iconSm),
-              color: AppColors.red,
+              icon: const Icon(Icons.delete_outline,
+                  size: AppSpacing.iconSm, semanticLabel: 'Delete category'),
+              color: colorScheme.error,
               tooltip: 'Delete Category',
             ),
           ],
@@ -141,41 +147,47 @@ class BudgetCategoryCard extends StatelessWidget {
   }
 
   Widget _buildProgressBar() {
-    final percentage = BudgetStatusCalculator.calculatePercentage(
-      category.spent,
-      category.budget,
-    );
-    final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final percentage = BudgetStatusCalculator.calculatePercentage(
+          category.spent,
+          category.budget,
+        );
+        final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
 
-    return Stack(
-      children: [
-        Container(
-          height: 24,
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: percentage.clamp(0.0, 1.0),
-              backgroundColor: Colors.transparent,
-              valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-              minHeight: 24,
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: Center(
-            child: Text(
-              '${(percentage * 100).toStringAsFixed(1)}%',
-              style: AppTextStyles.progressPercentage.copyWith(
-                color: percentage > 0.5 ? Colors.white : AppColors.textPrimary,
+        return Stack(
+          children: [
+            Container(
+              height: 24,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                child: LinearProgressIndicator(
+                  value: percentage.clamp(0.0, 1.0),
+                  backgroundColor: Colors.transparent,
+                  valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                  minHeight: 24,
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+            Positioned.fill(
+              child: Center(
+                child: Text(
+                  '${(percentage * 100).toStringAsFixed(1)}%',
+                  style: AppTextStyles.progressPercentage.copyWith(
+                    color:
+                        percentage > 0.5 ? Colors.white : colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

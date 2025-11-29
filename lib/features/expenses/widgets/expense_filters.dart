@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -25,6 +24,7 @@ class ExpenseFilters extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final categoryRepository = ref.watch(categoryRepositoryProvider);
 
     return Row(
@@ -36,7 +36,7 @@ class ExpenseFilters extends ConsumerWidget {
             stream: categoryRepository.watchAllCategories(),
             builder: (context, snapshot) {
               final categories = snapshot.data ?? [];
-              return _buildCategoryDropdown(categories);
+              return _buildCategoryDropdown(categories, colorScheme);
             },
           ),
         ),
@@ -44,22 +44,23 @@ class ExpenseFilters extends ConsumerWidget {
         // Date Filter
         Expanded(
           flex: 2,
-          child: _buildDatePicker(context),
+          child: _buildDatePicker(context, colorScheme),
         ),
       ],
     );
   }
 
-  Widget _buildCategoryDropdown(List<Category> categories) {
+  Widget _buildCategoryDropdown(
+      List<Category> categories, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset:
                 const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
@@ -72,7 +73,9 @@ class ExpenseFilters extends ConsumerWidget {
           hint: Row(
             children: [
               Icon(Icons.filter_list,
-                  color: AppColors.textSecondary, size: AppSpacing.iconSm),
+                  color: colorScheme.onSurfaceVariant,
+                  size: AppSpacing.iconSm,
+                  semanticLabel: 'Filter'),
               const SizedBox(width: AppSpacing.sm),
               Text(AppStrings.labelCategory, style: AppTextStyles.bodyMedium),
             ],
@@ -83,8 +86,10 @@ class ExpenseFilters extends ConsumerWidget {
               value: null,
               child: Row(
                 children: [
-                  Icon(Icons.clear,
-                      color: AppColors.textSecondary, size: AppSpacing.iconSm),
+                  Icon(Icons.category_outlined,
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconSm,
+                      semanticLabel: 'All categories'),
                   const SizedBox(width: AppSpacing.sm),
                   const Text('All Categories'),
                 ],
@@ -116,16 +121,16 @@ class ExpenseFilters extends ConsumerWidget {
     );
   }
 
-  Widget _buildDatePicker(BuildContext context) {
+  Widget _buildDatePicker(BuildContext context, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset:
                 const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
@@ -134,14 +139,20 @@ class ExpenseFilters extends ConsumerWidget {
       ),
       child: InkWell(
         onTap: () async {
-          final DateTime? picked = await showDatePicker(
+          final DateTimeRange? picked = await showDateRangePicker(
             context: context,
-            initialDate: selectedDate ?? DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2101),
+            initialDateRange: selectedDate != null
+                ? DateTimeRange(
+                    start: selectedDate!,
+                    end: selectedDate!,
+                  )
+                : null,
           );
           if (picked != null) {
-            onDateChanged(picked);
+            // For now, use the start date. You may want to extend your filter to support date ranges
+            onDateChanged(picked.start);
           }
         },
         child: Padding(
@@ -149,7 +160,7 @@ class ExpenseFilters extends ConsumerWidget {
           child: Row(
             children: [
               Icon(Icons.calendar_today,
-                  color: AppColors.textSecondary, size: AppSpacing.iconSm),
+                  color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -158,8 +169,8 @@ class ExpenseFilters extends ConsumerWidget {
                       : DateFormat('MMM dd, yyyy').format(selectedDate!),
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: selectedDate == null
-                        ? AppColors.textSecondary
-                        : AppColors.textPrimary,
+                        ? colorScheme.onSurfaceVariant
+                        : colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -167,7 +178,8 @@ class ExpenseFilters extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => onDateChanged(null),
                   child: Icon(Icons.close,
-                      color: AppColors.textSecondary, size: AppSpacing.iconXs),
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconXs),
                 ),
             ],
           ),

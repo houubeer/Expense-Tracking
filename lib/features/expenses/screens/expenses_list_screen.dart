@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_list_header.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_search_bar.dart';
@@ -13,11 +12,12 @@ class ExpensesListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final state = ref.watch(expenseListViewModelProvider);
     final viewModel = ref.read(expenseListViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerLowest,
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Column(

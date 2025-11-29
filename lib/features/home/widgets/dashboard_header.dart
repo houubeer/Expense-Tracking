@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import '../../../widgets/buttons.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -21,27 +21,17 @@ class DashboardHeader extends StatelessWidget {
               'Dashboard',
               style: AppTextStyles.heading1,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               'Overview of your financial health',
               style: AppTextStyles.bodyMedium,
             ),
           ],
         ),
-        ElevatedButton.icon(
+        PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
-          icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-          label: Text(AppStrings.btnAddExpense),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: AppColors.textInverse,
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.xlMinor, vertical: AppSpacing.lg),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            ),
-            textStyle: AppTextStyles.button,
-          ),
+          icon: Icons.add,
+          child: Text(AppStrings.btnAddExpense),
         ),
       ],
     );

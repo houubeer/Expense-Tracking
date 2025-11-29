@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 
 class ExpenseSearchBar extends StatelessWidget {
   final String searchQuery;
@@ -16,29 +14,39 @@ class ExpenseSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      height: 48,
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
-            blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset:
-                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
-          ),
-        ],
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        border: Border.all(
+          color: searchQuery.isNotEmpty
+              ? colorScheme.primary
+              : colorScheme.outlineVariant,
+          width: 1,
+        ),
       ),
       child: TextField(
         onChanged: onSearchChanged,
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchExpenses,
-          hintStyle: TextStyle(color: AppColors.textSecondary),
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+          prefixIcon: Icon(Icons.search,
+              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
+          suffixIcon: searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: Icon(Icons.clear,
+                      color: colorScheme.onSurfaceVariant,
+                      semanticLabel: 'Clear search'),
+                  onPressed: () => onSearchChanged(''),
+                )
+              : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: 14,
+          ),
         ),
       ),
     );

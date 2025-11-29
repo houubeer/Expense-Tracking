@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -10,10 +9,12 @@ class BudgetEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Text(
         AppStrings.descNoCategoriesFound,
-        style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
+        style: AppTextStyles.bodyLarge
+            .copyWith(color: colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -25,6 +26,7 @@ class BudgetNoMatchesState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -32,13 +34,13 @@ class BudgetNoMatchesState extends StatelessWidget {
           Icon(
             Icons.filter_list_off,
             size: 64,
-            color: AppColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(
             AppStrings.descNoMatchingCategories,
             style: AppTextStyles.bodyLarge.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],

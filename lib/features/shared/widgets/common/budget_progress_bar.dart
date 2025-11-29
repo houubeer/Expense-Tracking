@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
@@ -24,7 +23,7 @@ class BudgetProgressBar extends StatelessWidget {
     this.showPercentage = false,
   });
 
-  Color _getProgressColor() {
+  Color _getProgressColor(ColorScheme colorScheme) {
     final percentage =
         category.budget > 0 ? category.spent / category.budget : 0.0;
 
@@ -34,18 +33,19 @@ class BudgetProgressBar extends StatelessWidget {
     }
 
     // Fallback to hardcoded logic for backward compatibility
-    if (percentage >= 1.0) return AppColors.red;
-    if (percentage >= 0.9) return AppColors.orange;
-    if (percentage >= 0.75) return AppColors.purple;
-    return AppColors.accent;
+    if (percentage >= 1.0) return colorScheme.error;
+    if (percentage >= 0.9) return colorScheme.tertiary;
+    if (percentage >= 0.75) return colorScheme.secondary;
+    return colorScheme.primary;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final percentage = category.budget > 0
         ? (category.spent / category.budget).clamp(0.0, 1.0)
         : 0.0;
-    final progressColor = _getProgressColor();
+    final progressColor = _getProgressColor(colorScheme);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +55,7 @@ class BudgetProgressBar extends StatelessWidget {
               borderRadius ?? BorderRadius.circular(AppSpacing.radiusSm),
           child: LinearProgressIndicator(
             value: percentage,
-            backgroundColor: backgroundColor ?? AppColors.border,
+            backgroundColor: backgroundColor ?? colorScheme.outlineVariant,
             valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             minHeight: height ?? AppSpacing.sm,
           ),

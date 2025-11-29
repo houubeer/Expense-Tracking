@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// A reusable section header with optional action button
@@ -17,6 +16,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -25,7 +25,7 @@ class SectionHeader extends StatelessWidget {
           TextButton(
             onPressed: onActionPressed,
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.accent,
+              foregroundColor: colorScheme.secondary,
               textStyle: AppTextStyles.label,
             ),
             child: Text(actionText!),

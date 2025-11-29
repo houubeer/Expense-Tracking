@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
@@ -24,6 +23,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     ref.listen<AddExpenseState>(
       addExpenseViewModelProvider(widget.preSelectedCategoryId),
       (previous, next) {
@@ -31,7 +31,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(next.successMessage ?? AppStrings.msgExpenseAdded),
-              backgroundColor: AppColors.green,
+              backgroundColor: colorScheme.tertiary,
               action: SnackBarAction(
                 label: AppStrings.navViewExpenses,
                 textColor: Colors.white,
@@ -48,7 +48,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(next.errorMessage ?? 'An error occurred'),
-              backgroundColor: AppColors.red,
+              backgroundColor: colorScheme.error,
             ),
           );
         }
@@ -61,7 +61,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerLowest,
       body: Center(
         child: ExpenseFormWidget(
           formKey: _formKey,
@@ -78,10 +78,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                       state.selectedCategoryId != null) {
                     await viewModel.submitExpense();
                   } else if (state.selectedCategoryId == null) {
+                    final errorColorScheme = Theme.of(context).colorScheme;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please select a category'),
-                        backgroundColor: AppColors.red,
+                      SnackBar(
+                        content: const Text('Please select a category'),
+                        backgroundColor: errorColorScheme.error,
                       ),
                     );
                   }

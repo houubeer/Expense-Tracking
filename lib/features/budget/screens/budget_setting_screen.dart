@@ -10,9 +10,10 @@ import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_cate
 import 'package:expense_tracking_desktop_app/features/budget/widgets/add_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
   final ICategoryRepository categoryRepository;
@@ -45,8 +46,9 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerLowest,
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Column(
@@ -70,7 +72,11 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       stream: _viewModel.watchFilteredCategories(filter),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: ShimmerLoading(
+              child: _buildShimmerPlaceholder(),
+            ),
+          );
         }
 
         final categories = snapshot.data ?? [];
@@ -94,10 +100,13 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       itemBuilder: (context, index) {
         final category = categories[index];
 
-        return BudgetCategoryCard(
-          category: category,
-          onEdit: () => _handleEditCategory(category),
-          onDelete: () => _handleDeleteCategory(category),
+        return FadeInListItem(
+          index: index,
+          child: BudgetCategoryCard(
+            category: category,
+            onEdit: () => _handleEditCategory(category),
+            onDelete: () => _handleDeleteCategory(category),
+          ),
         );
       },
     );
@@ -146,8 +155,24 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   void _showSuccessMessage(String message) {
     if (!mounted) return;
+    final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.green),
+      SnackBar(content: Text(message), backgroundColor: colorScheme.tertiary),
+    );
+  }
+
+  Widget _buildShimmerPlaceholder() {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, index) => Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        ),
+        height: 150,
+      ),
     );
   }
 }
