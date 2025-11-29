@@ -173,48 +173,53 @@ class _SidebarTileState extends State<_SidebarTile> {
     final isSelected = widget.isSelected;
     final isHovered = _isHovered;
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: AppDurations.fast,
-          padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.md, horizontal: AppSpacing.lg),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? colorScheme.primaryContainer.withOpacity(0.4)
-                : isHovered
-                    ? colorScheme.primaryContainer.withOpacity(0.2)
-                    : Colors.transparent,
-            borderRadius: AppSpacing.borderRadiusSm,
-          ),
-          child: Row(
-            children: [
-              Icon(
-                widget.icon,
-                color: isSelected
-                    ? colorScheme.onPrimary
-                    : isHovered
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurfaceVariant,
-                size: 22,
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Text(
-                widget.label,
-                style: AppTextStyles.bodyMedium.copyWith(
+    return Semantics(
+      button: true,
+      label: '${widget.label}${isSelected ? ", selected" : ""}',
+      selected: isSelected,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedContainer(
+            duration: AppDurations.fast,
+            padding: const EdgeInsets.symmetric(
+                vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? colorScheme.primaryContainer.withOpacity(0.4)
+                  : isHovered
+                      ? colorScheme.primaryContainer.withOpacity(0.2)
+                      : Colors.transparent,
+              borderRadius: AppSpacing.borderRadiusSm,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  widget.icon,
                   color: isSelected
                       ? colorScheme.onPrimary
                       : isHovered
                           ? colorScheme.onPrimary
                           : colorScheme.onSurfaceVariant,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  size: 22,
                 ),
-              ),
-            ],
+                const SizedBox(width: AppSpacing.md),
+                Text(
+                  widget.label,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: isSelected
+                        ? colorScheme.onPrimary
+                        : isHovered
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

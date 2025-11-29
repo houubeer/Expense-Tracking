@@ -105,26 +105,31 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           runSpacing: AppSpacing.sm,
           children: CategoryColors.colors.map((color) {
             final isSelected = _selectedColor == color.value;
-            return InkWell(
-              onTap: () => setState(() => _selectedColor = color.value),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: isSelected
-                      ? Border.all(color: colorScheme.onSurface, width: 2)
+            return Semantics(
+              button: true,
+              label: 'Color option${isSelected ? ", selected" : ""}',
+              selected: isSelected,
+              child: InkWell(
+                onTap: () => setState(() => _selectedColor = color.value),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: isSelected
+                        ? Border.all(color: colorScheme.onSurface, width: 2)
+                        : null,
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: AppSpacing.iconXs + 2,
+                        )
                       : null,
                 ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: AppSpacing.iconXs + 2,
-                      )
-                    : null,
               ),
             );
           }).toList(),
@@ -147,27 +152,32 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               runSpacing: AppSpacing.sm,
               children: CategoryIcons.icons.map((icon) {
                 final isSelected = _selectedIcon == icon.codePoint.toString();
-                return InkWell(
-                  onTap: () =>
-                      setState(() => _selectedIcon = icon.codePoint.toString()),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.primary.withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                      border: isSelected
-                          ? Border.all(color: colorScheme.primary)
-                          : Border.all(color: colorScheme.outlineVariant),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconMd,
+                return Semantics(
+                  button: true,
+                  label: 'Category icon${isSelected ? ", selected" : ""}',
+                  selected: isSelected,
+                  child: InkWell(
+                    onTap: () =>
+                        setState(() => _selectedIcon = icon.codePoint.toString()),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? colorScheme.primary.withOpacity(0.1)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        border: isSelected
+                            ? Border.all(color: colorScheme.primary)
+                            : Border.all(color: colorScheme.outlineVariant),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                        size: AppSpacing.iconMd,
+                      ),
                     ),
                   ),
                 );

@@ -86,6 +86,7 @@ class BudgetControlsBar extends ConsumerWidget {
                     ref.read(budgetFilterProvider.notifier).state =
                         filter.copyWith(searchQuery: '');
                   },
+                  tooltip: 'Clear search',
                 )
               : null,
           border: InputBorder.none,

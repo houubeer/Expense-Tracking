@@ -268,6 +268,7 @@ class _ExpenseRow extends StatelessWidget {
                     onPressed: onEdit,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
+                    tooltip: 'Edit expense',
                   ),
                   const SizedBox(width: AppSpacing.lg),
                   IconButton(
@@ -276,6 +277,7 @@ class _ExpenseRow extends StatelessWidget {
                     onPressed: onDelete,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
+                    tooltip: 'Delete expense',
                   ),
                 ],
               ),

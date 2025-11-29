@@ -106,6 +106,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
                     color: colorScheme.onSurfaceVariant,
+                    tooltip: 'Close',
                   ),
                 ],
               ),

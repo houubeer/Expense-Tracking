@@ -185,27 +185,31 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               // Date Picker
               Text('Date', style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
-              InkWell(
-                onTap: () => _selectDate(context),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    border: Border.all(color: colorScheme.outlineVariant),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today,
-                          color: colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 12),
-                      Text(
-                        DateFormat('MMM dd, yyyy').format(widget.selectedDate),
-                        style: AppTextStyles.bodyLarge,
-                      ),
-                    ],
+              Semantics(
+                button: true,
+                label: 'Select date, currently ${DateFormat('MMM dd, yyyy').format(widget.selectedDate)}',
+                child: InkWell(
+                  onTap: () => _selectDate(context),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                      border: Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 12),
+                        Text(
+                          DateFormat('MMM dd, yyyy').format(widget.selectedDate),
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

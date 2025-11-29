@@ -106,6 +106,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
                   color: colorScheme.onSurfaceVariant,
+                  tooltip: 'Close',
                 ),
               ],
             ),
