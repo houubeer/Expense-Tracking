@@ -101,7 +101,9 @@ class BudgetCategoryCard extends StatelessWidget {
         Row(
           children: [
             FilledButton.icon(
-              onPressed: () => context.go(AppRoutes.addExpense),
+              onPressed: () => context.go(
+                '${AppRoutes.addExpense}?categoryId=${category.id}',
+              ),
               icon: const Icon(Icons.add, size: AppSpacing.iconXs),
               label: Text(AppStrings.btnAddExpense),
               style: FilledButton.styleFrom(
