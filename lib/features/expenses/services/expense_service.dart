@@ -34,12 +34,15 @@ class ExpenseService implements IExpenseService {
           final amount = expense.amount.value;
 
           final category = await _categoryReader.getCategoryById(categoryId);
-          if (category != null) {
-            await _categoryBudgetManager.updateCategorySpent(
-              category.id,
-              category.spent + amount,
-            );
+          if (category == null) {
+            throw Exception('Category not found with id: $categoryId');
           }
+
+          await _categoryBudgetManager.updateCategorySpent(
+            category.id,
+            category.spent + amount,
+            category.version,
+          );
         }
 
         return expenseId;
@@ -69,32 +72,38 @@ class ExpenseService implements IExpenseService {
           // Subtract from old category
           final oldCategory =
               await _categoryReader.getCategoryById(oldCategoryId);
-          if (oldCategory != null) {
-            await _categoryBudgetManager.updateCategorySpent(
-              oldCategory.id,
-              (oldCategory.spent - oldAmount).clamp(0.0, double.infinity),
-            );
+          if (oldCategory == null) {
+            throw Exception('Old category not found with id: $oldCategoryId');
           }
+          await _categoryBudgetManager.updateCategorySpent(
+            oldCategory.id,
+            (oldCategory.spent - oldAmount).clamp(0.0, double.infinity),
+            oldCategory.version,
+          );
 
           // Add to new category
           final newCategory =
               await _categoryReader.getCategoryById(newCategoryId);
-          if (newCategory != null) {
-            await _categoryBudgetManager.updateCategorySpent(
-              newCategory.id,
-              newCategory.spent + newAmount,
-            );
+          if (newCategory == null) {
+            throw Exception('New category not found with id: $newCategoryId');
           }
+          await _categoryBudgetManager.updateCategorySpent(
+            newCategory.id,
+            newCategory.spent + newAmount,
+            newCategory.version,
+          );
         } else if (oldAmount != newAmount) {
           // Same category but amount changed
           final category = await _categoryReader.getCategoryById(newCategoryId);
-          if (category != null) {
-            final amountDiff = newAmount - oldAmount;
-            await _categoryBudgetManager.updateCategorySpent(
-              category.id,
-              (category.spent + amountDiff).clamp(0.0, double.infinity),
-            );
+          if (category == null) {
+            throw Exception('Category not found with id: $newCategoryId');
           }
+          final amountDiff = newAmount - oldAmount;
+          await _categoryBudgetManager.updateCategorySpent(
+            category.id,
+            (category.spent + amountDiff).clamp(0.0, double.infinity),
+            category.version,
+          );
         }
       });
     } catch (e) {
@@ -112,12 +121,14 @@ class ExpenseService implements IExpenseService {
         // Update category spent (subtract the deleted amount)
         final category =
             await _categoryReader.getCategoryById(expense.categoryId);
-        if (category != null) {
-          await _categoryBudgetManager.updateCategorySpent(
-            category.id,
-            (category.spent - expense.amount).clamp(0.0, double.infinity),
-          );
+        if (category == null) {
+          throw Exception('Category not found with id: ${expense.categoryId}');
         }
+        await _categoryBudgetManager.updateCategorySpent(
+          category.id,
+          (category.spent - expense.amount).clamp(0.0, double.infinity),
+          category.version,
+        );
       });
     } catch (e) {
       throw Exception('Failed to delete expense: $e');

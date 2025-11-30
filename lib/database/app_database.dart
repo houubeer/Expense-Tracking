@@ -18,7 +18,8 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   final ConnectivityService? _connectivityService;
 
   AppDatabase([this._connectivityService]) : super(_createConnection());
-  AppDatabase.forTesting(QueryExecutor e, [this._connectivityService]) : super(e);
+  AppDatabase.forTesting(QueryExecutor e, [this._connectivityService])
+      : super(e);
 
   static QueryExecutor _createConnection() {
     try {

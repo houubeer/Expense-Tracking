@@ -24,12 +24,12 @@ class ConnectivityService extends ChangeNotifier {
     if (_state != newState) {
       _state = newState;
       _errorMessage = error;
-      
+
       if (newState == ConnectionState.connected) {
         _lastSuccessfulOperation = DateTime.now();
         _errorMessage = null;
       }
-      
+
       notifyListeners();
     }
   }
@@ -115,10 +115,10 @@ class ConnectivityService extends ChangeNotifier {
 enum ConnectionState {
   /// Successfully connected to database
   connected,
-  
+
   /// Disconnected from database (file system issue, corruption, etc.)
   disconnected,
-  
+
   /// Attempting to reconnect
   reconnecting,
 }

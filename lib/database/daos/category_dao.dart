@@ -72,7 +72,7 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Update category budget
-  Future<int> updateCategoryBudget(int id, double budget) async {
+  Future<int> updateCategoryBudget(int id, double budget, int currentVersion) async {
     try {
       if (budget < 0) {
         throw Exception('Budget cannot be negative, got: $budget');
@@ -81,21 +81,16 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
         throw Exception('Budget is too large: $budget');
       }
 
-      // Get current category to check version
-      final category = await getCategoryById(id);
-      if (category == null) {
-        throw Exception('Category not found with id: $id');
-      }
-
       // Update with version increment for optimistic locking
+      // Using WHERE clause with both id AND version to detect concurrent modifications
       final rowsAffected = await (update(categories)
-            ..where((c) => c.id.equals(id)))
+            ..where((c) => c.id.equals(id) & c.version.equals(currentVersion)))
           .write(CategoriesCompanion(
-              budget: Value(budget), version: Value(category.version + 1)));
+              budget: Value(budget), version: Value(currentVersion + 1)));
 
       if (rowsAffected == 0) {
         throw Exception(
-            'Failed to update category budget - concurrent modification detected');
+            'Failed to update category budget - concurrent modification detected or category not found');
       }
 
       _connectivityService?.markSuccessfulOperation();
@@ -107,27 +102,22 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   }
 
   // Update category spent
-  Future<int> updateCategorySpent(int id, double spent) async {
+  Future<int> updateCategorySpent(int id, double spent, int currentVersion) async {
     try {
       if (spent < 0) {
         throw Exception('Spent amount cannot be negative, got: $spent');
       }
 
-      // Get current category to check version
-      final category = await getCategoryById(id);
-      if (category == null) {
-        throw Exception('Category not found with id: $id');
-      }
-
       // Update with version increment for optimistic locking
+      // Using WHERE clause with both id AND version to detect concurrent modifications
       final rowsAffected = await (update(categories)
-            ..where((c) => c.id.equals(id)))
+            ..where((c) => c.id.equals(id) & c.version.equals(currentVersion)))
           .write(CategoriesCompanion(
-              spent: Value(spent), version: Value(category.version + 1)));
+              spent: Value(spent), version: Value(currentVersion + 1)));
 
       if (rowsAffected == 0) {
         throw Exception(
-            'Failed to update category spent - concurrent modification detected');
+            'Failed to update category spent - concurrent modification detected or category not found');
       }
 
       _connectivityService?.markSuccessfulOperation();
@@ -175,7 +165,8 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Delete category
   Future<int> deleteCategory(int id) async {
     try {
-      final result = await (delete(categories)..where((c) => c.id.equals(id))).go();
+      final result =
+          await (delete(categories)..where((c) => c.id.equals(id))).go();
       _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e) {
