@@ -4,7 +4,6 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
@@ -138,6 +137,50 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       state = state.copyWith(
         status: SubmissionStatus.error,
         errorMessage: amountError,
+      );
+      return;
+    }
+
+    final descriptionError = validateDescription(state.descriptionController.text);
+    if (descriptionError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: descriptionError,
+      );
+      return;
+    }
+
+    if (state.selectedCategoryId == null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: 'Please select a category',
+      );
+      return;
+    }
+
+    state = state.copyWith(status: SubmissionStatus.submitting);
+
+    try {
+      final amount = double.parse(state.amountController.text);
+      final newExpense = oldExpense.copyWith(
+        amount: amount,
+        description: state.descriptionController.text,
+        categoryId: state.selectedCategoryId!,
+        date: state.selectedDate,
+      );
+
+      await _expenseService.updateExpense(oldExpense, newExpense);
+      _logger.info('AddExpenseViewModel: Expense updated successfully');
+
+      state = state.copyWith(
+        status: SubmissionStatus.success,
+        successMessage: 'Expense updated successfully',
+      );
+    } catch (e, stackTrace) {
+      _logger.error('AddExpenseViewModel: Failed to update expense',
+          error: e, stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'AddExpenseViewModel',
         'updateExpense',
         e,
         stackTrace: stackTrace,

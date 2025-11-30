@@ -14,6 +14,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 ### ✨ Features
 
 #### Expense Management
+
 - Create, read, update, and delete expenses
 - Categorize expenses with custom categories
 - Date-based expense tracking
@@ -22,6 +23,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Automatic category budget updates on expense changes
 
 #### Budget Management
+
 - Create and manage budget categories
 - Set spending limits for each category
 - Real-time budget tracking with spent amounts
@@ -30,6 +32,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Automatic budget calculations
 
 #### Dashboard & Analytics
+
 - Real-time financial overview
 - Total budget vs. total spent visualization
 - Budget remaining with percentage indicators
@@ -39,6 +42,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Budget health status with color-coded indicators
 
 #### Data Persistence
+
 - SQLite database with Drift ORM integration
 - Type-safe database operations
 - Schema version management (v1 to v5)
@@ -48,6 +52,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Optimistic locking for concurrent modifications
 
 #### Cross-Platform Support
+
 - Windows desktop build
 - macOS desktop build
 - Linux desktop build
@@ -55,6 +60,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Native look and feel on each platform
 
 #### Architecture & Code Quality
+
 - Clean layered architecture (UI → ViewModel → Service → Repository → DAO)
 - Dependency injection with Riverpod
 - Interface-based abstractions for testability
@@ -63,6 +69,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Custom exceptions (DatabaseException, ValidationException)
 
 #### Logging & Monitoring
+
 - Comprehensive logging system with LoggerService
 - Multiple log levels (debug, info, warning, error)
 - Error reporting with stack traces and context
@@ -71,6 +78,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Detailed operation logging across all layers
 
 #### Testing
+
 - Unit tests for DAOs, services, and repositories
 - Integration tests for complete user flows
 - In-memory database for test isolation
@@ -78,6 +86,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - Mock implementations for testing
 
 #### Documentation
+
 - Comprehensive README with setup instructions
 - Architecture overview with diagrams
 - Database schema documentation
@@ -91,16 +100,17 @@ First production release of the Expense Tracking Desktop App for small businesse
 ### 🗄️ Database Schema
 
 #### Tables
+
 - **Categories** (v1)
   - Fields: id, name, color, iconCodePoint, budget, spent, version, createdAt
   - Indices: Primary key on id
-  
 - **Expenses** (v2)
   - Fields: id, amount, date, description, categoryId, createdAt
   - Indices: Primary key on id, date, categoryId
   - Foreign Keys: categoryId → categories(id) ON DELETE CASCADE
 
 #### Migrations
+
 - v1: Initial categories table
 - v2: Added expenses table
 - v3: Added color and icon fields to categories
@@ -110,6 +120,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 ### 🔧 Technical Details
 
 #### Dependencies
+
 - Flutter 3.0+
 - Dart 3.0+
 - Drift (latest) - ORM for SQLite
@@ -121,6 +132,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 - path (latest) - Path manipulation
 
 #### Build Tools
+
 - build_runner - Code generation
 - drift_dev - Drift code generation
 
@@ -171,6 +183,7 @@ First production release of the Expense Tracking Desktop App for small businesse
 ### 🧪 Testing Coverage
 
 - Unit tests: ✅
+
   - CategoryDao operations
   - ExpenseDao operations
   - Repository layer mapping
@@ -227,6 +240,7 @@ flutter run -d windows  # or macos, linux
 ### 🚧 Planned Features
 
 #### v1.1.0 (Q1 2026)
+
 - [ ] Cloud synchronization (Google Drive, Dropbox)
 - [ ] Receipt image attachments
 - [ ] PDF/Excel report export
@@ -237,6 +251,7 @@ flutter run -d windows  # or macos, linux
 - [ ] Budget forecasting
 
 #### v1.2.0 (Q2 2026)
+
 - [ ] Mobile app (iOS/Android)
 - [ ] Data import/export (CSV, JSON)
 - [ ] Custom report builder
@@ -246,6 +261,7 @@ flutter run -d windows  # or macos, linux
 - [ ] Bulk operations
 
 #### v2.0.0 (Q3 2026)
+
 - [ ] Multi-user support
 - [ ] Role-based access control
 - [ ] Cloud-native architecture
@@ -264,16 +280,17 @@ flutter run -d windows  # or macos, linux
 
 ## Version History Summary
 
-| Version | Release Date | Status    | Highlights                                  |
-|---------|--------------|-----------|---------------------------------------------|
-| 1.0.0   | 2025-11-30   | ✅ Released | Initial production release                 |
-| 1.1.0   | Q1 2026      | 🚧 Planned | Cloud sync, receipts, export               |
-| 1.2.0   | Q2 2026      | 🚧 Planned | Mobile app, import/export                  |
-| 2.0.0   | Q3 2026      | 🚧 Planned | Multi-user, cloud-native, collaboration    |
+| Version | Release Date | Status      | Highlights                              |
+| ------- | ------------ | ----------- | --------------------------------------- |
+| 1.0.0   | 2025-11-30   | ✅ Released | Initial production release              |
+| 1.1.0   | Q1 2026      | 🚧 Planned  | Cloud sync, receipts, export            |
+| 1.2.0   | Q2 2026      | 🚧 Planned  | Mobile app, import/export               |
+| 2.0.0   | Q3 2026      | 🚧 Planned  | Multi-user, cloud-native, collaboration |
 
 ---
 
 **Note**: This changelog follows [Keep a Changelog](https://keepachangelog.com/) conventions:
+
 - **Added** for new features
 - **Changed** for changes in existing functionality
 - **Deprecated** for soon-to-be removed features

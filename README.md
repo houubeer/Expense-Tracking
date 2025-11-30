@@ -191,39 +191,42 @@ The application uses Drift for type-safe database operations. The database consi
 
 Stores budget categories with spending tracking and optimistic locking support.
 
-| Column         | Type     | Constraints                    | Description                              |
-|----------------|----------|--------------------------------|------------------------------------------|
-| `id`           | INTEGER  | PRIMARY KEY, AUTO INCREMENT    | Unique category identifier               |
-| `name`         | TEXT     | NOT NULL, LENGTH(1-100)        | Category name                            |
-| `color`        | INTEGER  | NOT NULL                       | Color value for UI display               |
-| `iconCodePoint`| TEXT     | NOT NULL                       | Icon code point for category display     |
-| `budget`       | REAL     | DEFAULT 0.0                    | Allocated budget amount                  |
-| `spent`        | REAL     | DEFAULT 0.0                    | Total amount spent in category           |
-| `version`      | INTEGER  | DEFAULT 0                      | Version for optimistic locking           |
-| `createdAt`    | DATETIME | DEFAULT CURRENT_TIMESTAMP      | Category creation timestamp              |
+| Column          | Type     | Constraints                 | Description                          |
+| --------------- | -------- | --------------------------- | ------------------------------------ |
+| `id`            | INTEGER  | PRIMARY KEY, AUTO INCREMENT | Unique category identifier           |
+| `name`          | TEXT     | NOT NULL, LENGTH(1-100)     | Category name                        |
+| `color`         | INTEGER  | NOT NULL                    | Color value for UI display           |
+| `iconCodePoint` | TEXT     | NOT NULL                    | Icon code point for category display |
+| `budget`        | REAL     | DEFAULT 0.0                 | Allocated budget amount              |
+| `spent`         | REAL     | DEFAULT 0.0                 | Total amount spent in category       |
+| `version`       | INTEGER  | DEFAULT 0                   | Version for optimistic locking       |
+| `createdAt`     | DATETIME | DEFAULT CURRENT_TIMESTAMP   | Category creation timestamp          |
 
 **Indices:**
+
 - Primary key on `id`
 
 #### Expenses Table
 
 Stores individual expense records linked to categories.
 
-| Column       | Type     | Constraints                              | Description                        |
+| Column | Type | Constraints | Description |
 |--------------|----------|------------------------------------------|------------------------------------||
-| `id`         | INTEGER  | PRIMARY KEY, AUTO INCREMENT              | Unique expense identifier          |
-| `amount`     | REAL     | NOT NULL                                 | Expense amount                     |
-| `date`       | DATETIME | NOT NULL                                 | Date of expense                    |
-| `description`| TEXT     | NOT NULL                                 | Expense description                |
-| `categoryId` | INTEGER  | FOREIGN KEY → categories(id) ON DELETE CASCADE | Reference to category       |
-| `createdAt`  | DATETIME | DEFAULT CURRENT_TIMESTAMP                | Expense creation timestamp         |
+| `id` | INTEGER | PRIMARY KEY, AUTO INCREMENT | Unique expense identifier |
+| `amount` | REAL | NOT NULL | Expense amount |
+| `date` | DATETIME | NOT NULL | Date of expense |
+| `description`| TEXT | NOT NULL | Expense description |
+| `categoryId` | INTEGER | FOREIGN KEY → categories(id) ON DELETE CASCADE | Reference to category |
+| `createdAt` | DATETIME | DEFAULT CURRENT_TIMESTAMP | Expense creation timestamp |
 
 **Indices:**
+
 - Primary key on `id`
 - Index on `date` for date-range queries
 - Index on `categoryId` for category filtering
 
 **Foreign Keys:**
+
 - `categoryId` references `categories(id)` with CASCADE delete
 
 ### Relationships
@@ -630,15 +633,18 @@ This indicates optimistic locking conflict. The app automatically retries, but y
 If you encounter issues not covered here:
 
 1. **Check Documentation**:
+
    - [Architecture Overview](#architecture-overview)
    - [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md)
    - [Database Schema](#database-schema)
 
 2. **Review Logs**:
+
    - Enable debug logging: `LoggerService.instance.setLevel(LogLevel.debug)`
    - Check error reports: `ErrorReportingService` captures stack traces
 
 3. **Search Issues**:
+
    - Check [GitHub Issues](https://github.com/houubeer/Expense-Tracking/issues)
    - Search for similar problems in Flutter/Drift communities
 

@@ -31,15 +31,15 @@ The Expense Tracking Desktop App is a comprehensive financial management solutio
 
 ### Core Technologies
 
-| Technology          | Version | Purpose                                    |
-|---------------------|---------|---------------------------------------------|
-| **Flutter**         | 3.0+    | Cross-platform UI framework                 |
-| **Dart**            | 3.0+    | Programming language                        |
-| **Drift**           | Latest  | Type-safe ORM for SQLite                    |
-| **SQLite**          | 3.x     | Local database engine                       |
-| **Riverpod**        | Latest  | State management & dependency injection     |
-| **fl_chart**        | Latest  | Data visualization and charts               |
-| **logger**          | Latest  | Logging infrastructure                      |
+| Technology   | Version | Purpose                                 |
+| ------------ | ------- | --------------------------------------- |
+| **Flutter**  | 3.0+    | Cross-platform UI framework             |
+| **Dart**     | 3.0+    | Programming language                    |
+| **Drift**    | Latest  | Type-safe ORM for SQLite                |
+| **SQLite**   | 3.x     | Local database engine                   |
+| **Riverpod** | Latest  | State management & dependency injection |
+| **fl_chart** | Latest  | Data visualization and charts           |
+| **logger**   | Latest  | Logging infrastructure                  |
 
 ### Architecture Pattern
 
@@ -70,6 +70,7 @@ Database Layer (SQLite via Drift)
 ## Features Delivered
 
 ### 1. Expense Management
+
 - ✅ Create, read, update, delete (CRUD) expenses
 - ✅ Categorize expenses with custom categories
 - ✅ Date-based expense tracking
@@ -77,6 +78,7 @@ Database Layer (SQLite via Drift)
 - ✅ Expense history with category details
 
 ### 2. Budget Management
+
 - ✅ Create budget categories with spending limits
 - ✅ Real-time budget tracking and spent amounts
 - ✅ Visual budget health indicators
@@ -84,6 +86,7 @@ Database Layer (SQLite via Drift)
 - ✅ Automatic budget updates on expense changes
 
 ### 3. Dashboard & Analytics
+
 - ✅ Real-time financial overview
 - ✅ Total budget vs. total spent visualization
 - ✅ Budget remaining calculations
@@ -92,6 +95,7 @@ Database Layer (SQLite via Drift)
 - ✅ Budget health status indicators
 
 ### 4. Data Management
+
 - ✅ SQLite database with Drift ORM
 - ✅ Schema version management and migrations
 - ✅ Database health checks and recovery
@@ -100,6 +104,7 @@ Database Layer (SQLite via Drift)
 - ✅ Indexed queries for performance
 
 ### 5. Cross-Cutting Features
+
 - ✅ Comprehensive logging system (debug, info, warning, error)
 - ✅ Error reporting with stack traces and context
 - ✅ Connectivity monitoring (for future cloud sync)
@@ -111,11 +116,13 @@ Database Layer (SQLite via Drift)
 ### Tables Implemented
 
 #### Categories Table (8 columns)
+
 - Primary key: `id` (auto-increment)
 - Fields: `name`, `color`, `iconCodePoint`, `budget`, `spent`, `version`, `createdAt`
 - Purpose: Store budget categories with tracking
 
 #### Expenses Table (6 columns)
+
 - Primary key: `id` (auto-increment)
 - Fields: `amount`, `date`, `description`, `categoryId` (FK), `createdAt`
 - Purpose: Store individual expense records
@@ -124,6 +131,7 @@ Database Layer (SQLite via Drift)
 ### Schema Version: 5
 
 **Migration History:**
+
 - v1: Initial categories table
 - v2: Added expenses table
 - v3: Added color and icon fields
@@ -133,6 +141,7 @@ Database Layer (SQLite via Drift)
 ## Code Quality Metrics
 
 ### Documentation
+
 - ✅ **10/10 Rating** - Comprehensive DartDocs across all layers
 - ✅ Class-level documentation with purpose and examples
 - ✅ Method-level documentation with parameters, returns, exceptions
@@ -141,12 +150,14 @@ Database Layer (SQLite via Drift)
 - ✅ STRUCTURE.md with project organization
 
 ### Testing
+
 - ✅ Unit tests for DAOs, services, repositories
 - ✅ Integration tests for complete user flows
 - ✅ Test coverage reporting configured
 - ✅ In-memory database for test isolation
 
 ### Code Standards
+
 - ✅ Follows Effective Dart guidelines
 - ✅ Consistent naming conventions
 - ✅ Proper error handling throughout
@@ -204,6 +215,7 @@ expense_tracking_desktop_app/
 ## Key Implementation Highlights
 
 ### 1. Transaction Safety
+
 All operations that modify multiple tables are wrapped in database transactions:
 
 ```dart
@@ -216,11 +228,12 @@ await _database.transaction(() async {
 ```
 
 ### 2. Optimistic Locking
+
 Categories use version-based optimistic locking to prevent concurrent modification conflicts:
 
 ```dart
 Future<int> updateCategorySpent(int id, double spent, int currentVersion) async {
-  return (update(categories)..where((c) => 
+  return (update(categories)..where((c) =>
     c.id.equals(id) & c.version.equals(currentVersion)
   )).write(CategoriesCompanion(
     spent: Value(spent),
@@ -230,6 +243,7 @@ Future<int> updateCategorySpent(int id, double spent, int currentVersion) async 
 ```
 
 ### 3. Comprehensive Logging
+
 Logging integrated throughout all layers with context-aware messages:
 
 ```dart
@@ -238,6 +252,7 @@ _logger.error('Failed to create expense', error: e, stackTrace: stackTrace);
 ```
 
 ### 4. Type-Safe Queries
+
 Drift provides compile-time type safety for all database operations:
 
 ```dart
@@ -252,6 +267,7 @@ Stream<List<ExpenseWithCategory>> watchExpensesWithCategory() {
 ## Testing Coverage
 
 ### Unit Tests
+
 - ✅ CategoryDao operations
 - ✅ ExpenseDao operations
 - ✅ Repository layer mapping
@@ -259,6 +275,7 @@ Stream<List<ExpenseWithCategory>> watchExpensesWithCategory() {
 - ✅ ViewModel state management
 
 ### Integration Tests
+
 - ✅ Complete expense creation flow
 - ✅ Category budget update flow
 - ✅ Database migration testing
@@ -280,6 +297,7 @@ flutter test integration_test
 ## Build & Deployment
 
 ### Supported Platforms
+
 - ✅ Windows (x64)
 - ✅ macOS (Universal Binary)
 - ✅ Linux (x64)
@@ -298,6 +316,7 @@ flutter build linux --release
 ```
 
 ### Build Outputs
+
 - **Windows**: `build/windows/runner/Release/`
 - **macOS**: `build/macos/Build/Products/Release/`
 - **Linux**: `build/linux/x64/release/bundle/`
@@ -305,7 +324,9 @@ flutter build linux --release
 ## Documentation Deliverables
 
 ### Primary Documentation
+
 1. ✅ **README.md** - Complete project documentation
+
    - Installation instructions
    - Architecture overview
    - Database schema
@@ -314,16 +335,19 @@ flutter build linux --release
    - Troubleshooting section
 
 2. ✅ **LOGGING_IMPLEMENTATION.md** - Logging system details
+
    - Logger architecture
    - Log levels and usage
    - Error reporting integration
 
 3. ✅ **STRUCTURE.md** - Project structure overview
+
    - Directory organization
    - Feature modules
    - Layer responsibilities
 
 4. ✅ **CHANGELOG.md** - Version history
+
    - Release notes
    - Feature additions
    - Bug fixes
@@ -334,6 +358,7 @@ flutter build linux --release
    - Implementation details
 
 ### Code Documentation
+
 - ✅ All classes have comprehensive DartDocs
 - ✅ All public methods documented with parameters and returns
 - ✅ Examples provided for complex operations
@@ -341,17 +366,18 @@ flutter build linux --release
 
 ## Team Contributions
 
-| Team Member                      | Primary Contributions                           |
-|----------------------------------|-------------------------------------------------|
-| **Beradai Houssameddine Diaelhak** | Database architecture, Drift integration     |
-| **Cilia Mouhoun**                | UI/UX design, Widget development                |
-| **Mohamed Islam Sahli**          | Service layer, Business logic                   |
-| **Aya Brahimi**                  | Testing, Quality assurance                      |
-| **Enzo Chaabnia**                | Repository layer, State management              |
+| Team Member                        | Primary Contributions                    |
+| ---------------------------------- | ---------------------------------------- |
+| **Beradai Houssameddine Diaelhak** | Database architecture, Drift integration |
+| **Cilia Mouhoun**                  | UI/UX design, Widget development         |
+| **Mohamed Islam Sahli**            | Service layer, Business logic            |
+| **Aya Brahimi**                    | Testing, Quality assurance               |
+| **Enzo Chaabnia**                  | Repository layer, State management       |
 
 ## Future Enhancements
 
 ### Planned Features
+
 - 📋 Cloud synchronization (Google Drive, Dropbox)
 - 📋 Multi-currency support
 - 📋 Receipt image attachments
@@ -362,6 +388,7 @@ flutter build linux --release
 - 📋 Dark mode support
 
 ### Technical Improvements
+
 - 📋 Performance optimization for large datasets
 - 📋 Automated database backups
 - 📋 Enhanced error recovery mechanisms
