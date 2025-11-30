@@ -43,8 +43,8 @@ class StaggeredListAnimation extends StatelessWidget {
       child: AnimatedBuilder(
         animation: AlwaysStoppedAnimation(totalDelay),
         builder: (context, child) {
-          return FutureBuilder(
-            future: Future.delayed(totalDelay),
+          return FutureBuilder<void>(
+            future: Future<void>.delayed(totalDelay),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return child!;

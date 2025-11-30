@@ -62,9 +62,13 @@ class BudgetOverviewCard extends StatelessWidget {
       );
     }
 
-    // Take top N and group others (configurable limit)
-    final topBudgets = activeBudgets.take(itemsToShow).toList();
-    final otherBudgets = activeBudgets.skip(itemsToShow).toList();
+    // Sort by total spent (descending) to show top spenders first
+    activeBudgets.sort((a, b) => b.totalSpent.compareTo(a.totalSpent));
+
+    // Take top 4 categories with spending for pie chart
+    const maxPieSlices = 4;
+    final topBudgets = activeBudgets.take(maxPieSlices).toList();
+    final otherBudgets = activeBudgets.skip(maxPieSlices).toList();
 
     // Prepare pie chart data - only categories with expenses
     final pieChartData = topBudgets.where((b) => b.totalSpent > 0).toList();
@@ -113,7 +117,7 @@ class BudgetOverviewCard extends StatelessWidget {
                           }),
                           if (othersSpent > 0)
                             PieChartSectionData(
-                              color: colorScheme.onSurfaceVariant,
+                              color: Colors.grey,
                               value: othersSpent,
                               title: '',
                               radius: 22,
@@ -276,8 +280,8 @@ class _OthersLegendItem extends StatelessWidget {
             Container(
               width: AppSpacing.md,
               height: AppSpacing.md,
-              decoration: BoxDecoration(
-                color: colorScheme.onSurfaceVariant,
+              decoration: const BoxDecoration(
+                color: Colors.grey,
                 shape: BoxShape.circle,
               ),
             ),
@@ -311,7 +315,7 @@ class _OthersLegendItem extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: percentage / 100,
                       backgroundColor: colorScheme.surfaceContainerHighest,
-                      color: colorScheme.onSurfaceVariant,
+                      color: Colors.grey,
                       minHeight: 6,
                     ),
                   ),

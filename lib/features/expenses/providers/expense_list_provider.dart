@@ -18,11 +18,15 @@ class ExpenseFilters {
     String? searchQuery,
     int? selectedCategoryId,
     DateTime? selectedDate,
+    bool clearCategoryId = false,
+    bool clearDate = false,
   }) {
     return ExpenseFilters(
       searchQuery: searchQuery ?? this.searchQuery,
-      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
-      selectedDate: selectedDate ?? this.selectedDate,
+      selectedCategoryId: clearCategoryId
+          ? null
+          : (selectedCategoryId ?? this.selectedCategoryId),
+      selectedDate: clearDate ? null : (selectedDate ?? this.selectedDate),
     );
   }
 }
@@ -41,11 +45,17 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
   }
 
   void setCategoryFilter(int? categoryId) {
-    state = state.copyWith(selectedCategoryId: categoryId);
+    state = state.copyWith(
+      selectedCategoryId: categoryId,
+      clearCategoryId: categoryId == null,
+    );
   }
 
   void setDateFilter(DateTime? date) {
-    state = state.copyWith(selectedDate: date);
+    state = state.copyWith(
+      selectedDate: date,
+      clearDate: date == null,
+    );
   }
 }
 

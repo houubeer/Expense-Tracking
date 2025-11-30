@@ -2,9 +2,11 @@ import 'package:logger/logger.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:expense_tracking_desktop_app/config/environment.dart';
 
 /// Centralized logging service for the application
 /// Provides structured logging with different levels and log persistence
+/// Automatically sanitizes sensitive data in production
 class LoggerService {
   static LoggerService? _instance;
   late Logger _logger;
@@ -70,34 +72,91 @@ class LoggerService {
     }
   }
 
-  /// Log debug message
+  /// Log debug message (sanitized in production)
   void debug(String message, {dynamic error, StackTrace? stackTrace}) {
     _ensureInitialized();
-    _logger.d(message, error: error, stackTrace: stackTrace);
+    final sanitized = _sanitizeMessage(message);
+    _logger.d(sanitized, error: error, stackTrace: stackTrace);
   }
 
-  /// Log info message
+  /// Log info message (sanitized in production)
   void info(String message, {dynamic error, StackTrace? stackTrace}) {
     _ensureInitialized();
-    _logger.i(message, error: error, stackTrace: stackTrace);
+    final sanitized = _sanitizeMessage(message);
+    _logger.i(sanitized, error: error, stackTrace: stackTrace);
   }
 
-  /// Log warning message
+  /// Log warning message (sanitized in production)
   void warning(String message, {dynamic error, StackTrace? stackTrace}) {
     _ensureInitialized();
-    _logger.w(message, error: error, stackTrace: stackTrace);
+    final sanitized = _sanitizeMessage(message);
+    _logger.w(sanitized, error: error, stackTrace: stackTrace);
   }
 
-  /// Log error message
+  /// Log error message (sanitized in production)
   void error(String message, {dynamic error, StackTrace? stackTrace}) {
     _ensureInitialized();
-    _logger.e(message, error: error, stackTrace: stackTrace);
+    final sanitized = _sanitizeMessage(message);
+    _logger.e(sanitized, error: error, stackTrace: stackTrace);
   }
 
-  /// Log fatal/critical error message
+  /// Log fatal/critical error message (sanitized in production)
   void fatal(String message, {dynamic error, StackTrace? stackTrace}) {
     _ensureInitialized();
-    _logger.f(message, error: error, stackTrace: stackTrace);
+    final sanitized = _sanitizeMessage(message);
+    _logger.f(sanitized, error: error, stackTrace: stackTrace);
+  }
+
+  /// Log sensitive debug message (only in development)
+  /// Use this for logging sensitive data during development
+  void debugSensitive(String message, {dynamic error, StackTrace? stackTrace}) {
+    if (EnvironmentConfig.isDevelopment) {
+      _ensureInitialized();
+      _logger.d('[DEV ONLY] $message', error: error, stackTrace: stackTrace);
+    }
+  }
+
+  /// Sanitize message to remove sensitive data
+  String _sanitizeMessage(String message) {
+    // In development, don't sanitize
+    if (EnvironmentConfig.isDevelopment) {
+      return message;
+    }
+
+    var sanitized = message;
+
+    // Replace amount values
+    sanitized = sanitized.replaceAllMapped(
+      RegExp(r'(amount|budget|spent|balance|price|cost)\s*[=:]\s*[\d.,]+',
+          caseSensitive: false),
+      (match) => '${match.group(1)}=[REDACTED]',
+    );
+
+    // Replace description values
+    sanitized = sanitized.replaceAllMapped(
+      RegExp(r'description\s*[=:]\s*[^,}\]]+', caseSensitive: false),
+      (match) => 'description=[REDACTED]',
+    );
+
+    // Replace email addresses
+    sanitized = sanitized.replaceAllMapped(
+      RegExp(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),
+      (match) => '[EMAIL_REDACTED]',
+    );
+
+    // Replace phone numbers (various formats)
+    sanitized = sanitized.replaceAllMapped(
+      RegExp(r'(\+?1?[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}'),
+      (match) => '[PHONE_REDACTED]',
+    );
+
+    // Replace credit card numbers
+    sanitized = sanitized.replaceAllMapped(
+      RegExp(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'),
+      (match) => '[CARD_REDACTED]',
+    );
+
+    return sanitized;
   }
 
   /// Log with custom level and structured data

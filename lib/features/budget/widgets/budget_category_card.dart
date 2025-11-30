@@ -30,7 +30,7 @@ class BudgetCategoryCard extends StatelessWidget {
     final categoryColor = Color(category.color);
 
     return AnimatedHoverCard(
-      scale: 1.01,
+      scale: 1.005,
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.lg),
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -47,7 +47,6 @@ class BudgetCategoryCard extends StatelessWidget {
             ),
           ],
         ),
-        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

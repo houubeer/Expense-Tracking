@@ -33,7 +33,7 @@ class ExpenseTable extends ConsumerWidget {
                 size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128)),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No transactions found',
+              'No expenses found',
               style: AppTextStyles.heading3
                   .copyWith(color: colorScheme.onSurfaceVariant),
             ),
