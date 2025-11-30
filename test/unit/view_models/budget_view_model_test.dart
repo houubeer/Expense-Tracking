@@ -6,7 +6,6 @@ import 'package:expense_tracking_desktop_app/services/error_reporting_service.da
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:drift/drift.dart';
 
 import 'budget_view_model_test.mocks.dart';
 

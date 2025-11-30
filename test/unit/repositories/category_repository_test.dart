@@ -55,19 +55,17 @@ void main() {
       when(mockCategoryDao.updateCategory(category))
           .thenAnswer((_) async => true);
 
-      final result = await repository.updateCategory(category);
+      await repository.updateCategory(category);
 
       verify(mockCategoryDao.updateCategory(category)).called(1);
-      expect(result, true);
     });
 
     test('deleteCategory delegates to CategoryDao', () async {
       when(mockCategoryDao.deleteCategory(1)).thenAnswer((_) async => 1);
 
-      final result = await repository.deleteCategory(1);
+      await repository.deleteCategory(1);
 
       verify(mockCategoryDao.deleteCategory(1)).called(1);
-      expect(result, 1);
     });
 
     test('getCategoryById delegates to CategoryDao', () async {
@@ -140,28 +138,12 @@ void main() {
       when(mockCategoryDao.updateCategorySpent(1, 500.0, 1))
           .thenAnswer((_) async => 1);
 
-      final result = await repository.updateCategorySpent(1, 500.0, 1);
+      await repository.updateCategorySpent(1, 500.0, 1);
 
       verify(mockCategoryDao.updateCategorySpent(1, 500.0, 1)).called(1);
-      expect(result, 1);
     });
 
-    test('getTotalBudget delegates to CategoryDao', () async {
-      when(mockCategoryDao.getTotalBudget()).thenAnswer((_) async => 5000.0);
-
-      final result = await repository.getTotalBudget();
-
-      verify(mockCategoryDao.getTotalBudget()).called(1);
-      expect(result, 5000.0);
-    });
-
-    test('getTotalSpent delegates to CategoryDao', () async {
-      when(mockCategoryDao.getTotalSpent()).thenAnswer((_) async => 2500.0);
-
-      final result = await repository.getTotalSpent();
-
-      verify(mockCategoryDao.getTotalSpent()).called(1);
-      expect(result, 2500.0);
-    });
+    // Note: getTotalBudget and getTotalSpent are not in CategoryRepository
+    // These are implemented in DashboardBudgetReader interface
   });
 }

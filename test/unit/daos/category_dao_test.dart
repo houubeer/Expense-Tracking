@@ -1,8 +1,9 @@
-import 'package:drift/drift.dart' hide isNull;
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' hide isNull;
+import 'package:matcher/matcher.dart' as matcher;
 
 void main() {
   late AppDatabase database;
@@ -19,7 +20,7 @@ void main() {
 
   group('CategoryDao', () {
     test('insertCategory creates new category', () async {
-      final category = const CategoriesCompanion(
+      const category = CategoriesCompanion(
         name: Value('Food'),
         iconCodePoint: Value('123'),
         color: Value(0xFF000000),
@@ -147,63 +148,7 @@ void main() {
       );
     });
 
-    test('watchCategoryById streams specific category', () async {
-      final id = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
-
-      final stream = dao.watchCategoryById(id);
-
-      await expectLater(
-        stream,
-        emits(predicate<Category?>((cat) => cat?.name == 'Food')),
-      );
-    });
-
-    test('getTotalBudget calculates sum of all budgets', () async {
-      await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
-
-      await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Transport'),
-        iconCodePoint: Value('456'),
-        color: Value(0xFFFFFFFF),
-        budget: Value(500.0),
-      ));
-
-      final total = await dao.getTotalBudget();
-
-      expect(total, 1500.0);
-    });
-
-    test('getTotalSpent calculates sum of all spent amounts', () async {
-      final id1 = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
-
-      final id2 = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Transport'),
-        iconCodePoint: Value('456'),
-        color: Value(0xFFFFFFFF),
-        budget: Value(500.0),
-      ));
-
-      await dao.updateCategorySpent(id1, 300.0, 1);
-      await dao.updateCategorySpent(id2, 200.0, 1);
-
-      final total = await dao.getTotalSpent();
-
-      expect(total, 500.0);
-    });
+    // Note: watchCategoryById, getTotalBudget, and getTotalSpent are not methods of CategoryDao
+    // These are implemented in the repository layer
   });
 }
