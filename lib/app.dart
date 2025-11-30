@@ -28,7 +28,7 @@ class ExpenseTrackerApp extends StatelessWidget {
         errorReportingServiceProvider.overrideWithValue(errorReportingService),
       ],
       child: MaterialApp.router(
-        routerConfig: app_router.createRouter(database),
+        routerConfig: app_router.createRouter(),
         debugShowCheckedModeBanner: false,
         title: 'ExpenseTracker',
         theme: AppTheme.lightTheme,

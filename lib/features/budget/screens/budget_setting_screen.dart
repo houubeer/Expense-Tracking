@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_screen_header.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_empty_states.dart';
@@ -17,10 +16,7 @@ import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
-  final ICategoryRepository categoryRepository;
-
   const BudgetSettingScreen({
-    required this.categoryRepository,
     super.key,
   });
 
@@ -33,17 +29,12 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   late final BudgetViewModel _viewModel;
 
   @override
-  void initState() {
-    super.initState();
-    // Get errorReporting from ref in didChangeDependencies instead
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final categoryRepository = ref.read(categoryRepositoryProvider);
     final errorReporting = ref.read(errorReportingServiceProvider);
-    _viewModel = BudgetViewModel(
-        widget.categoryRepository, widget.categoryRepository, errorReporting);
+    _viewModel =
+        BudgetViewModel(categoryRepository, categoryRepository, errorReporting);
   }
 
   @override
@@ -144,10 +135,11 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   }
 
   void _handleEditCategory(Category category) {
+    final categoryRepository = ref.read(categoryRepositoryProvider);
     showDialog(
       context: context,
       builder: (context) => EditCategoryDialog(
-        categoryRepository: widget.categoryRepository,
+        categoryRepository: categoryRepository,
         category: category,
         budgetController: _viewModel.getController(category),
       ),

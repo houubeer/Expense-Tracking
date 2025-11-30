@@ -29,7 +29,7 @@ Expense Tracker is a desktop application tailored for small businesses seeking a
 
 ### Key Highlights
 
-- **Offline-First Architecture**: All data stored locally using Drift + SQLite
+- **Local Data Storage**: All data stored locally using Drift + SQLite
 - **Cross-Platform**: Single codebase for Windows, macOS, and Linux
 - **Small Business Focused**: Features designed specifically for SMB financial management
 - **Fast & Responsive**: Native desktop performance with Flutter
@@ -37,48 +37,96 @@ Expense Tracker is a desktop application tailored for small businesses seeking a
 
 ## Features
 
-### Core Functionality
+### ✅ Implemented Features (v1.0)
 
 - **📊 Expense Management**
 
   - Add, edit, and delete expenses with detailed categorization
-  - Attach receipts and supporting documents
-  - Multi-currency support
-  - Recurring expense tracking
+  - Date-based expense tracking
+  - Amount and description fields
+  - Category assignment
 
-- **📈 Financial Reports**
+- **🏷️ Category Management**
 
-  - Monthly/quarterly/annual expense summaries
-  - Category-wise spending analysis
-  - Profit & loss statements
-  - Export reports to PDF/Excel
-
-- **🏷️ Categories**
-
-  - Customizable expense categories
+  - Create and manage custom expense categories
   - Budget allocation per category
+  - Color-coded categories with custom icons
+  - Real-time budget tracking and spent amounts
+  - Optimistic locking for concurrent updates
 
-- **🔍 Advanced Search & Filtering**
+- **🔍 Search & Filtering**
 
-  - Search by date range, category, amount
-  - Custom filter combinations
+  - Filter expenses by category
+  - Search expenses by description
+  - Date range filtering
+  - Sort by date, amount, or category
 
 - **📅 Dashboard**
+
   - Real-time financial overview
-  - Visual charts and graphs
-  - Spending trends and insights
+  - Visual charts with fl_chart
+  - Category spending breakdown
+  - Budget vs actual spending comparison
+  - Total expenses and budget summary
+
+- **🏗️ Robust Architecture**
+  - Clean layered architecture (UI → ViewModel → Service → Repository → DAO)
+  - Riverpod state management
+  - Type-safe database operations with Drift
+  - Comprehensive error handling and logging
+  - Transaction safety for data integrity
+
+### 🚧 Planned Features (Future Releases)
+
+- **📎 Attachments & Receipts**
+
+  - Attach receipt images to expenses
+  - Document management system
+  - OCR for automatic receipt scanning
+
+- **💱 Multi-Currency**
+
+  - Multiple currency support
+  - Exchange rate tracking
+  - Currency conversion
+
+- **🔄 Recurring Expenses**
+
+  - Scheduled recurring transactions
+  - Automatic expense creation
+  - Subscription tracking
+
+- **📈 Advanced Reports**
+
+  - Export reports to PDF/Excel
+  - Profit & loss statements
+  - Tax reports
+  - Custom report builder
+
+- **☁️ Cloud Sync**
+
+  - Optional cloud backup
+  - Multi-device synchronization
+  - Data export/import
+
+- **📊 Analytics**
+  - Spending trends and predictions
+  - Budget recommendations
+  - Anomaly detection
 
 ## Technology Stack
 
-| Technology   | Purpose                       |
-| ------------ | ----------------------------- |
-| **Flutter**  | Cross-platform UI framework   |
-| **Dart**     | Programming language          |
-| **Drift**    | Type-safe Dart ORM for SQLite |
-| **SQLite**   | Local database engine         |
-| **Riverpod** | State management              |
-| **fl_chart** | Data visualization            |
-| **pdf**      | Report generation             |
+| Technology       | Purpose                       | Status         |
+| ---------------- | ----------------------------- | -------------- |
+| **Flutter**      | Cross-platform UI framework   | ✅ Implemented |
+| **Dart**         | Programming language          | ✅ Implemented |
+| **Drift**        | Type-safe Dart ORM for SQLite | ✅ Implemented |
+| **SQLite**       | Local database engine         | ✅ Implemented |
+| **Riverpod**     | State management              | ✅ Implemented |
+| **fl_chart**     | Data visualization            | ✅ Implemented |
+| **go_router**    | Navigation                    | ✅ Implemented |
+| **google_fonts** | Typography                    | ✅ Implemented |
+| **logger**       | Logging system                | ✅ Implemented |
 
 ## Prerequisites
 
@@ -278,24 +326,51 @@ class Expense {
 
 ### Adding an Expense
 
-1. Click the **"Add Expense"** button on the dashboard
-2. Fill in the expense details (title, amount, category, date)
-3. Optionally attach a receipt image
-4. Click **"Save"** to record the expense
-
-### Generating Reports
-
-1. Navigate to the **Reports** section
-2. Select the desired date range and report type
-3. Click **"Generate Report"**
-4. Export to PDF or Excel as needed
+1. Navigate to the **Expenses** screen from the sidebar
+2. Click the **"Add Expense"** button
+3. Fill in the expense details:
+   - Amount (required)
+   - Description (required)
+   - Category (select from dropdown)
+   - Date (defaults to today)
+4. Click **"Add Expense"** to save
 
 ### Managing Categories
 
-1. Go to **Settings** > **Categories**
-2. Add, edit, or delete expense categories
-3. Set budget limits for each category
-4. Customize category colors and icons
+1. Navigate to **Budget** from the sidebar
+2. View existing categories with their budgets and spent amounts
+3. **Add new category**:
+   - Click **"Add Category"**
+   - Enter category name
+   - Set budget amount
+   - Choose icon and color
+   - Click **"Save"**
+4. **Edit category**:
+   - Click the edit icon on any category
+   - Modify budget, name, or icon
+   - Click **"Update"**
+5. **Delete category**:
+   - Click the delete icon
+   - Confirm deletion (note: associated expenses will also be deleted)
+
+### Viewing Dashboard
+
+1. Navigate to **Home** from the sidebar
+2. View summary statistics:
+   - Total budget across all categories
+   - Total spent amount
+   - Remaining budget
+3. Analyze visual charts:
+   - Category spending breakdown (pie chart)
+   - Budget vs actual comparison
+   - Recent transactions list
+
+### Filtering Expenses
+
+1. On the **Expenses** screen
+2. Use the category dropdown to filter by specific category
+3. Use the search field to find expenses by description
+4. Sort expenses by clicking column headers (date, amount, category)
 
 ## Building for Production
 

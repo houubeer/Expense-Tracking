@@ -132,4 +132,26 @@ void main() {
     expect(find.text('Updated'), findsOneWidget);
     expect(find.text('200.00'), findsOneWidget);
   });
+  testWidgets('Dashboard Integration Test', (WidgetTester tester) async {
+    app.main();
+    await tester.pumpAndSettle();
+
+    // 1. Verify Dashboard is the initial screen
+    expect(find.text('Financial Overview'), findsOneWidget);
+    expect(find.text('Total Balance'), findsOneWidget);
+
+    // 2. Check for Budget Overview
+    expect(find.text('Budget Overview'), findsOneWidget);
+
+    // 3. Check for Recent Transactions
+    expect(find.text('Recent Transactions'), findsOneWidget);
+
+    // 4. Navigate to Budget Screen
+    final budgetIcon = find.byIcon(Icons.pie_chart);
+    if (budgetIcon.evaluate().isNotEmpty) {
+      await tester.tap(budgetIcon.first);
+      await tester.pumpAndSettle();
+      expect(find.text('Budget Settings'), findsOneWidget);
+    }
+  });
 }

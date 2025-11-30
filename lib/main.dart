@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+import 'package:expense_tracking_desktop_app/config/environment.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,14 +12,17 @@ void main() async {
   // Initialize logging service first
   final logger = LoggerService.instance;
   await logger.initialize();
-  logger.info('Application starting...');
+  logger.info(
+      'Application starting in ${EnvironmentConfig.environmentName} environment...');
 
   // Initialize error reporting service
   final errorReporting = ErrorReportingService(logger);
-  await errorReporting.initialize();
+  if (EnvironmentConfig.errorReportingEnabled) {
+    await errorReporting.initialize();
+  }
 
-  // Clean old logs (keep last 7 days)
-  await logger.cleanOldLogs(keepDays: 7);
+  // Clean old logs based on environment configuration
+  await logger.cleanOldLogs(keepDays: EnvironmentConfig.logRetentionDays);
 
   AppDatabase? database;
   final connectivityService = ConnectivityService();
