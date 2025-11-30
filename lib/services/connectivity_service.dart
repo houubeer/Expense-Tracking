@@ -73,7 +73,7 @@ class ConnectivityService extends ChangeNotifier {
           } else {
             // Try again with increased backoff
             updateState(ConnectionState.disconnected,
-                error: 'Reconnection attempt ${_reconnectionAttempts} failed');
+                error: 'Reconnection attempt $_reconnectionAttempts failed');
             if (_reconnectionAttempts < 10) {
               // Limit to 10 attempts
               await attemptReconnection();

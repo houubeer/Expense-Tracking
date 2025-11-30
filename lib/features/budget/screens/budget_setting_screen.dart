@@ -135,13 +135,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
             _showSuccessMessage(AppStrings.msgCategoryAdded);
           } catch (e) {
             if (mounted) {
-              final colorScheme = Theme.of(context).colorScheme;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to add category: ${e.toString()}'),
-                  backgroundColor: colorScheme.error,
-                ),
-              );
+              _showErrorMessage('Failed to add category: ${e.toString()}');
             }
           }
         },
@@ -171,13 +165,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
             _showSuccessMessage(AppStrings.msgCategoryDeleted);
           } catch (e) {
             if (mounted) {
-              final colorScheme = Theme.of(context).colorScheme;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Failed to delete category: ${e.toString()}'),
-                  backgroundColor: colorScheme.error,
-                ),
-              );
+              _showErrorMessage('Failed to delete category: ${e.toString()}');
             }
           }
         },
@@ -190,6 +178,14 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: colorScheme.tertiary),
+    );
+  }
+
+  void _showErrorMessage(String message) {
+    if (!mounted) return;
+    final colorScheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: colorScheme.error),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+// ignore: depend_on_referenced_packages
 import 'package:sqlite3/sqlite3.dart';
 
 LazyDatabase connect() {
@@ -31,11 +32,13 @@ LazyDatabase connect() {
             }
           } catch (e) {
             // Database is corrupt, create backup and recreate
+            // ignore: avoid_print
             print('Database corruption detected: $e');
             final backupPath =
                 '${dbFile.path}.corrupt.${DateTime.now().millisecondsSinceEpoch}';
             await dbFile.copy(backupPath);
             await dbFile.delete();
+            // ignore: avoid_print
             print('Corrupt database backed up to: $backupPath');
           }
         }
@@ -46,6 +49,7 @@ LazyDatabase connect() {
           throw Exception(
               'Failed to connect to database after $maxRetries attempts: $e');
         }
+        // ignore: avoid_print
         print(
             'Database connection attempt ${attempt + 1} failed: $e. Retrying...');
         await Future.delayed(retryDelay);

@@ -42,7 +42,8 @@ class BudgetCategoryCard extends StatelessWidget {
             BoxShadow(
               color: colorScheme.primary.withValues(alpha: 0.05),
               blurRadius: AppConfig.shadowBlurRadius,
-              offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+              offset: const Offset(
+                  AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
             ),
           ],
         ),
@@ -105,7 +106,7 @@ class BudgetCategoryCard extends StatelessWidget {
                 '${AppRoutes.addExpense}?categoryId=${category.id}',
               ),
               icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-              label: Text(AppStrings.btnAddExpense),
+              label: const Text(AppStrings.btnAddExpense),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
@@ -121,7 +122,7 @@ class BudgetCategoryCard extends StatelessWidget {
               onPressed: onEdit,
               icon: const Icon(Icons.edit,
                   size: AppSpacing.iconXs, semanticLabel: 'Edit'),
-              label: Text(AppStrings.btnEdit),
+              label: const Text(AppStrings.btnEdit),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,

@@ -34,14 +34,10 @@ class AppTheme {
       errorContainer: Color(0xFFF9DEDC),
       onErrorContainer: Color(0xFF410E0B),
 
-      // Background colors
-      background: Color(0xFFFFFBFE),
-      onBackground: Color(0xFF1C1B1F),
-
       // Surface colors
       surface: Color(0xFFFFFBFE),
       onSurface: Color(0xFF1C1B1F),
-      surfaceVariant: Color(0xFFE7E0EC),
+      surfaceContainerHighest: Color(0xFFE7E0EC),
       onSurfaceVariant: Color(0xFF49454F),
 
       // Outline colors
@@ -169,7 +165,7 @@ class AppTheme {
       // Input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: lightColorScheme.surfaceVariant,
+        fillColor: lightColorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           borderSide: BorderSide.none,
@@ -299,14 +295,10 @@ class AppTheme {
       errorContainer: Color(0xFF8C1D18),
       onErrorContainer: Color(0xFFFFDADA),
 
-      // Background colors - Dark gray
-      background: Color(0xFF1A1A1A),
-      onBackground: Color(0xFFE5E5E5),
-
       // Surface colors - Slightly lighter than background
       surface: Color(0xFF242424),
       onSurface: Color(0xFFE5E5E5),
-      surfaceVariant: Color(0xFF2F2F2F),
+      surfaceContainerHighest: Color(0xFF2F2F2F),
       onSurfaceVariant: Color(0xFFB8B8B8),
 
       // Outline colors
@@ -434,7 +426,7 @@ class AppTheme {
       // Input decoration theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: darkColorScheme.surfaceVariant,
+        fillColor: darkColorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           borderSide: BorderSide.none,

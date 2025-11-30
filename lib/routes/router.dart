@@ -18,7 +18,6 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Creates the app router with the provided database instance
 GoRouter createRouter(AppDatabase database) {
-  // TODO: Remove these when all screens are refactored to use Riverpod providers
   // Currently needed for BudgetSettingScreen which hasn't been refactored yet
   final ICategoryRepository categoryRepository = CategoryRepository(database);
 

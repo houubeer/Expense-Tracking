@@ -8,53 +8,91 @@ This document explains the organization of the `lib/` directory.
 lib/
 ├── main.dart                    # Application entry point
 ├── app.dart                     # Main app widget configuration
+├── STRUCTURE.md                 # This file - project structure documentation
+├── core/                        # Core application components
+│   └── exceptions.dart         # Custom exception classes
 ├── constants/                   # App-wide constants
 │   ├── colors.dart             # Color palette
+│   ├── spacing.dart            # Spacing constants
+│   ├── strings.dart            # String constants
 │   └── text_styles.dart        # Typography styles
 ├── database/                    # Database layer (Drift ORM)
 │   ├── app_database.dart       # Database configuration
 │   ├── app_database.g.dart     # Generated database code
+│   ├── i_database.dart         # Database interface
 │   ├── daos/                   # Data Access Objects
 │   │   ├── category_dao.dart
 │   │   ├── category_dao.g.dart
 │   │   ├── expense_dao.dart
 │   │   └── expense_dao.g.dart
-│   ├── tables/                 # Table definitions
-│   │   ├── categories_table.dart
-│   │   └── expenses_table.dart
-│   └── seeds/                  # Database seed data
-│       └── budget_dummy_data.dart
-├── models/                      # Domain models
-│   └── budget_category.dart    # Budget category model
-├── screens/                     # UI screens
-│   ├── home/
-│   │   └── home_screen.dart
-│   ├── budget/
-│   │   └── budget_setting_screen.dart
-│   ├── expenses/
-│   │   ├── add_expense_screen.dart
-│   │   └── expenses_list_screen.dart
-│   └── categories/
-│       └── (empty - placeholder for future)
-├── widgets/                     # Reusable UI components
-│   └── common/
-│       └── sidebar.dart
-├── services/                    # Business logic layer
-│   └── budget_service.dart
+│   └── tables/                 # Table definitions
+│       ├── categories_table.dart
+│       └── expenses_table.dart
+├── features/                    # Feature-based architecture
+│   ├── budget/                 # Budget management feature
+│   │   ├── models/
+│   │   ├── repositories/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   ├── expenses/               # Expense tracking feature
+│   │   ├── models/
+│   │   ├── providers/
+│   │   ├── repositories/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   ├── home/                   # Dashboard feature
+│   │   ├── providers/
+│   │   ├── screens/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   └── shared/                 # Shared feature components
+│       └── widgets/
+├── providers/                   # Riverpod providers
+│   ├── app_providers.dart
+│   └── budget_status_config_provider.dart
+├── routes/                      # Navigation
+│   └── router.dart
+├── services/                    # Global services
+│   ├── connectivity_service.dart
+│   ├── error_reporting_service.dart
+│   └── logger_service.dart
+├── theme/                       # App theming
+│   └── app_theme.dart
 ├── utils/                       # Utility functions
-│   └── currency_formatter.dart
-└── routes/                      # Navigation
-    └── app_routes.dart
+│   ├── formatters/
+│   ├── sorting/
+│   ├── status/
+│   ├── budget_status_calculator.dart
+│   └── icon_utils.dart
+└── widgets/                     # Global reusable widgets
+    ├── animations/
+    ├── buttons.dart
+    ├── connection_status_banner.dart
+    ├── empty_states.dart
+    └── skeleton_loader.dart
 ```
 
 ## 📂 Directory Descriptions
 
+### `/core`
+
+Core application components and utilities:
+
+**Current files:**
+- `exceptions.dart` - Custom exception classes (DatabaseException, ValidationException, etc.)
+
 ### `/constants`
 
-Contains all app-wide constants including colors and text styles. This ensures consistency across the application.
+Contains all app-wide constants including colors, spacing, strings, and text styles. This ensures consistency across the application.
 
 **Current files:**
 - `colors.dart` - Color palette definitions
+- `spacing.dart` - Spacing and sizing constants
+- `strings.dart` - String constants and labels
 - `text_styles.dart` - Typography and text styling
 
 ### `/database`
@@ -67,78 +105,99 @@ Houses all database-related code using Drift ORM:
 - **tables/**: Table schema definitions
   - `categories_table.dart` - Categories table schema
   - `expenses_table.dart` - Expenses table schema
-- **seeds/**: Dummy/seed data for development and testing
-  - `budget_dummy_data.dart` - Sample budget data
+- `i_database.dart` - Database interface for dependency injection
 
-### `/models`
+### `/features`
 
-Domain models that represent business entities. These are separate from database entities for better separation of concerns.
+**Feature-based architecture** - Each feature is self-contained with its own models, repositories, screens, services, view models, and widgets:
+
+- **budget/**: Budget management feature
+  - Complete budget tracking and category management
+  - Budget status calculation and visualization
+- **expenses/**: Expense tracking feature
+  - Add, edit, delete expenses
+  - Expense list with filtering and search
+- **home/**: Dashboard feature
+  - Overview of financial status
+  - Quick stats and charts
+- **shared/**: Shared components used across features
+  - Common widgets and utilities
+
+### `/providers`
+
+Riverpod providers for dependency injection and state management:
 
 **Current files:**
-- `budget_category.dart` - Budget category model for UI representation
+- `app_providers.dart` - Main application providers
+- `budget_status_config_provider.dart` - Budget status configuration
 
-### `/screens`
+### `/routes`
 
-All application screens organized by feature:
+Navigation configuration using go_router:
 
-- **home/**: Dashboard and overview screens
-- **budget/**: Budget management screens
-- **expenses/**: Expense tracking screens
-  - Add expense form
-  - Expenses list/transactions view
-- **categories/**: Category management (placeholder)
-
-### `/widgets`
-
-Reusable UI components:
-
-- **common/**: Shared widgets used across multiple screens
-  - `sidebar.dart` - Navigation sidebar component
+**Current files:**
+- `router.dart` - App routing configuration
 
 ### `/services`
 
-Business logic layer that sits between UI and data:
+Global services that sit between UI and data:
 
-- Handles complex operations
-- Coordinates between multiple data sources
-- Keeps screens clean and focused on UI
+- Handles cross-cutting concerns
+- Logging, error reporting, connectivity monitoring
+- Keeps features decoupled from infrastructure
 
 **Current files:**
-- `budget_service.dart` - Budget-related business logic
+- `connectivity_service.dart` - Database connectivity monitoring
+- `error_reporting_service.dart` - Error tracking and reporting
+- `logger_service.dart` - Application-wide logging
+
+### `/theme`
+
+Application theming and design system:
+
+**Current files:**
+- `app_theme.dart` - Theme configuration (light/dark modes)
 
 ### `/utils`
 
 Utility functions and helpers:
 
-- Formatters
-- Validators
-- Common helper functions
+- **formatters/**: Date and number formatting utilities
+- **sorting/**: Category sorting strategies
+- **status/**: Budget status calculation strategies
+- Other helper functions
 
 **Current files:**
-- `currency_formatter.dart` - Currency formatting utilities
+- `budget_status_calculator.dart` - Budget status calculation
+- `icon_utils.dart` - Icon utilities
 
-### `/routes`
+### `/widgets`
 
-Navigation configuration:
+Global reusable UI components used across multiple features:
 
-- Route names
-- Screen indices
-- Navigation helpers
+- **animations/**: Animation widgets
+- Common buttons, loaders, empty states, etc.
 
 **Current files:**
-- `app_routes.dart` - App routing configuration
+- `buttons.dart` - Reusable button components
+- `connection_status_banner.dart` - Connection status indicator
+- `empty_states.dart` - Empty state widgets
+- `skeleton_loader.dart` - Loading skeleton widgets
 
 ## 🔄 Import Conventions
 
 Always use absolute imports:
 
 ```dart
-import 'package:expense_tracking_desktop_app/screens/home/home_screen.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 ```
 
 ## 📝 Notes
 
-- **Database seeds**: Move or delete `seeds/` folder before production deployment
+- **Feature-based architecture**: Each feature in `/features` is self-contained with its own screens, widgets, view models, repositories, and services
 - **Generated files**: Files ending with `.g.dart` are auto-generated by build_runner
-- **Feature organization**: Related screens, widgets, and logic should be grouped together
-- **Removed**: `example_dao.dart` and `example_table.dart` have been removed from the project
+- **Clean architecture**: The app follows a layered architecture with clear separation between UI, business logic, and data layers
+- **Dependency injection**: Riverpod is used for dependency injection and state management
+- **Old directories removed**: The legacy `/screens` directory has been removed in favor of the feature-based structure

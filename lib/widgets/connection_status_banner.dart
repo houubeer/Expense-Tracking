@@ -83,7 +83,7 @@ class ConnectionStatusBanner extends ConsumerWidget {
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor: Colors.white.withAlpha(51),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,

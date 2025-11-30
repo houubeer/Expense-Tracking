@@ -178,9 +178,9 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final baseColor = widget.baseColor ?? colorScheme.surfaceVariant;
+    final baseColor = widget.baseColor ?? colorScheme.surfaceContainerHighest;
     final highlightColor =
-        widget.highlightColor ?? colorScheme.surface.withOpacity(0.5);
+        widget.highlightColor ?? colorScheme.surface.withAlpha(128);
 
     return AnimatedBuilder(
       animation: _animation,

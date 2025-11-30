@@ -21,6 +21,7 @@ LazyDatabase connect() {
 
         if (result.missingFeatures.isNotEmpty) {
           // Log warning about missing features
+          // ignore: avoid_print
           print('Using ${result.chosenImplementation} due to missing features: '
               '${result.missingFeatures}');
         }
@@ -31,6 +32,7 @@ LazyDatabase connect() {
           throw Exception(
               'Failed to connect to web database after $maxRetries attempts: $e');
         }
+        // ignore: avoid_print
         print(
             'Web database connection attempt ${attempt + 1} failed: $e. Retrying...');
         await Future.delayed(retryDelay);

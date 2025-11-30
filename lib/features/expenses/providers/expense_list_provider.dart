@@ -28,7 +28,8 @@ class ExpenseFilters {
 }
 
 /// Provider for the current filters
-final expenseFiltersProvider = StateNotifierProvider<ExpenseFiltersNotifier, ExpenseFilters>((ref) {
+final expenseFiltersProvider =
+    StateNotifierProvider<ExpenseFiltersNotifier, ExpenseFilters>((ref) {
   return ExpenseFiltersNotifier();
 });
 
@@ -49,47 +50,49 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
 }
 
 /// Provider for the filtered expenses list (Stream)
-final filteredExpensesProvider = StreamProvider.autoDispose<List<ExpenseWithCategory>>((ref) {
+final filteredExpensesProvider =
+    StreamProvider.autoDispose<List<ExpenseWithCategory>>((ref) {
   final filters = ref.watch(expenseFiltersProvider);
   final expenseService = ref.watch(expenseServiceProvider);
-  
+
   // Use the service layer which returns the domain-level ExpenseWithCategory
   // Then apply client-side filtering
   return expenseService.watchExpensesWithCategory().map((expenses) {
     var filtered = expenses;
-    
+
     // Apply search query filter
     if (filters.searchQuery.isNotEmpty) {
       final query = filters.searchQuery.toLowerCase();
       filtered = filtered.where((e) {
         return e.expense.description.toLowerCase().contains(query) ||
-               e.category.name.toLowerCase().contains(query);
+            e.category.name.toLowerCase().contains(query);
       }).toList();
     }
-    
+
     // Apply category filter
     if (filters.selectedCategoryId != null) {
       filtered = filtered.where((e) {
         return e.expense.categoryId == filters.selectedCategoryId;
       }).toList();
     }
-    
+
     // Apply date filter
     if (filters.selectedDate != null) {
       final filterDate = filters.selectedDate!;
       final start = DateTime(filterDate.year, filterDate.month, filterDate.day);
       final end = start.add(const Duration(days: 1));
       filtered = filtered.where((e) {
-        return e.expense.date.isAfter(start.subtract(const Duration(milliseconds: 1))) &&
-               e.expense.date.isBefore(end);
+        return e.expense.date
+                .isAfter(start.subtract(const Duration(milliseconds: 1))) &&
+            e.expense.date.isBefore(end);
       }).toList();
     }
-    
+
     return filtered;
   });
 });
 
-// Legacy provider adapter to keep UI working with minimal changes if possible, 
+// Legacy provider adapter to keep UI working with minimal changes if possible,
 // OR we update the UI to use the new providers.
 // The UI uses `expenseListViewModelProvider` which returns `ExpenseListState`.
 // Let's recreate that structure but powered by the new providers.
@@ -112,11 +115,13 @@ class ExpenseListState {
   });
 }
 
-final expenseListViewModelProvider = StateNotifierProvider.autoDispose<ExpenseListViewModel, ExpenseListState>((ref) {
+final expenseListViewModelProvider =
+    StateNotifierProvider.autoDispose<ExpenseListViewModel, ExpenseListState>(
+        (ref) {
   final filters = ref.watch(expenseFiltersProvider);
   final expensesAsync = ref.watch(filteredExpensesProvider);
   final filtersNotifier = ref.read(expenseFiltersProvider.notifier);
-  
+
   return ExpenseListViewModel(filters, expensesAsync, filtersNotifier);
 });
 

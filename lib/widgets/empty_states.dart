@@ -41,7 +41,7 @@ class EmptyStateWidget extends StatelessWidget {
                   child: Icon(
                     icon,
                     size: iconSize,
-                    color: colorScheme.primary.withOpacity(0.3),
+                    color: colorScheme.primary.withAlpha(77),
                   ),
                 );
               },

@@ -15,6 +15,7 @@ class BudgetRepository implements IBudgetRepository {
   /// Returns a stream that automatically updates when:
   /// - Categories are added/updated/deleted
   /// - Expenses are added/updated/deleted
+  @override
   Stream<List<CategoryBudgetView>> watchCategoryBudgets() {
     // Combine two streams: categories and expense sums
     return Rx.combineLatest2<List<Category>, Map<int, double>,
@@ -34,6 +35,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Watch category budgets filtered by status
+  @override
   Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(
       BudgetStatus status) {
     return watchCategoryBudgets().map((budgets) {
@@ -42,6 +44,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Watch only categories with active budgets (budget > 0)
+  @override
   Stream<List<CategoryBudgetView>> watchActiveCategoryBudgets() {
     return watchCategoryBudgets().map((budgets) {
       return budgets.where((budget) => !budget.hasNoBudget).toList();
@@ -49,6 +52,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Watch categories sorted by spending (highest first)
+  @override
   Stream<List<CategoryBudgetView>> watchCategoryBudgetsSortedBySpending() {
     return watchCategoryBudgets().map((budgets) {
       final sorted = List<CategoryBudgetView>.from(budgets);
@@ -58,6 +62,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Watch top N spending categories
+  @override
   Stream<List<CategoryBudgetView>> watchTopSpendingCategories(int limit) {
     return watchCategoryBudgetsSortedBySpending().map((budgets) {
       return budgets.take(limit).toList();
@@ -65,6 +70,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Get total budget across all categories
+  @override
   Stream<double> watchTotalBudget() {
     return watchCategoryBudgets().map((budgets) {
       return budgets.fold(0.0, (sum, budget) => sum + budget.category.budget);
@@ -72,6 +78,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Get total spent across all categories
+  @override
   Stream<double> watchTotalSpent() {
     return watchCategoryBudgets().map((budgets) {
       return budgets.fold(0.0, (sum, budget) => sum + budget.totalSpent);
@@ -79,6 +86,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Get total remaining budget
+  @override
   Stream<double> watchTotalRemaining() {
     return watchCategoryBudgets().map((budgets) {
       return budgets.fold(0.0, (sum, budget) => sum + budget.remaining);
@@ -86,6 +94,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Get overall budget health percentage
+  @override
   Stream<double> watchOverallBudgetHealth() {
     return Rx.combineLatest2<double, double, double>(
       watchTotalBudget(),
@@ -98,6 +107,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Get count of categories by status
+  @override
   Stream<Map<BudgetStatus, int>> watchCategoryCountByStatus() {
     return watchCategoryBudgets().map((budgets) {
       final counts = <BudgetStatus, int>{};
@@ -109,6 +119,7 @@ class BudgetRepository implements IBudgetRepository {
   }
 
   /// Non-reactive version - get category budgets once
+  @override
   Future<List<CategoryBudgetView>> getCategoryBudgets() async {
     final categories = await _database.categoryDao.getAllCategories();
     final expenseSums = await _database.expenseDao.getExpensesSumByCategory();

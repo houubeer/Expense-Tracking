@@ -47,8 +47,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   ///
   /// [e] The query executor to use for database operations.
   /// [_connectivityService] Optional service for monitoring database connectivity.
-  AppDatabase.forTesting(QueryExecutor e, [this._connectivityService])
-      : super(e);
+  AppDatabase.forTesting(super.e, [this._connectivityService]);
 
   /// Provides access to category-related database operations.
   @override

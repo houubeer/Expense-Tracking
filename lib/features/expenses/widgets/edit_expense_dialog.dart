@@ -193,12 +193,12 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: colorScheme.onSurfaceVariant,
                   ),
-                  child: Text(AppStrings.btnCancel),
+                  child: const Text(AppStrings.btnCancel),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 PrimaryButton(
                   onPressed: _updateExpense,
-                  child: Text('Update Expense'),
+                  child: const Text('Update Expense'),
                 ),
               ],
             ),

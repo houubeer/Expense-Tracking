@@ -43,7 +43,7 @@ class LoggerService {
           lineLength: 120,
           colors: true,
           printEmojis: true,
-          printTime: true,
+          dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
         ),
         output: MultiOutput([
           ConsoleOutput(),
@@ -62,7 +62,7 @@ class LoggerService {
           lineLength: 120,
           colors: true,
           printEmojis: true,
-          printTime: true,
+          dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
         ),
       );
       _logger.w('Failed to initialize file logging, using console only: $e');
@@ -121,6 +121,7 @@ class LoggerService {
       _logger = Logger(
         printer: SimplePrinter(),
       );
+      // ignore: avoid_print
       print('WARNING: LoggerService used before initialization');
     }
   }
@@ -187,6 +188,7 @@ class FileOutput extends LogOutput {
         flush: true,
       );
     } catch (e) {
+      // ignore: avoid_print
       print('Error writing to log file: $e');
     }
   }
@@ -204,6 +206,7 @@ class MultiOutput extends LogOutput {
       try {
         output.output(event);
       } catch (e) {
+        // ignore: avoid_print
         print('Error in log output: $e');
       }
     }

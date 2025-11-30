@@ -148,7 +148,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                 spacing: AppSpacing.md,
                 runSpacing: AppSpacing.md,
                 children: _categoryColors.map((color) {
-                  final isSelected = color.value == _selectedColor.value;
+                  final isSelected = color == _selectedColor;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),
                     child: Container(
@@ -166,7 +166,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: color.withOpacity(0.4),
+                                  color: color.withAlpha(102),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 ),
@@ -202,7 +202,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           height: 48,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? _selectedColor.withOpacity(0.2)
+                                ? _selectedColor.withAlpha(51)
                                 : colorScheme.surfaceContainerHighest,
                             borderRadius:
                                 BorderRadius.circular(AppSpacing.radiusSm),
@@ -257,10 +257,13 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         return;
                       }
 
+                      final colorScheme = Theme.of(context).colorScheme;
+
                       try {
                         // Update category with new values
                         final updatedCategory = widget.category.copyWith(
                           budget: value,
+                          // ignore: deprecated_member_use
                           color: _selectedColor.value,
                           iconCodePoint: _selectedIcon.codePoint.toString(),
                         );
@@ -269,7 +272,6 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                             .updateCategory(updatedCategory);
 
                         if (mounted) {
-                          final colorScheme = Theme.of(context).colorScheme;
                           navigator.pop();
                           messenger.showSnackBar(
                             SnackBar(
@@ -282,7 +284,6 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         }
                       } catch (e) {
                         if (mounted) {
-                          final colorScheme = Theme.of(context).colorScheme;
                           messenger.showSnackBar(
                             SnackBar(
                               content: Text(

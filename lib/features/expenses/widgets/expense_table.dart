@@ -30,7 +30,7 @@ class ExpenseTable extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.receipt_long_outlined,
-                size: 64, color: colorScheme.onSurfaceVariant.withOpacity(0.5)),
+                size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128)),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'No transactions found',
@@ -137,11 +137,11 @@ class ExpenseTable extends ConsumerWidget {
         backgroundColor: colorScheme.surface,
         title: Text(AppStrings.titleDeleteTransaction,
             style: AppTextStyles.heading3),
-        content: Text(AppStrings.descDeleteTransaction),
+        content: const Text(AppStrings.descDeleteTransaction),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.btnCancel, style: AppTextStyles.bodyMedium),
+            child: const Text(AppStrings.btnCancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -188,7 +188,7 @@ class ExpenseTable extends ConsumerWidget {
               }
             },
             style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
-            child: Text(AppStrings.btnDelete),
+            child: const Text(AppStrings.btnDelete),
           ),
         ],
       ),

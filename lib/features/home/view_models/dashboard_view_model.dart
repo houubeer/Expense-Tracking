@@ -60,9 +60,4 @@ class DashboardViewModel extends ChangeNotifier {
   double calculateCardWidth(double screenWidth, bool isDesktop) {
     return isDesktop ? (screenWidth - 60) / 4 : (screenWidth - 20) / 2;
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }

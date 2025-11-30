@@ -10,15 +10,15 @@ class AppException implements Exception {
 }
 
 class DatabaseException extends AppException {
-  DatabaseException(String message, {dynamic originalError})
-      : super(message, code: 'DATABASE_ERROR', originalError: originalError);
+  DatabaseException(super.message,
+      {super.originalError, super.code = 'DATABASE_ERROR'});
 }
 
 class ValidationException extends AppException {
-  ValidationException(String message) : super(message, code: 'VALIDATION_ERROR');
+  ValidationException(super.message, {super.code = 'VALIDATION_ERROR'});
 }
 
 class NetworkException extends AppException {
-  NetworkException(String message, {dynamic originalError})
-      : super(message, code: 'NETWORK_ERROR', originalError: originalError);
+  NetworkException(super.message,
+      {super.originalError, super.code = 'NETWORK_ERROR'});
 }

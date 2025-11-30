@@ -199,7 +199,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   }
 
   /// Reset state (deprecated - use resetForm)
-  @deprecated
+  @Deprecated('Use resetForm() instead')
   void resetState() {
     resetForm();
   }

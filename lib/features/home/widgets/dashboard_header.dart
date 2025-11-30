@@ -31,7 +31,7 @@ class DashboardHeader extends StatelessWidget {
         PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
           icon: Icons.add,
-          child: Text(AppStrings.btnAddExpense),
+          child: const Text(AppStrings.btnAddExpense),
         ),
       ],
     );

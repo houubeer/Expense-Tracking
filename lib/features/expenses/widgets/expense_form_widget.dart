@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,6 +135,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   }
                   final categories = snapshot.data!;
                   return DropdownButtonFormField<int>(
+                    // Use initialValue for form field initialization
                     value: widget.selectedCategoryId,
                     items: categories.map((category) {
                       return DropdownMenuItem(
@@ -260,7 +263,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     TertiaryButton(
                       onPressed: widget.isSubmitting ? null : widget.onReset,
                       icon: Icons.refresh,
-                      child: Text(AppStrings.btnReset),
+                      child: const Text(AppStrings.btnReset),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     PrimaryButton(
