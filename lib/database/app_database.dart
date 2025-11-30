@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'connection/connection.dart' as impl;
 import 'package:expense_tracking_desktop_app/database/i_database.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 // Import tables and DAOs
 import 'tables/categories_table.dart';
 import 'tables/expenses_table.dart';
@@ -14,8 +15,10 @@ part 'app_database.g.dart';
   daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase implements IDatabase {
-  AppDatabase() : super(_createConnection());
-  AppDatabase.forTesting(QueryExecutor e) : super(e);
+  final ConnectivityService? _connectivityService;
+
+  AppDatabase([this._connectivityService]) : super(_createConnection());
+  AppDatabase.forTesting(QueryExecutor e, [this._connectivityService]) : super(e);
 
   static QueryExecutor _createConnection() {
     try {
@@ -24,6 +27,12 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
       throw Exception('Failed to initialize database connection: $e');
     }
   }
+
+  @override
+  CategoryDao get categoryDao => CategoryDao(this, _connectivityService);
+
+  @override
+  ExpenseDao get expenseDao => ExpenseDao(this, _connectivityService);
 
   @override
   int get schemaVersion => 5;

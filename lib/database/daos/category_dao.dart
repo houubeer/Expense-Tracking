@@ -1,26 +1,41 @@
 import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/categories_table.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 
 part 'category_dao.g.dart';
 
 @DriftAccessor(tables: [Categories])
 class CategoryDao extends DatabaseAccessor<AppDatabase>
     with _$CategoryDaoMixin {
-  CategoryDao(super.db);
+  final ConnectivityService? _connectivityService;
+
+  CategoryDao(super.db, [this._connectivityService]);
 
   // Watch all categories
   Stream<List<Category>> watchAllCategories() => select(categories).watch();
 
   // Get all categories
-  Future<List<Category>> getAllCategories() => select(categories).get();
+  Future<List<Category>> getAllCategories() async {
+    try {
+      final result = await select(categories).get();
+      _connectivityService?.markSuccessfulOperation();
+      return result;
+    } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
+      rethrow;
+    }
+  }
 
   // Get category by ID
   Future<Category?> getCategoryById(int id) async {
     try {
-      return await (select(categories)..where((c) => c.id.equals(id)))
+      final result = await (select(categories)..where((c) => c.id.equals(id)))
           .getSingleOrNull();
+      _connectivityService?.markSuccessfulOperation();
+      return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to get category by id - $e');
     }
   }
@@ -47,8 +62,11 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
         }
       }
 
-      return await into(categories).insert(category);
+      final id = await into(categories).insert(category);
+      _connectivityService?.markSuccessfulOperation();
+      return id;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to insert category - $e');
     }
   }
@@ -70,18 +88,20 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
       }
 
       // Update with version increment for optimistic locking
-      final rowsAffected =
-          await (update(categories)..where((c) => c.id.equals(id))).write(
-              CategoriesCompanion(
-                  budget: Value(budget), version: Value(category.version + 1)));
+      final rowsAffected = await (update(categories)
+            ..where((c) => c.id.equals(id)))
+          .write(CategoriesCompanion(
+              budget: Value(budget), version: Value(category.version + 1)));
 
       if (rowsAffected == 0) {
         throw Exception(
             'Failed to update category budget - concurrent modification detected');
       }
 
+      _connectivityService?.markSuccessfulOperation();
       return rowsAffected;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to update category budget - $e');
     }
   }
@@ -100,18 +120,20 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
       }
 
       // Update with version increment for optimistic locking
-      final rowsAffected =
-          await (update(categories)..where((c) => c.id.equals(id))).write(
-              CategoriesCompanion(
-                  spent: Value(spent), version: Value(category.version + 1)));
+      final rowsAffected = await (update(categories)
+            ..where((c) => c.id.equals(id)))
+          .write(CategoriesCompanion(
+              spent: Value(spent), version: Value(category.version + 1)));
 
       if (rowsAffected == 0) {
         throw Exception(
             'Failed to update category spent - concurrent modification detected');
       }
 
+      _connectivityService?.markSuccessfulOperation();
       return rowsAffected;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to update category spent - $e');
     }
   }
@@ -134,8 +156,7 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
       }
 
       // Update with version increment for optimistic locking
-      final updatedCategory =
-          category.copyWith(version: category.version + 1);
+      final updatedCategory = category.copyWith(version: category.version + 1);
       final result = await update(categories).replace(updatedCategory);
 
       if (!result) {
@@ -143,8 +164,10 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
             'Failed to update category - concurrent modification detected');
       }
 
+      _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to update category - $e');
     }
   }
@@ -152,8 +175,11 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Delete category
   Future<int> deleteCategory(int id) async {
     try {
-      return await (delete(categories)..where((c) => c.id.equals(id))).go();
+      final result = await (delete(categories)..where((c) => c.id.equals(id))).go();
+      _connectivityService?.markSuccessfulOperation();
+      return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to delete category - $e');
     }
   }

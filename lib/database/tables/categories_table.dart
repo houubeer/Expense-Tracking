@@ -7,6 +7,7 @@ class Categories extends Table {
   TextColumn get iconCodePoint => text()();
   RealColumn get budget => real().withDefault(const Constant(0.0))();
   RealColumn get spent => real().withDefault(const Constant(0.0))();
-  IntColumn get version => integer().withDefault(const Constant(0))(); // For optimistic locking
+  IntColumn get version =>
+      integer().withDefault(const Constant(0))(); // For optimistic locking
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }

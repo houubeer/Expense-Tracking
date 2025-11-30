@@ -1,21 +1,34 @@
 import 'package:expense_tracking_desktop_app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   AppDatabase? database;
+  final connectivityService = ConnectivityService();
 
   try {
-    database = AppDatabase();
+    database = AppDatabase(connectivityService);
+
+    // Set up health check callback for reconnection attempts
+    connectivityService.healthCheckCallback = () async {
+      try {
+        return await database!.healthCheck();
+      } catch (e) {
+        return false;
+      }
+    };
 
     // Verify database connection with a simple query
     await database.customSelect('SELECT 1').get();
 
     print('Database connection established successfully');
+    connectivityService.markSuccessfulOperation();
   } catch (e) {
     print('FATAL: Failed to initialize database: $e');
+    connectivityService.handleConnectionFailure(e.toString());
 
     // Show error dialog and exit
     runApp(
@@ -55,5 +68,8 @@ void main() async {
     return;
   }
 
-  runApp(ExpenseTrackerApp(database: database));
+  runApp(ExpenseTrackerApp(
+    database: database,
+    connectivityService: connectivityService,
+  ));
 }

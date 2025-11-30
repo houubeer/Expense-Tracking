@@ -11,6 +11,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/widgets/connection_status_banner.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -30,16 +31,23 @@ GoRouter createRouter(AppDatabase database) {
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
           return Scaffold(
-            body: Row(
+            body: Column(
               children: [
-                Sidebar(
-                  currentPath: state.uri.path,
-                  onDestinationSelected: (path) {
-                    context.go(path);
-                  },
-                ),
+                const ConnectionStatusBanner(),
                 Expanded(
-                  child: child,
+                  child: Row(
+                    children: [
+                      Sidebar(
+                        currentPath: state.uri.path,
+                        onDestinationSelected: (path) {
+                          context.go(path);
+                        },
+                      ),
+                      Expanded(
+                        child: child,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

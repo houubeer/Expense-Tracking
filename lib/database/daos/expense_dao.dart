@@ -2,12 +2,15 @@ import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/expenses_table.dart';
 import '../tables/categories_table.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 
 part 'expense_dao.g.dart';
 
 @DriftAccessor(tables: [Expenses, Categories])
 class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
-  ExpenseDao(super.db);
+  final ConnectivityService? _connectivityService;
+
+  ExpenseDao(super.db, [this._connectivityService]);
 
   // Watch all expenses
   Stream<List<Expense>> watchAllExpenses() {
@@ -35,7 +38,16 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   }
 
   // Get all expenses
-  Future<List<Expense>> getAllExpenses() => select(expenses).get();
+  Future<List<Expense>> getAllExpenses() async {
+    try {
+      final result = await select(expenses).get();
+      _connectivityService?.markSuccessfulOperation();
+      return result;
+    } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
+      rethrow;
+    }
+  }
 
   // Insert expense (category spent updates handled by service layer)
   Future<int> insertExpense(ExpensesCompanion expense) async {
@@ -68,8 +80,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
       final id = await into(expenses).insert(expense);
 
+      _connectivityService?.markSuccessfulOperation();
       return id;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to insert expense - $e');
     }
   }
@@ -108,8 +122,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
       final result = await update(expenses).replace(expense);
 
+      _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to update expense - $e');
     }
   }
@@ -128,8 +144,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       final result =
           await (delete(expenses)..where((e) => e.id.equals(id))).go();
 
+      _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
       throw Exception('Database error: Failed to delete expense - $e');
     }
   }
@@ -155,20 +173,26 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
   // Get total expenses by category (non-reactive)
   Future<Map<int, double>> getExpensesSumByCategory() async {
-    final query = selectOnly(expenses)
-      ..addColumns([expenses.categoryId, expenses.amount.sum()]);
-    query.groupBy([expenses.categoryId]);
+    try {
+      final query = selectOnly(expenses)
+        ..addColumns([expenses.categoryId, expenses.amount.sum()]);
+      query.groupBy([expenses.categoryId]);
 
-    final rows = await query.get();
-    final result = <int, double>{};
-    for (final row in rows) {
-      final categoryId = row.read(expenses.categoryId);
-      final sum = row.read(expenses.amount.sum()) ?? 0.0;
-      if (categoryId != null) {
-        result[categoryId] = sum;
+      final rows = await query.get();
+      final result = <int, double>{};
+      for (final row in rows) {
+        final categoryId = row.read(expenses.categoryId);
+        final sum = row.read(expenses.amount.sum()) ?? 0.0;
+        if (categoryId != null) {
+          result[categoryId] = sum;
+        }
       }
+      _connectivityService?.markSuccessfulOperation();
+      return result;
+    } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
+      rethrow;
     }
-    return result;
   }
 }
 

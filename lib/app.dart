@@ -4,17 +4,24 @@ import 'package:expense_tracking_desktop_app/theme/app_theme.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/routes/router.dart' as app_router;
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 
 class ExpenseTrackerApp extends StatelessWidget {
   final AppDatabase database;
+  final ConnectivityService connectivityService;
 
-  const ExpenseTrackerApp({super.key, required this.database});
+  const ExpenseTrackerApp({
+    super.key,
+    required this.database,
+    required this.connectivityService,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
         databaseProvider.overrideWithValue(database),
+        connectivityServiceProvider.overrideWithValue(connectivityService),
       ],
       child: MaterialApp.router(
         routerConfig: app_router.createRouter(database),

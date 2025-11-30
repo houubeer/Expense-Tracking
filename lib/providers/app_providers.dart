@@ -9,6 +9,12 @@ import 'package:expense_tracking_desktop_app/features/expenses/repositories/expe
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+
+/// Connectivity service provider - tracks database/filesystem connection state
+final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
+  throw UnimplementedError('ConnectivityService provider must be overridden');
+});
 
 /// Database provider - the single source of truth
 final databaseProvider = Provider<AppDatabase>((ref) {
