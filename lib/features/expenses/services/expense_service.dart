@@ -7,8 +7,32 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 
-/// Service layer for expense-related business logic
-/// Handles expense operations and category spent updates with transactional safety
+/// Service layer for expense-related business logic.
+///
+/// Orchestrates expense operations with transactional safety, ensuring database
+/// consistency when creating, updating, or deleting expenses with associated
+/// category budget updates.
+///
+/// **Responsibilities:**
+/// - Create expenses and update category budgets atomically
+/// - Update expenses with proper budget recalculation
+/// - Delete expenses and adjust category spent amounts
+/// - Ensure all operations are wrapped in transactions
+///
+/// **Transaction Management:**
+/// All operations that modify both expenses and category budgets are wrapped
+/// in database transactions to maintain data consistency. If any step fails,
+/// the entire operation is rolled back.
+///
+/// Example:
+/// ```dart
+/// final service = ref.read(expenseServiceProvider);
+/// await service.createExpense(ExpensesCompanion(
+///   description: Value('Groceries'),
+///   amount: Value(50.0),
+///   categoryId: Value(1),
+/// ));
+/// ```
 class ExpenseService implements IExpenseService {
   final IExpenseRepository _expenseRepository;
   final ICategoryReader _categoryReader;
@@ -16,6 +40,12 @@ class ExpenseService implements IExpenseService {
   final IDatabase _database;
   final _logger = LoggerService.instance;
 
+  /// Creates a new [ExpenseService] instance.
+  ///
+  /// [_expenseRepository] Repository for expense data access.
+  /// [_categoryReader] Reader for querying category information.
+  /// [_categoryBudgetManager] Manager for updating category budgets.
+  /// [_database] Database interface for transaction support.
   ExpenseService(
     this._expenseRepository,
     this._categoryReader,
@@ -23,6 +53,32 @@ class ExpenseService implements IExpenseService {
     this._database,
   );
 
+  /// Creates a new expense and updates the associated category's spent amount.
+  ///
+  /// This operation is executed within a transaction to ensure atomicity. If the
+  /// expense is successfully inserted, the category's spent amount is incremented
+  /// by the expense amount. If any step fails, the entire operation is rolled back.
+  ///
+  /// **Process:**
+  /// 1. Insert expense into database
+  /// 2. Retrieve category information
+  /// 3. Update category spent amount (spent + amount)
+  ///
+  /// [expense] The expense data to create.
+  ///
+  /// Returns the ID of the newly created expense.
+  ///
+  /// Throws [DatabaseException] if the operation fails.
+  ///
+  /// Example:
+  /// ```dart
+  /// final id = await service.createExpense(ExpensesCompanion(
+  ///   description: Value('Coffee'),
+  ///   amount: Value(5.0),
+  ///   categoryId: Value(3),
+  /// ));
+  /// print('Created expense with ID: $id');
+  /// ```
   @override
   Future<int> createExpense(ExpensesCompanion expense) async {
     try {
@@ -41,6 +97,7 @@ class ExpenseService implements IExpenseService {
             await _categoryBudgetManager.updateCategorySpent(
               category.id,
               category.spent + amount,
+              category.version,
             );
           } else {
             _logger.warning('Category not found for expense creation: $categoryId');
@@ -55,6 +112,25 @@ class ExpenseService implements IExpenseService {
     }
   }
 
+  /// Updates an existing expense and recalculates category spent amounts.
+  ///
+  /// This operation handles three scenarios within a transaction:
+  /// - **Category changed**: Subtract from old category, add to new category
+  /// - **Same category, amount changed**: Adjust category spent by difference
+  /// - **No budget impact**: Only update expense data
+  ///
+  /// [oldExpense] The expense before modification.
+  /// [newExpense] The expense with updated values.
+  ///
+  /// Throws [DatabaseException] if the operation fails.
+  ///
+  /// Example:
+  /// ```dart
+  /// await service.updateExpense(
+  ///   oldExpense,
+  ///   oldExpense.copyWith(amount: 75.0),
+  /// );
+  /// ```
   @override
   Future<void> updateExpense(
     Expense oldExpense,
@@ -80,6 +156,7 @@ class ExpenseService implements IExpenseService {
             await _categoryBudgetManager.updateCategorySpent(
               oldCategory.id,
               (oldCategory.spent - oldAmount).clamp(0.0, double.infinity),
+              oldCategory.version,
             );
           }
 
@@ -90,6 +167,7 @@ class ExpenseService implements IExpenseService {
             await _categoryBudgetManager.updateCategorySpent(
               newCategory.id,
               newCategory.spent + newAmount,
+              newCategory.version,
             );
           }
         } else if (oldAmount != newAmount) {
@@ -100,6 +178,7 @@ class ExpenseService implements IExpenseService {
             await _categoryBudgetManager.updateCategorySpent(
               category.id,
               (category.spent + amountDiff).clamp(0.0, double.infinity),
+              category.version,
             );
           }
         }
@@ -110,6 +189,26 @@ class ExpenseService implements IExpenseService {
     }
   }
 
+  /// Deletes an expense and adjusts the category's spent amount.
+  ///
+  /// This operation is executed within a transaction to ensure atomicity. The
+  /// category's spent amount is decremented by the expense amount (clamped to
+  /// prevent negative values).
+  ///
+  /// **Process:**
+  /// 1. Delete expense from database
+  /// 2. Retrieve category information
+  /// 3. Update category spent amount (spent - amount, minimum 0)
+  ///
+  /// [expense] The expense to delete.
+  ///
+  /// Throws [DatabaseException] if the operation fails.
+  ///
+  /// Example:
+  /// ```dart
+  /// await service.deleteExpense(expense);
+  /// print('Expense deleted and budget updated');
+  /// ```
   @override
   Future<void> deleteExpense(Expense expense) async {
     try {
@@ -125,6 +224,7 @@ class ExpenseService implements IExpenseService {
           await _categoryBudgetManager.updateCategorySpent(
             category.id,
             (category.spent - expense.amount).clamp(0.0, double.infinity),
+            category.version,
           );
         }
       });

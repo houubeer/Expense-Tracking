@@ -279,6 +279,135 @@ This project is developed and maintained by a dedicated team of developers:
 | **Aya Brahimi**                    | [@Aya-Brahimi](https://github.com/Aya-Brahimi)       |
 | **Enzo Chaabnia**                  | [@ENZOdz23](https://github.com/ENZOdz23)             |
 
+## Running Tests
+
+This project includes comprehensive unit tests and integration tests to ensure code quality and reliability.
+
+### Unit Tests
+
+Run all unit tests with:
+
+```bash
+flutter test
+```
+
+Run tests with coverage:
+
+```bash
+flutter test --coverage
+```
+
+View coverage report:
+
+```bash
+# Install lcov if not already installed
+# On macOS: brew install lcov
+# On Ubuntu: sudo apt-get install lcov
+# On Windows: Use WSL or install via Chocolatey
+
+# Generate HTML report
+genhtml coverage/lcov.info -o coverage/html
+
+# Open in browser
+# Windows: start coverage/html/index.html
+# macOS: open coverage/html/index.html
+# Linux: xdg-open coverage/html/index.html
+```
+
+### Integration Tests
+
+Run integration tests:
+
+```bash
+flutter test integration_test
+```
+
+### Test Organization
+
+Tests are organized as follows:
+- `test/unit/` - Unit tests for individual components, services, repositories, and DAOs
+- `integration_test/` - End-to-end integration tests for complete user flows
+
+## Architecture Overview
+
+This application follows a **layered architecture** pattern to ensure clean separation of concerns, testability, and maintainability.
+
+### Layered Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│              UI Layer (Screens)                  │
+│  - ExpenseTable, AddExpenseScreen, etc.         │
+│  - Renders UI and handles user interactions     │
+└────────────────┬────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────┐
+│          ViewModel Layer                         │
+│  - AddExpenseViewModel, etc.                    │
+│  - Manages UI state and validation logic        │
+└────────────────┬────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────┐
+│          Service Layer                           │
+│  - ExpenseService, LoggerService, etc.          │
+│  - Business logic, transactions, error handling │
+└────────────────┬────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────┐
+│         Repository Layer                         │
+│  - ExpenseRepository, CategoryRepository        │
+│  - Abstracts data access, maps domain objects   │
+└────────────────┬────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────┐
+│            DAO Layer                             │
+│  - ExpenseDao, CategoryDao                      │
+│  - Direct database operations via Drift         │
+└────────────────┬────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────┐
+│          Database Layer                          │
+│  - AppDatabase (Drift + SQLite)                 │
+│  - Schema, migrations, health checks            │
+└─────────────────────────────────────────────────┘
+```
+
+### Key Principles
+
+- **Single Responsibility**: Each layer has a well-defined purpose
+- **Dependency Inversion**: Upper layers depend on abstractions (interfaces), not concrete implementations
+- **Interface Segregation**: Small, focused interfaces (e.g., `ICategoryReader`, `ICategoryBudgetManager`)
+- **Transaction Safety**: All multi-step operations wrapped in database transactions
+- **Error Handling**: Comprehensive logging and custom exceptions (`DatabaseException`, `ValidationException`)
+
+### Data Flow
+
+**Creating an Expense (Top to Bottom):**
+1. **UI Layer**: User fills form → `AddExpenseScreen`
+2. **ViewModel**: Validates input → `AddExpenseViewModel`
+3. **Service**: Orchestrates transaction → `ExpenseService.createExpense()`
+4. **Repository**: Maps domain objects → `ExpenseRepository.insertExpense()`
+5. **DAO**: Executes SQL → `ExpenseDao.insertExpense()`
+6. **Database**: Persists data → SQLite
+
+**Displaying Expenses (Bottom to Top):**
+1. **Database**: Data changes trigger stream updates
+2. **DAO**: Watches table → `ExpenseDao.watchExpensesWithCategory()`
+3. **Repository**: Maps to domain objects → Stream transformation
+4. **Service**: Consumed by UI (or additional business logic)
+5. **ViewModel**: Manages state for UI
+6. **UI Layer**: Reactive rebuild → `ExpenseTable` displays data
+
+### Cross-Cutting Concerns
+
+- **Logging**: `LoggerService` used throughout all layers for debugging and monitoring
+- **Error Reporting**: `ErrorReportingService` captures and logs exceptions with context
+- **Connectivity**: `ConnectivityService` monitors network status (future cloud sync)
+
+For detailed implementation, see:
+- [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md) - Logging system details
+- [lib/STRUCTURE.md](lib/STRUCTURE.md) - Project structure overview
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

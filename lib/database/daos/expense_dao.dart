@@ -7,6 +7,15 @@ import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 
 part 'expense_dao.g.dart';
 
+/// Data Access Object for managing Expense-related database operations.
+///
+/// This class provides methods to:
+/// - CRUD operations for [Expense] entities.
+/// - Filtered querying of expenses with category information.
+/// - Aggregation of expenses by category for budgeting.
+///
+/// It uses [ConnectivityService] to track the success/failure of operations
+/// and [LoggerService] for detailed logging.
 @DriftAccessor(tables: [Expenses, Categories])
 class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   final ConnectivityService? _connectivityService;
@@ -14,7 +23,9 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
   ExpenseDao(super.db, [this._connectivityService]);
 
-  // Watch all expenses
+  /// Watches all expenses ordered by date (descending).
+  ///
+  /// Returns a [Stream] of [List<Expense>].
   Stream<List<Expense>> watchAllExpenses() {
     return (select(expenses)
           ..orderBy([
@@ -23,7 +34,13 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
         .watch();
   }
 
-  // Watch expenses with category info and filtering
+  /// Watches expenses with their associated category, applying optional filters.
+  ///
+  /// [searchQuery] - Filters by expense description or category name (case-insensitive).
+  /// [categoryId] - Filters by a specific category ID.
+  /// [date] - Filters by a specific date (matches the entire day).
+  ///
+  /// Returns a [Stream] of [List<ExpenseWithCategory>] ordered by date (descending).
   Stream<List<ExpenseWithCategory>> watchExpensesWithCategory({
     String? searchQuery,
     int? categoryId,
@@ -64,7 +81,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     });
   }
 
-  // Get all expenses
+  /// Retrieves all expenses from the database.
+  ///
+  /// Returns a [Future] containing a [List<Expense>].
+  /// Logs the operation and updates connectivity status.
+  /// Throws generic exceptions if the database operation fails.
   Future<List<Expense>> getAllExpenses() async {
     try {
       _logger.debug('ExpenseDao: getAllExpenses called');
@@ -79,7 +100,13 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     }
   }
 
-  // Insert expense (PURE CRUD ONLY)
+  /// Inserts a new expense into the database.
+  ///
+  /// [expense] - The [ExpensesCompanion] containing the data to insert.
+  ///
+  /// Returns the ID of the inserted expense.
+  /// Note: This is a pure CRUD operation. Business logic (like updating category budgets)
+  /// should be handled by the Service layer.
   Future<int> insertExpense(ExpensesCompanion expense) async {
     try {
       final id = await into(expenses).insert(expense);
@@ -93,7 +120,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     }
   }
 
-  // Update expense (PURE CRUD ONLY)
+  /// Updates an existing expense in the database.
+  ///
+  /// [expense] - The [Expense] object with updated values.
+  ///
+  /// Returns `true` if the update was successful.
   Future<bool> updateExpense(Expense expense) async {
     try {
       final result = await update(expenses).replace(expense);
@@ -107,7 +138,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     }
   }
 
-  // Delete expense (PURE CRUD ONLY)
+  /// Deletes an expense from the database by its ID.
+  ///
+  /// [id] - The unique identifier of the expense to delete.
+  ///
+  /// Returns the number of rows affected (should be 1).
   Future<int> deleteExpense(int id) async {
     try {
       final result = await (delete(expenses)..where((e) => e.id.equals(id))).go();
@@ -121,7 +156,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     }
   }
 
-  // Watch aggregated expenses by category (for budget tracking)
+  /// Watches the total sum of expenses grouped by category.
+  ///
+  /// Returns a [Stream] of a Map where the key is the Category ID and the value is the total amount.
+  /// Useful for real-time budget tracking.
   Stream<Map<int, double>> watchExpensesSumByCategory() {
     final query = selectOnly(expenses)
       ..addColumns([expenses.categoryId, expenses.amount.sum()]);
@@ -140,7 +178,9 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     });
   }
 
-  // Get total expenses by category (non-reactive)
+  /// Retrieves the total sum of expenses grouped by category (one-time query).
+  ///
+  /// Returns a [Future] of a Map where the key is the Category ID and the value is the total amount.
   Future<Map<int, double>> getExpensesSumByCategory() async {
     try {
       final query = selectOnly(expenses)
