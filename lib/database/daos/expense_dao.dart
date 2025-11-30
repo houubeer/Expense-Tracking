@@ -40,6 +40,32 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   // Insert expense and update category spent
   Future<int> insertExpense(ExpensesCompanion expense) async {
     try {
+      // Validate amount
+      if (expense.amount.present) {
+        final amount = expense.amount.value;
+        if (amount <= 0) {
+          throw Exception('Amount must be greater than 0, got: $amount');
+        }
+        if (amount > 1000000000) {
+          throw Exception('Amount is too large: $amount');
+        }
+      }
+      
+      // Validate date
+      if (expense.date.present) {
+        final date = expense.date.value;
+        final now = DateTime.now();
+        final futureLimit = DateTime(now.year + 1, now.month, now.day);
+        final pastLimit = DateTime(now.year - 10, now.month, now.day);
+        
+        if (date.isAfter(futureLimit)) {
+          throw Exception('Date cannot be more than 1 year in the future');
+        }
+        if (date.isBefore(pastLimit)) {
+          throw Exception('Date cannot be more than 10 years in the past');
+        }
+      }
+      
       final id = await into(expenses).insert(expense);
 
       // Update category spent amount
@@ -66,6 +92,26 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   // Update expense and adjust category spent
   Future<bool> updateExpense(Expense expense) async {
     try {
+      // Validate amount
+      if (expense.amount <= 0) {
+        throw Exception('Amount must be greater than 0, got: ${expense.amount}');
+      }
+      if (expense.amount > 1000000000) {
+        throw Exception('Amount is too large: ${expense.amount}');
+      }
+      
+      // Validate date
+      final now = DateTime.now();
+      final futureLimit = DateTime(now.year + 1, now.month, now.day);
+      final pastLimit = DateTime(now.year - 10, now.month, now.day);
+      
+      if (expense.date.isAfter(futureLimit)) {
+        throw Exception('Date cannot be more than 1 year in the future');
+      }
+      if (expense.date.isBefore(pastLimit)) {
+        throw Exception('Date cannot be more than 10 years in the past');
+      }
+      
       // Get the old expense to calculate the difference
       final oldExpense = await (select(expenses)
             ..where((e) => e.id.equals(expense.id)))

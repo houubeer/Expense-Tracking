@@ -196,6 +196,27 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     }
 
     final budget = double.tryParse(_budgetController.text) ?? 0.0;
+    
+    // Validate budget is not negative
+    if (budget < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Budget cannot be negative'),
+        ),
+      );
+      return;
+    }
+    
+    // Validate budget is reasonable (not more than 1 billion)
+    if (budget > 1000000000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Budget value is too large'),
+        ),
+      );
+      return;
+    }
+    
     widget.onAdd(
       _nameController.text,
       budget,

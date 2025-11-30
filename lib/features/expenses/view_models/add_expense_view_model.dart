@@ -46,9 +46,35 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
   /// Submit expense to database
   Future<void> submitExpense() async {
-    // Validate controllers have data
-    if (state.amountController.text.isEmpty) return;
-    if (state.selectedCategoryId == null) return;
+    // Validate amount
+    final amountError = validateAmount(state.amountController.text);
+    if (amountError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: amountError,
+      );
+      return;
+    }
+
+    // Validate category
+    final categoryError = validateCategory(state.selectedCategoryId);
+    if (categoryError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: categoryError,
+      );
+      return;
+    }
+
+    // Validate date
+    final dateError = validateDate(state.selectedDate);
+    if (dateError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: dateError,
+      );
+      return;
+    }
 
     // Set submitting status
     state = state.copyWith(status: SubmissionStatus.submitting);
@@ -84,8 +110,35 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   Future<void> updateExpense({
     required Expense oldExpense,
   }) async {
-    if (state.amountController.text.isEmpty) return;
-    if (state.selectedCategoryId == null) return;
+    // Validate amount
+    final amountError = validateAmount(state.amountController.text);
+    if (amountError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: amountError,
+      );
+      return;
+    }
+
+    // Validate category
+    final categoryError = validateCategory(state.selectedCategoryId);
+    if (categoryError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: categoryError,
+      );
+      return;
+    }
+
+    // Validate date
+    final dateError = validateDate(state.selectedDate);
+    if (dateError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: dateError,
+      );
+      return;
+    }
 
     state = state.copyWith(status: SubmissionStatus.submitting);
 
@@ -151,6 +204,23 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     if (categoryId == null) {
       return 'Please select a category';
     }
+    return null;
+  }
+
+  String? validateDate(DateTime date) {
+    final now = DateTime.now();
+    final futureLimit = DateTime(now.year + 1, now.month, now.day);
+    
+    if (date.isAfter(futureLimit)) {
+      return 'Date cannot be more than 1 year in the future';
+    }
+    
+    // Allow dates up to 10 years in the past for historical data
+    final pastLimit = DateTime(now.year - 10, now.month, now.day);
+    if (date.isBefore(pastLimit)) {
+      return 'Date cannot be more than 10 years in the past';
+    }
+    
     return null;
   }
 }

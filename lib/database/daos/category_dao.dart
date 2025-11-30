@@ -27,6 +27,25 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Insert category
   Future<int> insertCategory(CategoriesCompanion category) async {
     try {
+      // Validate budget
+      if (category.budget.present) {
+        final budget = category.budget.value;
+        if (budget < 0) {
+          throw Exception('Budget cannot be negative, got: $budget');
+        }
+        if (budget > 1000000000) {
+          throw Exception('Budget is too large: $budget');
+        }
+      }
+      
+      // Validate spent
+      if (category.spent.present) {
+        final spent = category.spent.value;
+        if (spent < 0) {
+          throw Exception('Spent amount cannot be negative, got: $spent');
+        }
+      }
+      
       return await into(categories).insert(category);
     } catch (e) {
       throw Exception('Database error: Failed to insert category - $e');
@@ -36,6 +55,13 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Update category budget
   Future<int> updateCategoryBudget(int id, double budget) async {
     try {
+      if (budget < 0) {
+        throw Exception('Budget cannot be negative, got: $budget');
+      }
+      if (budget > 1000000000) {
+        throw Exception('Budget is too large: $budget');
+      }
+      
       return await (update(categories)..where((c) => c.id.equals(id)))
           .write(CategoriesCompanion(budget: Value(budget)));
     } catch (e) {
@@ -46,6 +72,10 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Update category spent
   Future<int> updateCategorySpent(int id, double spent) async {
     try {
+      if (spent < 0) {
+        throw Exception('Spent amount cannot be negative, got: $spent');
+      }
+      
       return await (update(categories)..where((c) => c.id.equals(id)))
           .write(CategoriesCompanion(spent: Value(spent)));
     } catch (e) {
@@ -56,6 +86,19 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
   // Update category
   Future<bool> updateCategory(Category category) async {
     try {
+      // Validate budget
+      if (category.budget < 0) {
+        throw Exception('Budget cannot be negative, got: ${category.budget}');
+      }
+      if (category.budget > 1000000000) {
+        throw Exception('Budget is too large: ${category.budget}');
+      }
+      
+      // Validate spent
+      if (category.spent < 0) {
+        throw Exception('Spent amount cannot be negative, got: ${category.spent}');
+      }
+      
       return await update(categories).replace(category);
     } catch (e) {
       throw Exception('Database error: Failed to update category - $e');
