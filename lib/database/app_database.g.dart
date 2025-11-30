@@ -51,6 +51,14 @@ class $CategoriesTable extends Categories
       type: DriftSqlType.double,
       requiredDuringInsert: false,
       defaultValue: const Constant(0.0));
+  static const VerificationMeta _versionMeta =
+      const VerificationMeta('version');
+  @override
+  late final GeneratedColumn<int> version = GeneratedColumn<int>(
+      'version', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -61,7 +69,7 @@ class $CategoriesTable extends Categories
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, color, iconCodePoint, budget, spent, createdAt];
+      [id, name, color, iconCodePoint, budget, spent, version, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -103,6 +111,10 @@ class $CategoriesTable extends Categories
       context.handle(
           _spentMeta, spent.isAcceptableOrUnknown(data['spent']!, _spentMeta));
     }
+    if (data.containsKey('version')) {
+      context.handle(_versionMeta,
+          version.isAcceptableOrUnknown(data['version']!, _versionMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -128,6 +140,8 @@ class $CategoriesTable extends Categories
           .read(DriftSqlType.double, data['${effectivePrefix}budget'])!,
       spent: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}spent'])!,
+      version: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}version'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -146,6 +160,7 @@ class Category extends DataClass implements Insertable<Category> {
   final String iconCodePoint;
   final double budget;
   final double spent;
+  final int version;
   final DateTime createdAt;
   const Category(
       {required this.id,
@@ -154,6 +169,7 @@ class Category extends DataClass implements Insertable<Category> {
       required this.iconCodePoint,
       required this.budget,
       required this.spent,
+      required this.version,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -164,6 +180,7 @@ class Category extends DataClass implements Insertable<Category> {
     map['icon_code_point'] = Variable<String>(iconCodePoint);
     map['budget'] = Variable<double>(budget);
     map['spent'] = Variable<double>(spent);
+    map['version'] = Variable<int>(version);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -176,6 +193,7 @@ class Category extends DataClass implements Insertable<Category> {
       iconCodePoint: Value(iconCodePoint),
       budget: Value(budget),
       spent: Value(spent),
+      version: Value(version),
       createdAt: Value(createdAt),
     );
   }
@@ -190,6 +208,7 @@ class Category extends DataClass implements Insertable<Category> {
       iconCodePoint: serializer.fromJson<String>(json['iconCodePoint']),
       budget: serializer.fromJson<double>(json['budget']),
       spent: serializer.fromJson<double>(json['spent']),
+      version: serializer.fromJson<int>(json['version']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -203,6 +222,7 @@ class Category extends DataClass implements Insertable<Category> {
       'iconCodePoint': serializer.toJson<String>(iconCodePoint),
       'budget': serializer.toJson<double>(budget),
       'spent': serializer.toJson<double>(spent),
+      'version': serializer.toJson<int>(version),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -214,6 +234,7 @@ class Category extends DataClass implements Insertable<Category> {
           String? iconCodePoint,
           double? budget,
           double? spent,
+          int? version,
           DateTime? createdAt}) =>
       Category(
         id: id ?? this.id,
@@ -222,6 +243,7 @@ class Category extends DataClass implements Insertable<Category> {
         iconCodePoint: iconCodePoint ?? this.iconCodePoint,
         budget: budget ?? this.budget,
         spent: spent ?? this.spent,
+        version: version ?? this.version,
         createdAt: createdAt ?? this.createdAt,
       );
   Category copyWithCompanion(CategoriesCompanion data) {
@@ -234,6 +256,7 @@ class Category extends DataClass implements Insertable<Category> {
           : this.iconCodePoint,
       budget: data.budget.present ? data.budget.value : this.budget,
       spent: data.spent.present ? data.spent.value : this.spent,
+      version: data.version.present ? data.version.value : this.version,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -247,14 +270,15 @@ class Category extends DataClass implements Insertable<Category> {
           ..write('iconCodePoint: $iconCodePoint, ')
           ..write('budget: $budget, ')
           ..write('spent: $spent, ')
+          ..write('version: $version, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, color, iconCodePoint, budget, spent, createdAt);
+  int get hashCode => Object.hash(
+      id, name, color, iconCodePoint, budget, spent, version, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -265,6 +289,7 @@ class Category extends DataClass implements Insertable<Category> {
           other.iconCodePoint == this.iconCodePoint &&
           other.budget == this.budget &&
           other.spent == this.spent &&
+          other.version == this.version &&
           other.createdAt == this.createdAt);
 }
 
@@ -275,6 +300,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<String> iconCodePoint;
   final Value<double> budget;
   final Value<double> spent;
+  final Value<int> version;
   final Value<DateTime> createdAt;
   const CategoriesCompanion({
     this.id = const Value.absent(),
@@ -283,6 +309,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     this.iconCodePoint = const Value.absent(),
     this.budget = const Value.absent(),
     this.spent = const Value.absent(),
+    this.version = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   CategoriesCompanion.insert({
@@ -292,6 +319,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     required String iconCodePoint,
     this.budget = const Value.absent(),
     this.spent = const Value.absent(),
+    this.version = const Value.absent(),
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
         color = Value(color),
@@ -303,6 +331,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     Expression<String>? iconCodePoint,
     Expression<double>? budget,
     Expression<double>? spent,
+    Expression<int>? version,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -312,6 +341,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
       if (budget != null) 'budget': budget,
       if (spent != null) 'spent': spent,
+      if (version != null) 'version': version,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -323,6 +353,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       Value<String>? iconCodePoint,
       Value<double>? budget,
       Value<double>? spent,
+      Value<int>? version,
       Value<DateTime>? createdAt}) {
     return CategoriesCompanion(
       id: id ?? this.id,
@@ -331,6 +362,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
       iconCodePoint: iconCodePoint ?? this.iconCodePoint,
       budget: budget ?? this.budget,
       spent: spent ?? this.spent,
+      version: version ?? this.version,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -356,6 +388,9 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (spent.present) {
       map['spent'] = Variable<double>(spent.value);
     }
+    if (version.present) {
+      map['version'] = Variable<int>(version.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -371,6 +406,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
           ..write('iconCodePoint: $iconCodePoint, ')
           ..write('budget: $budget, ')
           ..write('spent: $spent, ')
+          ..write('version: $version, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -740,6 +776,7 @@ typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
   required String iconCodePoint,
   Value<double> budget,
   Value<double> spent,
+  Value<int> version,
   Value<DateTime> createdAt,
 });
 typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
@@ -749,6 +786,7 @@ typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
   Value<String> iconCodePoint,
   Value<double> budget,
   Value<double> spent,
+  Value<int> version,
   Value<DateTime> createdAt,
 });
 
@@ -798,6 +836,9 @@ class $$CategoriesTableFilterComposer
 
   ColumnFilters<double> get spent => $composableBuilder(
       column: $table.spent, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -852,6 +893,9 @@ class $$CategoriesTableOrderingComposer
   ColumnOrderings<double> get spent => $composableBuilder(
       column: $table.spent, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get version => $composableBuilder(
+      column: $table.version, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
@@ -882,6 +926,9 @@ class $$CategoriesTableAnnotationComposer
 
   GeneratedColumn<double> get spent =>
       $composableBuilder(column: $table.spent, builder: (column) => column);
+
+  GeneratedColumn<int> get version =>
+      $composableBuilder(column: $table.version, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -937,6 +984,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
             Value<String> iconCodePoint = const Value.absent(),
             Value<double> budget = const Value.absent(),
             Value<double> spent = const Value.absent(),
+            Value<int> version = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
           }) =>
               CategoriesCompanion(
@@ -946,6 +994,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
             iconCodePoint: iconCodePoint,
             budget: budget,
             spent: spent,
+            version: version,
             createdAt: createdAt,
           ),
           createCompanionCallback: ({
@@ -955,6 +1004,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
             required String iconCodePoint,
             Value<double> budget = const Value.absent(),
             Value<double> spent = const Value.absent(),
+            Value<int> version = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
           }) =>
               CategoriesCompanion.insert(
@@ -964,6 +1014,7 @@ class $$CategoriesTableTableManager extends RootTableManager<
             iconCodePoint: iconCodePoint,
             budget: budget,
             spent: spent,
+            version: version,
             createdAt: createdAt,
           ),
           withReferenceMapper: (p0) => p0

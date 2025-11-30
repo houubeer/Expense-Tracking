@@ -63,7 +63,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
 
       try {
         final amount = double.parse(_amountController.text);
-        
+
         // Validate amount is positive
         if (amount <= 0) {
           final colorScheme = Theme.of(context).colorScheme;
@@ -75,34 +75,36 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           );
           return;
         }
-        
+
         // Validate date is reasonable
         final now = DateTime.now();
         final futureLimit = DateTime(now.year + 1, now.month, now.day);
         final pastLimit = DateTime(now.year - 10, now.month, now.day);
-        
+
         if (_selectedDate.isAfter(futureLimit)) {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Date cannot be more than 1 year in the future'),
+              content:
+                  const Text('Date cannot be more than 1 year in the future'),
               backgroundColor: colorScheme.error,
             ),
           );
           return;
         }
-        
+
         if (_selectedDate.isBefore(pastLimit)) {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Date cannot be more than 10 years in the past'),
+              content:
+                  const Text('Date cannot be more than 10 years in the past'),
               backgroundColor: colorScheme.error,
             ),
           );
           return;
         }
-        
+
         final description = _descriptionController.text;
 
         final originalExpense = widget.expenseWithCategory.expense;

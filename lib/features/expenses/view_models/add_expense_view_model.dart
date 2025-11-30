@@ -210,17 +210,17 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   String? validateDate(DateTime date) {
     final now = DateTime.now();
     final futureLimit = DateTime(now.year + 1, now.month, now.day);
-    
+
     if (date.isAfter(futureLimit)) {
       return 'Date cannot be more than 1 year in the future';
     }
-    
+
     // Allow dates up to 10 years in the past for historical data
     final pastLimit = DateTime(now.year - 10, now.month, now.day);
     if (date.isBefore(pastLimit)) {
       return 'Date cannot be more than 10 years in the past';
     }
-    
+
     return null;
   }
 }

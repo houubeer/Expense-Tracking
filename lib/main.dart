@@ -4,19 +4,19 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   AppDatabase? database;
-  
+
   try {
     database = AppDatabase();
-    
+
     // Verify database connection with a simple query
     await database.customSelect('SELECT 1').get();
-    
+
     print('Database connection established successfully');
   } catch (e) {
     print('FATAL: Failed to initialize database: $e');
-    
+
     // Show error dialog and exit
     runApp(
       MaterialApp(
@@ -54,6 +54,6 @@ void main() async {
     );
     return;
   }
-  
+
   runApp(ExpenseTrackerApp(database: database));
 }

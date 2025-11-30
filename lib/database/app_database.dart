@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,6 +43,10 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
           if (from < 4) {
             // Add expenses table
             await m.createTable(expenses);
+          }
+          if (from < 5) {
+            // Add version column to categories for optimistic locking
+            await m.addColumn(categories, categories.version);
           }
         },
         beforeOpen: (details) async {
@@ -61,22 +65,23 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
     try {
       // Test basic query execution
       await customSelect('SELECT 1').get();
-      
+
       // Verify tables exist
       final tables = await customSelect(
         "SELECT name FROM sqlite_master WHERE type='table'",
       ).get();
-      
+
       if (tables.isEmpty) {
         throw Exception('No tables found in database');
       }
-      
+
       // Run integrity check
       final integrity = await customSelect('PRAGMA integrity_check').get();
-      if (integrity.isEmpty || integrity.first.data['integrity_check'] != 'ok') {
+      if (integrity.isEmpty ||
+          integrity.first.data['integrity_check'] != 'ok') {
         throw Exception('Database integrity check failed');
       }
-      
+
       return true;
     } catch (e) {
       print('Database health check failed: $e');
@@ -89,10 +94,10 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
     try {
       // Try to run VACUUM to clean up and optimize
       await customStatement('VACUUM');
-      
+
       // Rebuild indices if they exist
       await customStatement('REINDEX');
-      
+
       print('Database recovery attempted successfully');
     } catch (e) {
       throw Exception('Database recovery failed: $e');

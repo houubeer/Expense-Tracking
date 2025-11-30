@@ -5,7 +5,7 @@ LazyDatabase connect() {
   return LazyDatabase(() async {
     const maxRetries = 3;
     const retryDelay = Duration(milliseconds: 500);
-    
+
     for (int attempt = 0; attempt < maxRetries; attempt++) {
       try {
         final result = await WasmDatabase.open(
@@ -28,13 +28,15 @@ LazyDatabase connect() {
         return result.resolvedExecutor;
       } catch (e) {
         if (attempt == maxRetries - 1) {
-          throw Exception('Failed to connect to web database after $maxRetries attempts: $e');
+          throw Exception(
+              'Failed to connect to web database after $maxRetries attempts: $e');
         }
-        print('Web database connection attempt ${attempt + 1} failed: $e. Retrying...');
+        print(
+            'Web database connection attempt ${attempt + 1} failed: $e. Retrying...');
         await Future.delayed(retryDelay);
       }
     }
-    
+
     throw Exception('Failed to establish web database connection');
   });
 }
