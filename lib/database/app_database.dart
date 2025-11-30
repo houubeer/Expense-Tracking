@@ -14,8 +14,16 @@ part 'app_database.g.dart';
   daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase implements IDatabase {
-  AppDatabase() : super(impl.connect());
+  AppDatabase() : super(_createConnection());
   AppDatabase.forTesting(QueryExecutor e) : super(e);
+
+  static QueryExecutor _createConnection() {
+    try {
+      return impl.connect();
+    } catch (e) {
+      throw Exception('Failed to initialize database connection: $e');
+    }
+  }
 
   @override
   int get schemaVersion => 4;
@@ -46,5 +54,48 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   Future<T> transaction<T>(Future<T> Function() action,
       {bool requireNew = false}) async {
     return await super.transaction(action, requireNew: requireNew);
+  }
+
+  /// Health check to verify database connection and integrity
+  Future<bool> healthCheck() async {
+    try {
+      // Test basic query execution
+      await customSelect('SELECT 1').get();
+      
+      // Verify tables exist
+      final tables = await customSelect(
+        "SELECT name FROM sqlite_master WHERE type='table'",
+      ).get();
+      
+      if (tables.isEmpty) {
+        throw Exception('No tables found in database');
+      }
+      
+      // Run integrity check
+      final integrity = await customSelect('PRAGMA integrity_check').get();
+      if (integrity.isEmpty || integrity.first.data['integrity_check'] != 'ok') {
+        throw Exception('Database integrity check failed');
+      }
+      
+      return true;
+    } catch (e) {
+      print('Database health check failed: $e');
+      return false;
+    }
+  }
+
+  /// Attempt to recover from database errors
+  Future<void> attemptRecovery() async {
+    try {
+      // Try to run VACUUM to clean up and optimize
+      await customStatement('VACUUM');
+      
+      // Rebuild indices if they exist
+      await customStatement('REINDEX');
+      
+      print('Database recovery attempted successfully');
+    } catch (e) {
+      throw Exception('Database recovery failed: $e');
+    }
   }
 }
