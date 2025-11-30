@@ -35,7 +35,7 @@ LazyDatabase connect() {
         // ignore: avoid_print
         print(
             'Web database connection attempt ${attempt + 1} failed: $e. Retrying...');
-        await Future.delayed(retryDelay);
+        await Future<void>.delayed(retryDelay);
       }
     }
 

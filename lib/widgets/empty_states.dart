@@ -95,7 +95,7 @@ class EmptyExpensesState extends StatelessWidget {
     return EmptyStateWidget(
       icon: Icons.receipt_long_outlined,
       title: 'No Expenses Yet',
-      message: 'Start tracking your expenses by adding your first transaction.',
+      message: 'Start tracking your expenses by adding your first expense.',
       action: onAddExpense != null
           ? FilledButton.icon(
               onPressed: onAddExpense,

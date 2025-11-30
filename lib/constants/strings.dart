@@ -27,12 +27,12 @@ class AppStrings {
 
   // Screen titles
   static const String titleAddExpense = 'Add Expense';
-  static const String titleEditExpense = 'Edit Transaction';
+  static const String titleEditExpense = 'Edit Expense';
   static const String titleViewExpenses = 'Expenses';
   static const String titleBudgetManagement = 'Budget Management';
   static const String titleAddCategory = 'Add New Category';
   static const String titleDeleteCategory = 'Delete Category';
-  static const String titleDeleteTransaction = 'Delete Transaction';
+  static const String titleDeleteTransaction = 'Delete Expense';
   static const String titleBudgetOverview = 'Budget Overview';
   static const String titleRecentExpenses = 'Recent Expenses';
 
@@ -61,7 +61,7 @@ class AppStrings {
   static const String msgCategoryDeleted = 'Category deleted';
   static const String msgExpenseAdded = 'Expense added successfully';
   static const String msgExpenseUpdated = 'Expense updated successfully';
-  static const String msgTransactionDeleted = 'Transaction deleted';
+  static const String msgTransactionDeleted = 'Expense deleted';
   static const String msgNoExpensesYet = 'No expenses yet';
   static const String msgNoBudgetsYet =
       'No budgets set yet. Go to Budgets to create one.';
@@ -80,7 +80,7 @@ class AppStrings {
   static const String descDeleteCategory =
       'Are you sure you want to delete "{name}"? This action cannot be undone.';
   static const String descDeleteTransaction =
-      'Are you sure you want to delete this transaction? This action cannot be undone.';
+      'Are you sure you want to delete this expense? This action cannot be undone.';
   static const String descNoCategoriesFound = 'No categories found.';
   static const String descNoMatchingCategories =
       'No categories match your filters';

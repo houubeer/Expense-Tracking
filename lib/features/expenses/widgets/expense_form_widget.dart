@@ -13,20 +13,7 @@ import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class ExpenseFormWidget extends ConsumerStatefulWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController amountController;
-  final TextEditingController descriptionController;
-  final DateTime selectedDate;
-  final int? selectedCategoryId;
-  final Function(DateTime) onDateChanged;
-  final Function(int?) onCategoryChanged;
-  final VoidCallback? onSubmit;
-  final VoidCallback onReset;
-  final bool isEditing;
-  final bool isSubmitting;
-
   const ExpenseFormWidget({
-    super.key,
     required this.formKey,
     required this.amountController,
     required this.descriptionController,
@@ -36,9 +23,21 @@ class ExpenseFormWidget extends ConsumerStatefulWidget {
     required this.onCategoryChanged,
     required this.onSubmit,
     required this.onReset,
+    super.key,
     this.isEditing = false,
     this.isSubmitting = false,
   });
+  final GlobalKey<FormState> formKey;
+  final TextEditingController amountController;
+  final TextEditingController descriptionController;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
+  final void Function(DateTime) onDateChanged;
+  final void Function(int?) onCategoryChanged;
+  final VoidCallback? onSubmit;
+  final VoidCallback onReset;
+  final bool isEditing;
+  final bool isSubmitting;
 
   @override
   ConsumerState<ExpenseFormWidget> createState() => _ExpenseFormWidgetState();
@@ -69,19 +68,6 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                widget.isEditing ? 'Edit Expense' : 'Add New Expense',
-                style: AppTextStyles.heading1,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                widget.isEditing
-                    ? 'Update the details of your transaction'
-                    : 'Enter the details of your transaction',
-                style: AppTextStyles.bodyMedium,
-              ),
-              const SizedBox(height: AppSpacing.xxl),
-
               // Amount Field
               Text(AppStrings.labelAmount, style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),

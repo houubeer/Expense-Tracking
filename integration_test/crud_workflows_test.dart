@@ -267,7 +267,7 @@ void main() {
       if (expensesNav.evaluate().isNotEmpty) {
         await tester.tap(expensesNav.first);
         await tester.pumpAndSettle();
-        expect(find.text('Transactions'), findsAny);
+        expect(find.text('Expenses'), findsAny);
       }
 
       // Navigate to Budget

@@ -7,7 +7,7 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class Sidebar extends StatelessWidget {
   final String currentPath;
-  final Function(String) onDestinationSelected;
+  final void Function(String) onDestinationSelected;
 
   const Sidebar({
     super.key,
@@ -124,13 +124,26 @@ class Sidebar extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
               itemBuilder: (context, i) {
                 final itemPath = _items[i]["path"] as String;
-                // Check if current path starts with item path (for nested routes)
-                // Special case for root '/' to match exactly or be the only one if others don't match
+                // Match routes - only exact matches or when this is a parent
+                // AND no other more specific item exists
                 bool isSelected = false;
-                if (itemPath == '/') {
-                  isSelected = currentPath == '/';
-                } else {
-                  isSelected = currentPath.startsWith(itemPath);
+
+                if (currentPath == itemPath) {
+                  // Exact match - always select
+                  isSelected = true;
+                } else if (itemPath != '/' &&
+                    currentPath.startsWith(itemPath + '/')) {
+                  // This item is a parent of current route
+                  // Check if any other item has a more specific match
+                  final hasMoreSpecificMatch = _items.any((item) {
+                    final otherPath = item["path"] as String;
+                    return otherPath != itemPath &&
+                        otherPath.length > itemPath.length &&
+                        currentPath.startsWith(otherPath);
+                  });
+
+                  // Only select if no more specific match exists
+                  isSelected = !hasMoreSpecificMatch;
                 }
 
                 return _SidebarTile(

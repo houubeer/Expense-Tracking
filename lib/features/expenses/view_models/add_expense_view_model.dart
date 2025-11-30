@@ -6,6 +6,8 @@ import 'package:expense_tracking_desktop_app/features/expenses/providers/add_exp
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+import 'package:expense_tracking_desktop_app/core/validators/expense_validators.dart';
+import 'package:expense_tracking_desktop_app/core/errors/error_mapper.dart';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final IExpenseService _expenseService;
@@ -51,8 +53,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
   /// Submit expense to database
   Future<void> submitExpense() async {
-    // Validate amount
-    final amountError = validateAmount(state.amountController.text);
+    // Validate amount using centralized validator
+    final amountError =
+        ExpenseValidators.validateAmount(state.amountController.text);
     if (amountError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -61,8 +64,20 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       return;
     }
 
-    // Validate category
-    final categoryError = validateCategory(state.selectedCategoryId);
+    // Validate description using centralized validator
+    final descriptionError =
+        ExpenseValidators.validateDescription(state.descriptionController.text);
+    if (descriptionError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: descriptionError,
+      );
+      return;
+    }
+
+    // Validate category using centralized validator
+    final categoryError =
+        ExpenseValidators.validateCategory(state.selectedCategoryId);
     if (categoryError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -71,8 +86,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       return;
     }
 
-    // Validate date
-    final dateError = validateDate(state.selectedDate);
+    // Validate date using centralized validator
+    final dateError = ExpenseValidators.validateDate(state.selectedDate);
     if (dateError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -86,7 +101,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
     try {
       final amount = double.parse(state.amountController.text);
-      final description = state.descriptionController.text;
+      final description = state.descriptionController.text.trim();
 
       final expense = ExpensesCompanion(
         amount: drift.Value(amount),
@@ -95,8 +110,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         categoryId: drift.Value(state.selectedCategoryId!),
       );
 
-      _logger.debug(
-          'AddExpenseViewModel: Creating expense - amount=$amount, categoryId=${state.selectedCategoryId}');
+      _logger.info('AddExpenseViewModel: Creating expense');
       await _expenseService.createExpense(expense);
       _logger.info('AddExpenseViewModel: Expense created successfully');
 
@@ -108,21 +122,24 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     } catch (e, stackTrace) {
       _logger.error('AddExpenseViewModel: Failed to create expense',
           error: e, stackTrace: stackTrace);
-      await _errorReporting.reportUIError(
-        'AddExpenseViewModel',
-        'submitExpense',
-        e,
-        stackTrace: stackTrace,
-        context: {
-          'amount': state.amountController.text,
-          'categoryId': state.selectedCategoryId?.toString() ?? 'null',
-          'date': state.selectedDate.toString(),
-        },
-      );
-      // Set error status
+
+      // Only report if it's an unexpected error
+      if (ErrorMapper.shouldReportError(e)) {
+        await _errorReporting.reportUIError(
+          'AddExpenseViewModel',
+          'submitExpense',
+          e,
+          stackTrace: stackTrace,
+          context: {
+            'errorCode': ErrorMapper.getErrorCode(e),
+          },
+        );
+      }
+
+      // Set user-friendly error status
       state = state.copyWith(
         status: SubmissionStatus.error,
-        errorMessage: 'Failed to add expense: ${e.toString()}',
+        errorMessage: ErrorMapper.getUserFriendlyMessage(e),
       );
     }
   }
@@ -131,8 +148,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   Future<void> updateExpense({
     required Expense oldExpense,
   }) async {
-    // Validate amount
-    final amountError = validateAmount(state.amountController.text);
+    // Validate amount using centralized validator
+    final amountError =
+        ExpenseValidators.validateAmount(state.amountController.text);
     if (amountError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -141,8 +159,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       return;
     }
 
+    // Validate description using centralized validator
     final descriptionError =
-        validateDescription(state.descriptionController.text);
+        ExpenseValidators.validateDescription(state.descriptionController.text);
     if (descriptionError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -151,10 +170,23 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       return;
     }
 
-    if (state.selectedCategoryId == null) {
+    // Validate category
+    final categoryError =
+        ExpenseValidators.validateCategory(state.selectedCategoryId);
+    if (categoryError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
-        errorMessage: 'Please select a category',
+        errorMessage: categoryError,
+      );
+      return;
+    }
+
+    // Validate date
+    final dateError = ExpenseValidators.validateDate(state.selectedDate);
+    if (dateError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: dateError,
       );
       return;
     }
@@ -165,7 +197,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       final amount = double.parse(state.amountController.text);
       final newExpense = oldExpense.copyWith(
         amount: amount,
-        description: state.descriptionController.text,
+        description: state.descriptionController.text.trim(),
         categoryId: state.selectedCategoryId!,
         date: state.selectedDate,
       );
@@ -180,20 +212,24 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     } catch (e, stackTrace) {
       _logger.error('AddExpenseViewModel: Failed to update expense',
           error: e, stackTrace: stackTrace);
-      await _errorReporting.reportUIError(
-        'AddExpenseViewModel',
-        'updateExpense',
-        e,
-        stackTrace: stackTrace,
-        context: {
-          'expenseId': oldExpense.id.toString(),
-          'newAmount': state.amountController.text,
-          'oldAmount': oldExpense.amount.toString(),
-        },
-      );
+
+      // Only report if it's an unexpected error
+      if (ErrorMapper.shouldReportError(e)) {
+        await _errorReporting.reportUIError(
+          'AddExpenseViewModel',
+          'updateExpense',
+          e,
+          stackTrace: stackTrace,
+          context: {
+            'expenseId': oldExpense.id.toString(),
+            'errorCode': ErrorMapper.getErrorCode(e),
+          },
+        );
+      }
+
       state = state.copyWith(
         status: SubmissionStatus.error,
-        errorMessage: 'Failed to update expense: ${e.toString()}',
+        errorMessage: ErrorMapper.getUserFriendlyMessage(e),
       );
     }
   }
@@ -202,54 +238,5 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   @Deprecated('Use resetForm() instead')
   void resetState() {
     resetForm();
-  }
-
-  /// Validate form data (returns error message or null)
-  String? validateAmount(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter an amount';
-    }
-    final amount = double.tryParse(value);
-    if (amount == null) {
-      return 'Please enter a valid number';
-    }
-    if (amount <= 0) {
-      return 'Amount must be greater than 0';
-    }
-    return null;
-  }
-
-  String? validateDescription(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a description';
-    }
-    if (value.length < 3) {
-      return 'Description must be at least 3 characters';
-    }
-    return null;
-  }
-
-  String? validateCategory(int? categoryId) {
-    if (categoryId == null) {
-      return 'Please select a category';
-    }
-    return null;
-  }
-
-  String? validateDate(DateTime date) {
-    final now = DateTime.now();
-    final futureLimit = DateTime(now.year + 1, now.month, now.day);
-
-    if (date.isAfter(futureLimit)) {
-      return 'Date cannot be more than 1 year in the future';
-    }
-
-    // Allow dates up to 10 years in the past for historical data
-    final pastLimit = DateTime(now.year - 10, now.month, now.day);
-    if (date.isBefore(pastLimit)) {
-      return 'Date cannot be more than 10 years in the past';
-    }
-
-    return null;
   }
 }

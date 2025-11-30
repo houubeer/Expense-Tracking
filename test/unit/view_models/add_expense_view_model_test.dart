@@ -47,14 +47,8 @@ void main() {
       expect(viewModel.state.selectedCategoryId, 1);
     });
 
-    test('validateAmount returns error for invalid input', () {
-      expect(viewModel.validateAmount(null), 'Please enter an amount');
-      expect(viewModel.validateAmount(''), 'Please enter an amount');
-      expect(viewModel.validateAmount('abc'), 'Please enter a valid number');
-      expect(viewModel.validateAmount('-10'), 'Amount must be greater than 0');
-      expect(viewModel.validateAmount('0'), 'Amount must be greater than 0');
-      expect(viewModel.validateAmount('10'), isNull);
-    });
+    // Validation is now done via ExpenseValidators class
+    // See expense_validators_test.dart for validation tests
 
     test('submitExpense fails with validation errors', () async {
       // Empty form

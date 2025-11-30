@@ -13,7 +13,7 @@ void main() {
 
     // 1. Navigate to Expenses List (assuming it's index 2 or accessible via sidebar)
     // The app starts at Dashboard (index 0).
-    // Tap on sidebar item for "Transactions" or "Expenses"
+    // Tap on sidebar item for "Expenses"
     // We need to find the sidebar icon or text.
     // Sidebar usually has icons. Let's assume the 3rd item is Expenses.
 
@@ -59,14 +59,14 @@ void main() {
     await tester.pumpAndSettle();
 
     // 4. Verify Dialog appears
-    expect(find.text('Delete Transaction'), findsOneWidget);
+    expect(find.text('Delete Expense'), findsOneWidget);
 
     // 5. Confirm Delete
     await tester.tap(find.text('Delete'));
     await tester.pumpAndSettle();
 
     // 6. Verify Snackbar
-    expect(find.text('Transaction deleted'), findsOneWidget);
+    expect(find.text('Expense deleted'), findsOneWidget);
 
     // 7. Verify Undo (Optional)
     await tester.tap(find.text('UNDO'));
@@ -112,7 +112,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // 4. Verify Edit Screen opens (check title)
-    expect(find.text('Edit Transaction'), findsOneWidget);
+    expect(find.text('Edit Expense'), findsOneWidget);
     expect(find.text('Original'), findsOneWidget); // Pre-filled
 
     // 5. Update fields
@@ -143,8 +143,8 @@ void main() {
     // 2. Check for Budget Overview
     expect(find.text('Budget Overview'), findsOneWidget);
 
-    // 3. Check for Recent Transactions
-    expect(find.text('Recent Transactions'), findsOneWidget);
+    // 3. Check for Recent Expenses
+    expect(find.text('Recent Expenses'), findsOneWidget);
 
     // 4. Navigate to Budget Screen
     final budgetIcon = find.byIcon(Icons.pie_chart);
