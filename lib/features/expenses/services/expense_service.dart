@@ -100,14 +100,16 @@ class ExpenseService implements IExpenseService {
               category.version,
             );
           } else {
-            _logger.warning('Category not found for expense creation: $categoryId');
+            _logger.warning(
+                'Category not found for expense creation: $categoryId');
           }
         }
 
         return expenseId;
       });
     } catch (e, stackTrace) {
-      _logger.error('Failed to create expense', error: e, stackTrace: stackTrace);
+      _logger.error('Failed to create expense',
+          error: e, stackTrace: stackTrace);
       throw DatabaseException('Failed to create expense', originalError: e);
     }
   }
@@ -184,7 +186,8 @@ class ExpenseService implements IExpenseService {
         }
       });
     } catch (e, stackTrace) {
-      _logger.error('Failed to update expense', error: e, stackTrace: stackTrace);
+      _logger.error('Failed to update expense',
+          error: e, stackTrace: stackTrace);
       throw DatabaseException('Failed to update expense', originalError: e);
     }
   }
@@ -229,7 +232,8 @@ class ExpenseService implements IExpenseService {
         }
       });
     } catch (e, stackTrace) {
-      _logger.error('Failed to delete expense', error: e, stackTrace: stackTrace);
+      _logger.error('Failed to delete expense',
+          error: e, stackTrace: stackTrace);
       throw DatabaseException('Failed to delete expense', originalError: e);
     }
   }

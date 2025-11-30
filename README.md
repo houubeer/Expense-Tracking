@@ -183,10 +183,92 @@ expense-tracker/
 
 ## Database Schema
 
-The application uses Drift for type-safe database operations. Key tables include:
+The application uses Drift for type-safe database operations. The database consists of two primary tables with foreign key relationships.
+
+### Schema Version: 5
+
+#### Categories Table
+
+Stores budget categories with spending tracking and optimistic locking support.
+
+| Column         | Type     | Constraints                    | Description                              |
+|----------------|----------|--------------------------------|------------------------------------------|
+| `id`           | INTEGER  | PRIMARY KEY, AUTO INCREMENT    | Unique category identifier               |
+| `name`         | TEXT     | NOT NULL, LENGTH(1-100)        | Category name                            |
+| `color`        | INTEGER  | NOT NULL                       | Color value for UI display               |
+| `iconCodePoint`| TEXT     | NOT NULL                       | Icon code point for category display     |
+| `budget`       | REAL     | DEFAULT 0.0                    | Allocated budget amount                  |
+| `spent`        | REAL     | DEFAULT 0.0                    | Total amount spent in category           |
+| `version`      | INTEGER  | DEFAULT 0                      | Version for optimistic locking           |
+| `createdAt`    | DATETIME | DEFAULT CURRENT_TIMESTAMP      | Category creation timestamp              |
+
+**Indices:**
+- Primary key on `id`
+
+#### Expenses Table
+
+Stores individual expense records linked to categories.
+
+| Column       | Type     | Constraints                              | Description                        |
+|--------------|----------|------------------------------------------|------------------------------------||
+| `id`         | INTEGER  | PRIMARY KEY, AUTO INCREMENT              | Unique expense identifier          |
+| `amount`     | REAL     | NOT NULL                                 | Expense amount                     |
+| `date`       | DATETIME | NOT NULL                                 | Date of expense                    |
+| `description`| TEXT     | NOT NULL                                 | Expense description                |
+| `categoryId` | INTEGER  | FOREIGN KEY → categories(id) ON DELETE CASCADE | Reference to category       |
+| `createdAt`  | DATETIME | DEFAULT CURRENT_TIMESTAMP                | Expense creation timestamp         |
+
+**Indices:**
+- Primary key on `id`
+- Index on `date` for date-range queries
+- Index on `categoryId` for category filtering
+
+**Foreign Keys:**
+- `categoryId` references `categories(id)` with CASCADE delete
+
+### Relationships
 
 ```
-Here we will include tables
+Categories (1) ──────< (N) Expenses
+    │                      │
+    │                      └─ categoryId (FK)
+    └─ id (PK)
+```
+
+### Migration History
+
+- **v1**: Initial schema with categories table
+- **v2**: Added expenses table
+- **v3**: Added color and icon fields to categories
+- **v4**: Added version column for optimistic locking
+- **v5**: Added createdAt timestamp to expenses
+
+### Type-Safe Queries
+
+Drift generates type-safe Dart classes for all tables:
+
+```dart
+// Category entity
+class Category {
+  final int id;
+  final String name;
+  final int color;
+  final String iconCodePoint;
+  final double budget;
+  final double spent;
+  final int version;
+  final DateTime createdAt;
+}
+
+// Expense entity
+class Expense {
+  final int id;
+  final double amount;
+  final DateTime date;
+  final String description;
+  final int categoryId;
+  final DateTime createdAt;
+}
 ```
 
 ## Usage
@@ -325,6 +407,7 @@ flutter test integration_test
 ### Test Organization
 
 Tests are organized as follows:
+
 - `test/unit/` - Unit tests for individual components, services, repositories, and DAOs
 - `integration_test/` - End-to-end integration tests for complete user flows
 
@@ -383,6 +466,7 @@ This application follows a **layered architecture** pattern to ensure clean sepa
 ### Data Flow
 
 **Creating an Expense (Top to Bottom):**
+
 1. **UI Layer**: User fills form → `AddExpenseScreen`
 2. **ViewModel**: Validates input → `AddExpenseViewModel`
 3. **Service**: Orchestrates transaction → `ExpenseService.createExpense()`
@@ -391,6 +475,7 @@ This application follows a **layered architecture** pattern to ensure clean sepa
 6. **Database**: Persists data → SQLite
 
 **Displaying Expenses (Bottom to Top):**
+
 1. **Database**: Data changes trigger stream updates
 2. **DAO**: Watches table → `ExpenseDao.watchExpensesWithCategory()`
 3. **Repository**: Maps to domain objects → Stream transformation
@@ -405,8 +490,162 @@ This application follows a **layered architecture** pattern to ensure clean sepa
 - **Connectivity**: `ConnectivityService` monitors network status (future cloud sync)
 
 For detailed implementation, see:
+
 - [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md) - Logging system details
 - [lib/STRUCTURE.md](lib/STRUCTURE.md) - Project structure overview
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### Build Errors
+
+**Problem**: `drift` code generation fails
+
+```bash
+Error: Could not find table definition
+```
+
+**Solution**:
+
+1. Ensure all dependencies are installed:
+   ```bash
+   flutter pub get
+   ```
+2. Clean build cache:
+   ```bash
+   flutter clean
+   dart run build_runner clean
+   ```
+3. Regenerate drift files:
+   ```bash
+   dart run build_runner build --delete-conflicting-outputs
+   ```
+
+---
+
+**Problem**: Windows build fails with "Visual Studio not found"
+
+**Solution**:
+
+- Install Visual Studio 2022 with "Desktop development with C++" workload
+- Run `flutter doctor` to verify installation
+- Restart your terminal/IDE after installation
+
+---
+
+#### Database Issues
+
+**Problem**: Database locked or corrupted
+
+**Solution**:
+
+1. Check database health:
+   ```dart
+   final isHealthy = await database.healthCheck();
+   if (!isHealthy) {
+     await database.attemptRecovery();
+   }
+   ```
+2. If recovery fails, delete database file (will recreate on next launch):
+   - Windows: `%APPDATA%/expense_tracker/database.sqlite`
+   - macOS: `~/Library/Application Support/expense_tracker/database.sqlite`
+   - Linux: `~/.local/share/expense_tracker/database.sqlite`
+
+---
+
+**Problem**: Migration errors after schema changes
+
+**Solution**:
+
+- Increment `schemaVersion` in `AppDatabase`
+- Add migration logic in `onUpgrade` callback
+- Test migration with both upgrade and fresh install scenarios
+
+---
+
+#### Runtime Errors
+
+**Problem**: "Concurrent modification" errors on category updates
+
+**Solution**:
+
+This indicates optimistic locking conflict. The app automatically retries, but you can:
+
+- Refresh the data before updating
+- Check logs for details: `LoggerService` captures all conflicts
+
+---
+
+**Problem**: App crashes on startup
+
+**Solution**:
+
+1. Check logs in:
+   - Windows: `%TEMP%/expense_tracker/logs/`
+   - macOS/Linux: `/tmp/expense_tracker/logs/`
+2. Common causes:
+   - Corrupted database (see Database Issues above)
+   - Missing dependencies (run `flutter pub get`)
+   - Platform-specific issues (run `flutter doctor`)
+
+---
+
+#### Performance Issues
+
+**Problem**: Slow queries or UI lag
+
+**Solution**:
+
+1. Run database optimization:
+   ```dart
+   await database.customStatement('VACUUM');
+   await database.customStatement('ANALYZE');
+   ```
+2. Check if indices are present:
+   - Expenses table should have indices on `date` and `categoryId`
+3. Limit query results using pagination or date ranges
+
+---
+
+#### Testing Issues
+
+**Problem**: Tests fail with database errors
+
+**Solution**:
+
+- Use in-memory database for tests:
+  ```dart
+  final database = AppDatabase.forTesting(
+    NativeDatabase.memory(),
+  );
+  ```
+- Ensure test database is properly closed after each test
+- Check that test data doesn't violate foreign key constraints
+
+---
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check Documentation**:
+   - [Architecture Overview](#architecture-overview)
+   - [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md)
+   - [Database Schema](#database-schema)
+
+2. **Review Logs**:
+   - Enable debug logging: `LoggerService.instance.setLevel(LogLevel.debug)`
+   - Check error reports: `ErrorReportingService` captures stack traces
+
+3. **Search Issues**:
+   - Check [GitHub Issues](https://github.com/houubeer/Expense-Tracking/issues)
+   - Search for similar problems in Flutter/Drift communities
+
+4. **Create an Issue**:
+   - Provide Flutter/Dart versions (`flutter doctor -v`)
+   - Include error logs and stack traces
+   - Describe steps to reproduce
 
 ## License
 

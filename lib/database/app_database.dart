@@ -40,7 +40,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   ///
   /// [_connectivityService] Optional service for monitoring database connectivity.
   AppDatabase([this._connectivityService]) : super(impl.connect());
-  
+
   /// Creates a test instance of the database with a custom executor.
   ///
   /// Used for unit testing with in-memory databases.
