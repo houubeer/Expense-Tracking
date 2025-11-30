@@ -257,27 +257,39 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         return;
                       }
 
-                      // Update category with new values
-                      final updatedCategory = widget.category.copyWith(
-                        budget: value,
-                        color: _selectedColor.value,
-                        iconCodePoint: _selectedIcon.codePoint.toString(),
-                      );
-
-                      await widget.categoryRepository
-                          .updateCategory(updatedCategory);
-
-                      if (mounted) {
-                        final colorScheme = Theme.of(context).colorScheme;
-                        navigator.pop();
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
-                            ),
-                            backgroundColor: colorScheme.tertiary,
-                          ),
+                      try {
+                        // Update category with new values
+                        final updatedCategory = widget.category.copyWith(
+                          budget: value,
+                          color: _selectedColor.value,
+                          iconCodePoint: _selectedIcon.codePoint.toString(),
                         );
+
+                        await widget.categoryRepository
+                            .updateCategory(updatedCategory);
+
+                        if (mounted) {
+                          final colorScheme = Theme.of(context).colorScheme;
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
+                              ),
+                              backgroundColor: colorScheme.tertiary,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          final colorScheme = Theme.of(context).colorScheme;
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to update category: ${e.toString()}'),
+                              backgroundColor: colorScheme.error,
+                            ),
+                          );
+                        }
                       }
                     },
                     child: const Text(AppStrings.btnSaveChanges),

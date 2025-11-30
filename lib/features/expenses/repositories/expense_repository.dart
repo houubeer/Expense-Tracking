@@ -24,15 +24,27 @@ class ExpenseRepository implements IExpenseRepository {
         );
   }
 
-  Future<int> insertExpense(ExpensesCompanion expense) {
-    return _expenseDao.insertExpense(expense);
+  Future<int> insertExpense(ExpensesCompanion expense) async {
+    try {
+      return await _expenseDao.insertExpense(expense);
+    } catch (e) {
+      throw Exception('Failed to insert expense: $e');
+    }
   }
 
-  Future<bool> updateExpense(Expense expense) {
-    return _expenseDao.updateExpense(expense);
+  Future<bool> updateExpense(Expense expense) async {
+    try {
+      return await _expenseDao.updateExpense(expense);
+    } catch (e) {
+      throw Exception('Failed to update expense: $e');
+    }
   }
 
-  Future<int> deleteExpense(int id) {
-    return _expenseDao.deleteExpense(id);
+  Future<int> deleteExpense(int id) async {
+    try {
+      return await _expenseDao.deleteExpense(id);
+    } catch (e) {
+      throw Exception('Failed to delete expense: $e');
+    }
   }
 }

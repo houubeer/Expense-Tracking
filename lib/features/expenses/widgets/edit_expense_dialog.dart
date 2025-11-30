@@ -61,23 +61,35 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
         return;
       }
 
-      final amount = double.parse(_amountController.text);
-      final description = _descriptionController.text;
+      try {
+        final amount = double.parse(_amountController.text);
+        final description = _descriptionController.text;
 
-      final originalExpense = widget.expenseWithCategory.expense;
-      final updatedExpense = originalExpense.copyWith(
-        amount: amount,
-        description: description,
-        date: _selectedDate,
-        categoryId: _selectedCategoryId!,
-      );
+        final originalExpense = widget.expenseWithCategory.expense;
+        final updatedExpense = originalExpense.copyWith(
+          amount: amount,
+          description: description,
+          date: _selectedDate,
+          categoryId: _selectedCategoryId!,
+        );
 
-      await widget.expenseService
-          .updateExpense(originalExpense, updatedExpense);
+        await widget.expenseService
+            .updateExpense(originalExpense, updatedExpense);
 
-      if (mounted) {
-        Navigator.pop(context);
-        SuccessSnackbar.show(context, 'Expense updated successfully');
+        if (mounted) {
+          Navigator.pop(context);
+          SuccessSnackbar.show(context, 'Expense updated successfully');
+        }
+      } catch (e) {
+        if (mounted) {
+          final colorScheme = Theme.of(context).colorScheme;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update expense: ${e.toString()}'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+        }
       }
     }
   }

@@ -27,28 +27,48 @@ class CategoryRepository implements ICategoryRepository {
   }
 
   /// Insert a new category
-  Future<int> insertCategory(CategoriesCompanion category) {
-    return _categoryDao.insertCategory(category);
+  Future<int> insertCategory(CategoriesCompanion category) async {
+    try {
+      return await _categoryDao.insertCategory(category);
+    } catch (e) {
+      throw Exception('Failed to insert category: $e');
+    }
   }
 
   /// Update an existing category
-  Future<void> updateCategory(Category category) {
-    return _categoryDao.updateCategory(category);
+  Future<void> updateCategory(Category category) async {
+    try {
+      await _categoryDao.updateCategory(category);
+    } catch (e) {
+      throw Exception('Failed to update category: $e');
+    }
   }
 
   /// Delete a category by ID
   Future<void> deleteCategory(int id) async {
-    await _categoryDao.deleteCategory(id);
+    try {
+      await _categoryDao.deleteCategory(id);
+    } catch (e) {
+      throw Exception('Failed to delete category: $e');
+    }
   }
 
   /// Update category budget
-  Future<void> updateCategoryBudget(int categoryId, double budget) {
-    return _categoryDao.updateCategoryBudget(categoryId, budget);
+  Future<void> updateCategoryBudget(int categoryId, double budget) async {
+    try {
+      await _categoryDao.updateCategoryBudget(categoryId, budget);
+    } catch (e) {
+      throw Exception('Failed to update category budget: $e');
+    }
   }
 
   /// Update category spent amount
-  Future<void> updateCategorySpent(int categoryId, double spent) {
-    return _categoryDao.updateCategorySpent(categoryId, spent);
+  Future<void> updateCategorySpent(int categoryId, double spent) async {
+    try {
+      await _categoryDao.updateCategorySpent(categoryId, spent);
+    } catch (e) {
+      throw Exception('Failed to update category spent: $e');
+    }
   }
 
   /// Get categories sorted by name

@@ -117,13 +117,25 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       context: context,
       builder: (context) => AddCategoryDialog(
         onAdd: (name, budget, color, iconCodePoint) async {
-          await _viewModel.addCategory(
-            name: name,
-            budget: budget,
-            color: color,
-            iconCodePoint: iconCodePoint,
-          );
-          _showSuccessMessage(AppStrings.msgCategoryAdded);
+          try {
+            await _viewModel.addCategory(
+              name: name,
+              budget: budget,
+              color: color,
+              iconCodePoint: iconCodePoint,
+            );
+            _showSuccessMessage(AppStrings.msgCategoryAdded);
+          } catch (e) {
+            if (mounted) {
+              final colorScheme = Theme.of(context).colorScheme;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to add category: ${e.toString()}'),
+                  backgroundColor: colorScheme.error,
+                ),
+              );
+            }
+          }
         },
       ),
     );
@@ -146,8 +158,20 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       builder: (context) => DeleteCategoryDialog(
         category: category,
         onConfirm: () async {
-          await _viewModel.deleteCategory(category.id);
-          _showSuccessMessage(AppStrings.msgCategoryDeleted);
+          try {
+            await _viewModel.deleteCategory(category.id);
+            _showSuccessMessage(AppStrings.msgCategoryDeleted);
+          } catch (e) {
+            if (mounted) {
+              final colorScheme = Theme.of(context).colorScheme;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to delete category: ${e.toString()}'),
+                  backgroundColor: colorScheme.error,
+                ),
+              );
+            }
+          }
         },
       ),
     );

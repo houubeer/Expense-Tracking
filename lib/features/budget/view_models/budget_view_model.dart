@@ -71,19 +71,27 @@ class BudgetViewModel extends ChangeNotifier {
     required int color,
     required String iconCodePoint,
   }) async {
-    await _categoryWriter.insertCategory(
-      CategoriesCompanion.insert(
-        name: name,
-        budget: Value(budget),
-        color: color,
-        iconCodePoint: iconCodePoint,
-      ),
-    );
+    try {
+      await _categoryWriter.insertCategory(
+        CategoriesCompanion.insert(
+          name: name,
+          budget: Value(budget),
+          color: color,
+          iconCodePoint: iconCodePoint,
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to add category: $e');
+    }
   }
 
   /// Delete a category (business logic in ViewModel)
   Future<void> deleteCategory(int categoryId) async {
-    await _categoryWriter.deleteCategory(categoryId);
+    try {
+      await _categoryWriter.deleteCategory(categoryId);
+    } catch (e) {
+      throw Exception('Failed to delete category: $e');
+    }
   }
 
   /// Private filtering and sorting logic using Strategy Pattern (Open/Closed Principle)

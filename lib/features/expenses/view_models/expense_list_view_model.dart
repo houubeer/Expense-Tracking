@@ -67,6 +67,10 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
 
   /// Delete expense with undo support
   Future<void> deleteExpense(Expense expense) async {
-    await _expenseService.deleteExpense(expense);
+    try {
+      await _expenseService.deleteExpense(expense);
+    } catch (e) {
+      throw Exception('Failed to delete expense: $e');
+    }
   }
 }

@@ -146,20 +146,42 @@ class ExpenseTable extends ConsumerWidget {
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
-              await expenseService.deleteExpense(item.expense);
+              try {
+                await expenseService.deleteExpense(item.expense);
 
-              if (context.mounted) {
-                SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
-                    onUndo: () async {
-                  final expense = ExpensesCompanion(
-                    amount: drift.Value(item.expense.amount),
-                    date: drift.Value(item.expense.date),
-                    description: drift.Value(item.expense.description),
-                    categoryId: drift.Value(item.expense.categoryId),
-                    createdAt: drift.Value(item.expense.createdAt),
+                if (context.mounted) {
+                  SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
+                      onUndo: () async {
+                    try {
+                      final expense = ExpensesCompanion(
+                        amount: drift.Value(item.expense.amount),
+                        date: drift.Value(item.expense.date),
+                        description: drift.Value(item.expense.description),
+                        categoryId: drift.Value(item.expense.categoryId),
+                        createdAt: drift.Value(item.expense.createdAt),
+                      );
+                      await expenseService.createExpense(expense);
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Failed to restore expense: ${e.toString()}'),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                      }
+                    }
+                  });
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete expense: ${e.toString()}'),
+                      backgroundColor: colorScheme.error,
+                    ),
                   );
-                  await expenseService.createExpense(expense);
-                });
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
