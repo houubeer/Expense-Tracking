@@ -14,6 +14,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
   final ICategoryRepository categoryRepository;
@@ -34,8 +35,15 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel =
-        BudgetViewModel(widget.categoryRepository, widget.categoryRepository);
+    // Get errorReporting from ref in didChangeDependencies instead
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final errorReporting = ref.read(errorReportingServiceProvider);
+    _viewModel = BudgetViewModel(
+        widget.categoryRepository, widget.categoryRepository, errorReporting);
   }
 
   @override

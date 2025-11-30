@@ -3,12 +3,14 @@ import '../app_database.dart';
 import '../tables/expenses_table.dart';
 import '../tables/categories_table.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 
 part 'expense_dao.g.dart';
 
 @DriftAccessor(tables: [Expenses, Categories])
 class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   final ConnectivityService? _connectivityService;
+  final _logger = LoggerService.instance;
 
   ExpenseDao(super.db, [this._connectivityService]);
 
@@ -21,11 +23,36 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
         .watch();
   }
 
-  // Watch expenses with category info
-  Stream<List<ExpenseWithCategory>> watchExpensesWithCategory() {
+  // Watch expenses with category info and filtering
+  Stream<List<ExpenseWithCategory>> watchExpensesWithCategory({
+    String? searchQuery,
+    int? categoryId,
+    DateTime? date,
+  }) {
     final query = select(expenses).join([
       innerJoin(categories, categories.id.equalsExp(expenses.categoryId)),
     ]);
+
+    // Apply filters
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      query.where(expenses.description.like('%$searchQuery%') |
+          categories.name.like('%$searchQuery%'));
+    }
+
+    if (categoryId != null) {
+      query.where(expenses.categoryId.equals(categoryId));
+    }
+
+    if (date != null) {
+      // Filter by day
+      final start = DateTime(date.year, date.month, date.day);
+      final end = start.add(const Duration(days: 1));
+      query.where(expenses.date.isBiggerOrEqualValue(start) &
+          expenses.date.isSmallerThanValue(end));
+    }
+
+    // Order by date descending
+    query.orderBy([OrderingTerm(expression: expenses.date, mode: OrderingMode.desc)]);
 
     return query.watch().map((rows) {
       return rows.map((row) {
@@ -40,115 +67,57 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   // Get all expenses
   Future<List<Expense>> getAllExpenses() async {
     try {
+      _logger.debug('ExpenseDao: getAllExpenses called');
       final result = await select(expenses).get();
       _connectivityService?.markSuccessfulOperation();
       return result;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: getAllExpenses failed',
+          error: e, stackTrace: stackTrace);
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
   }
 
-  // Insert expense (category spent updates handled by service layer)
+  // Insert expense (PURE CRUD ONLY)
   Future<int> insertExpense(ExpensesCompanion expense) async {
     try {
-      // Validate amount
-      if (expense.amount.present) {
-        final amount = expense.amount.value;
-        if (amount <= 0) {
-          throw Exception('Amount must be greater than 0, got: $amount');
-        }
-        if (amount > 1000000000) {
-          throw Exception('Amount is too large: $amount');
-        }
-      }
-
-      // Validate date
-      if (expense.date.present) {
-        final date = expense.date.value;
-        final now = DateTime.now();
-        final futureLimit = DateTime(now.year + 1, now.month, now.day);
-        final pastLimit = DateTime(now.year - 10, now.month, now.day);
-
-        if (date.isAfter(futureLimit)) {
-          throw Exception('Date cannot be more than 1 year in the future');
-        }
-        if (date.isBefore(pastLimit)) {
-          throw Exception('Date cannot be more than 10 years in the past');
-        }
-      }
-
       final id = await into(expenses).insert(expense);
-
       _connectivityService?.markSuccessfulOperation();
       return id;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: insertExpense failed',
+          error: e, stackTrace: stackTrace);
       _connectivityService?.handleConnectionFailure(e.toString());
-      throw Exception('Database error: Failed to insert expense - $e');
+      rethrow;
     }
   }
 
-  // Update expense (category spent adjustments handled by service layer)
+  // Update expense (PURE CRUD ONLY)
   Future<bool> updateExpense(Expense expense) async {
     try {
-      // Validate amount
-      if (expense.amount <= 0) {
-        throw Exception(
-            'Amount must be greater than 0, got: ${expense.amount}');
-      }
-      if (expense.amount > 1000000000) {
-        throw Exception('Amount is too large: ${expense.amount}');
-      }
-
-      // Validate date
-      final now = DateTime.now();
-      final futureLimit = DateTime(now.year + 1, now.month, now.day);
-      final pastLimit = DateTime(now.year - 10, now.month, now.day);
-
-      if (expense.date.isAfter(futureLimit)) {
-        throw Exception('Date cannot be more than 1 year in the future');
-      }
-      if (expense.date.isBefore(pastLimit)) {
-        throw Exception('Date cannot be more than 10 years in the past');
-      }
-
-      // Get the old expense to calculate the difference
-      final oldExpense = await (select(expenses)
-            ..where((e) => e.id.equals(expense.id)))
-          .getSingleOrNull();
-      if (oldExpense == null) {
-        throw Exception('Expense not found with id: ${expense.id}');
-      }
-
       final result = await update(expenses).replace(expense);
-
       _connectivityService?.markSuccessfulOperation();
       return result;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: updateExpense failed',
+          error: e, stackTrace: stackTrace);
       _connectivityService?.handleConnectionFailure(e.toString());
-      throw Exception('Database error: Failed to update expense - $e');
+      rethrow;
     }
   }
 
-  // Delete expense (category spent updates handled by service layer)
+  // Delete expense (PURE CRUD ONLY)
   Future<int> deleteExpense(int id) async {
     try {
-      // Get the expense first to know which category and amount
-      final expense = await (select(expenses)..where((e) => e.id.equals(id)))
-          .getSingleOrNull();
-      if (expense == null) {
-        throw Exception('Expense not found with id: $id');
-      }
-
-      // Delete the expense
-      final result =
-          await (delete(expenses)..where((e) => e.id.equals(id))).go();
-
+      final result = await (delete(expenses)..where((e) => e.id.equals(id))).go();
       _connectivityService?.markSuccessfulOperation();
       return result;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: deleteExpense failed',
+          error: e, stackTrace: stackTrace);
       _connectivityService?.handleConnectionFailure(e.toString());
-      throw Exception('Database error: Failed to delete expense - $e');
+      rethrow;
     }
   }
 

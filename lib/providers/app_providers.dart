@@ -10,6 +10,18 @@ import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_ex
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+
+/// Logger service provider - centralized logging
+final loggerServiceProvider = Provider<LoggerService>((ref) {
+  return LoggerService.instance;
+});
+
+/// Error reporting service provider - tracks and reports errors
+final errorReportingServiceProvider = Provider<ErrorReportingService>((ref) {
+  throw UnimplementedError('ErrorReportingService provider must be overridden');
+});
 
 /// Connectivity service provider - tracks database/filesystem connection state
 final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
@@ -49,11 +61,13 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
   final database = ref.watch(databaseInterfaceProvider);
   final expenseRepository = ref.watch(expenseRepositoryProvider);
   final categoryRepository = ref.watch(categoryRepositoryProvider);
+  final errorReporting = ref.watch(errorReportingServiceProvider);
   // ExpenseService only needs reader and budget manager interfaces (ISP)
   return ExpenseService(
     expenseRepository,
     categoryRepository, // ICategoryRepository implements both interfaces
     categoryRepository, // Pass same instance for both reader and budget manager
     database,
+    errorReporting,
   );
 });

@@ -2,14 +2,29 @@ import 'package:expense_tracking_desktop_app/app.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize logging service first
+  final logger = LoggerService.instance;
+  await logger.initialize();
+  logger.info('Application starting...');
+
+  // Initialize error reporting service
+  final errorReporting = ErrorReportingService(logger);
+  await errorReporting.initialize();
+
+  // Clean old logs (keep last 7 days)
+  await logger.cleanOldLogs(keepDays: 7);
 
   AppDatabase? database;
   final connectivityService = ConnectivityService();
 
   try {
+    logger.info('Initializing database connection...');
     database = AppDatabase(connectivityService);
 
     // Set up health check callback for reconnection attempts
@@ -17,6 +32,7 @@ void main() async {
       try {
         return await database!.healthCheck();
       } catch (e) {
+        logger.error('Health check failed', error: e);
         return false;
       }
     };
@@ -24,10 +40,18 @@ void main() async {
     // Verify database connection with a simple query
     await database.customSelect('SELECT 1').get();
 
-    print('Database connection established successfully');
+    logger.info('Database connection established successfully');
     connectivityService.markSuccessfulOperation();
-  } catch (e) {
-    print('FATAL: Failed to initialize database: $e');
+  } catch (e, stackTrace) {
+    logger.fatal('FATAL: Failed to initialize database',
+        error: e, stackTrace: stackTrace);
+    await errorReporting.reportError(
+      'Fatal database initialization error',
+      error: e,
+      stackTrace: stackTrace,
+      severity: ErrorSeverity.critical,
+      handled: false,
+    );
     connectivityService.handleConnectionFailure(e.toString());
 
     // Show error dialog and exit
@@ -68,8 +92,10 @@ void main() async {
     return;
   }
 
+  logger.info('Launching application UI...');
   runApp(ExpenseTrackerApp(
     database: database,
     connectivityService: connectivityService,
+    errorReportingService: errorReporting,
   ));
 }

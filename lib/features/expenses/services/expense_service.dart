@@ -4,15 +4,17 @@ import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_ex
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_reader.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_budget_manager.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 
 /// Service layer for expense-related business logic
 /// Handles expense operations and category spent updates with transactional safety
-/// Now depends only on specific interfaces it needs (ISP compliance)
 class ExpenseService implements IExpenseService {
   final IExpenseRepository _expenseRepository;
   final ICategoryReader _categoryReader;
   final ICategoryBudgetManager _categoryBudgetManager;
   final IDatabase _database;
+  final _logger = LoggerService.instance;
 
   ExpenseService(
     this._expenseRepository,
@@ -24,6 +26,7 @@ class ExpenseService implements IExpenseService {
   @override
   Future<int> createExpense(ExpensesCompanion expense) async {
     try {
+      _logger.info('Creating expense: ${expense.description.value}');
       return await _database.transaction(() async {
         // Insert the expense
         final expenseId = await _expenseRepository.insertExpense(expense);
@@ -34,21 +37,21 @@ class ExpenseService implements IExpenseService {
           final amount = expense.amount.value;
 
           final category = await _categoryReader.getCategoryById(categoryId);
-          if (category == null) {
-            throw Exception('Category not found with id: $categoryId');
+          if (category != null) {
+            await _categoryBudgetManager.updateCategorySpent(
+              category.id,
+              category.spent + amount,
+            );
+          } else {
+            _logger.warning('Category not found for expense creation: $categoryId');
           }
-
-          await _categoryBudgetManager.updateCategorySpent(
-            category.id,
-            category.spent + amount,
-            category.version,
-          );
         }
 
         return expenseId;
       });
-    } catch (e) {
-      throw Exception('Failed to create expense: $e');
+    } catch (e, stackTrace) {
+      _logger.error('Failed to create expense', error: e, stackTrace: stackTrace);
+      throw DatabaseException('Failed to create expense', originalError: e);
     }
   }
 
@@ -58,6 +61,7 @@ class ExpenseService implements IExpenseService {
     Expense newExpense,
   ) async {
     try {
+      _logger.info('Updating expense: ${oldExpense.id}');
       await _database.transaction(() async {
         // Update the expense
         await _expenseRepository.updateExpense(newExpense);
@@ -72,48 +76,44 @@ class ExpenseService implements IExpenseService {
           // Subtract from old category
           final oldCategory =
               await _categoryReader.getCategoryById(oldCategoryId);
-          if (oldCategory == null) {
-            throw Exception('Old category not found with id: $oldCategoryId');
+          if (oldCategory != null) {
+            await _categoryBudgetManager.updateCategorySpent(
+              oldCategory.id,
+              (oldCategory.spent - oldAmount).clamp(0.0, double.infinity),
+            );
           }
-          await _categoryBudgetManager.updateCategorySpent(
-            oldCategory.id,
-            (oldCategory.spent - oldAmount).clamp(0.0, double.infinity),
-            oldCategory.version,
-          );
 
           // Add to new category
           final newCategory =
               await _categoryReader.getCategoryById(newCategoryId);
-          if (newCategory == null) {
-            throw Exception('New category not found with id: $newCategoryId');
+          if (newCategory != null) {
+            await _categoryBudgetManager.updateCategorySpent(
+              newCategory.id,
+              newCategory.spent + newAmount,
+            );
           }
-          await _categoryBudgetManager.updateCategorySpent(
-            newCategory.id,
-            newCategory.spent + newAmount,
-            newCategory.version,
-          );
         } else if (oldAmount != newAmount) {
           // Same category but amount changed
           final category = await _categoryReader.getCategoryById(newCategoryId);
-          if (category == null) {
-            throw Exception('Category not found with id: $newCategoryId');
+          if (category != null) {
+            final amountDiff = newAmount - oldAmount;
+            await _categoryBudgetManager.updateCategorySpent(
+              category.id,
+              (category.spent + amountDiff).clamp(0.0, double.infinity),
+            );
           }
-          final amountDiff = newAmount - oldAmount;
-          await _categoryBudgetManager.updateCategorySpent(
-            category.id,
-            (category.spent + amountDiff).clamp(0.0, double.infinity),
-            category.version,
-          );
         }
       });
-    } catch (e) {
-      throw Exception('Failed to update expense: $e');
+    } catch (e, stackTrace) {
+      _logger.error('Failed to update expense', error: e, stackTrace: stackTrace);
+      throw DatabaseException('Failed to update expense', originalError: e);
     }
   }
 
   @override
   Future<void> deleteExpense(Expense expense) async {
     try {
+      _logger.info('Deleting expense: ${expense.id}');
       await _database.transaction(() async {
         // Delete the expense
         await _expenseRepository.deleteExpense(expense.id);
@@ -121,17 +121,16 @@ class ExpenseService implements IExpenseService {
         // Update category spent (subtract the deleted amount)
         final category =
             await _categoryReader.getCategoryById(expense.categoryId);
-        if (category == null) {
-          throw Exception('Category not found with id: ${expense.categoryId}');
+        if (category != null) {
+          await _categoryBudgetManager.updateCategorySpent(
+            category.id,
+            (category.spent - expense.amount).clamp(0.0, double.infinity),
+          );
         }
-        await _categoryBudgetManager.updateCategorySpent(
-          category.id,
-          (category.spent - expense.amount).clamp(0.0, double.infinity),
-          category.version,
-        );
       });
-    } catch (e) {
-      throw Exception('Failed to delete expense: $e');
+    } catch (e, stackTrace) {
+      _logger.error('Failed to delete expense', error: e, stackTrace: stackTrace);
+      throw DatabaseException('Failed to delete expense', originalError: e);
     }
   }
 

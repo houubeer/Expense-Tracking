@@ -2,11 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/expense_list_provider.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
 class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
   final IExpenseService _expenseService;
+  final ErrorReportingService _errorReporting;
+  final _logger = LoggerService.instance;
 
-  ExpenseListViewModel(this._expenseService)
+  ExpenseListViewModel(this._expenseService, this._errorReporting)
       : super(ExpenseListState.initial()) {
     _init();
   }
@@ -68,8 +72,23 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
   /// Delete expense with undo support
   Future<void> deleteExpense(Expense expense) async {
     try {
+      _logger
+          .debug('ExpenseListViewModel: Deleting expense - id=${expense.id}');
       await _expenseService.deleteExpense(expense);
-    } catch (e) {
+      _logger.info(
+          'ExpenseListViewModel: Expense deleted successfully - id=${expense.id}');
+    } catch (e, stackTrace) {
+      _logger.error(
+          'ExpenseListViewModel: Failed to delete expense - id=${expense.id}',
+          error: e,
+          stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'ExpenseListViewModel',
+        'deleteExpense',
+        e,
+        stackTrace: stackTrace,
+        context: {'expenseId': expense.id.toString()},
+      );
       throw Exception('Failed to delete expense: $e');
     }
   }

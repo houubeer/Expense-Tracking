@@ -54,16 +54,19 @@ class CategoryRepository implements ICategoryRepository {
   }
 
   /// Update category budget
-  Future<void> updateCategoryBudget(int categoryId, double budget, int currentVersion) async {
+  Future<void> updateCategoryBudget(
+      int categoryId, double budget, int currentVersion) async {
     try {
-      await _categoryDao.updateCategoryBudget(categoryId, budget, currentVersion);
+      await _categoryDao.updateCategoryBudget(
+          categoryId, budget, currentVersion);
     } catch (e) {
       throw Exception('Failed to update category budget: $e');
     }
   }
 
   /// Update category spent amount
-  Future<void> updateCategorySpent(int categoryId, double spent, int currentVersion) async {
+  Future<void> updateCategorySpent(
+      int categoryId, double spent, int currentVersion) async {
     try {
       await _categoryDao.updateCategorySpent(categoryId, spent, currentVersion);
     } catch (e) {

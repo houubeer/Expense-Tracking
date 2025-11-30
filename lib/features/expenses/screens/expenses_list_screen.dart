@@ -48,11 +48,32 @@ class ExpensesListScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             Expanded(
-              child: ExpenseTable(expenses: state.filteredExpenses),
+              child: _buildContent(context, state),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildContent(BuildContext context, ExpenseListState state) {
+    if (state.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            Text('Error: ${state.error}'),
+          ],
+        ),
+      );
+    }
+
+    return ExpenseTable(expenses: state.filteredExpenses);
   }
 }

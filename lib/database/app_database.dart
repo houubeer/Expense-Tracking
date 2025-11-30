@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'connection/connection.dart' as impl;
 import 'package:expense_tracking_desktop_app/database/i_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 // Import tables and DAOs
 import 'tables/categories_table.dart';
 import 'tables/expenses_table.dart';
@@ -12,19 +13,6 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [Categories, Expenses],
-  daos: [CategoryDao, ExpenseDao],
-)
-class AppDatabase extends _$AppDatabase implements IDatabase {
-  final ConnectivityService? _connectivityService;
-
-  AppDatabase([this._connectivityService]) : super(_createConnection());
-  AppDatabase.forTesting(QueryExecutor e, [this._connectivityService])
-      : super(e);
-
-  static QueryExecutor _createConnection() {
-    try {
-      return impl.connect();
-    } catch (e) {
       throw Exception('Failed to initialize database connection: $e');
     }
   }
@@ -94,7 +82,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
       return true;
     } catch (e) {
-      print('Database health check failed: $e');
+      _logger.error('Database health check failed', error: e, stackTrace: null);
       return false;
     }
   }
@@ -108,8 +96,9 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
       // Rebuild indices if they exist
       await customStatement('REINDEX');
 
-      print('Database recovery attempted successfully');
+      _logger.info('Database recovery attempted successfully');
     } catch (e) {
+      _logger.error('Database recovery failed', error: e, stackTrace: null);
       throw Exception('Database recovery failed: $e');
     }
   }

@@ -71,8 +71,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       final category = await widget.database.categoryDao
           .getCategoryById(_selectedCategoryId!);
       if (category != null) {
-        await widget.database.categoryDao
-            .updateCategorySpent(category.id, category.spent + amount, category.version);
+        await widget.database.categoryDao.updateCategorySpent(
+            category.id, category.spent + amount, category.version);
       }
 
       if (mounted) {

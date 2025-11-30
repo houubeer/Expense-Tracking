@@ -1,84 +1,121 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/view_models/expense_list_view_model.dart';
 
-/// Expense List State - holds all filter state and computed data
+/// Filter State
+class ExpenseFilters {
+  final String searchQuery;
+  final int? selectedCategoryId;
+  final DateTime? selectedDate;
+
+  const ExpenseFilters({
+    this.searchQuery = '',
+    this.selectedCategoryId,
+    this.selectedDate,
+  });
+
+  ExpenseFilters copyWith({
+    String? searchQuery,
+    int? selectedCategoryId,
+    DateTime? selectedDate,
+  }) {
+    return ExpenseFilters(
+      searchQuery: searchQuery ?? this.searchQuery,
+      selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      selectedDate: selectedDate ?? this.selectedDate,
+    );
+  }
+}
+
+/// Provider for the current filters
+final expenseFiltersProvider = StateNotifierProvider<ExpenseFiltersNotifier, ExpenseFilters>((ref) {
+  return ExpenseFiltersNotifier();
+});
+
+class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
+  ExpenseFiltersNotifier() : super(const ExpenseFilters());
+
+  void setSearchQuery(String query) {
+    state = state.copyWith(searchQuery: query);
+  }
+
+  void setCategoryFilter(int? categoryId) {
+    state = state.copyWith(selectedCategoryId: categoryId);
+  }
+
+  void setDateFilter(DateTime? date) {
+    state = state.copyWith(selectedDate: date);
+  }
+}
+
+/// Provider for the filtered expenses list (Stream)
+final filteredExpensesProvider = StreamProvider.autoDispose<List<ExpenseWithCategory>>((ref) {
+  final filters = ref.watch(expenseFiltersProvider);
+  final database = ref.watch(databaseProvider);
+  
+  return database.expenseDao.watchExpensesWithCategory(
+    searchQuery: filters.searchQuery,
+    categoryId: filters.selectedCategoryId,
+    date: filters.selectedDate,
+  );
+});
+
+// Legacy provider adapter to keep UI working with minimal changes if possible, 
+// OR we update the UI to use the new providers.
+// The UI uses `expenseListViewModelProvider` which returns `ExpenseListState`.
+// Let's recreate that structure but powered by the new providers.
+
 class ExpenseListState {
   final String searchQuery;
   final int? selectedCategoryId;
   final DateTime? selectedDate;
-  final List<ExpenseWithCategory> allExpenses;
   final List<ExpenseWithCategory> filteredExpenses;
+  final bool isLoading;
+  final String? error;
 
   const ExpenseListState({
     required this.searchQuery,
     required this.selectedCategoryId,
     required this.selectedDate,
-    required this.allExpenses,
     required this.filteredExpenses,
+    this.isLoading = false,
+    this.error,
   });
-
-  factory ExpenseListState.initial() {
-    return const ExpenseListState(
-      searchQuery: '',
-      selectedCategoryId: null,
-      selectedDate: null,
-      allExpenses: [],
-      filteredExpenses: [],
-    );
-  }
-
-  /// Apply all filters to expenses (logic in state, not UI)
-  factory ExpenseListState.withFilters({
-    required String searchQuery,
-    required int? selectedCategoryId,
-    required DateTime? selectedDate,
-    required List<ExpenseWithCategory> allExpenses,
-  }) {
-    final filtered = allExpenses.where((item) {
-      // Search filter (description or category name)
-      final matchesSearch = searchQuery.isEmpty ||
-          item.expense.description
-              .toLowerCase()
-              .contains(searchQuery.toLowerCase()) ||
-          item.category.name.toLowerCase().contains(searchQuery.toLowerCase());
-
-      // Category filter
-      final matchesCategory =
-          selectedCategoryId == null || item.category.id == selectedCategoryId;
-
-      // Date filter (exact day match)
-      final matchesDate = selectedDate == null ||
-          (item.expense.date.year == selectedDate.year &&
-              item.expense.date.month == selectedDate.month &&
-              item.expense.date.day == selectedDate.day);
-
-      return matchesSearch && matchesCategory && matchesDate;
-    }).toList();
-
-    return ExpenseListState(
-      searchQuery: searchQuery,
-      selectedCategoryId: selectedCategoryId,
-      selectedDate: selectedDate,
-      allExpenses: allExpenses,
-      filteredExpenses: filtered,
-    );
-  }
-
-  bool get hasActiveFilters =>
-      searchQuery.isNotEmpty ||
-      selectedCategoryId != null ||
-      selectedDate != null;
-
-  bool get isEmpty => filteredExpenses.isEmpty;
 }
 
-/// ViewModel Provider - manages state and business logic
-final expenseListViewModelProvider =
-    StateNotifierProvider.autoDispose<ExpenseListViewModel, ExpenseListState>(
-  (ref) {
-    final expenseService = ref.watch(expenseServiceProvider);
-    return ExpenseListViewModel(expenseService);
-  },
-);
+final expenseListViewModelProvider = StateNotifierProvider.autoDispose<ExpenseListViewModel, ExpenseListState>((ref) {
+  final filters = ref.watch(expenseFiltersProvider);
+  final expensesAsync = ref.watch(filteredExpensesProvider);
+  final filtersNotifier = ref.read(expenseFiltersProvider.notifier);
+  
+  return ExpenseListViewModel(filters, expensesAsync, filtersNotifier);
+});
+
+class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
+  final ExpenseFiltersNotifier _filtersNotifier;
+
+  ExpenseListViewModel(
+    ExpenseFilters filters,
+    AsyncValue<List<ExpenseWithCategory>> expensesAsync,
+    this._filtersNotifier,
+  ) : super(ExpenseListState(
+          searchQuery: filters.searchQuery,
+          selectedCategoryId: filters.selectedCategoryId,
+          selectedDate: filters.selectedDate,
+          filteredExpenses: expensesAsync.value ?? [],
+          isLoading: expensesAsync.isLoading,
+          error: expensesAsync.hasError ? expensesAsync.error.toString() : null,
+        ));
+
+  void setSearchQuery(String query) {
+    _filtersNotifier.setSearchQuery(query);
+  }
+
+  void setCategoryFilter(int? categoryId) {
+    _filtersNotifier.setCategoryFilter(categoryId);
+  }
+
+  void setDateFilter(DateTime? date) {
+    _filtersNotifier.setDateFilter(date);
+  }
+}

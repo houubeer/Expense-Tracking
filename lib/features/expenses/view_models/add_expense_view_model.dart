@@ -4,11 +4,17 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/core/exceptions.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final IExpenseService _expenseService;
+  final ErrorReportingService _errorReporting;
+  final _logger = LoggerService.instance;
 
-  AddExpenseViewModel(this._expenseService, int? preSelectedCategoryId)
+  AddExpenseViewModel(
+      this._expenseService, this._errorReporting, int? preSelectedCategoryId)
       : super(AddExpenseState.initial(
             preSelectedCategoryId: preSelectedCategoryId));
 
@@ -90,14 +96,30 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         categoryId: drift.Value(state.selectedCategoryId!),
       );
 
+      _logger.debug(
+          'AddExpenseViewModel: Creating expense - amount=$amount, categoryId=${state.selectedCategoryId}');
       await _expenseService.createExpense(expense);
+      _logger.info('AddExpenseViewModel: Expense created successfully');
 
       // Set success status
       state = state.copyWith(
         status: SubmissionStatus.success,
         successMessage: AppStrings.msgExpenseAdded,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('AddExpenseViewModel: Failed to create expense',
+          error: e, stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'AddExpenseViewModel',
+        'submitExpense',
+        e,
+        stackTrace: stackTrace,
+        context: {
+          'amount': state.amountController.text,
+          'categoryId': state.selectedCategoryId?.toString() ?? 'null',
+          'date': state.selectedDate.toString(),
+        },
+      );
       // Set error status
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -116,52 +138,15 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       state = state.copyWith(
         status: SubmissionStatus.error,
         errorMessage: amountError,
+        'updateExpense',
+        e,
+        stackTrace: stackTrace,
+        context: {
+          'expenseId': oldExpense.id.toString(),
+          'newAmount': state.amountController.text,
+          'oldAmount': oldExpense.amount.toString(),
+        },
       );
-      return;
-    }
-
-    // Validate category
-    final categoryError = validateCategory(state.selectedCategoryId);
-    if (categoryError != null) {
-      state = state.copyWith(
-        status: SubmissionStatus.error,
-        errorMessage: categoryError,
-      );
-      return;
-    }
-
-    // Validate date
-    final dateError = validateDate(state.selectedDate);
-    if (dateError != null) {
-      state = state.copyWith(
-        status: SubmissionStatus.error,
-        errorMessage: dateError,
-      );
-      return;
-    }
-
-    state = state.copyWith(status: SubmissionStatus.submitting);
-
-    try {
-      final amount = double.parse(state.amountController.text);
-      final description = state.descriptionController.text;
-
-      final newExpense = Expense(
-        id: oldExpense.id,
-        amount: amount,
-        description: description,
-        date: state.selectedDate,
-        categoryId: state.selectedCategoryId!,
-        createdAt: oldExpense.createdAt,
-      );
-
-      await _expenseService.updateExpense(oldExpense, newExpense);
-
-      state = state.copyWith(
-        status: SubmissionStatus.success,
-        successMessage: 'Expense updated successfully',
-      );
-    } catch (e) {
       state = state.copyWith(
         status: SubmissionStatus.error,
         errorMessage: 'Failed to update expense: ${e.toString()}',
