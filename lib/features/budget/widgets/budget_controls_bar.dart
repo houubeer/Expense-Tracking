@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -14,17 +13,18 @@ class BudgetControlsBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final filter = ref.watch(budgetFilterProvider);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl - 4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.05),
+            color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
             offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
@@ -35,17 +35,17 @@ class BudgetControlsBar extends ConsumerWidget {
           // Search field
           Expanded(
             flex: 2,
-            child: _buildSearchField(context, ref, filter),
+            child: _buildSearchField(context, ref, filter, colorScheme),
           ),
           const SizedBox(width: AppSpacing.lg),
           // Filter dropdown
           Expanded(
-            child: _buildStatusFilter(ref, filter),
+            child: _buildStatusFilter(ref, filter, colorScheme),
           ),
           const SizedBox(width: AppSpacing.lg),
           // Sort dropdown
           Expanded(
-            child: _buildSortDropdown(ref, filter),
+            child: _buildSortDropdown(ref, filter, colorScheme),
           ),
         ],
       ),
@@ -56,16 +56,17 @@ class BudgetControlsBar extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     BudgetFilter filter,
+    ColorScheme colorScheme,
   ) {
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
         border: Border.all(
           color: filter.searchQuery.isNotEmpty
-              ? AppColors.primary
-              : AppColors.border,
+              ? colorScheme.primary
+              : colorScheme.outlineVariant,
           width: 1,
         ),
       ),
@@ -77,14 +78,18 @@ class BudgetControlsBar extends ConsumerWidget {
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchCategories,
           hintStyle: AppTextStyles.bodyMedium,
-          prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+          prefixIcon: Icon(Icons.search,
+              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
           suffixIcon: filter.searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear, color: AppColors.textSecondary),
+                  icon: Icon(Icons.clear,
+                      color: colorScheme.onSurfaceVariant,
+                      semanticLabel: 'Clear search'),
                   onPressed: () {
                     ref.read(budgetFilterProvider.notifier).state =
                         filter.copyWith(searchQuery: '');
                   },
+                  tooltip: 'Clear search',
                 )
               : null,
           border: InputBorder.none,
@@ -97,20 +102,21 @@ class BudgetControlsBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusFilter(WidgetRef ref, BudgetFilter filter) {
+  Widget _buildStatusFilter(
+      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: filter.statusFilter,
           isExpanded: true,
           icon: const Icon(Icons.filter_list),
-          dropdownColor: AppColors.surface,
+          dropdownColor: colorScheme.surface,
           items: [
             AppStrings.filterAll,
             AppStrings.statusGood,
@@ -141,20 +147,21 @@ class BudgetControlsBar extends ConsumerWidget {
     );
   }
 
-  Widget _buildSortDropdown(WidgetRef ref, BudgetFilter filter) {
+  Widget _buildSortDropdown(
+      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: filter.sortBy,
           isExpanded: true,
           icon: const Icon(Icons.sort),
-          dropdownColor: AppColors.surface,
+          dropdownColor: colorScheme.surface,
           items: [
             AppStrings.filterSortByName,
             AppStrings.filterSortByBudget,

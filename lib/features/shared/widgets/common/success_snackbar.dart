@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -8,11 +7,13 @@ class SuccessSnackbar extends SnackBar {
   SuccessSnackbar({
     super.key,
     required String message,
+    required Color backgroundColor,
+    required Color iconColor,
     VoidCallback? onUndo,
   }) : super(
           content: Row(
             children: [
-              const Icon(Icons.check_circle, color: AppColors.textInverse),
+              Icon(Icons.check_circle, color: iconColor),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
@@ -22,7 +23,7 @@ class SuccessSnackbar extends SnackBar {
               ),
             ],
           ),
-          backgroundColor: AppColors.green,
+          backgroundColor: backgroundColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -38,8 +39,14 @@ class SuccessSnackbar extends SnackBar {
 
   static void show(BuildContext context, String message,
       {VoidCallback? onUndo}) {
+    final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
-      SuccessSnackbar(message: message, onUndo: onUndo),
+      SuccessSnackbar(
+        message: message,
+        backgroundColor: colorScheme.tertiary,
+        iconColor: colorScheme.onTertiary,
+        onUndo: onUndo,
+      ),
     );
   }
 }

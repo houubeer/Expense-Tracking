@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -35,20 +34,21 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return AlertDialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       title: Text('Add New Category', style: AppTextStyles.heading3),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildNameField(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             _buildBudgetField(),
             const SizedBox(height: AppSpacing.lg),
-            _buildColorPicker(),
+            _buildColorPicker(colorScheme),
             const SizedBox(height: AppSpacing.lg),
-            _buildIconPicker(),
+            _buildIconPicker(colorScheme),
           ],
         ),
       ),
@@ -59,7 +59,6 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         ),
         FilledButton(
           onPressed: _handleAdd,
-          style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
           child: const Text(AppStrings.btnAdd),
         ),
       ],
@@ -95,7 +94,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     );
   }
 
-  Widget _buildColorPicker() {
+  Widget _buildColorPicker(ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -106,26 +105,31 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           runSpacing: AppSpacing.sm,
           children: CategoryColors.colors.map((color) {
             final isSelected = _selectedColor == color.value;
-            return InkWell(
-              onTap: () => setState(() => _selectedColor = color.value),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: isSelected
-                      ? Border.all(color: AppColors.textPrimary, width: 2)
+            return Semantics(
+              button: true,
+              label: 'Color option${isSelected ? ", selected" : ""}',
+              selected: isSelected,
+              child: InkWell(
+                onTap: () => setState(() => _selectedColor = color.value),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                    border: isSelected
+                        ? Border.all(color: colorScheme.onSurface, width: 2)
+                        : null,
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: AppSpacing.iconXs + 2,
+                        )
                       : null,
                 ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: AppSpacing.iconXs + 2,
-                      )
-                    : null,
               ),
             );
           }).toList(),
@@ -134,7 +138,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     );
   }
 
-  Widget _buildIconPicker() {
+  Widget _buildIconPicker(ColorScheme colorScheme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -148,27 +152,33 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               runSpacing: AppSpacing.sm,
               children: CategoryIcons.icons.map((icon) {
                 final isSelected = _selectedIcon == icon.codePoint.toString();
-                return InkWell(
-                  onTap: () =>
-                      setState(() => _selectedIcon = icon.codePoint.toString()),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary.withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                      border: isSelected
-                          ? Border.all(color: AppColors.primary)
-                          : Border.all(color: AppColors.border),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
-                      size: AppSpacing.iconMd,
+                return Semantics(
+                  button: true,
+                  label: 'Category icon${isSelected ? ", selected" : ""}',
+                  selected: isSelected,
+                  child: InkWell(
+                    onTap: () => setState(
+                        () => _selectedIcon = icon.codePoint.toString()),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? colorScheme.primary.withOpacity(0.1)
+                            : Colors.transparent,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
+                        border: isSelected
+                            ? Border.all(color: colorScheme.primary)
+                            : Border.all(color: colorScheme.outlineVariant),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                        size: AppSpacing.iconMd,
+                      ),
                     ),
                   ),
                 );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/cards/stat_card.dart';
@@ -16,6 +15,7 @@ class DashboardStatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -40,7 +40,7 @@ class DashboardStatsGrid extends StatelessWidget {
               value: "${state.activeCategories} Active",
               trend: state.categoriesTrend,
               icon: Icons.category_outlined,
-              color: AppColors.purple,
+              color: colorScheme.secondary,
               width: cardWidth,
             ),
             StatCard(
@@ -49,7 +49,7 @@ class DashboardStatsGrid extends StatelessWidget {
                   "${state.totalExpenses.toStringAsFixed(0)} ${AppStrings.currency}",
               trend: state.expenseTrend,
               icon: Icons.arrow_downward_rounded,
-              color: AppColors.red,
+              color: colorScheme.error,
               width: cardWidth,
             ),
             StatCard(
@@ -58,7 +58,7 @@ class DashboardStatsGrid extends StatelessWidget {
                   "${state.dailyAverage.toStringAsFixed(0)} ${AppStrings.currency}",
               trend: state.dailyAverageTrend,
               icon: Icons.trending_down_rounded,
-              color: AppColors.teal,
+              color: colorScheme.tertiary,
               width: cardWidth,
             ),
           ],

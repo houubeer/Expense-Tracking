@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class ExpenseFormWidget extends ConsumerStatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -49,18 +49,6 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
       initialDate: widget.selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: AppColors.textInverse,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null && picked != widget.selectedDate) {
       widget.onDateChanged(picked);
@@ -69,6 +57,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SingleChildScrollView(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
@@ -106,18 +95,18 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   hintText: '0.00',
                   suffixText: AppStrings.currency,
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outlineVariant),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outlineVariant),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderSide: BorderSide(color: colorScheme.primary),
                   ),
                 ),
                 validator: (value) {
@@ -165,21 +154,23 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     decoration: InputDecoration(
                       hintText: 'Select Category',
                       filled: true,
-                      fillColor: AppColors.surface,
+                      fillColor: colorScheme.surface,
                       border: OutlineInputBorder(
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusLg),
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide:
+                            BorderSide(color: colorScheme.outlineVariant),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusLg),
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide:
+                            BorderSide(color: colorScheme.outlineVariant),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusLg),
-                        borderSide: const BorderSide(color: AppColors.primary),
+                        borderSide: BorderSide(color: colorScheme.primary),
                       ),
                     ),
                     validator: (value) {
@@ -195,28 +186,34 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
 
               // Date Picker
               Text('Date', style: AppTextStyles.label),
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: () => _selectDate(context),
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.calendar_today,
-                          color: AppColors.textSecondary),
-                      const SizedBox(width: 12),
-                      Text(
-                        DateFormat('MMM dd, yyyy').format(widget.selectedDate),
-                        style: AppTextStyles.bodyLarge,
-                      ),
-                    ],
+              const SizedBox(height: AppSpacing.sm),
+              Semantics(
+                button: true,
+                label:
+                    'Select date, currently ${DateFormat('MMM dd, yyyy').format(widget.selectedDate)}',
+                child: InkWell(
+                  onTap: () => _selectDate(context),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                      border: Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: AppSpacing.md),
+                        Text(
+                          DateFormat('MMM dd, yyyy')
+                              .format(widget.selectedDate),
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -232,18 +229,18 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 decoration: InputDecoration(
                   hintText: AppStrings.hintDescription,
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outlineVariant),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: colorScheme.outlineVariant),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    borderSide: const BorderSide(color: AppColors.primary),
+                    borderSide: BorderSide(color: colorScheme.primary),
                   ),
                 ),
                 validator: (value) {
@@ -260,48 +257,19 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    OutlinedButton.icon(
+                    TertiaryButton(
                       onPressed: widget.isSubmitting ? null : widget.onReset,
-                      icon: const Icon(Icons.refresh),
-                      label: Text(AppStrings.btnReset),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                        side: const BorderSide(color: AppColors.border),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                        ),
-                      ),
+                      icon: Icons.refresh,
+                      child: Text(AppStrings.btnReset),
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    ElevatedButton.icon(
+                    PrimaryButton(
                       onPressed: widget.onSubmit,
-                      icon: widget.isSubmitting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Icon(Icons.add),
-                      label: Text(widget.isSubmitting
+                      icon: Icons.add,
+                      isLoading: widget.isSubmitting,
+                      child: Text(widget.isSubmitting
                           ? 'Adding...'
                           : AppStrings.btnAddExpense),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.textInverse,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                        ),
-                      ),
                     ),
                   ],
                 ),

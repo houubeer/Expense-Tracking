@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
+import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 /// A configurable summary card widget for displaying summary information with an icon
 /// Uses composition to allow customization of appearance and behavior
@@ -40,17 +40,19 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardContent = Container(
+    final colorScheme = Theme.of(context).colorScheme;
+    final cardContent = MergeSemantics(
+        child: Container(
       padding: padding ?? const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.surface,
+        color: backgroundColor ?? colorScheme.surface,
         borderRadius:
             BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
-        border: Border.all(color: borderColor ?? AppColors.border),
+        border: Border.all(color: borderColor ?? colorScheme.outlineVariant),
         boxShadow: showShadow
             ? [
                 BoxShadow(
-                  color: AppColors.primary
+                  color: colorScheme.primary
                       .withValues(alpha: AppConfig.shadowOpacity),
                   blurRadius: AppConfig.shadowBlurRadiusLarge,
                   offset: const Offset(0, AppConfig.shadowOffsetYLarge),
@@ -81,7 +83,7 @@ class SummaryCard extends StatelessWidget {
                   title,
                   style: titleStyle ??
                       AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                 ),
@@ -92,17 +94,16 @@ class SummaryCard extends StatelessWidget {
           Text(
             amount,
             style: amountStyle ??
-                AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
+                AppTextStyles.heading2.copyWith(color: colorScheme.onSurface),
           ),
         ],
       ),
-    );
+    ));
 
     if (onTap != null) {
-      return InkWell(
+      return AnimatedHoverCard(
+        scale: 1.015,
         onTap: onTap,
-        borderRadius:
-            BorderRadius.circular(borderRadius ?? AppSpacing.radiusXl),
         child: cardContent,
       );
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/utils/status/i_budget_status_strategy.dart';
 
@@ -9,7 +8,7 @@ class GoodStatusStrategy implements IBudgetStatusStrategy {
   String get statusText => AppStrings.statusGood;
 
   @override
-  Color get statusColor => AppColors.green;
+  Color get statusColor => const Color(0xFF10B981); // Emerald green
 
   @override
   IconData get statusIcon => Icons.check_circle;

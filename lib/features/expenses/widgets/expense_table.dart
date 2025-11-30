@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
-import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -24,18 +23,19 @@ class ExpenseTable extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     if (expenses.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.receipt_long_outlined,
-                size: 64, color: AppColors.textSecondary.withOpacity(0.5)),
+                size: 64, color: colorScheme.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'No transactions found',
               style: AppTextStyles.heading3
-                  .copyWith(color: AppColors.textSecondary),
+                  .copyWith(color: colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -44,20 +44,20 @@ class ExpenseTable extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildTableHeader(),
+        _buildTableHeader(colorScheme),
         const SizedBox(height: AppSpacing.sm),
         Expanded(
           child: ListView.separated(
             itemCount: expenses.length,
             separatorBuilder: (context, index) =>
-                const Divider(height: 1, color: AppColors.border),
+                Divider(height: 1, color: colorScheme.outlineVariant),
             itemBuilder: (context, index) {
               final item = expenses[index];
               return _ExpenseRow(
                 item: item,
                 onTap: () => _showExpenseDetail(context, item),
                 onEdit: () => _showEditDialog(context, ref, item),
-                onDelete: () => _confirmDelete(context, ref, item),
+                onDelete: () => _confirmDelete(context, ref, item, colorScheme),
               );
             },
           ),
@@ -66,12 +66,12 @@ class ExpenseTable extends ConsumerWidget {
     );
   }
 
-  Widget _buildTableHeader() {
+  Widget _buildTableHeader(ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg, vertical: AppSpacing.md),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
       child: Row(
         children: [
@@ -89,13 +89,13 @@ class ExpenseTable extends ConsumerWidget {
           Expanded(
               flex: 2,
               child: Text(AppStrings.labelAmount, style: AppTextStyles.label)),
-          const SizedBox(
+          SizedBox(
               width: 100,
               child: Text('Actions',
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary),
+                      color: colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.end)),
         ],
       ),
@@ -127,14 +127,14 @@ class ExpenseTable extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(
-      BuildContext context, WidgetRef ref, ExpenseWithCategory item) {
+  void _confirmDelete(BuildContext context, WidgetRef ref,
+      ExpenseWithCategory item, ColorScheme colorScheme) {
     final expenseService = ref.read(expenseServiceProvider);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         title: Text(AppStrings.titleDeleteTransaction,
             style: AppTextStyles.heading3),
         content: Text(AppStrings.descDeleteTransaction),
@@ -162,7 +162,7 @@ class ExpenseTable extends ConsumerWidget {
                 });
               }
             },
-            style: FilledButton.styleFrom(backgroundColor: AppColors.red),
+            style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
             child: Text(AppStrings.btnDelete),
           ),
         ],
@@ -186,12 +186,13 @@ class _ExpenseRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final categoryColor = Color(item.category.color);
     final dateStr = DateFormat('MMM dd, yyyy').format(item.expense.date);
 
     return InkWell(
       onTap: onTap,
-      hoverColor: AppColors.primary.withValues(alpha: 0.03),
+      hoverColor: colorScheme.primary.withValues(alpha: 0.03),
       child: Container(
         padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
@@ -202,7 +203,7 @@ class _ExpenseRow extends StatelessWidget {
               child: Text(
                 dateStr,
                 style: AppTextStyles.bodyMedium
-                    .copyWith(color: AppColors.textPrimary),
+                    .copyWith(color: colorScheme.onSurface),
               ),
             ),
             Expanded(
@@ -252,7 +253,7 @@ class _ExpenseRow extends StatelessWidget {
                 "${item.expense.amount.toStringAsFixed(2)} ${AppStrings.currency}",
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),
@@ -262,19 +263,25 @@ class _ExpenseRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.edit_outlined,
-                        size: AppSpacing.iconSm, color: AppColors.primary),
+                    icon: Icon(Icons.edit_outlined,
+                        size: AppSpacing.iconSm,
+                        color: colorScheme.primary,
+                        semanticLabel: 'Edit'),
                     onPressed: onEdit,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
+                    tooltip: 'Edit expense',
                   ),
                   const SizedBox(width: AppSpacing.lg),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline,
-                        size: AppSpacing.iconSm, color: AppColors.red),
+                    icon: Icon(Icons.delete_outline,
+                        size: AppSpacing.iconSm,
+                        color: colorScheme.error,
+                        semanticLabel: 'Delete'),
                     onPressed: onDelete,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
+                    tooltip: 'Delete expense',
                   ),
                 ],
               ),
