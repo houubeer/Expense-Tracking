@@ -150,7 +150,8 @@ class ExpenseTable extends ConsumerWidget {
                 await expenseService.deleteExpense(item.expense);
 
                 if (context.mounted) {
-                  SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
+                  SuccessSnackbar.show(
+                      context, AppStrings.msgTransactionDeleted,
                       onUndo: () async {
                     try {
                       final expense = ExpensesCompanion(
@@ -165,7 +166,8 @@ class ExpenseTable extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Failed to restore expense: ${e.toString()}'),
+                            content: Text(
+                                'Failed to restore expense: ${e.toString()}'),
                             backgroundColor: colorScheme.error,
                           ),
                         );
@@ -177,7 +179,8 @@ class ExpenseTable extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Failed to delete expense: ${e.toString()}'),
+                      content:
+                          Text('Failed to delete expense: ${e.toString()}'),
                       backgroundColor: colorScheme.error,
                     ),
                   );

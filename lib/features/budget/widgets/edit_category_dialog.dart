@@ -285,7 +285,8 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           final colorScheme = Theme.of(context).colorScheme;
                           messenger.showSnackBar(
                             SnackBar(
-                              content: Text('Failed to update category: ${e.toString()}'),
+                              content: Text(
+                                  'Failed to update category: ${e.toString()}'),
                               backgroundColor: colorScheme.error,
                             ),
                           );
