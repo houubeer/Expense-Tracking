@@ -5,7 +5,8 @@ import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_l
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_search_bar.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_filters.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_table.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/providers/expense_list_provider.dart' hide ExpenseFilters;
+import 'package:expense_tracking_desktop_app/features/expenses/providers/expense_list_provider.dart'
+    hide ExpenseFilters;
 
 class ExpensesListScreen extends ConsumerWidget {
   const ExpensesListScreen({super.key});

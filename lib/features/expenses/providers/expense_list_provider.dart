@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Filter State
@@ -51,13 +51,42 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
 /// Provider for the filtered expenses list (Stream)
 final filteredExpensesProvider = StreamProvider.autoDispose<List<ExpenseWithCategory>>((ref) {
   final filters = ref.watch(expenseFiltersProvider);
-  final database = ref.watch(databaseProvider);
+  final expenseService = ref.watch(expenseServiceProvider);
   
-  return database.expenseDao.watchExpensesWithCategory(
-    searchQuery: filters.searchQuery,
-    categoryId: filters.selectedCategoryId,
-    date: filters.selectedDate,
-  );
+  // Use the service layer which returns the domain-level ExpenseWithCategory
+  // Then apply client-side filtering
+  return expenseService.watchExpensesWithCategory().map((expenses) {
+    var filtered = expenses;
+    
+    // Apply search query filter
+    if (filters.searchQuery.isNotEmpty) {
+      final query = filters.searchQuery.toLowerCase();
+      filtered = filtered.where((e) {
+        return e.expense.description.toLowerCase().contains(query) ||
+               e.category.name.toLowerCase().contains(query);
+      }).toList();
+    }
+    
+    // Apply category filter
+    if (filters.selectedCategoryId != null) {
+      filtered = filtered.where((e) {
+        return e.expense.categoryId == filters.selectedCategoryId;
+      }).toList();
+    }
+    
+    // Apply date filter
+    if (filters.selectedDate != null) {
+      final filterDate = filters.selectedDate!;
+      final start = DateTime(filterDate.year, filterDate.month, filterDate.day);
+      final end = start.add(const Duration(days: 1));
+      filtered = filtered.where((e) {
+        return e.expense.date.isAfter(start.subtract(const Duration(milliseconds: 1))) &&
+               e.expense.date.isBefore(end);
+      }).toList();
+    }
+    
+    return filtered;
+  });
 });
 
 // Legacy provider adapter to keep UI working with minimal changes if possible, 

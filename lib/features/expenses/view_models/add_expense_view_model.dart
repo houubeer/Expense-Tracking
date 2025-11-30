@@ -141,7 +141,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       return;
     }
 
-    final descriptionError = validateDescription(state.descriptionController.text);
+    final descriptionError =
+        validateDescription(state.descriptionController.text);
     if (descriptionError != null) {
       state = state.copyWith(
         status: SubmissionStatus.error,
