@@ -35,7 +35,7 @@ class BudgetScreenHeader extends StatelessWidget {
         FilledButton.icon(
           onPressed: onAddPressed,
           icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-          label: Text(AppStrings.btnAddCategory),
+          label: const Text(AppStrings.btnAddCategory),
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.xl - 4,

@@ -148,7 +148,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                 spacing: AppSpacing.md,
                 runSpacing: AppSpacing.md,
                 children: _categoryColors.map((color) {
-                  final isSelected = color.value == _selectedColor.value;
+                  final isSelected = color == _selectedColor;
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColor = color),
                     child: Container(
@@ -166,7 +166,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
-                                  color: color.withOpacity(0.4),
+                                  color: color.withAlpha(102),
                                   blurRadius: 8,
                                   spreadRadius: 2,
                                 ),
@@ -202,7 +202,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           height: 48,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? _selectedColor.withOpacity(0.2)
+                                ? _selectedColor.withAlpha(51)
                                 : colorScheme.surfaceContainerHighest,
                             borderRadius:
                                 BorderRadius.circular(AppSpacing.radiusSm),
@@ -257,27 +257,41 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                         return;
                       }
 
-                      // Update category with new values
-                      final updatedCategory = widget.category.copyWith(
-                        budget: value,
-                        color: _selectedColor.value,
-                        iconCodePoint: _selectedIcon.codePoint.toString(),
-                      );
+                      final colorScheme = Theme.of(context).colorScheme;
 
-                      await widget.categoryRepository
-                          .updateCategory(updatedCategory);
-
-                      if (mounted) {
-                        final colorScheme = Theme.of(context).colorScheme;
-                        navigator.pop();
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
-                            ),
-                            backgroundColor: colorScheme.tertiary,
-                          ),
+                      try {
+                        // Update category with new values
+                        final updatedCategory = widget.category.copyWith(
+                          budget: value,
+                          // ignore: deprecated_member_use
+                          color: _selectedColor.value,
+                          iconCodePoint: _selectedIcon.codePoint.toString(),
                         );
+
+                        await widget.categoryRepository
+                            .updateCategory(updatedCategory);
+
+                        if (mounted) {
+                          navigator.pop();
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${AppStrings.msgCategoryUpdated} ${widget.category.name}',
+                              ),
+                              backgroundColor: colorScheme.tertiary,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Failed to update category: ${e.toString()}'),
+                              backgroundColor: colorScheme.error,
+                            ),
+                          );
+                        }
                       }
                     },
                     child: const Text(AppStrings.btnSaveChanges),

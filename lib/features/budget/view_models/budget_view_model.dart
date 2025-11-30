@@ -7,6 +7,8 @@ import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart
 import 'package:expense_tracking_desktop_app/utils/sorting/category_sort_factory.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
 /// Filter model for budget categories
 class BudgetFilter {
@@ -37,9 +39,12 @@ class BudgetFilter {
 class BudgetViewModel extends ChangeNotifier {
   final ICategoryReader _categoryReader;
   final ICategoryWriter _categoryWriter;
+  final ErrorReportingService _errorReporting;
+  final _logger = LoggerService.instance;
   final Map<int, TextEditingController> _controllers = {};
 
-  BudgetViewModel(this._categoryReader, this._categoryWriter);
+  BudgetViewModel(
+      this._categoryReader, this._categoryWriter, this._errorReporting);
 
   /// Get TextEditingController for a category
   /// UI accesses controllers through ViewModel (not managing lifecycle)
@@ -71,19 +76,53 @@ class BudgetViewModel extends ChangeNotifier {
     required int color,
     required String iconCodePoint,
   }) async {
-    await _categoryWriter.insertCategory(
-      CategoriesCompanion.insert(
-        name: name,
-        budget: Value(budget),
-        color: color,
-        iconCodePoint: iconCodePoint,
-      ),
-    );
+    try {
+      _logger.debug(
+          'BudgetViewModel: Adding category - name=$name, budget=$budget');
+      await _categoryWriter.insertCategory(
+        CategoriesCompanion.insert(
+          name: name,
+          budget: Value(budget),
+          color: color,
+          iconCodePoint: iconCodePoint,
+        ),
+      );
+      _logger.info('BudgetViewModel: Category added successfully - name=$name');
+    } catch (e, stackTrace) {
+      _logger.error('BudgetViewModel: Failed to add category',
+          error: e, stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'BudgetViewModel',
+        'addCategory',
+        e,
+        stackTrace: stackTrace,
+        context: {'name': name, 'budget': budget.toString()},
+      );
+      throw Exception('Failed to add category: $e');
+    }
   }
 
   /// Delete a category (business logic in ViewModel)
   Future<void> deleteCategory(int categoryId) async {
-    await _categoryWriter.deleteCategory(categoryId);
+    try {
+      _logger.debug('BudgetViewModel: Deleting category - id=$categoryId');
+      await _categoryWriter.deleteCategory(categoryId);
+      _logger.info(
+          'BudgetViewModel: Category deleted successfully - id=$categoryId');
+    } catch (e, stackTrace) {
+      _logger.error(
+          'BudgetViewModel: Failed to delete category - id=$categoryId',
+          error: e,
+          stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'BudgetViewModel',
+        'deleteCategory',
+        e,
+        stackTrace: stackTrace,
+        context: {'categoryId': categoryId.toString()},
+      );
+      throw Exception('Failed to delete category: $e');
+    }
   }
 
   /// Private filtering and sorting logic using Strategy Pattern (Open/Closed Principle)
@@ -132,7 +171,8 @@ class BudgetViewModel extends ChangeNotifier {
 /// Provider factory for BudgetViewModel
 final budgetViewModelProvider = Provider.autoDispose<BudgetViewModel>((ref) {
   final repository = ref.watch(categoryRepositoryProvider);
-  return BudgetViewModel(repository, repository);
+  final errorReporting = ref.watch(errorReportingServiceProvider);
+  return BudgetViewModel(repository, repository, errorReporting);
 });
 
 /// StateProvider for budget filter

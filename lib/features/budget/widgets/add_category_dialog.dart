@@ -22,7 +22,7 @@ class AddCategoryDialog extends StatefulWidget {
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
   final _nameController = TextEditingController();
   final _budgetController = TextEditingController();
-  int _selectedColor = CategoryColors.colors[0].value;
+  Color _selectedColor = CategoryColors.colors[0];
   String _selectedIcon = CategoryIcons.icons[0].codePoint.toString();
 
   @override
@@ -104,13 +104,13 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           spacing: AppSpacing.sm,
           runSpacing: AppSpacing.sm,
           children: CategoryColors.colors.map((color) {
-            final isSelected = _selectedColor == color.value;
+            final isSelected = _selectedColor == color;
             return Semantics(
               button: true,
               label: 'Color option${isSelected ? ", selected" : ""}',
               selected: isSelected,
               child: InkWell(
-                onTap: () => setState(() => _selectedColor = color.value),
+                onTap: () => setState(() => _selectedColor = color),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusXl + 4),
                 child: Container(
                   width: 40,
@@ -164,7 +164,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                       padding: const EdgeInsets.all(AppSpacing.sm),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? colorScheme.primary.withOpacity(0.1)
+                            ? colorScheme.primary.withAlpha(25)
                             : Colors.transparent,
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusSm),
@@ -196,10 +196,32 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     }
 
     final budget = double.tryParse(_budgetController.text) ?? 0.0;
+
+    // Validate budget is not negative
+    if (budget < 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Budget cannot be negative'),
+        ),
+      );
+      return;
+    }
+
+    // Validate budget is reasonable (not more than 1 billion)
+    if (budget > 1000000000) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Budget value is too large'),
+        ),
+      );
+      return;
+    }
+
     widget.onAdd(
       _nameController.text,
       budget,
-      _selectedColor,
+      // ignore: deprecated_member_use
+      _selectedColor.value,
       _selectedIcon,
     );
     Navigator.pop(context);

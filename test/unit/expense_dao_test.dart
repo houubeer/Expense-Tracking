@@ -31,11 +31,11 @@ void main() {
     // But for unit test with in-memory, we can disable FK or insert category
     // Let's try to insert category first to be safe
     await database.categoryDao.insertCategory(
-      CategoriesCompanion(
-        name: const Value('Test Category'),
-        iconCodePoint: const Value('123'),
-        color: const Value(0xFF000000),
-        budget: const Value(1000.0),
+      const CategoriesCompanion(
+        name: Value('Test Category'),
+        iconCodePoint: Value('123'),
+        color: Value(0xFF000000),
+        budget: Value(1000.0),
       ),
     );
 
@@ -50,11 +50,11 @@ void main() {
 
   test('updateExpense modifies the expense in the database', () async {
     await database.categoryDao.insertCategory(
-      CategoriesCompanion(
-        name: const Value('Test Category'),
-        iconCodePoint: const Value('123'),
-        color: const Value(0xFF000000),
-        budget: const Value(1000.0),
+      const CategoriesCompanion(
+        name: Value('Test Category'),
+        iconCodePoint: Value('123'),
+        color: Value(0xFF000000),
+        budget: Value(1000.0),
       ),
     );
 

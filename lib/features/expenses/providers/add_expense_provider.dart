@@ -73,6 +73,8 @@ final addExpenseViewModelProvider = StateNotifierProvider.autoDispose
     .family<AddExpenseViewModel, AddExpenseState, int?>(
   (ref, preSelectedCategoryId) {
     final expenseService = ref.watch(expenseServiceProvider);
-    return AddExpenseViewModel(expenseService, preSelectedCategoryId);
+    final errorReporting = ref.watch(errorReportingServiceProvider);
+    return AddExpenseViewModel(
+        expenseService, errorReporting, preSelectedCategoryId);
   },
 );

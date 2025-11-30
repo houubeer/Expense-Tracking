@@ -61,23 +61,77 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
         return;
       }
 
-      final amount = double.parse(_amountController.text);
-      final description = _descriptionController.text;
+      try {
+        final amount = double.parse(_amountController.text);
 
-      final originalExpense = widget.expenseWithCategory.expense;
-      final updatedExpense = originalExpense.copyWith(
-        amount: amount,
-        description: description,
-        date: _selectedDate,
-        categoryId: _selectedCategoryId!,
-      );
+        // Validate amount is positive
+        if (amount <= 0) {
+          final colorScheme = Theme.of(context).colorScheme;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Amount must be greater than 0'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+          return;
+        }
 
-      await widget.expenseService
-          .updateExpense(originalExpense, updatedExpense);
+        // Validate date is reasonable
+        final now = DateTime.now();
+        final futureLimit = DateTime(now.year + 1, now.month, now.day);
+        final pastLimit = DateTime(now.year - 10, now.month, now.day);
 
-      if (mounted) {
-        Navigator.pop(context);
-        SuccessSnackbar.show(context, 'Expense updated successfully');
+        if (_selectedDate.isAfter(futureLimit)) {
+          final colorScheme = Theme.of(context).colorScheme;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  const Text('Date cannot be more than 1 year in the future'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+          return;
+        }
+
+        if (_selectedDate.isBefore(pastLimit)) {
+          final colorScheme = Theme.of(context).colorScheme;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  const Text('Date cannot be more than 10 years in the past'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+          return;
+        }
+
+        final description = _descriptionController.text;
+
+        final originalExpense = widget.expenseWithCategory.expense;
+        final updatedExpense = originalExpense.copyWith(
+          amount: amount,
+          description: description,
+          date: _selectedDate,
+          categoryId: _selectedCategoryId!,
+        );
+
+        await widget.expenseService
+            .updateExpense(originalExpense, updatedExpense);
+
+        if (mounted) {
+          Navigator.pop(context);
+          SuccessSnackbar.show(context, 'Expense updated successfully');
+        }
+      } catch (e) {
+        if (mounted) {
+          final colorScheme = Theme.of(context).colorScheme;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update expense: ${e.toString()}'),
+              backgroundColor: colorScheme.error,
+            ),
+          );
+        }
       }
     }
   }
@@ -139,12 +193,12 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: colorScheme.onSurfaceVariant,
                   ),
-                  child: Text(AppStrings.btnCancel),
+                  child: const Text(AppStrings.btnCancel),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 PrimaryButton(
                   onPressed: _updateExpense,
-                  child: Text('Update Expense'),
+                  child: const Text('Update Expense'),
                 ),
               ],
             ),

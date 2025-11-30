@@ -4,11 +4,16 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   final IExpenseService _expenseService;
+  final ErrorReportingService _errorReporting;
+  final _logger = LoggerService.instance;
 
-  AddExpenseViewModel(this._expenseService, int? preSelectedCategoryId)
+  AddExpenseViewModel(
+      this._expenseService, this._errorReporting, int? preSelectedCategoryId)
       : super(AddExpenseState.initial(
             preSelectedCategoryId: preSelectedCategoryId));
 
@@ -46,9 +51,35 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
   /// Submit expense to database
   Future<void> submitExpense() async {
-    // Validate controllers have data
-    if (state.amountController.text.isEmpty) return;
-    if (state.selectedCategoryId == null) return;
+    // Validate amount
+    final amountError = validateAmount(state.amountController.text);
+    if (amountError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: amountError,
+      );
+      return;
+    }
+
+    // Validate category
+    final categoryError = validateCategory(state.selectedCategoryId);
+    if (categoryError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: categoryError,
+      );
+      return;
+    }
+
+    // Validate date
+    final dateError = validateDate(state.selectedDate);
+    if (dateError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: dateError,
+      );
+      return;
+    }
 
     // Set submitting status
     state = state.copyWith(status: SubmissionStatus.submitting);
@@ -64,14 +95,30 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         categoryId: drift.Value(state.selectedCategoryId!),
       );
 
+      _logger.debug(
+          'AddExpenseViewModel: Creating expense - amount=$amount, categoryId=${state.selectedCategoryId}');
       await _expenseService.createExpense(expense);
+      _logger.info('AddExpenseViewModel: Expense created successfully');
 
       // Set success status
       state = state.copyWith(
         status: SubmissionStatus.success,
         successMessage: AppStrings.msgExpenseAdded,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('AddExpenseViewModel: Failed to create expense',
+          error: e, stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'AddExpenseViewModel',
+        'submitExpense',
+        e,
+        stackTrace: stackTrace,
+        context: {
+          'amount': state.amountController.text,
+          'categoryId': state.selectedCategoryId?.toString() ?? 'null',
+          'date': state.selectedDate.toString(),
+        },
+      );
       // Set error status
       state = state.copyWith(
         status: SubmissionStatus.error,
@@ -84,31 +131,66 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   Future<void> updateExpense({
     required Expense oldExpense,
   }) async {
-    if (state.amountController.text.isEmpty) return;
-    if (state.selectedCategoryId == null) return;
+    // Validate amount
+    final amountError = validateAmount(state.amountController.text);
+    if (amountError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: amountError,
+      );
+      return;
+    }
+
+    final descriptionError =
+        validateDescription(state.descriptionController.text);
+    if (descriptionError != null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: descriptionError,
+      );
+      return;
+    }
+
+    if (state.selectedCategoryId == null) {
+      state = state.copyWith(
+        status: SubmissionStatus.error,
+        errorMessage: 'Please select a category',
+      );
+      return;
+    }
 
     state = state.copyWith(status: SubmissionStatus.submitting);
 
     try {
       final amount = double.parse(state.amountController.text);
-      final description = state.descriptionController.text;
-
-      final newExpense = Expense(
-        id: oldExpense.id,
+      final newExpense = oldExpense.copyWith(
         amount: amount,
-        description: description,
-        date: state.selectedDate,
+        description: state.descriptionController.text,
         categoryId: state.selectedCategoryId!,
-        createdAt: oldExpense.createdAt,
+        date: state.selectedDate,
       );
 
       await _expenseService.updateExpense(oldExpense, newExpense);
+      _logger.info('AddExpenseViewModel: Expense updated successfully');
 
       state = state.copyWith(
         status: SubmissionStatus.success,
         successMessage: 'Expense updated successfully',
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      _logger.error('AddExpenseViewModel: Failed to update expense',
+          error: e, stackTrace: stackTrace);
+      await _errorReporting.reportUIError(
+        'AddExpenseViewModel',
+        'updateExpense',
+        e,
+        stackTrace: stackTrace,
+        context: {
+          'expenseId': oldExpense.id.toString(),
+          'newAmount': state.amountController.text,
+          'oldAmount': oldExpense.amount.toString(),
+        },
+      );
       state = state.copyWith(
         status: SubmissionStatus.error,
         errorMessage: 'Failed to update expense: ${e.toString()}',
@@ -117,7 +199,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
   }
 
   /// Reset state (deprecated - use resetForm)
-  @deprecated
+  @Deprecated('Use resetForm() instead')
   void resetState() {
     resetForm();
   }
@@ -151,6 +233,23 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     if (categoryId == null) {
       return 'Please select a category';
     }
+    return null;
+  }
+
+  String? validateDate(DateTime date) {
+    final now = DateTime.now();
+    final futureLimit = DateTime(now.year + 1, now.month, now.day);
+
+    if (date.isAfter(futureLimit)) {
+      return 'Date cannot be more than 1 year in the future';
+    }
+
+    // Allow dates up to 10 years in the past for historical data
+    final pastLimit = DateTime(now.year - 10, now.month, now.day);
+    if (date.isBefore(pastLimit)) {
+      return 'Date cannot be more than 10 years in the past';
+    }
+
     return null;
   }
 }

@@ -30,7 +30,7 @@ class ExpenseTable extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.receipt_long_outlined,
-                size: 64, color: colorScheme.onSurfaceVariant.withOpacity(0.5)),
+                size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128)),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'No transactions found',
@@ -137,33 +137,58 @@ class ExpenseTable extends ConsumerWidget {
         backgroundColor: colorScheme.surface,
         title: Text(AppStrings.titleDeleteTransaction,
             style: AppTextStyles.heading3),
-        content: Text(AppStrings.descDeleteTransaction),
+        content: const Text(AppStrings.descDeleteTransaction),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppStrings.btnCancel, style: AppTextStyles.bodyMedium),
+            child: const Text(AppStrings.btnCancel),
           ),
           FilledButton(
             onPressed: () async {
               Navigator.pop(context);
-              await expenseService.deleteExpense(item.expense);
+              try {
+                await expenseService.deleteExpense(item.expense);
 
-              if (context.mounted) {
-                SuccessSnackbar.show(context, AppStrings.msgTransactionDeleted,
-                    onUndo: () async {
-                  final expense = ExpensesCompanion(
-                    amount: drift.Value(item.expense.amount),
-                    date: drift.Value(item.expense.date),
-                    description: drift.Value(item.expense.description),
-                    categoryId: drift.Value(item.expense.categoryId),
-                    createdAt: drift.Value(item.expense.createdAt),
+                if (context.mounted) {
+                  SuccessSnackbar.show(
+                      context, AppStrings.msgTransactionDeleted,
+                      onUndo: () async {
+                    try {
+                      final expense = ExpensesCompanion(
+                        amount: drift.Value(item.expense.amount),
+                        date: drift.Value(item.expense.date),
+                        description: drift.Value(item.expense.description),
+                        categoryId: drift.Value(item.expense.categoryId),
+                        createdAt: drift.Value(item.expense.createdAt),
+                      );
+                      await expenseService.createExpense(expense);
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                'Failed to restore expense: ${e.toString()}'),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                      }
+                    }
+                  });
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content:
+                          Text('Failed to delete expense: ${e.toString()}'),
+                      backgroundColor: colorScheme.error,
+                    ),
                   );
-                  await expenseService.createExpense(expense);
-                });
+                }
               }
             },
             style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
-            child: Text(AppStrings.btnDelete),
+            child: const Text(AppStrings.btnDelete),
           ),
         ],
       ),

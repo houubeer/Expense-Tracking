@@ -34,25 +34,34 @@ class HomeScreen extends ConsumerWidget {
                         screenWidth > 1100 ? Axis.horizontal : Axis.vertical,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child: BudgetOverviewCard(
+                      if (screenWidth > 1100)
+                        Expanded(
+                          flex: 3,
+                          child: BudgetOverviewCard(
+                            budgetData: state.budgetData,
+                            itemsToShow: screenWidth > 1400 ? 8 : 5,
+                          ),
+                        )
+                      else
+                        BudgetOverviewCard(
                           budgetData: state.budgetData,
-                          itemsToShow: screenWidth > 1400
-                              ? 8
-                              : 5, // More items on larger screens
+                          itemsToShow: 5,
                         ),
-                      ),
                       if (screenWidth > 1100)
                         const SizedBox(width: AppSpacing.xl),
                       if (screenWidth <= 1100)
                         const SizedBox(height: AppSpacing.xl),
-                      Expanded(
-                        flex: 2,
-                        child: RecentExpensesCard(
+                      if (screenWidth > 1100)
+                        Expanded(
+                          flex: 2,
+                          child: RecentExpensesCard(
+                            recentExpenses: state.recentExpenses,
+                          ),
+                        )
+                      else
+                        RecentExpensesCard(
                           recentExpenses: state.recentExpenses,
                         ),
-                      ),
                     ],
                   ),
                 ],

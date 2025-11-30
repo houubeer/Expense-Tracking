@@ -36,7 +36,7 @@ class RecentExpensesCard extends StatelessWidget {
           SizedBox(
             height: 300,
             child: recentExpenses.isEmpty
-                ? Center(child: Text(AppStrings.msgNoExpensesYet))
+                ? const Center(child: Text(AppStrings.msgNoExpensesYet))
                 : SingleChildScrollView(
                     child: Column(
                       children: [
@@ -74,7 +74,8 @@ class RecentExpensesCard extends StatelessWidget {
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       );

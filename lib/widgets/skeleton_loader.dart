@@ -75,8 +75,8 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
                     ? colorScheme.surfaceContainerHighest
                     : colorScheme.surfaceContainerHigh,
                 isDark
-                    ? colorScheme.surfaceContainerHighest.withOpacity(0.5)
-                    : colorScheme.surfaceContainerHigh.withOpacity(0.5),
+                    ? colorScheme.surfaceContainerHighest.withAlpha(128)
+                    : colorScheme.surfaceContainerHigh.withAlpha(128),
                 isDark
                     ? colorScheme.surfaceContainerHighest
                     : colorScheme.surfaceContainerHigh,

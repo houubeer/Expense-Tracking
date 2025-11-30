@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_screen_header.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_empty_states.dart';
@@ -14,12 +13,10 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 class BudgetSettingScreen extends ConsumerStatefulWidget {
-  final ICategoryRepository categoryRepository;
-
   const BudgetSettingScreen({
-    required this.categoryRepository,
     super.key,
   });
 
@@ -32,10 +29,12 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   late final BudgetViewModel _viewModel;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final categoryRepository = ref.read(categoryRepositoryProvider);
+    final errorReporting = ref.read(errorReportingServiceProvider);
     _viewModel =
-        BudgetViewModel(widget.categoryRepository, widget.categoryRepository);
+        BudgetViewModel(categoryRepository, categoryRepository, errorReporting);
   }
 
   @override
@@ -117,23 +116,30 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       context: context,
       builder: (context) => AddCategoryDialog(
         onAdd: (name, budget, color, iconCodePoint) async {
-          await _viewModel.addCategory(
-            name: name,
-            budget: budget,
-            color: color,
-            iconCodePoint: iconCodePoint,
-          );
-          _showSuccessMessage(AppStrings.msgCategoryAdded);
+          try {
+            await _viewModel.addCategory(
+              name: name,
+              budget: budget,
+              color: color,
+              iconCodePoint: iconCodePoint,
+            );
+            _showSuccessMessage(AppStrings.msgCategoryAdded);
+          } catch (e) {
+            if (mounted) {
+              _showErrorMessage('Failed to add category: ${e.toString()}');
+            }
+          }
         },
       ),
     );
   }
 
   void _handleEditCategory(Category category) {
+    final categoryRepository = ref.read(categoryRepositoryProvider);
     showDialog(
       context: context,
       builder: (context) => EditCategoryDialog(
-        categoryRepository: widget.categoryRepository,
+        categoryRepository: categoryRepository,
         category: category,
         budgetController: _viewModel.getController(category),
       ),
@@ -146,8 +152,14 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       builder: (context) => DeleteCategoryDialog(
         category: category,
         onConfirm: () async {
-          await _viewModel.deleteCategory(category.id);
-          _showSuccessMessage(AppStrings.msgCategoryDeleted);
+          try {
+            await _viewModel.deleteCategory(category.id);
+            _showSuccessMessage(AppStrings.msgCategoryDeleted);
+          } catch (e) {
+            if (mounted) {
+              _showErrorMessage('Failed to delete category: ${e.toString()}');
+            }
+          }
         },
       ),
     );
@@ -158,6 +170,14 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: colorScheme.tertiary),
+    );
+  }
+
+  void _showErrorMessage(String message) {
+    if (!mounted) return;
+    final colorScheme = Theme.of(context).colorScheme;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: colorScheme.error),
     );
   }
 

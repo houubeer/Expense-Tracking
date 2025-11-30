@@ -42,9 +42,9 @@ class BudgetOverviewCard extends StatelessWidget {
 
   Widget _buildBudgetContent() {
     if (budgetData.isEmpty) {
-      return Center(
+      return const Center(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xxxl),
+          padding: EdgeInsets.all(AppSpacing.xxxl),
           child: Text(AppStrings.msgNoBudgetsYet),
         ),
       );
@@ -54,9 +54,9 @@ class BudgetOverviewCard extends StatelessWidget {
     final activeBudgets = budgetData.where((b) => !b.hasNoBudget).toList();
 
     if (activeBudgets.isEmpty) {
-      return Center(
+      return const Center(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xxxl),
+          padding: EdgeInsets.all(AppSpacing.xxxl),
           child: Text(AppStrings.msgNoBudgetsYet),
         ),
       );
@@ -166,7 +166,8 @@ class BudgetOverviewCard extends StatelessWidget {
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadiusMd,
-            offset: Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       );
@@ -192,10 +193,10 @@ class _BudgetLegendItem extends StatelessWidget {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.3),
+                color: color.withAlpha(77),
                 blurRadius: AppConfig.shadowBlurRadiusSm,
-                offset:
-                    Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                offset: const Offset(
+                    AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
               ),
             ],
           ),

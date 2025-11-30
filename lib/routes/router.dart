@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
@@ -8,19 +7,14 @@ import 'package:expense_tracking_desktop_app/features/budget/screens/budget_sett
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/category_repository.dart';
-import 'package:expense_tracking_desktop_app/features/budget/repositories/i_category_repository.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/widgets/connection_status_banner.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Creates the app router with the provided database instance
-GoRouter createRouter(AppDatabase database) {
-  // TODO: Remove these when all screens are refactored to use Riverpod providers
-  // Currently needed for BudgetSettingScreen which hasn't been refactored yet
-  final ICategoryRepository categoryRepository = CategoryRepository(database);
-
+/// Creates the app router
+GoRouter createRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.home,
@@ -30,16 +24,23 @@ GoRouter createRouter(AppDatabase database) {
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
           return Scaffold(
-            body: Row(
+            body: Column(
               children: [
-                Sidebar(
-                  currentPath: state.uri.path,
-                  onDestinationSelected: (path) {
-                    context.go(path);
-                  },
-                ),
+                const ConnectionStatusBanner(),
                 Expanded(
-                  child: child,
+                  child: Row(
+                    children: [
+                      Sidebar(
+                        currentPath: state.uri.path,
+                        onDestinationSelected: (path) {
+                          context.go(path);
+                        },
+                      ),
+                      Expanded(
+                        child: child,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -91,9 +92,7 @@ GoRouter createRouter(AppDatabase database) {
             path: AppRoutes.budgets,
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
-              child: BudgetSettingScreen(
-                categoryRepository: categoryRepository,
-              ),
+              child: const BudgetSettingScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);

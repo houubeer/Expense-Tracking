@@ -48,7 +48,7 @@ class Sidebar extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             colorScheme.primary,
-            colorScheme.primary.withOpacity(0.85),
+            colorScheme.primary.withAlpha(217),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -72,7 +72,7 @@ class Sidebar extends StatelessWidget {
                     borderRadius: AppSpacing.borderRadiusLg,
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.secondaryContainer.withOpacity(0.3),
+                        color: colorScheme.secondaryContainer.withAlpha(77),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -193,9 +193,9 @@ class _SidebarTileState extends State<_SidebarTile> {
                 : EdgeInsets.zero,
             decoration: BoxDecoration(
               color: isSelected
-                  ? colorScheme.primaryContainer.withOpacity(0.4)
+                  ? colorScheme.primaryContainer.withAlpha(102)
                   : isHovered
-                      ? colorScheme.primaryContainer.withOpacity(0.2)
+                      ? colorScheme.primaryContainer.withAlpha(51)
                       : Colors.transparent,
               borderRadius: isSelected
                   ? const BorderRadius.only(
@@ -211,8 +211,8 @@ class _SidebarTileState extends State<_SidebarTile> {
                   color: isSelected
                       ? colorScheme.onPrimary
                       : isHovered
-                          ? colorScheme.onPrimary.withOpacity(0.9)
-                          : colorScheme.onPrimary.withOpacity(0.65),
+                          ? colorScheme.onPrimary.withAlpha(230)
+                          : colorScheme.onPrimary.withAlpha(166),
                   size: 22,
                 ),
                 const SizedBox(width: AppSpacing.md),
@@ -222,8 +222,8 @@ class _SidebarTileState extends State<_SidebarTile> {
                     color: isSelected
                         ? colorScheme.onPrimary
                         : isHovered
-                            ? colorScheme.onPrimary.withOpacity(0.9)
-                            : colorScheme.onPrimary.withOpacity(0.65),
+                            ? colorScheme.onPrimary.withAlpha(230)
+                            : colorScheme.onPrimary.withAlpha(166),
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
