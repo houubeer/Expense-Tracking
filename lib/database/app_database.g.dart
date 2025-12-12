@@ -460,9 +460,33 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
+  static const VerificationMeta _isReimbursableMeta =
+      const VerificationMeta('isReimbursable');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, amount, date, description, categoryId, createdAt];
+  late final GeneratedColumn<bool> isReimbursable = GeneratedColumn<bool>(
+      'is_reimbursable', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_reimbursable" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _receiptPathMeta =
+      const VerificationMeta('receiptPath');
+  @override
+  late final GeneratedColumn<String> receiptPath = GeneratedColumn<String>(
+      'receipt_path', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        amount,
+        date,
+        description,
+        categoryId,
+        createdAt,
+        isReimbursable,
+        receiptPath
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -508,15 +532,23 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
+    if (data.containsKey('is_reimbursable')) {
+      context.handle(
+          _isReimbursableMeta,
+          isReimbursable.isAcceptableOrUnknown(
+              data['is_reimbursable']!, _isReimbursableMeta));
+    }
+    if (data.containsKey('receipt_path')) {
+      context.handle(
+          _receiptPathMeta,
+          receiptPath.isAcceptableOrUnknown(
+              data['receipt_path']!, _receiptPathMeta));
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-        {id},
-      ];
   @override
   Expense map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -533,6 +565,10 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
           .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isReimbursable: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_reimbursable'])!,
+      receiptPath: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}receipt_path']),
     );
   }
 
@@ -549,13 +585,21 @@ class Expense extends DataClass implements Insertable<Expense> {
   final String description;
   final int categoryId;
   final DateTime createdAt;
+
+  /// Flag to mark expense as reimbursable (employee-owed expense)
+  final bool isReimbursable;
+
+  /// Path to attached receipt image or PDF file (nullable)
+  final String? receiptPath;
   const Expense(
       {required this.id,
       required this.amount,
       required this.date,
       required this.description,
       required this.categoryId,
-      required this.createdAt});
+      required this.createdAt,
+      required this.isReimbursable,
+      this.receiptPath});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -565,6 +609,10 @@ class Expense extends DataClass implements Insertable<Expense> {
     map['description'] = Variable<String>(description);
     map['category_id'] = Variable<int>(categoryId);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_reimbursable'] = Variable<bool>(isReimbursable);
+    if (!nullToAbsent || receiptPath != null) {
+      map['receipt_path'] = Variable<String>(receiptPath);
+    }
     return map;
   }
 
@@ -576,6 +624,10 @@ class Expense extends DataClass implements Insertable<Expense> {
       description: Value(description),
       categoryId: Value(categoryId),
       createdAt: Value(createdAt),
+      isReimbursable: Value(isReimbursable),
+      receiptPath: receiptPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(receiptPath),
     );
   }
 
@@ -589,6 +641,8 @@ class Expense extends DataClass implements Insertable<Expense> {
       description: serializer.fromJson<String>(json['description']),
       categoryId: serializer.fromJson<int>(json['categoryId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isReimbursable: serializer.fromJson<bool>(json['isReimbursable']),
+      receiptPath: serializer.fromJson<String?>(json['receiptPath']),
     );
   }
   @override
@@ -601,6 +655,8 @@ class Expense extends DataClass implements Insertable<Expense> {
       'description': serializer.toJson<String>(description),
       'categoryId': serializer.toJson<int>(categoryId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isReimbursable': serializer.toJson<bool>(isReimbursable),
+      'receiptPath': serializer.toJson<String?>(receiptPath),
     };
   }
 
@@ -610,7 +666,9 @@ class Expense extends DataClass implements Insertable<Expense> {
           DateTime? date,
           String? description,
           int? categoryId,
-          DateTime? createdAt}) =>
+          DateTime? createdAt,
+          bool? isReimbursable,
+          Value<String?> receiptPath = const Value.absent()}) =>
       Expense(
         id: id ?? this.id,
         amount: amount ?? this.amount,
@@ -618,6 +676,8 @@ class Expense extends DataClass implements Insertable<Expense> {
         description: description ?? this.description,
         categoryId: categoryId ?? this.categoryId,
         createdAt: createdAt ?? this.createdAt,
+        isReimbursable: isReimbursable ?? this.isReimbursable,
+        receiptPath: receiptPath.present ? receiptPath.value : this.receiptPath,
       );
   Expense copyWithCompanion(ExpensesCompanion data) {
     return Expense(
@@ -629,6 +689,11 @@ class Expense extends DataClass implements Insertable<Expense> {
       categoryId:
           data.categoryId.present ? data.categoryId.value : this.categoryId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      isReimbursable: data.isReimbursable.present
+          ? data.isReimbursable.value
+          : this.isReimbursable,
+      receiptPath:
+          data.receiptPath.present ? data.receiptPath.value : this.receiptPath,
     );
   }
 
@@ -640,14 +705,16 @@ class Expense extends DataClass implements Insertable<Expense> {
           ..write('date: $date, ')
           ..write('description: $description, ')
           ..write('categoryId: $categoryId, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isReimbursable: $isReimbursable, ')
+          ..write('receiptPath: $receiptPath')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, amount, date, description, categoryId, createdAt);
+  int get hashCode => Object.hash(id, amount, date, description, categoryId,
+      createdAt, isReimbursable, receiptPath);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -657,7 +724,9 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.date == this.date &&
           other.description == this.description &&
           other.categoryId == this.categoryId &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.isReimbursable == this.isReimbursable &&
+          other.receiptPath == this.receiptPath);
 }
 
 class ExpensesCompanion extends UpdateCompanion<Expense> {
@@ -667,6 +736,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   final Value<String> description;
   final Value<int> categoryId;
   final Value<DateTime> createdAt;
+  final Value<bool> isReimbursable;
+  final Value<String?> receiptPath;
   const ExpensesCompanion({
     this.id = const Value.absent(),
     this.amount = const Value.absent(),
@@ -674,6 +745,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     this.description = const Value.absent(),
     this.categoryId = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.isReimbursable = const Value.absent(),
+    this.receiptPath = const Value.absent(),
   });
   ExpensesCompanion.insert({
     this.id = const Value.absent(),
@@ -682,6 +755,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     required String description,
     required int categoryId,
     this.createdAt = const Value.absent(),
+    this.isReimbursable = const Value.absent(),
+    this.receiptPath = const Value.absent(),
   })  : amount = Value(amount),
         date = Value(date),
         description = Value(description),
@@ -693,6 +768,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     Expression<String>? description,
     Expression<int>? categoryId,
     Expression<DateTime>? createdAt,
+    Expression<bool>? isReimbursable,
+    Expression<String>? receiptPath,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -701,6 +778,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       if (description != null) 'description': description,
       if (categoryId != null) 'category_id': categoryId,
       if (createdAt != null) 'created_at': createdAt,
+      if (isReimbursable != null) 'is_reimbursable': isReimbursable,
+      if (receiptPath != null) 'receipt_path': receiptPath,
     });
   }
 
@@ -710,7 +789,9 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       Value<DateTime>? date,
       Value<String>? description,
       Value<int>? categoryId,
-      Value<DateTime>? createdAt}) {
+      Value<DateTime>? createdAt,
+      Value<bool>? isReimbursable,
+      Value<String?>? receiptPath}) {
     return ExpensesCompanion(
       id: id ?? this.id,
       amount: amount ?? this.amount,
@@ -718,6 +799,8 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
       createdAt: createdAt ?? this.createdAt,
+      isReimbursable: isReimbursable ?? this.isReimbursable,
+      receiptPath: receiptPath ?? this.receiptPath,
     );
   }
 
@@ -742,6 +825,12 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (isReimbursable.present) {
+      map['is_reimbursable'] = Variable<bool>(isReimbursable.value);
+    }
+    if (receiptPath.present) {
+      map['receipt_path'] = Variable<String>(receiptPath.value);
+    }
     return map;
   }
 
@@ -753,7 +842,9 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
           ..write('date: $date, ')
           ..write('description: $description, ')
           ..write('categoryId: $categoryId, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isReimbursable: $isReimbursable, ')
+          ..write('receiptPath: $receiptPath')
           ..write(')'))
         .toString();
   }
@@ -1073,6 +1164,8 @@ typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
   required String description,
   required int categoryId,
   Value<DateTime> createdAt,
+  Value<bool> isReimbursable,
+  Value<String?> receiptPath,
 });
 typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
@@ -1081,6 +1174,8 @@ typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<String> description,
   Value<int> categoryId,
   Value<DateTime> createdAt,
+  Value<bool> isReimbursable,
+  Value<String?> receiptPath,
 });
 
 final class $$ExpensesTableReferences
@@ -1127,6 +1222,13 @@ class $$ExpensesTableFilterComposer
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<bool> get isReimbursable => $composableBuilder(
+      column: $table.isReimbursable,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get receiptPath => $composableBuilder(
+      column: $table.receiptPath, builder: (column) => ColumnFilters(column));
+
   $$CategoriesTableFilterComposer get categoryId {
     final $$CategoriesTableFilterComposer composer = $composerBuilder(
         composer: this,
@@ -1172,6 +1274,13 @@ class $$ExpensesTableOrderingComposer
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<bool> get isReimbursable => $composableBuilder(
+      column: $table.isReimbursable,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get receiptPath => $composableBuilder(
+      column: $table.receiptPath, builder: (column) => ColumnOrderings(column));
+
   $$CategoriesTableOrderingComposer get categoryId {
     final $$CategoriesTableOrderingComposer composer = $composerBuilder(
         composer: this,
@@ -1216,6 +1325,12 @@ class $$ExpensesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isReimbursable => $composableBuilder(
+      column: $table.isReimbursable, builder: (column) => column);
+
+  GeneratedColumn<String> get receiptPath => $composableBuilder(
+      column: $table.receiptPath, builder: (column) => column);
 
   $$CategoriesTableAnnotationComposer get categoryId {
     final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
@@ -1267,6 +1382,8 @@ class $$ExpensesTableTableManager extends RootTableManager<
             Value<String> description = const Value.absent(),
             Value<int> categoryId = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
+            Value<bool> isReimbursable = const Value.absent(),
+            Value<String?> receiptPath = const Value.absent(),
           }) =>
               ExpensesCompanion(
             id: id,
@@ -1275,6 +1392,8 @@ class $$ExpensesTableTableManager extends RootTableManager<
             description: description,
             categoryId: categoryId,
             createdAt: createdAt,
+            isReimbursable: isReimbursable,
+            receiptPath: receiptPath,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
@@ -1283,6 +1402,8 @@ class $$ExpensesTableTableManager extends RootTableManager<
             required String description,
             required int categoryId,
             Value<DateTime> createdAt = const Value.absent(),
+            Value<bool> isReimbursable = const Value.absent(),
+            Value<String?> receiptPath = const Value.absent(),
           }) =>
               ExpensesCompanion.insert(
             id: id,
@@ -1291,6 +1412,8 @@ class $$ExpensesTableTableManager extends RootTableManager<
             description: description,
             categoryId: categoryId,
             createdAt: createdAt,
+            isReimbursable: isReimbursable,
+            receiptPath: receiptPath,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) =>
