@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_filters.dart'
+    show ReimbursableFilter;
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Filter State
@@ -7,17 +9,20 @@ class ExpenseFilters {
   final String searchQuery;
   final int? selectedCategoryId;
   final DateTime? selectedDate;
+  final ReimbursableFilter reimbursableFilter;
 
   const ExpenseFilters({
     this.searchQuery = '',
     this.selectedCategoryId,
     this.selectedDate,
+    this.reimbursableFilter = ReimbursableFilter.all,
   });
 
   ExpenseFilters copyWith({
     String? searchQuery,
     int? selectedCategoryId,
     DateTime? selectedDate,
+    ReimbursableFilter? reimbursableFilter,
     bool clearCategoryId = false,
     bool clearDate = false,
   }) {
@@ -27,6 +32,7 @@ class ExpenseFilters {
           ? null
           : (selectedCategoryId ?? this.selectedCategoryId),
       selectedDate: clearDate ? null : (selectedDate ?? this.selectedDate),
+      reimbursableFilter: reimbursableFilter ?? this.reimbursableFilter,
     );
   }
 }
@@ -56,6 +62,10 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
       selectedDate: date,
       clearDate: date == null,
     );
+  }
+
+  void setReimbursableFilter(ReimbursableFilter filter) {
+    state = state.copyWith(reimbursableFilter: filter);
   }
 }
 
@@ -98,6 +108,15 @@ final filteredExpensesProvider =
       }).toList();
     }
 
+    // Apply reimbursable filter
+    if (filters.reimbursableFilter != ReimbursableFilter.all) {
+      final isReimbursable =
+          filters.reimbursableFilter == ReimbursableFilter.reimbursable;
+      filtered = filtered.where((e) {
+        return e.expense.isReimbursable == isReimbursable;
+      }).toList();
+    }
+
     return filtered;
   });
 });
@@ -111,6 +130,7 @@ class ExpenseListState {
   final String searchQuery;
   final int? selectedCategoryId;
   final DateTime? selectedDate;
+  final ReimbursableFilter reimbursableFilter;
   final List<ExpenseWithCategory> filteredExpenses;
   final bool isLoading;
   final String? error;
@@ -119,6 +139,7 @@ class ExpenseListState {
     required this.searchQuery,
     required this.selectedCategoryId,
     required this.selectedDate,
+    required this.reimbursableFilter,
     required this.filteredExpenses,
     this.isLoading = false,
     this.error,
@@ -146,6 +167,7 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
           searchQuery: filters.searchQuery,
           selectedCategoryId: filters.selectedCategoryId,
           selectedDate: filters.selectedDate,
+          reimbursableFilter: filters.reimbursableFilter,
           filteredExpenses: expensesAsync.value ?? [],
           isLoading: expensesAsync.isLoading,
           error: expensesAsync.hasError ? expensesAsync.error.toString() : null,
@@ -161,5 +183,9 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
 
   void setDateFilter(DateTime? date) {
     _filtersNotifier.setDateFilter(date);
+  }
+
+  void setReimbursableFilter(ReimbursableFilter filter) {
+    _filtersNotifier.setReimbursableFilter(filter);
   }
 }
