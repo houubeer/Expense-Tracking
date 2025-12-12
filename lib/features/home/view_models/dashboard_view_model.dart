@@ -25,12 +25,23 @@ class DashboardViewModel extends ChangeNotifier {
         double totalExpenses,
         List<ExpenseWithCategory> expenses,
       ) {
+        // Calculate reimbursable totals from expenses
+        final reimbursableExpenses = expenses
+            .where((e) => e.expense.isReimbursable)
+            .toList();
+        final reimbursableTotal = reimbursableExpenses.fold<double>(
+          0.0,
+          (sum, e) => sum + e.expense.amount,
+        );
+
         // All calculations happen here, UI just displays
         return DashboardState.fromData(
           budgets: budgets,
           totalBudget: totalBudget,
           totalExpenses: totalExpenses,
           expenses: expenses,
+          reimbursableTotal: reimbursableTotal,
+          reimbursableCount: reimbursableExpenses.length,
         );
       },
     );
