@@ -61,7 +61,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   ///
   /// Increment this value when making schema changes to trigger migrations.
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   /// Handles database schema migrations when the version changes.
   ///
@@ -74,6 +74,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// - v2->v3: Added category color and icon fields
   /// - v3->v4: Added version column for optimistic locking
   /// - v4->v5: Added createdAt timestamp to expenses
+  /// - v5->v6: Added isReimbursable and receiptPath columns to expenses
   ///
   /// [m] The migrator instance that executes schema changes.
   /// [from] The current schema version.
@@ -97,6 +98,11 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
           if (from < 5) {
             // Add version column to categories for optimistic locking
             await m.addColumn(categories, categories.version);
+          }
+          if (from < 6) {
+            // Add isReimbursable and receiptPath columns to expenses
+            await m.addColumn(expenses, expenses.isReimbursable);
+            await m.addColumn(expenses, expenses.receiptPath);
           }
         },
         beforeOpen: (details) async {
