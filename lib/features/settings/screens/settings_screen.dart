@@ -1,12 +1,16 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/settings/providers/backup_restore_provider.dart';
 import 'package:expense_tracking_desktop_app/features/settings/view_models/backup_restore_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/settings/widgets/backup_card.dart';
 import 'package:expense_tracking_desktop_app/features/settings/widgets/restore_card.dart';
+import 'package:expense_tracking_desktop_app/features/settings/widgets/restore_confirmation_dialog.dart';
+import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// Settings screen containing backup and restore functionality
 class SettingsScreen extends ConsumerStatefulWidget {
@@ -162,43 +166,41 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _handleRestore(BackupRestoreViewModel viewModel) async {
-    // Show confirmation dialog
-    final confirmed = await _showRestoreConfirmationDialog();
+    // Let user select backup file first
+    final result = await FilePicker.platform.pickFiles(
+      dialogTitle: AppStrings.labelSelectBackupFile,
+      type: FileType.custom,
+      allowedExtensions: ['sqlite'],
+      allowMultiple: false,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      return; // User cancelled
+    }
+
+    final filePath = result.files.first.path;
+    if (filePath == null) {
+      _showErrorSnackBar('Invalid file path');
+      return;
+    }
+
+    // Get backup info for display in confirmation dialog
+    final backupInfo = await viewModel.getBackupInfo(filePath);
+
+    // Show confirmation dialog with backup details
+    final confirmed = await _showRestoreConfirmationDialog(backupInfo);
     if (confirmed == true) {
-      await viewModel.restoreFromFile();
+      await viewModel.restoreBackup(filePath);
     }
   }
 
-  Future<bool?> _showRestoreConfirmationDialog() {
+  Future<bool?> _showRestoreConfirmationDialog(BackupInfo? backupInfo) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.warning_amber_outlined, color: AppColors.orange),
-            SizedBox(width: Spacing.sm),
-            Text('Confirm Restore'),
-          ],
-        ),
-        content: const Text(
-          'This will replace all current data with the backup data. '
-          'Any expenses or changes made after the backup was created will be lost.\n\n'
-          'Are you sure you want to continue?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.orange,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Restore'),
-          ),
-        ],
+      builder: (context) => RestoreConfirmationDialog(
+        backupInfo: backupInfo,
+        onConfirm: () => Navigator.of(context).pop(true),
+        onCancel: () => Navigator.of(context).pop(false),
       ),
     );
   }
