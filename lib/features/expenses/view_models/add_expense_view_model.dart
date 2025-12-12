@@ -39,6 +39,24 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     );
   }
 
+  /// Update reimbursable status
+  void updateReimbursable(bool isReimbursable) {
+    state = state.copyWith(isReimbursable: isReimbursable);
+  }
+
+  /// Update receipt path
+  void updateReceiptPath(String? path) {
+    state = state.copyWith(
+      receiptPath: path,
+      clearReceiptPath: path == null,
+    );
+  }
+
+  /// Remove receipt
+  void removeReceipt() {
+    state = state.copyWith(clearReceiptPath: true);
+  }
+
   /// Reset form to initial state
   void resetForm({int? preSelectedCategoryId}) {
     state.amountController.clear();
@@ -48,6 +66,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       selectedDate: DateTime.now(),
       selectedCategoryId: preSelectedCategoryId,
       clearCategoryId: preSelectedCategoryId == null,
+      isReimbursable: false,
+      clearReceiptPath: true,
     );
   }
 
@@ -108,6 +128,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         description: drift.Value(description),
         date: drift.Value(state.selectedDate),
         categoryId: drift.Value(state.selectedCategoryId!),
+        isReimbursable: drift.Value(state.isReimbursable),
+        receiptPath: drift.Value(state.receiptPath),
       );
 
       _logger.info('AddExpenseViewModel: Creating expense');

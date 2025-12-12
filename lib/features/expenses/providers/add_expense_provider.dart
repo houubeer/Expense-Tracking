@@ -20,6 +20,8 @@ class AddExpenseState {
   final TextEditingController descriptionController;
   final DateTime selectedDate;
   final int? selectedCategoryId;
+  final bool isReimbursable;
+  final String? receiptPath;
 
   AddExpenseState({
     required this.status,
@@ -29,6 +31,8 @@ class AddExpenseState {
     required this.descriptionController,
     required this.selectedDate,
     this.selectedCategoryId,
+    this.isReimbursable = false,
+    this.receiptPath,
   });
 
   factory AddExpenseState.initial({int? preSelectedCategoryId}) {
@@ -38,6 +42,8 @@ class AddExpenseState {
       descriptionController: TextEditingController(),
       selectedDate: DateTime.now(),
       selectedCategoryId: preSelectedCategoryId,
+      isReimbursable: false,
+      receiptPath: null,
     );
   }
 
@@ -48,6 +54,9 @@ class AddExpenseState {
     DateTime? selectedDate,
     int? selectedCategoryId,
     bool clearCategoryId = false,
+    bool? isReimbursable,
+    String? receiptPath,
+    bool clearReceiptPath = false,
   }) {
     return AddExpenseState(
       status: status ?? this.status,
@@ -59,6 +68,8 @@ class AddExpenseState {
       selectedCategoryId: clearCategoryId
           ? null
           : (selectedCategoryId ?? this.selectedCategoryId),
+      isReimbursable: isReimbursable ?? this.isReimbursable,
+      receiptPath: clearReceiptPath ? null : (receiptPath ?? this.receiptPath),
     );
   }
 
