@@ -222,6 +222,8 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         description: state.descriptionController.text.trim(),
         categoryId: state.selectedCategoryId!,
         date: state.selectedDate,
+        isReimbursable: state.isReimbursable,
+        receiptPath: state.receiptPath,
       );
 
       await _expenseService.updateExpense(oldExpense, newExpense);

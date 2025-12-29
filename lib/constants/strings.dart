@@ -102,6 +102,8 @@ class AppStrings {
   static const String titleReimbursableSummary = 'Reimbursable Expenses';
   static const String labelTotalReimbursable = 'Total Reimbursable';
   static const String labelPendingReimbursement = 'Pending Reimbursement';
+  static const String labelReimbursableOwed = 'Amount Owed';
+  static const String labelExpenses = 'expenses';
   static const String msgNoReimbursableExpenses = 'No reimbursable expenses';
 
   // Receipt attachment labels
