@@ -105,7 +105,7 @@ class ErrorMapper {
         return 'Wait a few seconds and try again. Close any other operations in progress.';
       }
 
-      if (message.contains('corrupt')) {
+      if (message.contains('corrupt') || message.contains('malformed')) {
         return 'Try restarting the app. If the problem persists, you may need to restore from a backup.';
       }
 

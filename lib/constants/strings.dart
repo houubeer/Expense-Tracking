@@ -9,6 +9,7 @@ class AppStrings {
   static const String navAddExpense = 'Add Expense';
   static const String navViewExpenses = 'View Expenses';
   static const String navBudgets = 'Budgets';
+  static const String navSettings = 'Settings';
   static const String navManageBudgets = 'Manage Budgets';
   static const String navManagerDashboard = 'Manager Dashboard';
   static const String navViewAll = 'View All';
@@ -98,4 +99,50 @@ class AppStrings {
   static const String filterSortByBudget = 'Budget';
   static const String filterSortBySpent = 'Spent';
   static const String filterSortByPercentage = 'Percentage';
+  static const String filterReimbursable = 'Reimbursable';
+  static const String filterNonReimbursable = 'Non-Reimbursable';
+
+  // Reimbursable expense labels
+  static const String labelReimbursable = 'Reimbursable';
+  static const String labelReimbursableExpense = 'Mark as Reimbursable';
+  static const String labelReimbursableHint =
+      'Check if this expense should be reimbursed by the company';
+  static const String titleReimbursableSummary = 'Reimbursable Expenses';
+  static const String labelTotalReimbursable = 'Total Reimbursable';
+  static const String labelPendingReimbursement = 'Pending Reimbursement';
+  static const String labelReimbursableOwed = 'Amount Owed';
+  static const String labelExpenses = 'expenses';
+  static const String msgNoReimbursableExpenses = 'No reimbursable expenses';
+
+  // Receipt attachment labels
+  static const String labelReceipt = 'Receipt';
+  static const String labelAttachReceipt = 'Attach Receipt';
+  static const String labelRemoveReceipt = 'Remove Receipt';
+  static const String labelViewReceipt = 'View Receipt';
+  static const String hintAttachReceipt = 'Attach an image or PDF as proof';
+  static const String msgReceiptAttached = 'Receipt attached successfully';
+  static const String msgReceiptRemoved = 'Receipt removed';
+  static const String errReceiptNotFound = 'Receipt file not found';
+  static const String errReceiptInvalidFormat =
+      'Invalid file format. Please use JPG, PNG, or PDF';
+
+  // Backup and restore labels
+  static const String labelBackup = 'Backup';
+  static const String labelRestore = 'Restore';
+  static const String titleBackupData = 'Backup Data';
+  static const String titleRestoreData = 'Restore Data';
+  static const String btnBackupNow = 'Backup Now';
+  static const String btnRestoreNow = 'Restore Now';
+  static const String msgBackupSuccess = 'Backup created successfully';
+  static const String msgRestoreSuccess = 'Data restored successfully';
+  static const String msgBackupFailed = 'Backup failed';
+  static const String msgRestoreFailed = 'Restore failed';
+  static const String descBackup =
+      'Create a backup file of all your expenses and categories';
+  static const String descRestore =
+      'Restore your data from a previous backup file';
+  static const String descRestoreWarning =
+      'Warning: This will replace all current data with the backup data';
+  static const String labelChooseBackupLocation = 'Choose backup location';
+  static const String labelSelectBackupFile = 'Select backup file';
 }

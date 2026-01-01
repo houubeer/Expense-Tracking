@@ -7,6 +7,7 @@ import 'package:expense_tracking_desktop_app/features/budget/screens/budget_sett
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/manager_dashboard_screen.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/employee_expenses_screen.dart';
 import 'package:expense_tracking_desktop_app/features/dashboard/screens/owner_dashboard_screen.dart';
+import 'package:expense_tracking_desktop_app/features/settings/screens/settings_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -141,7 +142,36 @@ GoRouter createRouter() {
               },
             ),
           ),
+          GoRoute(
+            path: AppRoutes.settings,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SettingsScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
         ],
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.settings,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          opaque: false, // Allow seeing content behind
+          barrierDismissible: true,
+          barrierColor: Colors.transparent, // Transparent to show backdrop
+          child: const SettingsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Fade in the backdrop and slide in the settings
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
     ],
   );

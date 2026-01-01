@@ -7,4 +7,5 @@ class AppRoutes {
   static const String managerDashboard = '/manager';
   static const String employeeExpenses = '/manager/expenses';
   static const String ownerDashboard = '/owner';
+  static const String settings = '/settings';
 }

@@ -21,6 +21,7 @@ dependencies:
   drift: ^2.29.0
   drift_flutter: ^0.2.7
   sqlite3_flutter_libs: ^0.5.18
+  sqlite3: ^2.4.0
   path_provider: ^2.1.1
   path: ^1.8.3
 
@@ -37,6 +38,9 @@ dependencies:
 
   # Logging & Error Reporting
   logger: ^2.0.2+1
+
+  # File Picker & File Handling
+  file_picker: ^8.0.0+1
 
 dev_dependencies:
   flutter_test:

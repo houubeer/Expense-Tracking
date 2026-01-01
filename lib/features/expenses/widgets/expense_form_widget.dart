@@ -26,6 +26,11 @@ class ExpenseFormWidget extends ConsumerStatefulWidget {
     super.key,
     this.isEditing = false,
     this.isSubmitting = false,
+    this.isReimbursable = false,
+    this.onReimbursableChanged,
+    this.receiptPath,
+    this.onAttachReceipt,
+    this.onRemoveReceipt,
   });
   final GlobalKey<FormState> formKey;
   final TextEditingController amountController;
@@ -38,6 +43,11 @@ class ExpenseFormWidget extends ConsumerStatefulWidget {
   final VoidCallback onReset;
   final bool isEditing;
   final bool isSubmitting;
+  final bool isReimbursable;
+  final void Function(bool)? onReimbursableChanged;
+  final String? receiptPath;
+  final VoidCallback? onAttachReceipt;
+  final VoidCallback? onRemoveReceipt;
 
   @override
   ConsumerState<ExpenseFormWidget> createState() => _ExpenseFormWidgetState();
@@ -239,6 +249,124 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   return null;
                 },
               ),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Reimbursable Checkbox
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  border: Border.all(color: colorScheme.outlineVariant),
+                ),
+                child: CheckboxListTile(
+                  value: widget.isReimbursable,
+                  onChanged: widget.onReimbursableChanged != null
+                      ? (value) =>
+                          widget.onReimbursableChanged!(value ?? false)
+                      : null,
+                  title: Text(
+                    AppStrings.labelReimbursableExpense,
+                    style: AppTextStyles.bodyLarge,
+                  ),
+                  subtitle: Text(
+                    AppStrings.labelReimbursableHint,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  secondary: Icon(
+                    Icons.monetization_on_outlined,
+                    color: widget.isReimbursable
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  ),
+                  controlAffinity: ListTileControlAffinity.trailing,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Receipt Attachment Section
+              Text(AppStrings.labelReceipt, style: AppTextStyles.label),
+              const SizedBox(height: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                  border: Border.all(
+                    color: widget.receiptPath != null
+                        ? colorScheme.primary.withOpacity(0.5)
+                        : colorScheme.outlineVariant,
+                  ),
+                ),
+                child: widget.receiptPath != null
+                    ? Row(
+                        children: [
+                          Icon(
+                            Icons.attachment,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppStrings.msgReceiptAttached,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                                Text(
+                                  _getFileName(widget.receiptPath!),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: colorScheme.error,
+                            ),
+                            onPressed: widget.onRemoveReceipt,
+                            tooltip: AppStrings.labelRemoveReceipt,
+                          ),
+                        ],
+                      )
+                    : InkWell(
+                        onTap: widget.onAttachReceipt,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.sm,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.upload_file,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: AppSpacing.sm),
+                              Text(
+                                AppStrings.labelAttachReceipt,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
               const SizedBox(height: AppSpacing.xxl),
 
               // Action Buttons
@@ -267,5 +395,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
         ),
       ),
     );
+  }
+
+  String _getFileName(String path) {
+    final parts = path.split(RegExp(r'[/\\]'));
+    return parts.isNotEmpty ? parts.last : path;
   }
 }

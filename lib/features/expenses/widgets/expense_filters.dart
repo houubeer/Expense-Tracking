@@ -8,18 +8,29 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:intl/intl.dart';
 
+/// Filter option for reimbursable status
+enum ReimbursableFilter {
+  all,
+  reimbursable,
+  nonReimbursable,
+}
+
 class ExpenseFilters extends ConsumerWidget {
   final int? selectedCategoryId;
   final DateTime? selectedDate;
+  final ReimbursableFilter reimbursableFilter;
   final ValueChanged<int?> onCategoryChanged;
   final ValueChanged<DateTime?> onDateChanged;
+  final ValueChanged<ReimbursableFilter> onReimbursableFilterChanged;
 
   const ExpenseFilters({
     super.key,
     required this.selectedCategoryId,
     required this.selectedDate,
+    this.reimbursableFilter = ReimbursableFilter.all,
     required this.onCategoryChanged,
     required this.onDateChanged,
+    required this.onReimbursableFilterChanged,
   });
 
   @override
@@ -41,12 +52,85 @@ class ExpenseFilters extends ConsumerWidget {
           ),
         ),
         const SizedBox(width: AppSpacing.lg),
+        // Reimbursable Filter
+        Expanded(
+          flex: 2,
+          child: _buildReimbursableFilter(colorScheme),
+        ),
+        const SizedBox(width: AppSpacing.lg),
         // Date Filter
         Expanded(
           flex: 2,
           child: _buildDatePicker(context, colorScheme),
         ),
       ],
+    );
+  }
+
+  Widget _buildReimbursableFilter(ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.primary.withValues(alpha: 0.05),
+            blurRadius: AppConfig.shadowBlurRadiusMd,
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+          ),
+        ],
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<ReimbursableFilter>(
+          value: reimbursableFilter,
+          isExpanded: true,
+          items: [
+            DropdownMenuItem(
+              value: ReimbursableFilter.all,
+              child: Row(
+                children: [
+                  Icon(Icons.monetization_on_outlined,
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconSm),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Text(AppStrings.filterAll),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: ReimbursableFilter.reimbursable,
+              child: Row(
+                children: [
+                  Icon(Icons.check_circle_outline,
+                      color: colorScheme.primary, size: AppSpacing.iconSm),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Text(AppStrings.filterReimbursable),
+                ],
+              ),
+            ),
+            DropdownMenuItem(
+              value: ReimbursableFilter.nonReimbursable,
+              child: Row(
+                children: [
+                  Icon(Icons.cancel_outlined,
+                      color: colorScheme.onSurfaceVariant,
+                      size: AppSpacing.iconSm),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Text(AppStrings.filterNonReimbursable),
+                ],
+              ),
+            ),
+          ],
+          onChanged: (value) {
+            if (value != null) {
+              onReimbursableFilterChanged(value);
+            }
+          },
+        ),
+      ),
     );
   }
 

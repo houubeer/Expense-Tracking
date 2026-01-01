@@ -39,12 +39,14 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   /// [searchQuery] - Filters by expense description or category name (case-insensitive).
   /// [categoryId] - Filters by a specific category ID.
   /// [date] - Filters by a specific date (matches the entire day).
+  /// [isReimbursable] - Filters by reimbursable status (null = all, true/false = filter).
   ///
   /// Returns a [Stream] of [List<ExpenseWithCategory>] ordered by date (descending).
   Stream<List<ExpenseWithCategory>> watchExpensesWithCategory({
     String? searchQuery,
     int? categoryId,
     DateTime? date,
+    bool? isReimbursable,
   }) {
     final query = select(expenses).join([
       innerJoin(categories, categories.id.equalsExp(expenses.categoryId)),
@@ -66,6 +68,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       final end = start.add(const Duration(days: 1));
       query.where(expenses.date.isBiggerOrEqualValue(start) &
           expenses.date.isSmallerThanValue(end));
+    }
+
+    if (isReimbursable != null) {
+      query.where(expenses.isReimbursable.equals(isReimbursable));
     }
 
     // Order by date descending
@@ -199,6 +205,66 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e) {
+      _connectivityService?.handleConnectionFailure(e.toString());
+      rethrow;
+    }
+  }
+
+  /// Watches the total sum of reimbursable expenses.
+  ///
+  /// Returns a [Stream] of the total amount of reimbursable expenses.
+  Stream<double> watchReimbursableTotal() {
+    final query = selectOnly(expenses)
+      ..addColumns([expenses.amount.sum()])
+      ..where(expenses.isReimbursable.equals(true));
+
+    return query.watchSingle().map((row) {
+      return row.read(expenses.amount.sum()) ?? 0.0;
+    });
+  }
+
+  /// Retrieves the total sum of reimbursable expenses (one-time query).
+  ///
+  /// Returns a [Future] of the total reimbursable amount.
+  Future<double> getReimbursableTotal() async {
+    try {
+      final query = selectOnly(expenses)
+        ..addColumns([expenses.amount.sum()])
+        ..where(expenses.isReimbursable.equals(true));
+
+      final row = await query.getSingle();
+      _connectivityService?.markSuccessfulOperation();
+      return row.read(expenses.amount.sum()) ?? 0.0;
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: getReimbursableTotal failed',
+          error: e, stackTrace: stackTrace);
+      _connectivityService?.handleConnectionFailure(e.toString());
+      rethrow;
+    }
+  }
+
+  /// Watches all reimbursable expenses with their associated categories.
+  ///
+  /// Returns a [Stream] of [List<ExpenseWithCategory>] for reimbursable expenses.
+  Stream<List<ExpenseWithCategory>> watchReimbursableExpenses() {
+    return watchExpensesWithCategory(isReimbursable: true);
+  }
+
+  /// Retrieves the count of reimbursable expenses.
+  ///
+  /// Returns a [Future] of the count of reimbursable expenses.
+  Future<int> getReimbursableCount() async {
+    try {
+      final query = selectOnly(expenses)
+        ..addColumns([expenses.id.count()])
+        ..where(expenses.isReimbursable.equals(true));
+
+      final row = await query.getSingle();
+      _connectivityService?.markSuccessfulOperation();
+      return row.read(expenses.id.count()) ?? 0;
+    } catch (e, stackTrace) {
+      _logger.error('ExpenseDao: getReimbursableCount failed',
+          error: e, stackTrace: stackTrace);
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
