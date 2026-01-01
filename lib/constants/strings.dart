@@ -9,6 +9,7 @@ class AppStrings {
   static const String navAddExpense = 'Add Expense';
   static const String navViewExpenses = 'View Expenses';
   static const String navBudgets = 'Budgets';
+  static const String navSettings = 'Settings';
   static const String navManageBudgets = 'Manage Budgets';
   static const String navViewAll = 'View All';
 
