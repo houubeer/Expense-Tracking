@@ -36,6 +36,16 @@ class Sidebar extends StatelessWidget {
       "label": AppStrings.navBudgets,
       "path": AppRoutes.budgets
     },
+    {
+      "icon": Icons.supervisor_account_rounded,
+      "label": AppStrings.navManagerDashboard,
+      "path": AppRoutes.managerDashboard
+    },
+    {
+      "icon": Icons.admin_panel_settings_rounded,
+      "label": "Owner Dashboard",
+      "path": AppRoutes.ownerDashboard
+    },
   ];
 
   @override

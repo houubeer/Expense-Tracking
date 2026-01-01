@@ -10,6 +10,7 @@ class AppStrings {
   static const String navViewExpenses = 'View Expenses';
   static const String navBudgets = 'Budgets';
   static const String navManageBudgets = 'Manage Budgets';
+  static const String navManagerDashboard = 'Manager Dashboard';
   static const String navViewAll = 'View All';
 
   // Common buttons
@@ -35,6 +36,8 @@ class AppStrings {
   static const String titleDeleteTransaction = 'Delete Expense';
   static const String titleBudgetOverview = 'Budget Overview';
   static const String titleRecentExpenses = 'Recent Expenses';
+  static const String titleManagerDashboard = 'Manager Dashboard';
+  static const String titleEmployeeExpenses = 'Employee Expenses';
 
   // Labels
   static const String labelAmount = 'Amount';
@@ -77,6 +80,10 @@ class AppStrings {
   // Descriptions
   static const String descManageBudgets =
       'Manage your categories and budget limits';
+  static const String descManagerDashboard =
+      'Monitor employees, approve expenses, and control budgets';
+  static const String descEmployeeExpenses =
+      'View and manage employee expense submissions';
   static const String descDeleteCategory =
       'Are you sure you want to delete "{name}"? This action cannot be undone.';
   static const String descDeleteTransaction =
