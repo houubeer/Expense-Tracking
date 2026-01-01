@@ -272,10 +272,11 @@ class AppTheme {
       brightness: Brightness.dark,
 
       // Primary colors - Deep Blue Dark Theme
-      primary: Color(0xFF4A5F9D), // Lighter blue for dark mode
+      primary: Color.fromARGB(255, 0, 74, 144), // Lighter blue for dark mode
       onPrimary: Color(0xFFFFFFFF),
-      primaryContainer: Color(0xFF2A3A6B), // Darker blue container
-      onPrimaryContainer: Color(0xFFB8C5E0),
+      primaryContainer:
+          Color.fromARGB(255, 201, 211, 241), // Darker blue container
+      onPrimaryContainer: Color.fromARGB(255, 0, 34, 114),
 
       // Secondary colors - Indigo for dark mode
       secondary: Color(0xFF8B92E8), // Lighter indigo
@@ -296,14 +297,14 @@ class AppTheme {
       onErrorContainer: Color(0xFFFFDADA),
 
       // Surface colors - Slightly lighter than background
-      surface: Color(0xFF242424),
+      surface: Color.fromARGB(255, 0, 7, 45),
       onSurface: Color(0xFFE5E5E5),
-      surfaceContainerHighest: Color(0xFF2F2F2F),
+      surfaceContainerHighest: Color.fromARGB(255, 86, 83, 102),
       onSurfaceVariant: Color(0xFFB8B8B8),
 
       // Outline colors
-      outline: Color(0xFF525252),
-      outlineVariant: Color(0xFF3A3A3A),
+      outline: Color.fromARGB(255, 245, 245, 245),
+      outlineVariant: Color.fromARGB(255, 97, 97, 97),
 
       // Shadow and other colors
       shadow: Color(0xFF000000),
