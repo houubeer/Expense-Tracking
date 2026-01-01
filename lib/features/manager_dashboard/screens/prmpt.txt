@@ -1,0 +1,362 @@
+our task is to implement a fully functional OWNER / SUPER ADMIN Dashboard for a Multi-Company Expense Tracker platform using Clean Architecture + MVVM.
+
+⚠️ NON-NEGOTIABLE RULES
+
+Sidebar already exists → ❌ DO NOT recreate or modify it
+
+UI must exactly match the existing Budget Management page
+
+Use ONLY existing:
+
+spacing constants
+
+color palette
+
+typography styles
+
+❌ NO hardcoded UI values
+
+❌ NO inline business logic in UI
+
+❌ NO dead buttons
+
+❌ NO layout overflow at any screen width
+
+Desktop-first (minimum width: 1440px)
+
+📁 REQUIRED PROJECT STRUCTURE (STRICT)
+dashboard/
+ ├─ models/
+ ├─ repositories/
+ ├─ services/
+ ├─ view_models/
+ ├─ widgets/
+ └─ screens/
+
+
+✔ Split code across files
+✔ No shortcuts
+✔ No mixed responsibilities
+
+🧱 ARCHITECTURE RULES
+models/
+
+Pure data models only:
+
+company_model.dart
+
+manager_model.dart
+
+employee_model.dart
+
+expense_model.dart
+
+subscription_model.dart
+
+audit_log_model.dart
+
+❌ No logic
+❌ No UI
+
+repositories/
+
+Mocked but stateful data sources:
+
+company_repository.dart
+
+manager_repository.dart
+
+expense_repository.dart
+
+subscription_repository.dart
+
+Must support:
+
+create / update / delete
+
+filtering & searching
+
+in-memory persistence
+
+services/
+
+Business logic only:
+
+manager_approval_service.dart
+
+expense_analytics_service.dart
+
+subscription_metrics_service.dart
+
+Examples:
+
+approval workflows
+
+platform-wide metrics
+
+revenue calculations
+
+❌ No UI
+❌ No ChangeNotifier
+
+view_models/
+
+ChangeNotifier ONLY:
+
+owner_dashboard_view_model.dart
+
+company_management_view_model.dart
+
+Responsibilities:
+
+load platform-wide data
+
+approve / reject manager requests
+
+suspend / activate managers
+
+manage companies & subscriptions
+
+update KPI cards reactively
+
+generate analytics data
+
+write audit logs
+
+notify listeners correctly
+
+❌ No widget imports
+❌ No UI code
+
+widgets/
+
+Reusable UI components ONLY
+
+Layout
+
+dashboard_layout.dart (uses existing sidebar)
+
+page_header.dart
+
+KPI & Cards
+
+summary_card.dart
+
+company_card.dart
+
+manager_card.dart
+
+subscription_status_card.dart
+
+audit_timeline_item.dart
+
+Must:
+
+use consistent padding, radius, shadow
+
+prevent overflow (Flexible / Expanded / LayoutBuilder)
+
+align icons, values, and actions perfectly
+
+Tables & Lists
+
+pending_manager_table.dart
+
+active_managers_table.dart
+
+company_table.dart
+
+Charts & Analytics
+
+platform_growth_line_chart.dart
+
+expense_category_pie_chart.dart
+
+revenue_bar_chart.dart
+
+Dialogs & Actions
+
+manager_approval_dialog.dart
+
+subscription_details_dialog.dart
+
+❌ No business logic inside widgets
+
+screens/
+
+Composition ONLY:
+
+owner_dashboard_screen.dart
+
+company_management_screen.dart
+
+❌ No state mutation
+❌ No business logic
+
+📊 OWNER DASHBOARD — FUNCTIONAL REQUIREMENTS
+🔢 KPI / Summary Cards (6)
+
+Grid: 3 × 2
+
+Total Companies
+
+Total Managers
+
+Total Employees
+
+Total Expenses
+
+Pending Manager Approvals
+
+Monthly Platform Growth
+
+Cards must:
+
+update reactively
+
+handle large numbers
+
+maintain visual hierarchy
+
+never overflow
+
+✅ Manager Approval (PRIMARY FOCUS)
+
+Table:
+“Pending Manager Requests”
+
+Columns:
+
+Name
+
+Email
+
+Company
+
+Phone
+
+Date
+
+Status
+
+Actions
+
+Actions:
+
+✅ Approve → updates status, KPIs, audit log
+
+❌ Reject → same
+
+👁 View Profile
+
+👥 Active Managers Management
+
+Table:
+
+Manager Name
+
+Company
+
+Employees Count
+
+Status
+
+Actions: View | Suspend | Delete
+
+All actions must work and log activity.
+
+🏢 Company Management
+
+Table:
+
+Company Name
+
+Managers
+
+Employees
+
+Subscription Plan
+
+Status
+
+Actions
+
+📈 Global Expense Analytics
+
+Charts:
+
+Total expenses over time (line)
+
+Top spending categories (pie)
+
+Charts must:
+
+use consistent color meaning
+
+be readable
+
+scale correctly
+
+💳 Subscriptions & Revenue
+
+Cards:
+
+Active subscriptions
+
+Expired plans
+
+Monthly revenue
+
+Upgrade activity
+
+🕒 Audit & Security Logs
+
+Timeline list:
+
+manager approvals
+
+suspensions
+
+deletions
+
+system actions
+
+Readable, evenly spaced, chronological.
+
+🎨 UI QUALITY REQUIREMENTS
+
+The final result must feel:
+
+Enterprise-grade
+
+Clean and structured
+
+Easy to scan
+
+SaaS-ready
+
+Explicitly fix:
+
+misalignment
+
+uneven spacing
+
+inconsistent fonts
+
+random colors
+
+button/text overflow
+
+weak hierarchy
+
+✅ OUTPUT REQUIREMENTS
+
+Full Dart files (all folders)
+
+Clean, readable, well-commented code
+
+Short explanation:
+
+architecture decisions
+
+state flow (Repository → ViewModel → UI)

@@ -4,6 +4,9 @@ import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.d
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/manager_dashboard_screen.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/employee_expenses_screen.dart';
+import 'package:expense_tracking_desktop_app/features/dashboard/screens/owner_dashboard_screen.dart';
 import 'package:expense_tracking_desktop_app/features/settings/screens/settings_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
@@ -94,6 +97,45 @@ GoRouter createRouter() {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const BudgetSettingScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
+          GoRoute(
+            path: AppRoutes.managerDashboard,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: ManagerDashboardScreen(
+                onNavigate: (path) => context.go(path),
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+            routes: [
+              GoRoute(
+                path: 'expenses',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: EmployeeExpensesScreen(
+                    onNavigate: (path) => context.go(path),
+                  ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: AppRoutes.ownerDashboard,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const OwnerDashboardScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);
