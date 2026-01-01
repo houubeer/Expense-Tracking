@@ -12,6 +12,13 @@ class Categories extends Table {
       integer().withDefault(const Constant(0))(); // For optimistic locking
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 
+  // Sync-related columns
+  TextColumn get organizationId => text().nullable()(); // UUID from Supabase
+  TextColumn get userId => text().nullable()(); // UUID of creator from Supabase
+  IntColumn get serverId => integer().nullable()(); // ID from Supabase server
+  DateTimeColumn get syncedAt => dateTime().nullable()();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+
   @override
   List<String> get customConstraints => [
         'CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name)',
