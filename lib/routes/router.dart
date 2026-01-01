@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.d
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
 import 'package:expense_tracking_desktop_app/features/budget/screens/budget_setting_screen.dart';
+import 'package:expense_tracking_desktop_app/features/settings/screens/settings_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -100,6 +101,24 @@ GoRouter createRouter() {
             ),
           ),
         ],
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: AppRoutes.settings,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          opaque: false, // Allow seeing content behind
+          barrierDismissible: true,
+          barrierColor: Colors.transparent, // Transparent to show backdrop
+          child: const SettingsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Fade in the backdrop and slide in the settings
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
     ],
   );
