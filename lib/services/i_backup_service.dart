@@ -1,5 +1,3 @@
-import 'dart:io';
-
 /// Interface for backup and restore operations.
 ///
 /// Defines the contract for backing up and restoring application data,
