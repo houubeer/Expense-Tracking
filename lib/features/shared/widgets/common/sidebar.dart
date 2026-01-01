@@ -36,6 +36,11 @@ class Sidebar extends StatelessWidget {
       "label": AppStrings.navBudgets,
       "path": AppRoutes.budgets
     },
+    {
+      "icon": Icons.settings_rounded,
+      "label": AppStrings.navSettings,
+      "path": AppRoutes.settings
+    },
   ];
 
   @override
