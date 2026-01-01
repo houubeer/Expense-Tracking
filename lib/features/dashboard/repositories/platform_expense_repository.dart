@@ -1,5 +1,3 @@
-
-
 /// Repository for aggregating platform-wide expense data
 /// This provides analytics across all companies
 class PlatformExpenseRepository {
@@ -127,18 +125,19 @@ class PlatformExpenseRepository {
     final now = DateTime.now();
     final currentMonth = DateTime(now.year, now.month, 1);
     final lastMonth = DateTime(now.year, now.month - 1, 1);
-    final twoMonthsAgo = DateTime(now.year, now.month - 2, 1);
 
     final currentMonthExpenses = _expenses
         .where((e) => e.date.isAfter(currentMonth))
         .fold(0.0, (sum, e) => sum + e.amount);
 
     final lastMonthExpenses = _expenses
-        .where((e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth))
+        .where(
+            (e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth))
         .fold(0.0, (sum, e) => sum + e.amount);
 
     if (lastMonthExpenses == 0) return 0.0;
-    return ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) * 100;
+    return ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses) *
+        100;
   }
 
   /// Get monthly expense trend (last 6 months)
@@ -174,8 +173,18 @@ class PlatformExpenseRepository {
   /// Helper to get month name
   String _getMonthName(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return months[month - 1];
   }

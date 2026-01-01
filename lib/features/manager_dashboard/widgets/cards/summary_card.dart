@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 
 class SummaryCard extends StatelessWidget {
   final IconData icon;

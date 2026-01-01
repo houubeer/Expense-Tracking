@@ -22,6 +22,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+
 class ManagerDashboardScreen extends StatefulWidget {
   final void Function(String) onNavigate;
 
@@ -297,7 +298,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             if (success) _showMessage('Expense rejected');
           },
           onComment: (id) => _showAddCommentDialogById(context, viewModel, id),
-          onViewDetails: (expense) => _showExpenseDetailsDialog(context, viewModel, expense),
+          onViewDetails: (expense) =>
+              _showExpenseDetailsDialog(context, viewModel, expense),
         ),
       ],
     );
@@ -330,8 +332,6 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     );
   }
 
-
-
   void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -358,7 +358,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     ManagerDashboardViewModel viewModel,
     ManagerExpense expense,
   ) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => ExpenseDetailsDialog(
         expense: expense,
@@ -397,7 +397,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     ManagerDashboardViewModel viewModel,
     ManagerExpense expense,
   ) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AddCommentDialog(
         expenseId: expense.id,

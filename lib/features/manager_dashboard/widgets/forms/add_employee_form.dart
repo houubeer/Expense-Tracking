@@ -24,7 +24,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _roleController = TextEditingController();
-  
+
   String _selectedDepartment = 'Engineering';
   EmployeeStatus _selectedStatus = EmployeeStatus.active;
   DateTime _hireDate = DateTime.now();
@@ -50,8 +50,6 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Dialog(
       child: Container(
         width: 600,

@@ -5,9 +5,9 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 /// Table widget for displaying active managers
 class ActiveManagersTable extends StatelessWidget {
   final List<Manager> managers;
-  final Function(String managerId) onView;
-  final Function(String managerId) onSuspend;
-  final Function(String managerId) onDelete;
+  final void Function(String managerId) onView;
+  final void Function(String managerId) onSuspend;
+  final void Function(String managerId) onDelete;
 
   const ActiveManagersTable({
     super.key,
@@ -141,7 +141,8 @@ class _ManagerRow extends StatelessWidget {
                 Expanded(
                   child: Text(
                     manager.name,
-                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

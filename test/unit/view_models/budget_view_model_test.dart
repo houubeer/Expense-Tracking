@@ -44,6 +44,7 @@ void main() {
           spent: 500.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 
@@ -128,6 +129,7 @@ void main() {
           spent: 500.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
         Category(
           id: 2,
@@ -138,6 +140,7 @@ void main() {
           spent: 100.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 
@@ -166,6 +169,7 @@ void main() {
           spent: 1100.0, // Over budget
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
         Category(
           id: 2,
@@ -176,6 +180,7 @@ void main() {
           spent: 100.0, // Under budget
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 
@@ -204,6 +209,7 @@ void main() {
           spent: 500.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
         Category(
           id: 2,
@@ -214,6 +220,7 @@ void main() {
           spent: 100.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 
@@ -241,6 +248,7 @@ void main() {
         spent: 500.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       final controller1 = viewModel.getController(category);

@@ -103,7 +103,7 @@ class ExpenseTable extends ConsumerWidget {
   }
 
   void _showExpenseDetail(BuildContext context, ExpenseWithCategory item) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => ExpenseDetailDialog(
         expenseWithCategory: item,
@@ -116,7 +116,7 @@ class ExpenseTable extends ConsumerWidget {
     final expenseService = ref.read(expenseServiceProvider);
     final categoryRepository = ref.read(categoryRepositoryProvider);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => EditExpenseDialog(
@@ -131,7 +131,7 @@ class ExpenseTable extends ConsumerWidget {
       ExpenseWithCategory item, ColorScheme colorScheme) {
     final expenseService = ref.read(expenseServiceProvider);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colorScheme.surface,

@@ -230,13 +230,13 @@ class ExpenseRepository {
 
   /// Get all expenses
   Future<List<ManagerExpense>> getAllExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
     return List.unmodifiable(_mockExpenses);
   }
 
   /// Get pending expenses
   Future<List<ManagerExpense>> getPendingExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses
         .where((exp) => exp.status == ExpenseStatus.pending)
         .toList();
@@ -244,21 +244,20 @@ class ExpenseRepository {
 
   /// Get expenses by employee ID
   Future<List<ManagerExpense>> getExpensesByEmployee(String employeeId) async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses.where((exp) => exp.employeeId == employeeId).toList();
   }
 
   /// Get expenses by status
-  Future<List<ManagerExpense>> getExpensesByStatus(
-      ExpenseStatus status) async {
-    await Future.delayed(const Duration(milliseconds: 250));
+  Future<List<ManagerExpense>> getExpensesByStatus(ExpenseStatus status) async {
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses.where((exp) => exp.status == status).toList();
   }
 
   /// Get expenses by date range
   Future<List<ManagerExpense>> getExpensesByDateRange(
       DateTime start, DateTime end) async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses
         .where((exp) =>
             exp.date.isAfter(start.subtract(const Duration(days: 1))) &&
@@ -268,19 +267,19 @@ class ExpenseRepository {
 
   /// Get expenses by category
   Future<List<ManagerExpense>> getExpensesByCategory(String category) async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses.where((exp) => exp.category == category).toList();
   }
 
   /// Get total expenses amount
   Future<double> getTotalExpensesAmount() async {
-    await Future.delayed(const Duration(milliseconds: 150));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     return _mockExpenses.fold<double>(0.0, (sum, exp) => sum + exp.amount);
   }
 
   /// Get expense count by status
   Future<Map<ExpenseStatus, int>> getExpenseCountByStatus() async {
-    await Future.delayed(const Duration(milliseconds: 150));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     final counts = <ExpenseStatus, int>{};
     for (final status in ExpenseStatus.values) {
       counts[status] =
@@ -291,13 +290,13 @@ class ExpenseRepository {
 
   /// Get all unique categories
   Future<List<String>> getAllCategories() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
     return _mockExpenses.map((exp) => exp.category).toSet().toList()..sort();
   }
 
   /// Get expenses for current month
   Future<List<ManagerExpense>> getCurrentMonthExpenses() async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
