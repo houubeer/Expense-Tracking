@@ -16,6 +16,8 @@ class EditExpenseState {
   final TextEditingController descriptionController;
   final DateTime selectedDate;
   final int? selectedCategoryId;
+  final bool isReimbursable;
+  final String? receiptPath;
   final Expense originalExpense;
 
   EditExpenseState({
@@ -26,6 +28,8 @@ class EditExpenseState {
     required this.descriptionController,
     required this.selectedDate,
     required this.selectedCategoryId,
+    required this.isReimbursable,
+    this.receiptPath,
     required this.originalExpense,
   });
 
@@ -36,6 +40,8 @@ class EditExpenseState {
       descriptionController: TextEditingController(text: expense.description),
       selectedDate: expense.date,
       selectedCategoryId: expense.categoryId,
+      isReimbursable: expense.isReimbursable,
+      receiptPath: expense.receiptPath,
       originalExpense: expense,
     );
   }
@@ -46,6 +52,9 @@ class EditExpenseState {
     String? successMessage,
     DateTime? selectedDate,
     int? selectedCategoryId,
+    bool? isReimbursable,
+    String? receiptPath,
+    bool clearReceiptPath = false,
   }) {
     return EditExpenseState(
       status: status ?? this.status,
@@ -55,6 +64,8 @@ class EditExpenseState {
       descriptionController: descriptionController,
       selectedDate: selectedDate ?? this.selectedDate,
       selectedCategoryId: selectedCategoryId ?? this.selectedCategoryId,
+      isReimbursable: isReimbursable ?? this.isReimbursable,
+      receiptPath: clearReceiptPath ? null : (receiptPath ?? this.receiptPath),
       originalExpense: originalExpense,
     );
   }
@@ -92,6 +103,24 @@ class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
     state = state.copyWith(selectedCategoryId: categoryId);
   }
 
+  /// Update reimbursable status
+  void updateReimbursable(bool isReimbursable) {
+    state = state.copyWith(isReimbursable: isReimbursable);
+  }
+
+  /// Update receipt path
+  void updateReceiptPath(String? path) {
+    state = state.copyWith(
+      receiptPath: path,
+      clearReceiptPath: path == null,
+    );
+  }
+
+  /// Remove receipt
+  void removeReceipt() {
+    state = state.copyWith(clearReceiptPath: true);
+  }
+
   /// Update expense
   Future<void> updateExpense() async {
     if (state.amountController.text.isEmpty) return;
@@ -108,6 +137,8 @@ class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
         description: description,
         date: state.selectedDate,
         categoryId: state.selectedCategoryId!,
+        isReimbursable: state.isReimbursable,
+        receiptPath: state.receiptPath,
       );
 
       _logger.debug(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
@@ -20,6 +21,35 @@ class AddExpenseScreen extends ConsumerStatefulWidget {
 
 class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> _pickReceiptFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final filePath = result.files.first.path;
+        if (filePath != null) {
+          ref
+              .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
+                  .notifier)
+              .updateReceiptPath(filePath);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to pick file: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +101,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           selectedCategoryId: state.selectedCategoryId,
           onDateChanged: viewModel.updateDate,
           onCategoryChanged: viewModel.updateCategory,
+          isReimbursable: state.isReimbursable,
+          onReimbursableChanged: viewModel.updateReimbursable,
+          receiptPath: state.receiptPath,
+          onAttachReceipt: _pickReceiptFile,
+          onRemoveReceipt: viewModel.removeReceipt,
           onSubmit: state.isSubmitting
               ? null
               : () async {

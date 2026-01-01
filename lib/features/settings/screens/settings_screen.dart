@@ -6,6 +6,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/features/settings/providers/theme_provider.dart';
+import 'package:expense_tracking_desktop_app/features/settings/widgets/backup_restore_content.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,6 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     {'icon': Icons.language_outlined, 'label': 'Language'},
     {'icon': Icons.notifications_none_rounded, 'label': 'Notifications'},
     {'icon': Icons.security_outlined, 'label': 'Security'},
+    {'icon': Icons.backup_outlined, 'label': 'Backup & Restore'},
   ];
 
   @override
@@ -186,6 +188,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         return const _NotificationsContent();
       case 5:
         return const _SecurityContent();
+      case 6:
+        return const BackupRestoreContent();
       default:
         return Center(
           child: Text(
@@ -1476,38 +1480,6 @@ class _SecurityContent extends StatelessWidget {
               alignment: Alignment.centerLeft,
             ),
             child: const Text('Sign out all other sessions'),
-          ),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // Data & Backup
-          Text(
-            'Data & Backup',
-            style:
-                AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _buildActionCard(
-            context,
-            // No specific icon in screenshot, guessing standard usage based on context, but screenshot shows raw content.
-            // Actually looking closely at "Data Backup" screenshot, it is just text.
-            // I will adapt the card to be flexible.
-            title: 'Data Backup',
-            subtitle: 'Last backup: December 7, 2024 at 11:30 PM',
-            icon: null, // Custom handling
-            actions: [
-              FilledButton(
-                onPressed: () {},
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF3B82F6),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  ),
-                ),
-                child: const Text('Backup Now'),
-              ),
-            ],
           ),
 
           const SizedBox(height: AppSpacing.lg),

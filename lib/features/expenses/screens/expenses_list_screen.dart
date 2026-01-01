@@ -37,12 +37,14 @@ class ExpensesListScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: AppSpacing.lg),
                 Expanded(
-                  flex: 4,
+                  flex: 5,
                   child: ExpenseFilters(
                     selectedCategoryId: state.selectedCategoryId,
                     selectedDate: state.selectedDate,
+                    reimbursableFilter: state.reimbursableFilter,
                     onCategoryChanged: viewModel.setCategoryFilter,
                     onDateChanged: viewModel.setDateFilter,
+                    onReimbursableFilterChanged: viewModel.setReimbursableFilter,
                   ),
                 ),
               ],
