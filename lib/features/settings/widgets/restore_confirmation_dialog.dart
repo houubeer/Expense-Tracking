@@ -21,15 +21,15 @@ class RestoreConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Spacing.radiusMd),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(Spacing.sm),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
               color: AppColors.orange.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(Spacing.radiusSm),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
             ),
             child: const Icon(
               Icons.restore_outlined,
@@ -37,7 +37,7 @@ class RestoreConfirmationDialog extends StatelessWidget {
               size: 24,
             ),
           ),
-          const SizedBox(width: Spacing.md),
+          const SizedBox(width: AppSpacing.md),
           const Text('Confirm Restore'),
         ],
       ),
@@ -48,15 +48,15 @@ class RestoreConfirmationDialog extends StatelessWidget {
           // Backup info card
           if (backupInfo != null) ...[
             _buildBackupInfoCard(),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: AppSpacing.lg),
           ],
 
           // Warning section
           Container(
-            padding: const EdgeInsets.all(Spacing.md),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: AppColors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(Spacing.radiusSm),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
               border: Border.all(
                 color: AppColors.red.withValues(alpha: 0.3),
               ),
@@ -71,7 +71,7 @@ class RestoreConfirmationDialog extends StatelessWidget {
                       color: AppColors.red,
                       size: 20,
                     ),
-                    const SizedBox(width: Spacing.sm),
+                    const SizedBox(width: AppSpacing.sm),
                     Text(
                       'Warning',
                       style: AppTextStyles.bodyMedium.copyWith(
@@ -81,7 +81,7 @@ class RestoreConfirmationDialog extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: Spacing.sm),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
                   'This action will replace ALL current data with the backup data. '
                   'Any expenses, categories, or budgets created after this backup '
@@ -93,7 +93,7 @@ class RestoreConfirmationDialog extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: Spacing.md),
+          const SizedBox(height: AppSpacing.md),
 
           Text(
             'Are you sure you want to continue?',
@@ -122,10 +122,10 @@ class RestoreConfirmationDialog extends StatelessWidget {
 
   Widget _buildBackupInfoCard() {
     return Container(
-      padding: const EdgeInsets.all(Spacing.md),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(Spacing.radiusSm),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
         border: Border.all(color: AppColors.border),
       ),
       child: Column(
@@ -137,16 +137,16 @@ class RestoreConfirmationDialog extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: Spacing.sm),
+          const SizedBox(height: AppSpacing.sm),
           _buildInfoRow(Icons.insert_drive_file_outlined, 'File',
               backupInfo!.fileName),
-          const SizedBox(height: Spacing.xs),
+          const SizedBox(height: AppSpacing.xs),
           _buildInfoRow(Icons.storage_outlined, 'Size',
               backupInfo!.formattedSize),
-          const SizedBox(height: Spacing.xs),
+          const SizedBox(height: AppSpacing.xs),
           _buildInfoRow(Icons.calendar_today_outlined, 'Created',
               _formatDate(backupInfo!.createdAt)),
-          const SizedBox(height: Spacing.xs),
+          const SizedBox(height: AppSpacing.xs),
           _buildInfoRow(
             backupInfo!.isValid
                 ? Icons.check_circle_outline
@@ -173,7 +173,7 @@ class RestoreConfirmationDialog extends StatelessWidget {
           size: 16,
           color: AppColors.textSecondary,
         ),
-        const SizedBox(width: Spacing.sm),
+        const SizedBox(width: AppSpacing.sm),
         Text(
           '$label: ',
           style: AppTextStyles.caption.copyWith(

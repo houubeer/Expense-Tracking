@@ -223,7 +223,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         categoryId: state.selectedCategoryId!,
         date: state.selectedDate,
         isReimbursable: state.isReimbursable,
-        receiptPath: state.receiptPath,
+        receiptPath: drift.Value(state.receiptPath),
       );
 
       await _expenseService.updateExpense(oldExpense, newExpense);

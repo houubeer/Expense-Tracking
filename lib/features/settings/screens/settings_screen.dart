@@ -47,13 +47,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(Spacing.xl),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Page header
             _buildHeader(),
-            const SizedBox(height: Spacing.xl),
+            const SizedBox(height: AppSpacing.xl),
 
             // Backup and Restore section
             _buildBackupRestoreSection(state, viewModel),
@@ -69,11 +69,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       children: [
         Text(
           'Settings',
-          style: AppTextStyles.h1.copyWith(
+          style: AppTextStyles.heading1.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: Spacing.xs),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           'Manage your app preferences and data',
           style: AppTextStyles.bodyMedium.copyWith(
@@ -99,16 +99,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               color: AppColors.textSecondary,
               size: 20,
             ),
-            const SizedBox(width: Spacing.sm),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               'Data Management',
-              style: AppTextStyles.h3.copyWith(
+              style: AppTextStyles.heading3.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
           ],
         ),
-        const SizedBox(height: Spacing.md),
+        const SizedBox(height: AppSpacing.md),
 
         // Backup and Restore cards in a responsive layout
         LayoutBuilder(
@@ -126,7 +126,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       lastBackupPath: state.lastBackupPath,
                     ),
                   ),
-                  const SizedBox(width: Spacing.lg),
+                  const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: RestoreCard(
                       onRestorePressed: () => _handleRestore(viewModel),
@@ -146,7 +146,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     progress: state.isBackingUp ? state.progress : null,
                     lastBackupPath: state.lastBackupPath,
                   ),
-                  const SizedBox(height: Spacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
                   RestoreCard(
                     onRestorePressed: () => _handleRestore(viewModel),
                     isLoading: state.isRestoring,
@@ -211,7 +211,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         content: Row(
           children: [
             const Icon(Icons.error_outline, color: Colors.white),
-            const SizedBox(width: Spacing.sm),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(child: Text(message)),
           ],
         ),
@@ -228,7 +228,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         content: Row(
           children: [
             const Icon(Icons.check_circle_outline, color: Colors.white),
-            const SizedBox(width: Spacing.sm),
+            const SizedBox(width: AppSpacing.sm),
             Expanded(child: Text(message)),
           ],
         ),

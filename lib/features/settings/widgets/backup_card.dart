@@ -24,10 +24,10 @@ class BackupCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Spacing.radiusMd),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(Spacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -35,10 +35,10 @@ class BackupCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(Spacing.sm),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                   child: const Icon(
                     Icons.backup_outlined,
@@ -46,7 +46,7 @@ class BackupCard extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: Spacing.md),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +57,7 @@ class BackupCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: Spacing.xxs),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         AppStrings.descBackup,
                         style: AppTextStyles.bodySmall.copyWith(
@@ -69,7 +69,7 @@ class BackupCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: AppSpacing.lg),
 
             // Progress indicator when loading
             if (isLoading && progress != null) ...[
@@ -79,16 +79,16 @@ class BackupCard extends StatelessWidget {
                 valueColor:
                     const AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
-              const SizedBox(height: Spacing.md),
+              const SizedBox(height: AppSpacing.md),
             ],
 
             // Last backup info
             if (lastBackupPath != null && !isLoading) ...[
               Container(
-                padding: const EdgeInsets.all(Spacing.sm),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   color: AppColors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
                 child: Row(
                   children: [
@@ -97,7 +97,7 @@ class BackupCard extends StatelessWidget {
                       color: AppColors.green,
                       size: 16,
                     ),
-                    const SizedBox(width: Spacing.xs),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
                         'Last backup: ${_getFileName(lastBackupPath!)}',
@@ -110,7 +110,7 @@ class BackupCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: Spacing.md),
+              const SizedBox(height: AppSpacing.md),
             ],
 
             // Backup button
@@ -135,9 +135,9 @@ class BackupCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                 ),
               ),

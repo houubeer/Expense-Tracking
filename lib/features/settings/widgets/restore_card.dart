@@ -22,10 +22,10 @@ class RestoreCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Spacing.radiusMd),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(Spacing.lg),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,10 +33,10 @@ class RestoreCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(Spacing.sm),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
                     color: AppColors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                   child: const Icon(
                     Icons.restore_outlined,
@@ -44,7 +44,7 @@ class RestoreCard extends StatelessWidget {
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: Spacing.md),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +55,7 @@ class RestoreCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: Spacing.xxs),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         AppStrings.descRestore,
                         style: AppTextStyles.bodySmall.copyWith(
@@ -67,14 +67,14 @@ class RestoreCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: Spacing.md),
+            const SizedBox(height: AppSpacing.md),
 
             // Warning message
             Container(
-              padding: const EdgeInsets.all(Spacing.sm),
+              padding: const EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
                 color: AppColors.orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 border: Border.all(
                   color: AppColors.orange.withValues(alpha: 0.3),
                 ),
@@ -86,7 +86,7 @@ class RestoreCard extends StatelessWidget {
                     color: AppColors.orange,
                     size: 16,
                   ),
-                  const SizedBox(width: Spacing.xs),
+                  const SizedBox(width: AppSpacing.xs),
                   Expanded(
                     child: Text(
                       AppStrings.descRestoreWarning,
@@ -98,7 +98,7 @@ class RestoreCard extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: Spacing.lg),
+            const SizedBox(height: AppSpacing.lg),
 
             // Progress indicator when loading
             if (isLoading && progress != null) ...[
@@ -108,7 +108,7 @@ class RestoreCard extends StatelessWidget {
                 valueColor:
                     const AlwaysStoppedAnimation<Color>(AppColors.orange),
               ),
-              const SizedBox(height: Spacing.md),
+              const SizedBox(height: AppSpacing.md),
             ],
 
             // Restore button
@@ -133,9 +133,9 @@ class RestoreCard extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.orange,
                   side: const BorderSide(color: AppColors.orange),
-                  padding: const EdgeInsets.symmetric(vertical: Spacing.md),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(Spacing.radiusSm),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   ),
                 ),
               ),
