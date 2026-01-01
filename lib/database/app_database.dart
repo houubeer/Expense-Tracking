@@ -6,6 +6,9 @@ import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 // Import tables and DAOs
 import 'tables/categories_table.dart';
 import 'tables/expenses_table.dart';
+import 'tables/organizations_table.dart';
+import 'tables/user_profiles_table.dart';
+import 'tables/sync_queue_table.dart';
 import 'daos/category_dao.dart';
 import 'daos/expense_dao.dart';
 
@@ -18,10 +21,13 @@ part 'app_database.g.dart';
 /// database schema, migrations, and provides health check capabilities.
 ///
 /// The database includes:
+/// - Organizations table: Multi-tenant organization data
+/// - UserProfiles table: User account information
 /// - Categories table: Budget categories with spending limits
 /// - Expenses table: Individual expense records
+/// - SyncQueue table: Offline-first sync queue
 ///
-/// Schema version: 5
+/// Schema version: 7
 ///
 /// Example usage:
 /// ```dart
@@ -29,7 +35,13 @@ part 'app_database.g.dart';
 /// final categories = await database.categoryDao.getAllCategories();
 /// ```
 @DriftDatabase(
-  tables: [Categories, Expenses],
+  tables: [
+    Organizations,
+    UserProfiles,
+    Categories,
+    Expenses,
+    SyncQueue,
+  ],
   daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase implements IDatabase {
@@ -61,7 +73,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   ///
   /// Increment this value when making schema changes to trigger migrations.
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   /// Handles database schema migrations when the version changes.
   ///
@@ -75,6 +87,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// - v3->v4: Added version column for optimistic locking
   /// - v4->v5: Added createdAt timestamp to expenses
   /// - v5->v6: Added isReimbursable and receiptPath columns to expenses
+  /// - v6->v7: Added organizations, user_profiles, sync_queue tables and sync columns
   ///
   /// [m] The migrator instance that executes schema changes.
   /// [from] The current schema version.
@@ -103,6 +116,27 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
             // Add isReimbursable and receiptPath columns to expenses
             await m.addColumn(expenses, expenses.isReimbursable);
             await m.addColumn(expenses, expenses.receiptPath);
+          }
+          if (from < 7) {
+            // Add new tables for multi-tenant and sync support
+            await m.createTable(organizations);
+            await m.createTable(userProfiles);
+            await m.createTable(syncQueue);
+
+            // Add sync columns to existing tables
+            await m.addColumn(categories, categories.organizationId);
+            await m.addColumn(categories, categories.userId);
+            await m.addColumn(categories, categories.serverId);
+            await m.addColumn(categories, categories.syncedAt);
+            await m.addColumn(categories, categories.isSynced);
+
+            await m.addColumn(expenses, expenses.organizationId);
+            await m.addColumn(expenses, expenses.userId);
+            await m.addColumn(expenses, expenses.serverId);
+            await m.addColumn(expenses, expenses.receiptUrl);
+            await m.addColumn(expenses, expenses.version);
+            await m.addColumn(expenses, expenses.syncedAt);
+            await m.addColumn(expenses, expenses.isSynced);
           }
         },
         beforeOpen: (details) async {
