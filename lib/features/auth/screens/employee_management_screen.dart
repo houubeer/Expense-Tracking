@@ -45,7 +45,7 @@ class _EmployeeManagementScreenState
         throw Exception('User profile not found');
       }
 
-      _organizationId = profile['organization_id'] as String?;
+      _organizationId = profile.organizationId;
       if (_organizationId == null) {
         throw Exception('No organization associated with this account');
       }
@@ -56,7 +56,7 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       setState(() {
-        _employees = employees.map((e) => UserProfile.fromJson(e)).toList();
+        _employees = employees;
         _isLoading = false;
       });
     } catch (e) {

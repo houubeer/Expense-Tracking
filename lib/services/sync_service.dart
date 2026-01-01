@@ -219,7 +219,14 @@ class SyncService {
   /// Pull categories from server
   Future<void> _pullCategories(DateTime? since) async {
     try {
-      final serverCategories = await _supabaseService.getCategories();
+      // Get organization ID from current user profile
+      final profile = await _supabaseService.getCurrentUserProfile();
+      if (profile == null || profile.organizationId == null) {
+        _logger.warning('No organization ID found for pulling categories');
+        return;
+      }
+
+      final serverCategories = await _supabaseService.getCategories(profile.organizationId!);
 
       for (final serverCat in serverCategories) {
         // Check if we have this category locally by server ID
@@ -254,7 +261,14 @@ class SyncService {
   /// Pull expenses from server
   Future<void> _pullExpenses(DateTime? since) async {
     try {
-      final serverExpenses = await _supabaseService.getExpenses();
+      // Get organization ID from current user profile
+      final profile = await _supabaseService.getCurrentUserProfile();
+      if (profile == null || profile.organizationId == null) {
+        _logger.warning('No organization ID found for pulling expenses');
+        return;
+      }
+
+      final serverExpenses = await _supabaseService.getExpenses(profile.organizationId!);
 
       for (final serverExp in serverExpenses) {
         // Check if we have this expense locally by server ID
@@ -582,7 +596,7 @@ class SyncService {
     try {
       // Get current user's organization ID
       final profile = await _supabaseService.getCurrentUserProfile();
-      final orgId = profile?['organization_id'] as String?;
+      final orgId = profile?.organizationId;
       if (orgId == null) {
         _logger.warning(
             'SyncService: No organization ID found for real-time subscriptions');

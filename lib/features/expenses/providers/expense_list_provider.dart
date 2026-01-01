@@ -8,30 +8,35 @@ import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 class ExpenseFilters {
   final String searchQuery;
   final int? selectedCategoryId;
-  final DateTime? selectedDate;
+  final DateTime? startDate; // Changed: date range support
+  final DateTime? endDate; // New: date range support
   final ReimbursableFilter reimbursableFilter;
 
   const ExpenseFilters({
     this.searchQuery = '',
     this.selectedCategoryId,
-    this.selectedDate,
+    this.startDate,
+    this.endDate,
     this.reimbursableFilter = ReimbursableFilter.all,
   });
 
   ExpenseFilters copyWith({
     String? searchQuery,
     int? selectedCategoryId,
-    DateTime? selectedDate,
+    DateTime? startDate,
+    DateTime? endDate,
     ReimbursableFilter? reimbursableFilter,
     bool clearCategoryId = false,
-    bool clearDate = false,
+    bool clearStartDate = false,
+    bool clearEndDate = false,
   }) {
     return ExpenseFilters(
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategoryId: clearCategoryId
           ? null
           : (selectedCategoryId ?? this.selectedCategoryId),
-      selectedDate: clearDate ? null : (selectedDate ?? this.selectedDate),
+      startDate: clearStartDate ? null : (startDate ?? this.startDate),
+      endDate: clearEndDate ? null : (endDate ?? this.endDate),
       reimbursableFilter: reimbursableFilter ?? this.reimbursableFilter,
     );
   }
@@ -58,9 +63,22 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
   }
 
   void setDateFilter(DateTime? date) {
+    // Backward compatibility: single date sets both start and end to same day
+    if (date != null) {
+      final start = DateTime(date.year, date.month, date.day);
+      final end = DateTime(date.year, date.month, date.day, 23, 59, 59);
+      state = state.copyWith(startDate: start, endDate: end);
+    } else {
+      state = state.copyWith(clearStartDate: true, clearEndDate: true);
+    }
+  }
+
+  void setDateRangeFilter(DateTime? startDate, DateTime? endDate) {
     state = state.copyWith(
-      selectedDate: date,
-      clearDate: date == null,
+      startDate: startDate,
+      endDate: endDate,
+      clearStartDate: startDate == null,
+      clearEndDate: endDate == null,
     );
   }
 
@@ -96,15 +114,15 @@ final filteredExpensesProvider =
       }).toList();
     }
 
-    // Apply date filter
-    if (filters.selectedDate != null) {
-      final filterDate = filters.selectedDate!;
-      final start = DateTime(filterDate.year, filterDate.month, filterDate.day);
-      final end = start.add(const Duration(days: 1));
+    // Apply date range filter
+    if (filters.startDate != null || filters.endDate != null) {
       filtered = filtered.where((e) {
-        return e.expense.date
-                .isAfter(start.subtract(const Duration(milliseconds: 1))) &&
-            e.expense.date.isBefore(end);
+        final expenseDate = e.expense.date;
+        final afterStart = filters.startDate == null ||
+            expenseDate.isAfter(filters.startDate!.subtract(const Duration(milliseconds: 1)));
+        final beforeEnd = filters.endDate == null ||
+            expenseDate.isBefore(filters.endDate!.add(const Duration(days: 1)));
+        return afterStart && beforeEnd;
       }).toList();
     }
 
@@ -129,7 +147,9 @@ final filteredExpensesProvider =
 class ExpenseListState {
   final String searchQuery;
   final int? selectedCategoryId;
-  final DateTime? selectedDate;
+  final DateTime? selectedDate; // Deprecated: kept for backward compatibility
+  final DateTime? startDate; // New: date range support
+  final DateTime? endDate; // New: date range support
   final ReimbursableFilter reimbursableFilter;
   final List<ExpenseWithCategory> filteredExpenses;
   final bool isLoading;
@@ -138,7 +158,9 @@ class ExpenseListState {
   const ExpenseListState({
     required this.searchQuery,
     required this.selectedCategoryId,
-    required this.selectedDate,
+    this.selectedDate,
+    this.startDate,
+    this.endDate,
     required this.reimbursableFilter,
     required this.filteredExpenses,
     this.isLoading = false,
@@ -166,7 +188,8 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
   ) : super(ExpenseListState(
           searchQuery: filters.searchQuery,
           selectedCategoryId: filters.selectedCategoryId,
-          selectedDate: filters.selectedDate,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
           reimbursableFilter: filters.reimbursableFilter,
           filteredExpenses: expensesAsync.value ?? [],
           isLoading: expensesAsync.isLoading,
@@ -183,6 +206,10 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
 
   void setDateFilter(DateTime? date) {
     _filtersNotifier.setDateFilter(date);
+  }
+
+  void setDateRangeFilter(DateTime? startDate, DateTime? endDate) {
+    _filtersNotifier.setDateRangeFilter(startDate, endDate);
   }
 
   void setReimbursableFilter(ReimbursableFilter filter) {

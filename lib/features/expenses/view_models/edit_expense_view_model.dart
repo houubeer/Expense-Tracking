@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
@@ -139,7 +139,7 @@ class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
         date: state.selectedDate,
         categoryId: state.selectedCategoryId!,
         isReimbursable: state.isReimbursable,
-        receiptPath: Value(state.receiptPath),
+        receiptPath: drift.Value(state.receiptPath),
       );
 
       _logger.debug(

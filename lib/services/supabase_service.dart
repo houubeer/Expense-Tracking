@@ -201,9 +201,58 @@ class SupabaseService {
 
       return UserProfile.fromJson(response);
     } catch (e, stackTrace) {
-      _logger.error('Failed to get user profile',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to get user profile', error: e, stackTrace: stackTrace);
       return null;
+    }
+  }
+
+  /// Get current user profile
+  Future<UserProfile?> getCurrentUserProfile() async {
+    if (currentUser == null) return null;
+    return getUserProfile(currentUser!.id);
+  }
+
+  /// Get organization members
+  Future<List<UserProfile>> getOrganizationMembers(String organizationId) async {
+    try {
+      final response = await client
+          .from('user_profiles')
+          .select()
+          .eq('organization_id', organizationId);
+
+      return response.map((json) => UserProfile.fromJson(json)).toList();
+    } catch (e, stackTrace) {
+      _logger.error('Failed to get organization members',
+          error: e, stackTrace: stackTrace);
+      return [];
+    }
+  }
+
+  /// Remove an employee from the organization
+  Future<bool> removeEmployee(String userId) async {
+    try {
+      await client.from('user_profiles').delete().eq('id', userId);
+
+      _logger.info('Employee removed: $userId');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error('Failed to remove employee', error: e, stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  /// Update employee status (active/inactive)
+  Future<bool> updateEmployeeStatus(String userId, bool isActive) async {
+    try {
+      await client
+          .from('user_profiles')
+          .update({'is_active': isActive}).eq('id', userId);
+
+      _logger.info('Employee status updated: $userId -> $isActive');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error('Failed to update employee status', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -286,8 +335,7 @@ class SupabaseService {
 
       return Organization.fromJson(response);
     } catch (e, stackTrace) {
-      _logger.error('Failed to get organization',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to get organization', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -301,7 +349,7 @@ class SupabaseService {
           .eq('status', 'pending')
           .order('created_at', ascending: false);
 
-      return (response as List)
+      return (response as List<dynamic>)
           .map((json) => Organization.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e, stackTrace) {
@@ -328,8 +376,9 @@ class SupabaseService {
           .eq('role', 'manager')
           .single();
 
-      await client.from('user_profiles').update({'is_active': true}).eq(
-          'id', managerResponse['id'] as String);
+      await client
+          .from('user_profiles')
+          .update({'is_active': true}).eq('id', managerResponse['id'] as Object);
 
       // Create audit log
       await _createAuditLog(
@@ -424,8 +473,7 @@ class SupabaseService {
         'operation': operation,
       };
     } catch (e, stackTrace) {
-      _logger.error('Failed to sync category',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to sync category', error: e, stackTrace: stackTrace);
       return {
         'success': false,
         'message': _getErrorMessage(e),
@@ -435,32 +483,22 @@ class SupabaseService {
 
   /// Get all categories for organization
   Future<List<Map<String, dynamic>>> getCategories(
-      [String? organizationId]) async {
+      String organizationId) async {
     try {
-      String? orgId = organizationId;
-      if (orgId == null && currentUser != null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
-      }
-      if (orgId == null) {
-        return [];
-      }
-
       final response = await client
           .from('categories')
           .select()
-          .eq('organization_id', orgId)
+          .eq('organization_id', organizationId)
           .order('name');
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
-      _logger.error('Failed to get categories',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to get categories', error: e, stackTrace: stackTrace);
       return [];
     }
   }
 
-  /// Create a new category on server
+  /// Create a new category
   Future<String?> createCategory({
     required String name,
     required String icon,
@@ -468,10 +506,9 @@ class SupabaseService {
   }) async {
     try {
       final profile = await getCurrentUserProfile();
-      if (profile == null) throw Exception('User profile not found');
-
-      final orgId = profile['organization_id'] as String?;
-      if (orgId == null) throw Exception('Organization not found');
+      if (profile == null || profile.organizationId == null) {
+        throw Exception('User profile or organization not found');
+      }
 
       final response = await client
           .from('categories')
@@ -479,51 +516,58 @@ class SupabaseService {
             'name': name,
             'icon': icon,
             'color': color,
-            'organization_id': orgId,
-            'user_id': currentUser!.id,
+            'organization_id': profile.organizationId,
+            'created_by': currentUser!.id,
           })
           .select()
           .single();
 
-      return response['id'] as String;
+      return response['id']?.toString();
     } catch (e, stackTrace) {
-      _logger.error('Failed to create category',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to create category', error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
-  /// Update a category on server
-  Future<void> updateCategory({
+  /// Update an existing category
+  Future<bool> updateCategory({
     required String id,
     String? name,
     String? icon,
     String? color,
   }) async {
     try {
-      final updates = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (name != null) updates['name'] = name;
-      if (icon != null) updates['icon'] = icon;
-      if (color != null) updates['color'] = color;
+      final updateData = <String, dynamic>{};
+      if (name != null) updateData['name'] = name;
+      if (icon != null) updateData['icon'] = icon;
+      if (color != null) updateData['color'] = color;
 
-      await client.from('categories').update(updates).eq('id', id);
+      if (updateData.isEmpty) return true;
+
+      await client
+          .from('categories')
+          .update(updateData)
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error('Failed to update category',
-          error: e, stackTrace: stackTrace);
-      rethrow;
+      _logger.error('Failed to update category', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
-  /// Delete a category from server
-  Future<void> deleteCategory(String id) async {
+  /// Delete a category
+  Future<bool> deleteCategory(String id) async {
     try {
-      await client.from('categories').delete().eq('id', id);
+      await client
+          .from('categories')
+          .delete()
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error('Failed to delete category',
-          error: e, stackTrace: stackTrace);
-      rethrow;
+      _logger.error('Failed to delete category', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -531,20 +575,20 @@ class SupabaseService {
   // EXPENSES
   // =====================================================
 
-  /// Create a new expense on server
+  /// Create a new expense
   Future<String?> createExpense({
     required String categoryId,
     required double amount,
     String? description,
     required DateTime expenseDate,
     String? receiptUrl,
+    bool isReimbursable = false,
   }) async {
     try {
       final profile = await getCurrentUserProfile();
-      if (profile == null) throw Exception('User profile not found');
-
-      final orgId = profile['organization_id'] as String?;
-      if (orgId == null) throw Exception('Organization not found');
+      if (profile == null || profile.organizationId == null) {
+        throw Exception('User profile or organization not found');
+      }
 
       final response = await client
           .from('expenses')
@@ -552,59 +596,67 @@ class SupabaseService {
             'category_id': categoryId,
             'amount': amount,
             'description': description,
-            'expense_date': expenseDate.toIso8601String().split('T')[0],
+            'date': expenseDate.toIso8601String(),
             'receipt_url': receiptUrl,
-            'organization_id': orgId,
-            'user_id': currentUser!.id,
+            'is_reimbursable': isReimbursable,
+            'organization_id': profile.organizationId,
+            'created_by': currentUser!.id,
           })
           .select()
           .single();
 
-      return response['id'] as String;
+      return response['id']?.toString();
     } catch (e, stackTrace) {
-      _logger.error('Failed to create expense',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to create expense', error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
-  /// Update an expense on server
-  Future<void> updateExpense({
+  /// Update an existing expense
+  Future<bool> updateExpense({
     required String id,
     String? categoryId,
     double? amount,
     String? description,
     DateTime? expenseDate,
     String? receiptUrl,
+    bool? isReimbursable,
   }) async {
     try {
-      final updates = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (categoryId != null) updates['category_id'] = categoryId;
-      if (amount != null) updates['amount'] = amount;
-      if (description != null) updates['description'] = description;
-      if (expenseDate != null) {
-        updates['expense_date'] = expenseDate.toIso8601String().split('T')[0];
-      }
-      if (receiptUrl != null) updates['receipt_url'] = receiptUrl;
+      final updateData = <String, dynamic>{};
+      if (categoryId != null) updateData['category_id'] = categoryId;
+      if (amount != null) updateData['amount'] = amount;
+      if (description != null) updateData['description'] = description;
+      if (expenseDate != null) updateData['date'] = expenseDate.toIso8601String();
+      if (receiptUrl != null) updateData['receipt_url'] = receiptUrl;
+      if (isReimbursable != null) updateData['is_reimbursable'] = isReimbursable;
 
-      await client.from('expenses').update(updates).eq('id', id);
+      if (updateData.isEmpty) return true;
+
+      await client
+          .from('expenses')
+          .update(updateData)
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error('Failed to update expense',
-          error: e, stackTrace: stackTrace);
-      rethrow;
+      _logger.error('Failed to update expense', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
-  /// Delete an expense from server
-  Future<void> deleteExpense(String id) async {
+  /// Delete an expense
+  Future<bool> deleteExpense(String id) async {
     try {
-      await client.from('expenses').delete().eq('id', id);
+      await client
+          .from('expenses')
+          .delete()
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error('Failed to delete expense',
-          error: e, stackTrace: stackTrace);
-      rethrow;
+      _logger.error('Failed to delete expense', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -666,24 +718,27 @@ class SupabaseService {
     }
   }
 
-  /// Get all expenses for organization
+  /// Get all expenses for organization with optional date range filtering
   Future<List<Map<String, dynamic>>> getExpenses(
-      [String? organizationId]) async {
+    String organizationId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
-      String? orgId = organizationId;
-      if (orgId == null && currentUser != null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
+      var query = client
+          .from('expenses')
+          .select('*, receipts(*)')
+          .eq('organization_id', organizationId);
+
+      // Apply date range filtering if provided
+      if (startDate != null) {
+        query = query.gte('date', startDate.toIso8601String());
       }
-      if (orgId == null) {
-        return [];
+      if (endDate != null) {
+        query = query.lte('date', endDate.toIso8601String());
       }
 
-      final response = await client
-          .from('expenses')
-          .select()
-          .eq('organization_id', orgId)
-          .order('expense_date', ascending: false);
+      final response = await query.order('date', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
@@ -718,8 +773,7 @@ class SupabaseService {
       _logger.info('Receipt uploaded: $storagePath');
       return publicUrl;
     } catch (e, stackTrace) {
-      _logger.error('Failed to upload receipt',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to upload receipt', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -741,8 +795,7 @@ class SupabaseService {
       _logger.info('Receipt downloaded: $localPath');
       return file;
     } catch (e, stackTrace) {
-      _logger.error('Failed to download receipt',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to download receipt', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -758,8 +811,7 @@ class SupabaseService {
       _logger.info('Receipt deleted: $storagePath');
       return true;
     } catch (e, stackTrace) {
-      _logger.error('Failed to delete receipt',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to delete receipt', error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -809,8 +861,7 @@ class SupabaseService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
-      _logger.error('Failed to get audit logs',
-          error: e, stackTrace: stackTrace);
+      _logger.error('Failed to get audit logs', error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -822,9 +873,9 @@ class SupabaseService {
   /// Subscribe to category changes
   RealtimeChannel subscribeToCategories({
     required String organizationId,
-    required void Function(Map<String, dynamic>) onInsert,
-    required void Function(Map<String, dynamic>) onUpdate,
-    required void Function(Map<String, dynamic>) onDelete,
+    required Function(Map<String, dynamic>) onInsert,
+    required Function(Map<String, dynamic>) onUpdate,
+    required Function(Map<String, dynamic>) onDelete,
   }) {
     return client
         .channel('categories:$organizationId')
@@ -867,9 +918,9 @@ class SupabaseService {
   /// Subscribe to expense changes
   RealtimeChannel subscribeToExpenses({
     required String organizationId,
-    required void Function(Map<String, dynamic>) onInsert,
-    required void Function(Map<String, dynamic>) onUpdate,
-    required void Function(Map<String, dynamic>) onDelete,
+    required Function(Map<String, dynamic>) onInsert,
+    required Function(Map<String, dynamic>) onUpdate,
+    required Function(Map<String, dynamic>) onDelete,
   }) {
     return client
         .channel('expenses:$organizationId')
@@ -913,98 +964,6 @@ class SupabaseService {
   // UTILITIES
   // =====================================================
 
-  /// Get current user profile
-  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
-    if (currentUser == null) return null;
-    try {
-      final response = await client
-          .from('user_profiles')
-          .select()
-          .eq('id', currentUser!.id)
-          .single();
-      return response;
-    } catch (e, stackTrace) {
-      _logger.error('Failed to get current user profile',
-          error: e, stackTrace: stackTrace);
-      return null;
-    }
-  }
-
-  /// Get approved organizations
-  Future<List<Map<String, dynamic>>> getApprovedOrganizations() async {
-    try {
-      final response = await client
-          .from('organizations')
-          .select()
-          .eq('status', 'approved')
-          .order('created_at', ascending: false);
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error('Failed to get approved organizations',
-          error: e, stackTrace: stackTrace);
-      return [];
-    }
-  }
-
-  /// Get rejected organizations
-  Future<List<Map<String, dynamic>>> getRejectedOrganizations() async {
-    try {
-      final response = await client
-          .from('organizations')
-          .select()
-          .eq('status', 'rejected')
-          .order('created_at', ascending: false);
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error('Failed to get rejected organizations',
-          error: e, stackTrace: stackTrace);
-      return [];
-    }
-  }
-
-  /// Get organization members
-  Future<List<Map<String, dynamic>>> getOrganizationMembers(
-      String organizationId) async {
-    try {
-      final response = await client
-          .from('user_profiles')
-          .select()
-          .eq('organization_id', organizationId)
-          .order('full_name');
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error('Failed to get organization members',
-          error: e, stackTrace: stackTrace);
-      return [];
-    }
-  }
-
-  /// Remove employee
-  Future<void> removeEmployee(String userId) async {
-    try {
-      await client.from('user_profiles').delete().eq('id', userId);
-      _logger.info('Employee removed: $userId');
-    } catch (e, stackTrace) {
-      _logger.error('Failed to remove employee',
-          error: e, stackTrace: stackTrace);
-      rethrow;
-    }
-  }
-
-  /// Update employee status
-  Future<void> updateEmployeeStatus(String userId, bool isActive) async {
-    try {
-      await client
-          .from('user_profiles')
-          .update({'is_active': isActive}).eq('id', userId);
-      _logger.info('Employee status updated: $userId -> $isActive');
-    } catch (e, stackTrace) {
-      _logger.error('Failed to update employee status',
-          error: e, stackTrace: stackTrace);
-      rethrow;
-    }
-  }
-
   /// Get user-friendly error message
   String _getErrorMessage(dynamic error) {
     if (error is AuthException) {
@@ -1025,3 +984,4 @@ class SupabaseService {
     _logger.info('Supabase service disposed');
   }
 }
+

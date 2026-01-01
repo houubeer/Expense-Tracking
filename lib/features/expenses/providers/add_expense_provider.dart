@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/view_models/add_expense_view_model.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/models/receipt_attachment.dart';
 
 /// Submission status for form feedback
 enum SubmissionStatus {
@@ -21,7 +22,8 @@ class AddExpenseState {
   final DateTime selectedDate;
   final int? selectedCategoryId;
   final bool isReimbursable;
-  final String? receiptPath;
+  final String? receiptPath; // Keep for backward compatibility
+  final List<ReceiptAttachment> receipts; // New: multiple receipts support
 
   AddExpenseState({
     required this.status,
@@ -33,6 +35,7 @@ class AddExpenseState {
     this.selectedCategoryId,
     this.isReimbursable = false,
     this.receiptPath,
+    this.receipts = const [],
   });
 
   factory AddExpenseState.initial({int? preSelectedCategoryId}) {
@@ -44,6 +47,7 @@ class AddExpenseState {
       selectedCategoryId: preSelectedCategoryId,
       isReimbursable: false,
       receiptPath: null,
+      receipts: [],
     );
   }
 
@@ -57,6 +61,7 @@ class AddExpenseState {
     bool? isReimbursable,
     String? receiptPath,
     bool clearReceiptPath = false,
+    List<ReceiptAttachment>? receipts,
   }) {
     return AddExpenseState(
       status: status ?? this.status,
@@ -70,6 +75,7 @@ class AddExpenseState {
           : (selectedCategoryId ?? this.selectedCategoryId),
       isReimbursable: isReimbursable ?? this.isReimbursable,
       receiptPath: clearReceiptPath ? null : (receiptPath ?? this.receiptPath),
+      receipts: receipts ?? this.receipts,
     );
   }
 
@@ -84,8 +90,15 @@ final addExpenseViewModelProvider = StateNotifierProvider.autoDispose
     .family<AddExpenseViewModel, AddExpenseState, int?>(
   (ref, preSelectedCategoryId) {
     final expenseService = ref.watch(expenseServiceProvider);
+    final budgetValidation = ref.watch(budgetValidationServiceProvider);
     final errorReporting = ref.watch(errorReportingServiceProvider);
+    final database = ref.watch(databaseProvider);
     return AddExpenseViewModel(
-        expenseService, errorReporting, preSelectedCategoryId);
+      expenseService,
+      budgetValidation,
+      errorReporting,
+      database,
+      preSelectedCategoryId,
+    );
   },
 );
