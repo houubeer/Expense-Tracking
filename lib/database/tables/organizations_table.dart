@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
 
 /// Organizations table for multi-tenant support
+@TableIndex(name: 'idx_organizations_status', columns: {#status})
+@TableIndex(name: 'idx_organizations_manager_email', columns: {#managerEmail})
+@TableIndex(name: 'idx_organizations_synced', columns: {#isSynced})
 class Organizations extends Table {
   /// Local autoincrement ID
   IntColumn get id => integer().autoIncrement()();
@@ -21,11 +24,4 @@ class Organizations extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
-
-  @override
-  List<String> get customConstraints => [
-        'CREATE INDEX IF NOT EXISTS idx_organizations_status ON organizations(status)',
-        'CREATE INDEX IF NOT EXISTS idx_organizations_manager_email ON organizations(manager_email)',
-        'CREATE INDEX IF NOT EXISTS idx_organizations_synced ON organizations(is_synced)',
-      ];
 }

@@ -2,6 +2,10 @@ import 'package:drift/drift.dart';
 import 'organizations_table.dart';
 
 /// User profiles table (extends Supabase auth.users)
+@TableIndex(name: 'idx_user_profiles_org', columns: {#organizationId})
+@TableIndex(name: 'idx_user_profiles_role', columns: {#role})
+@TableIndex(name: 'idx_user_profiles_email', columns: {#email})
+@TableIndex(name: 'idx_user_profiles_synced', columns: {#isSynced})
 class UserProfiles extends Table {
   /// Local autoincrement ID
   IntColumn get id => integer().autoIncrement()();
@@ -31,13 +35,4 @@ class UserProfiles extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get syncedAt => dateTime().nullable()();
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
-
-  @override
-  List<String> get customConstraints => [
-        'FOREIGN KEY (organization_id) REFERENCES organizations (id) ON DELETE CASCADE',
-        'CREATE INDEX IF NOT EXISTS idx_user_profiles_org ON user_profiles(organization_id)',
-        'CREATE INDEX IF NOT EXISTS idx_user_profiles_role ON user_profiles(role)',
-        'CREATE INDEX IF NOT EXISTS idx_user_profiles_email ON user_profiles(email)',
-        'CREATE INDEX IF NOT EXISTS idx_user_profiles_synced ON user_profiles(is_synced)',
-      ];
 }

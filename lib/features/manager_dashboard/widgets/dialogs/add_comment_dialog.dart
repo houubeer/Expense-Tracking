@@ -5,7 +5,7 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 class AddCommentDialog extends StatefulWidget {
   final String expenseId;
   final String employeeName;
-  final Function(String comment) onSubmit;
+  final void Function(String comment) onSubmit;
 
   const AddCommentDialog({
     super.key,

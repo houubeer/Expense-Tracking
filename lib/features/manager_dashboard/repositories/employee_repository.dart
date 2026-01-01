@@ -129,13 +129,13 @@ class EmployeeRepository {
   /// Get all employees
   Future<List<Employee>> getAllEmployees() async {
     // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
     return List.unmodifiable(_mockEmployees);
   }
 
   /// Get employee by ID
   Future<Employee?> getEmployeeById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     try {
       return _mockEmployees.firstWhere((emp) => emp.id == id);
     } catch (e) {
@@ -145,28 +145,25 @@ class EmployeeRepository {
 
   /// Get employees by department
   Future<List<Employee>> getEmployeesByDepartment(String department) async {
-    await Future.delayed(const Duration(milliseconds: 250));
-    return _mockEmployees
-        .where((emp) => emp.department == department)
-        .toList();
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    return _mockEmployees.where((emp) => emp.department == department).toList();
   }
 
   /// Get employees by status
   Future<List<Employee>> getEmployeesByStatus(EmployeeStatus status) async {
-    await Future.delayed(const Duration(milliseconds: 250));
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockEmployees.where((emp) => emp.status == status).toList();
   }
 
   /// Get all unique departments
   Future<List<String>> getAllDepartments() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return _mockEmployees.map((emp) => emp.department).toSet().toList()
-      ..sort();
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    return _mockEmployees.map((emp) => emp.department).toSet().toList()..sort();
   }
 
   /// Get employee count by status
   Future<Map<EmployeeStatus, int>> getEmployeeCountByStatus() async {
-    await Future.delayed(const Duration(milliseconds: 150));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     final counts = <EmployeeStatus, int>{};
     for (final status in EmployeeStatus.values) {
       counts[status] =
@@ -177,13 +174,13 @@ class EmployeeRepository {
 
   /// Add new employee
   Future<void> addEmployee(Employee employee) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     _mockEmployees.add(employee);
   }
 
   /// Update employee
   Future<void> updateEmployee(Employee employee) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     final index = _mockEmployees.indexWhere((emp) => emp.id == employee.id);
     if (index != -1) {
       _mockEmployees[index] = employee;
@@ -192,7 +189,7 @@ class EmployeeRepository {
 
   /// Suspend employee
   Future<void> suspendEmployee(String employeeId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     final index = _mockEmployees.indexWhere((emp) => emp.id == employeeId);
     if (index != -1) {
       _mockEmployees[index] = _mockEmployees[index].copyWith(
@@ -203,7 +200,7 @@ class EmployeeRepository {
 
   /// Activate employee
   Future<void> activateEmployee(String employeeId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     final index = _mockEmployees.indexWhere((emp) => emp.id == employeeId);
     if (index != -1) {
       _mockEmployees[index] = _mockEmployees[index].copyWith(
@@ -214,7 +211,7 @@ class EmployeeRepository {
 
   /// Remove employee
   Future<void> removeEmployee(String employeeId) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     _mockEmployees.removeWhere((emp) => emp.id == employeeId);
   }
 }

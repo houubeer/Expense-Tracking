@@ -13,7 +13,7 @@ class ExpenseApprovalService {
   Future<bool> approveExpense(String expenseId, String managerId,
       {String managerName = 'Manager'}) async {
     // Simulate processing delay
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
 
     // Validate expense status (can only approve pending expenses)
     final currentStatus = _expenseStatuses[expenseId];
@@ -47,7 +47,7 @@ class ExpenseApprovalService {
     String managerName = 'Manager',
   }) async {
     // Simulate processing delay
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(milliseconds: 500));
 
     // Validate expense status (can only reject pending expenses)
     final currentStatus = _expenseStatuses[expenseId];
@@ -80,7 +80,7 @@ class ExpenseApprovalService {
 
   /// Add a comment to an expense
   Future<void> addComment(String expenseId, String comment) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
 
     if (comment.trim().isEmpty) {
       throw ArgumentError('Comment cannot be empty');

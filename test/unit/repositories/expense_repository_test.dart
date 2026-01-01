@@ -49,6 +49,9 @@ void main() {
         date: DateTime.now(),
         categoryId: 1,
         createdAt: DateTime.now(),
+        isReimbursable: false,
+        version: 1,
+        isSynced: false,
       );
 
       when(mockExpenseDao.updateExpense(expense)).thenAnswer((_) async => true);
@@ -80,6 +83,9 @@ void main() {
         date: date,
         categoryId: 1,
         createdAt: date,
+        isReimbursable: false,
+        version: 1,
+        isSynced: false,
       );
       final category = Category(
         id: 1,
@@ -90,6 +96,7 @@ void main() {
         spent: 100.0,
         version: 1,
         createdAt: date,
+        isSynced: false,
       );
 
       final daoResult = [

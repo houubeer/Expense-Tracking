@@ -13,7 +13,6 @@ class SubscriptionRepository {
 
   /// Initialize with mock data
   void _initializeMockData() {
-    final now = DateTime.now();
     _subscriptions.addAll([
       Subscription(
         id: 's1',

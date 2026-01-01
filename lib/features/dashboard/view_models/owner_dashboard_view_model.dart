@@ -14,7 +14,9 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/manager_m
 class OwnerDashboardViewModel extends ChangeNotifier {
   final CompanyRepository _companyRepository;
   final ManagerRepository _managerRepository;
+  // ignore: unused_field
   final SubscriptionRepository _subscriptionRepository;
+  // ignore: unused_field
   final PlatformExpenseRepository _expenseRepository;
   final ManagerApprovalService _approvalService;
   final ExpenseAnalyticsService _analyticsService;

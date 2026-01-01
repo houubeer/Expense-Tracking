@@ -8,6 +8,9 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/screens/employee_expenses_screen.dart';
 import 'package:expense_tracking_desktop_app/features/dashboard/screens/owner_dashboard_screen.dart';
 import 'package:expense_tracking_desktop_app/features/settings/screens/settings_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/login_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/manager_signup_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/employee_management_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -24,6 +27,28 @@ GoRouter createRouter() {
     initialLocation: AppRoutes.home,
     errorBuilder: (context, state) => const _ErrorScreen(),
     routes: [
+      // Auth routes (no shell/sidebar)
+      GoRoute(
+        path: AppRoutes.login,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const LoginScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.register,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ManagerSignupScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+      // Main app routes with shell/sidebar
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
@@ -123,6 +148,17 @@ GoRouter createRouter() {
                   child: EmployeeExpensesScreen(
                     onNavigate: (path) => context.go(path),
                   ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                ),
+              ),
+              GoRoute(
+                path: 'employees',
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  key: state.pageKey,
+                  child: const EmployeeManagementScreen(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(opacity: animation, child: child);

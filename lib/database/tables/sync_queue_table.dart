@@ -1,13 +1,17 @@
 import 'package:drift/drift.dart';
 
 /// Local sync queue for offline-first operations
+@TableIndex(name: 'idx_sync_queue_synced', columns: {#synced})
+@TableIndex(name: 'idx_sync_queue_created', columns: {#createdAt})
+@TableIndex(name: 'idx_sync_queue_table', columns: {#targetTable})
 class SyncQueue extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   /// UUID for the sync operation
   TextColumn get syncId => text().unique()();
 
-  TextColumn get tableName => text()();
+  /// Target table name: categories, expenses, etc.
+  TextColumn get targetTable => text()();
   IntColumn get recordId => integer().nullable()();
 
   /// Operation type: INSERT, UPDATE, DELETE
@@ -22,11 +26,4 @@ class SyncQueue extends Table {
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get syncedAt => dateTime().nullable()();
-
-  @override
-  List<String> get customConstraints => [
-        'CREATE INDEX IF NOT EXISTS idx_sync_queue_synced ON sync_queue(synced)',
-        'CREATE INDEX IF NOT EXISTS idx_sync_queue_created ON sync_queue(created_at)',
-        'CREATE INDEX IF NOT EXISTS idx_sync_queue_table ON sync_queue(table_name)',
-      ];
 }

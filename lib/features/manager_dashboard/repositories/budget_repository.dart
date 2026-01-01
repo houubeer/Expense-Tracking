@@ -43,13 +43,13 @@ class BudgetRepository {
 
   /// Get all department budgets
   Future<List<DepartmentBudget>> getDepartmentBudgets() async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
     return List.unmodifiable(_mockBudgets);
   }
 
   /// Get budget for specific department
   Future<DepartmentBudget?> getBudgetByDepartment(String department) async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     try {
       return _mockBudgets
           .firstWhere((budget) => budget.departmentName == department);
@@ -60,26 +60,28 @@ class BudgetRepository {
 
   /// Get total budget across all departments
   Future<double> getTotalBudget() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _mockBudgets.fold<double>(0.0, (sum, budget) => sum + budget.totalBudget);
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    return _mockBudgets.fold<double>(
+        0.0, (sum, budget) => sum + budget.totalBudget);
   }
 
   /// Get total used budget across all departments
   Future<double> getTotalUsedBudget() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _mockBudgets.fold<double>(0.0, (sum, budget) => sum + budget.usedBudget);
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    return _mockBudgets.fold<double>(
+        0.0, (sum, budget) => sum + budget.usedBudget);
   }
 
   /// Get total remaining budget across all departments
   Future<double> getTotalRemainingBudget() async {
-    await Future.delayed(const Duration(milliseconds: 150));
+    await Future<void>.delayed(const Duration(milliseconds: 150));
     return _mockBudgets.fold<double>(
         0.0, (sum, budget) => sum + budget.remainingBudget);
   }
 
   /// Get category breakdown (mock data for pie chart)
   Future<Map<String, double>> getCategoryBreakdown() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     return {
       'Travel': 28500.00,
       'Equipment': 45200.00,
@@ -94,7 +96,7 @@ class BudgetRepository {
 
   /// Get monthly expense trends (mock data for bar chart)
   Future<Map<String, double>> getMonthlyTrends() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     final now = DateTime.now();
     return {
       _getMonthName(now.month - 5): 45000.00,
@@ -108,19 +110,19 @@ class BudgetRepository {
 
   /// Get departments exceeding budget
   Future<List<DepartmentBudget>> getDepartmentsExceedingBudget() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     return _mockBudgets.where((budget) => budget.isExceeded).toList();
   }
 
   /// Get departments in warning zone (>= 70% usage)
   Future<List<DepartmentBudget>> getDepartmentsInWarning() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     return _mockBudgets.where((budget) => budget.isInWarning).toList();
   }
 
   /// Get departments in danger zone (>= 90% usage)
   Future<List<DepartmentBudget>> getDepartmentsInDanger() async {
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
     return _mockBudgets.where((budget) => budget.isInDanger).toList();
   }
 

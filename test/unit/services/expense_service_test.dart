@@ -61,6 +61,7 @@ void main() {
         spent: 0.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       when(mockExpenseRepository.insertExpense(expense))
@@ -88,6 +89,9 @@ void main() {
         date: DateTime.now(),
         categoryId: 1,
         createdAt: DateTime.now(),
+        isReimbursable: false,
+        version: 1,
+        isSynced: false,
       );
       final newExpense = oldExpense.copyWith(
         categoryId: 2,
@@ -103,6 +107,7 @@ void main() {
         spent: 100.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
       final newCategory = Category(
         id: 2,
@@ -113,6 +118,7 @@ void main() {
         spent: 0.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       when(mockExpenseRepository.updateExpense(newExpense))
@@ -143,6 +149,9 @@ void main() {
         date: DateTime.now(),
         categoryId: 1,
         createdAt: DateTime.now(),
+        isReimbursable: false,
+        version: 1,
+        isSynced: false,
       );
       final category = Category(
         id: 1,
@@ -153,6 +162,7 @@ void main() {
         spent: 100.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       when(mockExpenseRepository.deleteExpense(1)).thenAnswer((_) async => 1);

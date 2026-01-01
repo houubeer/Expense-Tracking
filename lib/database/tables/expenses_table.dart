@@ -2,6 +2,11 @@ import 'package:drift/drift.dart';
 import 'categories_table.dart';
 
 /// Expenses table with optimized indexes for common query patterns
+@TableIndex(name: 'idx_expenses_date', columns: {#date})
+@TableIndex(name: 'idx_expenses_category', columns: {#categoryId})
+@TableIndex(name: 'idx_expenses_date_category', columns: {#date, #categoryId})
+@TableIndex(name: 'idx_expenses_created_at', columns: {#createdAt})
+@TableIndex(name: 'idx_expenses_reimbursable', columns: {#isReimbursable})
 class Expenses extends Table {
   IntColumn get id => integer().autoIncrement()();
   RealColumn get amount => real()();
@@ -26,14 +31,4 @@ class Expenses extends Table {
       integer().withDefault(const Constant(0))(); // For conflict resolution
   DateTimeColumn get syncedAt => dateTime().nullable()();
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
-
-  @override
-  List<String> get customConstraints => [
-        'FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE',
-        'CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)',
-        'CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id)',
-        'CREATE INDEX IF NOT EXISTS idx_expenses_date_category ON expenses(date, category_id)',
-        'CREATE INDEX IF NOT EXISTS idx_expenses_created_at ON expenses(created_at)',
-        'CREATE INDEX IF NOT EXISTS idx_expenses_reimbursable ON expenses(is_reimbursable)',
-      ];
 }

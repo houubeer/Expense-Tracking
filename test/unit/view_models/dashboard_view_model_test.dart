@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_provider.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/models/category_budget_view.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 
 void main() {
   group('DashboardState', () {
@@ -193,10 +194,9 @@ void main() {
     group('fromData factory', () {
       test('creates state from data with calculations', () {
         const budgets = <CategoryBudgetView>[];
-        final now = DateTime.now();
         final expenses = <ExpenseWithCategory>[];
 
-        const state = DashboardState.fromData(
+        final state = DashboardState.fromData(
           budgets: budgets,
           totalBudget: 5000.0,
           totalExpenses: 2000.0,
@@ -213,7 +213,7 @@ void main() {
       });
 
       test('calculates daily average correctly', () {
-        const state = DashboardState.fromData(
+        final state = DashboardState.fromData(
           budgets: [],
           totalBudget: 3000.0,
           totalExpenses: 1000.0,
@@ -234,19 +234,26 @@ void main() {
               date: DateTime.now(),
               description: 'Expense $i',
               categoryId: 1,
+              createdAt: DateTime.now(),
               isReimbursable: false,
-              receiptPath: null,
+              version: 1,
+              isSynced: false,
             ),
-            category: const Category(
+            category: Category(
               id: 1,
               name: 'Test',
               color: 0xFF000000,
-              iconCodePoint: 0xe6db,
+              iconCodePoint: '0xe6db',
+              budget: 1000.0,
+              spent: 0.0,
+              version: 1,
+              createdAt: DateTime.now(),
+              isSynced: false,
             ),
           ),
         );
 
-        const state = DashboardState.fromData(
+        final state = DashboardState.fromData(
           budgets: [],
           totalBudget: 0,
           totalExpenses: 0,

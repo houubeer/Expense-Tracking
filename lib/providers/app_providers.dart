@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show User;
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/i_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/repositories/budget_repository.dart';
@@ -14,6 +15,8 @@ import 'package:expense_tracking_desktop_app/services/connectivity_service.dart'
 import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
+import 'package:expense_tracking_desktop_app/services/sync_service.dart';
 
 /// Logger service provider - centralized logging
 final loggerServiceProvider = Provider<LoggerService>((ref) {
@@ -76,4 +79,47 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
 final backupServiceProvider = Provider<IBackupService>((ref) {
   final logger = ref.watch(loggerServiceProvider);
   return BackupService(logger: logger);
+});
+
+/// Supabase service provider - singleton for Supabase operations
+final supabaseServiceProvider = Provider<SupabaseService>((ref) {
+  return SupabaseService();
+});
+
+/// Sync service provider - handles offline-first synchronization
+final syncServiceProvider = Provider<SyncService>((ref) {
+  final database = ref.watch(databaseProvider);
+  final supabaseService = ref.watch(supabaseServiceProvider);
+  final logger = LoggerService.instance;
+  return SyncService(
+    database: database,
+    supabaseService: supabaseService,
+    logger: logger,
+  );
+});
+
+/// Sync status stream provider - exposes sync status as a stream
+final syncStatusProvider = StreamProvider<SyncStatus>((ref) {
+  final syncService = ref.watch(syncServiceProvider);
+  return syncService.statusStream;
+});
+
+/// Pending sync count provider - exposes pending item count
+final pendingSyncCountProvider = StreamProvider<int>((ref) {
+  final syncService = ref.watch(syncServiceProvider);
+  return syncService.pendingCountStream;
+});
+
+/// Auth state provider - exposes current user authentication state
+final authStateProvider = StreamProvider<bool>((ref) {
+  final supabaseService = ref.watch(supabaseServiceProvider);
+  return supabaseService.client.auth.onAuthStateChange.map(
+    (event) => event.session != null,
+  );
+});
+
+/// Current user provider
+final currentUserProvider = Provider<User?>((ref) {
+  final supabaseService = ref.watch(supabaseServiceProvider);
+  return supabaseService.currentUser;
 });

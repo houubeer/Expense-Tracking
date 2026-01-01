@@ -50,6 +50,7 @@ void main() {
         spent: 500.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       when(mockCategoryDao.updateCategory(category))
@@ -78,6 +79,7 @@ void main() {
         spent: 500.0,
         version: 1,
         createdAt: DateTime.now(),
+        isSynced: false,
       );
 
       when(mockCategoryDao.getCategoryById(1))
@@ -100,6 +102,7 @@ void main() {
           spent: 500.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 
@@ -123,6 +126,7 @@ void main() {
           spent: 500.0,
           version: 1,
           createdAt: DateTime.now(),
+          isSynced: false,
         ),
       ];
 

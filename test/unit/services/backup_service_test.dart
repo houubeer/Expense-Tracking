@@ -20,25 +20,25 @@ void main() {
     group('getDefaultBackupFileName', () {
       test('generates filename with timestamp format', () {
         final fileName = backupService.getDefaultBackupFileName();
-        
+
         // Should contain the prefix
         expect(fileName, startsWith('expense_tracker_backup_'));
-        
+
         // Should end with .sqlite
         expect(fileName, endsWith('.sqlite'));
-        
+
         // Should have reasonable length (prefix + timestamp + extension)
         expect(fileName.length, greaterThan(20));
       });
 
       test('generates unique filenames for different times', () {
         final fileName1 = backupService.getDefaultBackupFileName();
-        
+
         // Small delay to ensure different timestamp
-        Future.delayed(const Duration(milliseconds: 100));
-        
+        Future<void>.delayed(const Duration(milliseconds: 100));
+
         final fileName2 = backupService.getDefaultBackupFileName();
-        
+
         // Filenames should be different due to timestamp
         // (Note: might occasionally be the same if within same second)
         expect(fileName1, isA<String>());
@@ -49,15 +49,16 @@ void main() {
     group('BackupException', () {
       test('creates exception with message', () {
         final exception = BackupException('Test backup error');
-        
+
         expect(exception.message, equals('Test backup error'));
         expect(exception.toString(), contains('BackupException'));
       });
 
       test('preserves original error', () {
         final originalError = Exception('Original');
-        final exception = BackupException('Wrapped', originalError: originalError);
-        
+        final exception =
+            BackupException('Wrapped', originalError: originalError);
+
         expect(exception.originalError, equals(originalError));
       });
     });
@@ -65,15 +66,16 @@ void main() {
     group('RestoreException', () {
       test('creates exception with message', () {
         final exception = RestoreException('Test restore error');
-        
+
         expect(exception.message, equals('Test restore error'));
         expect(exception.toString(), contains('RestoreException'));
       });
 
       test('preserves original error', () {
         final originalError = Exception('Original');
-        final exception = RestoreException('Wrapped', originalError: originalError);
-        
+        final exception =
+            RestoreException('Wrapped', originalError: originalError);
+
         expect(exception.originalError, equals(originalError));
       });
     });
@@ -87,7 +89,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: true,
         );
-        
+
         expect(info.formattedSize, equals('512 B'));
       });
 
@@ -99,7 +101,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: true,
         );
-        
+
         expect(info.formattedSize, contains('KB'));
         expect(info.formattedSize, contains('10'));
       });
@@ -112,7 +114,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: true,
         );
-        
+
         expect(info.formattedSize, contains('MB'));
         expect(info.formattedSize, contains('5'));
       });
@@ -125,7 +127,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: true,
         );
-        
+
         expect(info.path, equals('/path/to/backup.sqlite'));
         expect(info.fileName, equals('backup.sqlite'));
       });
@@ -138,7 +140,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: true,
         );
-        
+
         final invalidInfo = BackupInfo(
           path: '/tmp/backup.sqlite',
           fileName: 'backup.sqlite',
@@ -146,7 +148,7 @@ void main() {
           createdAt: DateTime.now(),
           isValid: false,
         );
-        
+
         expect(validInfo.isValid, isTrue);
         expect(invalidInfo.isValid, isFalse);
       });

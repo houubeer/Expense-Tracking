@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 /// Table widget for displaying pending manager requests
 class PendingManagerTable extends StatelessWidget {
   final List<Manager> managers;
-  final Function(String managerId) onApprove;
-  final Function(String managerId) onReject;
-  final Function(String managerId) onView;
+  final void Function(String managerId) onApprove;
+  final void Function(String managerId) onReject;
+  final void Function(String managerId) onView;
 
   const PendingManagerTable({
     super.key,
@@ -143,7 +143,8 @@ class _ManagerRow extends StatelessWidget {
             flex: 2,
             child: Text(
               manager.name,
-              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+              style:
+                  textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

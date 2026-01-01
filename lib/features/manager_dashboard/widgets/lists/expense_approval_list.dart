@@ -57,7 +57,8 @@ class ExpenseApprovalList extends StatelessWidget {
             Icon(
               Icons.check_circle_outline,
               size: 64,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -106,8 +107,8 @@ class _ExpenseApprovalItem extends StatelessWidget {
           BoxShadow(
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
-            offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+            offset:
+                const Offset(AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
           ),
         ],
       ),
@@ -253,7 +254,7 @@ class _ExpenseApprovalItem extends StatelessWidget {
 
   void _showRejectDialog(BuildContext context, String expenseId) {
     final controller = TextEditingController();
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Reject Expense'),

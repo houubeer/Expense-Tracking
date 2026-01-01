@@ -470,7 +470,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   void _showExpenseDetail(service.ExpenseWithCategory item) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => ExpenseDetailDialog(
         expenseWithCategory: item,
@@ -479,7 +479,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   void _showEditExpenseDialog(service.ExpenseWithCategory item) {
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => _EditExpenseDialog(
@@ -499,7 +499,7 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
   }
 
   void _confirmDelete(service.ExpenseWithCategory item) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.surface,

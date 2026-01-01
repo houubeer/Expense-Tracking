@@ -112,7 +112,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   }
 
   void _handleAddCategory() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AddCategoryDialog(
         onAdd: (name, budget, color, iconCodePoint) async {
@@ -136,7 +136,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
 
   void _handleEditCategory(Category category) {
     final categoryRepository = ref.read(categoryRepositoryProvider);
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => EditCategoryDialog(
         categoryRepository: categoryRepository,
@@ -147,7 +147,7 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
   }
 
   void _handleDeleteCategory(Category category) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => DeleteCategoryDialog(
         category: category,
