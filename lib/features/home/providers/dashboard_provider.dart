@@ -14,6 +14,8 @@ class DashboardState {
   final double dailyAverage;
   final List<ExpenseWithCategory> recentExpenses;
   final List<CategoryBudgetView> budgetData;
+  final double reimbursableTotal;
+  final int reimbursableCount;
 
   const DashboardState({
     required this.activeCategories,
@@ -23,6 +25,8 @@ class DashboardState {
     required this.dailyAverage,
     required this.recentExpenses,
     required this.budgetData,
+    this.reimbursableTotal = 0.0,
+    this.reimbursableCount = 0,
   });
 
   // Computed properties (logic in state, not UI)
@@ -61,6 +65,8 @@ class DashboardState {
       dailyAverage: 0,
       recentExpenses: [],
       budgetData: [],
+      reimbursableTotal: 0,
+      reimbursableCount: 0,
     );
   }
 
@@ -70,6 +76,8 @@ class DashboardState {
     required double totalBudget,
     required double totalExpenses,
     required List<ExpenseWithCategory> expenses,
+    double reimbursableTotal = 0.0,
+    int reimbursableCount = 0,
   }) {
     return DashboardState(
       activeCategories: budgets.length,
@@ -79,6 +87,8 @@ class DashboardState {
       dailyAverage: totalExpenses / 30,
       recentExpenses: expenses.take(10).toList(),
       budgetData: budgets,
+      reimbursableTotal: reimbursableTotal,
+      reimbursableCount: reimbursableCount,
     );
   }
 }

@@ -9,7 +9,9 @@ import 'package:expense_tracking_desktop_app/features/expenses/repositories/expe
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/services/backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
 
@@ -68,4 +70,10 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
     categoryRepository, // Pass same instance for both reader and budget manager
     database,
   );
+});
+
+/// Backup service provider - handles database backup and restore operations
+final backupServiceProvider = Provider<IBackupService>((ref) {
+  final logger = ref.watch(loggerServiceProvider);
+  return BackupService(logger: logger);
 });

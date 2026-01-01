@@ -265,11 +265,63 @@ class _ExpenseRow extends StatelessWidget {
             ),
             Expanded(
               flex: 3,
-              child: Text(
-                item.expense.description,
-                style: AppTextStyles.bodyMedium,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.expense.description,
+                      style: AppTextStyles.bodyMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (item.expense.isReimbursable) ...[
+                    const SizedBox(width: AppSpacing.sm),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.tertiary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(AppSpacing.xs),
+                        border: Border.all(
+                          color: colorScheme.tertiary.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.monetization_on_outlined,
+                            size: 12,
+                            color: colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            'Reimb',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.tertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (item.expense.receiptPath != null) ...[
+                    const SizedBox(width: AppSpacing.sm),
+                    Tooltip(
+                      message: AppStrings.msgReceiptAttached,
+                      child: Icon(
+                        Icons.attachment,
+                        size: 14,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
             Expanded(
