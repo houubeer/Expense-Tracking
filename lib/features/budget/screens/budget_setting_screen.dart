@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/budget/view_models/budget_view_model.dart';
@@ -9,8 +10,8 @@ import 'package:expense_tracking_desktop_app/features/budget/widgets/budget_cate
 import 'package:expense_tracking_desktop_app/features/budget/widgets/add_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/edit_category_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/budget/widgets/delete_category_dialog.dart';
+
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
@@ -123,10 +124,11 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
               color: color,
               iconCodePoint: iconCodePoint,
             );
-            _showSuccessMessage(AppStrings.msgCategoryAdded);
+            _showSuccessMessage(AppLocalizations.of(context)!.msgCategoryAdded);
           } catch (e) {
             if (mounted) {
-              _showErrorMessage('Failed to add category: ${e.toString()}');
+              _showErrorMessage(AppLocalizations.of(context)!
+                  .msgAddCategoryFailed(e.toString()));
             }
           }
         },
@@ -154,10 +156,12 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
         onConfirm: () async {
           try {
             await _viewModel.deleteCategory(category.id);
-            _showSuccessMessage(AppStrings.msgCategoryDeleted);
+            _showSuccessMessage(
+                AppLocalizations.of(context)!.msgCategoryDeleted);
           } catch (e) {
             if (mounted) {
-              _showErrorMessage('Failed to delete category: ${e.toString()}');
+              _showErrorMessage(AppLocalizations.of(context)!
+                  .msgDeleteCategoryFailed(e.toString()));
             }
           }
         },
