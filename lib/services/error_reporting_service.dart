@@ -15,16 +15,6 @@ enum ErrorSeverity {
 
 /// Represents a reported error with full context
 class ErrorReport {
-  final String id;
-  final DateTime timestamp;
-  final String message;
-  final dynamic error;
-  final StackTrace? stackTrace;
-  final ErrorSeverity severity;
-  final String? userId;
-  final String? screenName;
-  final Map<String, dynamic>? context;
-  final bool handled;
 
   ErrorReport({
     required this.id,
@@ -38,6 +28,16 @@ class ErrorReport {
     this.context,
     this.handled = true,
   });
+  final String id;
+  final DateTime timestamp;
+  final String message;
+  final dynamic error;
+  final StackTrace? stackTrace;
+  final ErrorSeverity severity;
+  final String? userId;
+  final String? screenName;
+  final Map<String, dynamic>? context;
+  final bool handled;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -58,7 +58,7 @@ class ErrorReport {
     buffer.writeln('====== ERROR REPORT ======');
     buffer.writeln('ID: $id');
     buffer.writeln(
-        'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp)}');
+        'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp)}',);
     buffer.writeln('Severity: ${severity.name.toUpperCase()}');
     buffer.writeln('Message: $message');
     if (error != null) buffer.writeln('Error: $error');
@@ -76,12 +76,12 @@ class ErrorReport {
 
 /// Service for tracking and reporting errors throughout the application
 class ErrorReportingService extends ChangeNotifier {
+
+  ErrorReportingService(this._logger);
   final LoggerService _logger;
   final List<ErrorReport> _errorHistory = [];
   final int _maxHistorySize = 100;
   File? _errorReportFile;
-
-  ErrorReportingService(this._logger);
 
   /// Initialize error reporting
   Future<void> initialize() async {
@@ -184,7 +184,6 @@ class ErrorReportingService extends ChangeNotifier {
       'UI Error: $action',
       error: error,
       stackTrace: stackTrace,
-      severity: ErrorSeverity.medium,
       screenName: screen,
       context: {
         ...?context,
@@ -263,7 +262,7 @@ class ErrorReportingService extends ChangeNotifier {
       },
     };
 
-    for (var error in _errorHistory) {
+    for (final error in _errorHistory) {
       // Count by severity
       stats['by_severity'][error.severity.name] =
           (stats['by_severity'][error.severity.name] ?? 0) + 1;
@@ -338,13 +337,13 @@ class ErrorReportingService extends ChangeNotifier {
       final buffer = StringBuffer();
       buffer.writeln('========== ERROR HISTORY EXPORT ==========');
       buffer.writeln(
-          'Export Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}');
+          'Export Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',);
       buffer.writeln('Total Errors: ${_errorHistory.length}');
       buffer.writeln('\nStatistics:');
       buffer.writeln(getErrorStatistics().toString());
       buffer.writeln('\n========== ERRORS ==========\n');
 
-      for (var error in _errorHistory) {
+      for (final error in _errorHistory) {
         buffer.writeln(error.toString());
         buffer.writeln();
       }
