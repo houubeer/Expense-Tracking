@@ -1,8 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:expense_tracking_desktop_app/config/supabase_config.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/organization.dart';
@@ -19,9 +16,9 @@ import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 /// - Real-time subscriptions
 /// - Conflict resolution
 class SupabaseService {
+  static final SupabaseService _instance = SupabaseService._internal();
   factory SupabaseService() => _instance;
   SupabaseService._internal();
-  static final SupabaseService _instance = SupabaseService._internal();
 
   final _logger = LoggerService.instance;
   SupabaseClient? _client;
@@ -40,213 +37,6 @@ class SupabaseService {
       _logger.error('Failed to initialize Supabase',
           error: e, stackTrace: stackTrace);
       rethrow;
-    }
-  }
-
-  // =====================================================
-  // EXPORTS - PDF
-  // =====================================================
-
-  /// Export expenses as a PDF file (includes receipts/images when available)
-  /// Returns the local file path on success, or null on failure.
-  Future<String?> exportExpensesAsPdf({
-    String? dateRange,
-    String? categoryName,
-    String? organizationId,
-    bool includeReceipts = true,
-  }) async {
-    try {
-      String? orgId = organizationId;
-      if (orgId == null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
-      }
-      if (orgId == null) throw Exception('Organization not found');
-
-      // Build base query
-      var query = client
-          .from('expenses')
-          .select(
-              'id,expense_date,amount,description,receipt_url,category_id,created_at,updated_at,user_id')
-          .eq('organization_id', orgId);
-
-      // Date range filter (same logic as CSV)
-      final DateTime now = DateTime.now();
-      DateTime? fromDate;
-      if (dateRange == 'Last Month') {
-        fromDate = DateTime(now.year, now.month - 1, now.day);
-      } else if (dateRange == 'Last 3 Months') {
-        fromDate = DateTime(now.year, now.month - 3, now.day);
-      } else if (dateRange == 'Last Year') {
-        fromDate = DateTime(now.year - 1, now.month, now.day);
-      }
-      if (fromDate != null) {
-        query =
-            query.gte('expense_date', fromDate.toIso8601String().split('T')[0]);
-      }
-
-      // Category filter (resolve name -> id)
-      if (categoryName != null && categoryName != 'All Categories') {
-        final catResp = await client
-            .from('categories')
-            .select()
-            .eq('organization_id', orgId)
-            .eq('name', categoryName)
-            .maybeSingle();
-        if (catResp != null && catResp['id'] != null) {
-          query = query.eq('category_id', catResp['id'] as String);
-        }
-      }
-
-      final resp = await query.order('expense_date', ascending: false);
-      final rows = List<Map<String, dynamic>>.from(resp as List);
-
-      // Fetch category names for mapping
-      final categoryIds = rows
-          .map((r) => r['category_id'] as String?)
-          .where((id) => id != null)
-          .cast<String>()
-          .toSet()
-          .toList();
-      final Map<String, String> catMap = {};
-      if (categoryIds.isNotEmpty) {
-        final cats = await client
-            .from('categories')
-            .select()
-            .eq('organization_id', orgId)
-            .order('name');
-        for (final c in cats as List) {
-          final cid = c['id']?.toString() ?? '';
-          if (categoryIds.contains(cid)) {
-            catMap[cid] = c['name'] as String? ?? '';
-          }
-        }
-      }
-
-      // Build PDF
-      final doc = pw.Document();
-
-      // Title page / header
-      doc.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          build: (pw.Context ctx) {
-            final header = pw.Header(
-              level: 0,
-              child: pw.Text('Expenses Export',
-                  style: const pw.TextStyle(fontSize: 24)),
-            );
-
-            // Table rows
-            final tableHeaders = [
-              'ID',
-              'Date',
-              'Amount',
-              'Category',
-              'Description',
-              'Receipt',
-              'User',
-            ];
-
-            final tableData = rows.map((r) {
-              final id = r['id']?.toString() ?? '';
-              final date = r['expense_date']?.toString() ?? '';
-              final amount = r['amount']?.toString() ?? '';
-              final catId = r['category_id'] as String?;
-              final category = catId != null ? (catMap[catId] ?? catId) : '';
-              final description = r['description']?.toString() ?? '';
-              final receipt = r['receipt_url']?.toString() ?? '';
-              final userId = r['user_id']?.toString() ?? '';
-              return [id, date, amount, category, description, receipt, userId];
-            }).toList();
-
-            return [
-              header,
-              pw.SizedBox(height: 8),
-              pw.Text('Generated: ${DateTime.now().toIso8601String()}',
-                  style: const pw.TextStyle(fontSize: 10)),
-              pw.SizedBox(height: 12),
-              pw.TableHelper.fromTextArray(
-                headers: tableHeaders,
-                data: tableData,
-                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
-                cellAlignment: pw.Alignment.centerLeft,
-              ),
-            ];
-          },
-        ),
-      );
-
-      // Add individual receipt pages (if requested)
-      if (includeReceipts) {
-        for (final r in rows) {
-          final receiptUrl = r['receipt_url']?.toString();
-          if (receiptUrl == null || receiptUrl.isEmpty) continue;
-
-          try {
-            // Download image bytes (HttpClient)
-            final uri = Uri.parse(receiptUrl);
-            final httpClient = HttpClient();
-            final request = await httpClient.getUrl(uri);
-            final response = await request.close();
-            if (response.statusCode == 200) {
-              final bytes = await response.fold<List<int>>(
-                  [], (prev, element) => prev..addAll(element));
-              final imgData = Uint8List.fromList(bytes);
-
-              final img = pw.MemoryImage(imgData);
-
-              // Add a page with the receipt image and some metadata
-              doc.addPage(
-                pw.Page(
-                  pageFormat: PdfPageFormat.a4,
-                  build: (pw.Context ctx) {
-                    return pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.start,
-                      children: [
-                        pw.Text('Receipt for Expense ID: ${r['id']}',
-                            style: const pw.TextStyle(fontSize: 16)),
-                        pw.SizedBox(height: 8),
-                        pw.Text('Date: ${r['expense_date']?.toString() ?? ''}'),
-                        pw.Text('Amount: ${r['amount']?.toString() ?? ''}'),
-                        pw.SizedBox(height: 12),
-                        pw.Center(child: pw.Image(img)),
-                        pw.SizedBox(height: 12),
-                        pw.Text(
-                            'Description: ${r['description']?.toString() ?? ''}'),
-                      ],
-                    );
-                  },
-                ),
-              );
-            }
-          } catch (e) {
-            // Ignore individual image failures but log
-            _logger.warning(
-                'Failed to download/attach receipt image: $receiptUrl',
-                error: e);
-          }
-        }
-      }
-
-      // Save PDF to Downloads
-      final pdfBytes = await doc.save();
-      final userProfileEnv = Platform.environment['USERPROFILE'] ?? '.';
-      final downloadsDir = '$userProfileEnv${Platform.pathSeparator}Downloads';
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final fileName = 'expenses-export-$timestamp.pdf';
-      final path = '$downloadsDir${Platform.pathSeparator}$fileName';
-
-      final file = File(path);
-      await file.create(recursive: true);
-      await file.writeAsBytes(pdfBytes, flush: true);
-
-      _logger.info('Expenses exported to PDF: $path');
-      return path;
-    } catch (e, st) {
-      _logger.error('Failed to export expenses as PDF',
-          error: e, stackTrace: st);
-      return null;
     }
   }
 
@@ -275,11 +65,9 @@ class SupabaseService {
     required String fullName,
   }) async {
     try {
-      // Trim email to avoid accidental leading/trailing whitespace
-      final trimmedEmail = email.trim();
       // Create auth user
       final authResponse = await client.auth.signUp(
-        email: trimmedEmail,
+        email: email,
         password: password,
       );
 
@@ -287,37 +75,28 @@ class SupabaseService {
         throw Exception('Failed to create user account');
       }
 
-      // Use the newly created auth user for RLS-compliant inserts
-      final userId = authResponse.user!.id;
+      // Create organization (pending approval)
+      final orgResponse = await client
+          .from('organizations')
+          .insert({
+            'name': organizationName,
+            'manager_email': email,
+            'status': 'pending',
+          })
+          .select()
+          .single();
 
-      // Create user profile first
+      // Create user profile
       await client.from('user_profiles').insert({
-        'id': userId,
-        'email': trimmedEmail,
+        'id': authResponse.user!.id,
+        'organization_id': orgResponse['id'],
+        'email': email,
         'full_name': fullName,
         'role': 'manager',
         'is_active': false, // Will be activated when org is approved
       });
 
-      // Create organization (pending approval) with manager_name from full_name
-      final orgResponse = await client
-          .from('organizations')
-          .insert({
-            'name': organizationName,
-            'manager_email': trimmedEmail,
-            'manager_name': fullName,
-            'status': 'pending',
-            'created_by': userId,
-          })
-          .select()
-          .single();
-
-      // Update user profile with organization_id
-      await client
-          .from('user_profiles')
-          .update({'organization_id': orgResponse['id']}).eq('id', userId);
-
-      _logger.info('Manager signup successful: $trimmedEmail');
+      _logger.info('Manager signup successful: $email');
 
       return {
         'success': true,
@@ -361,8 +140,7 @@ class SupabaseService {
       // Check if user is active
       if (!userProfile.isActive && !userProfile.isOwner) {
         throw Exception(
-          'Your account is not yet activated. Please wait for approval.',
-        );
+            'Your account is not yet activated. Please wait for approval.');
       }
 
       // Create audit log
@@ -411,191 +189,9 @@ class SupabaseService {
     }
   }
 
-  /// Request password reset email (only for managers/owners)
-  Future<Map<String, dynamic>> requestPasswordReset({
-    required String email,
-  }) async {
-    try {
-      // Check if user exists and is a manager or owner
-      final profileResponse = await client
-          .from('user_profiles')
-          .select('role')
-          .eq('email', email)
-          .maybeSingle();
-
-      if (profileResponse == null) {
-        // Don't reveal if user exists - security best practice
-        return {
-          'success': true,
-          'message':
-              'If an account exists with this email, you will receive reset instructions.',
-        };
-      }
-
-      final role = profileResponse['role'] as String?;
-      if (role == 'employee') {
-        return {
-          'success': false,
-          'message':
-              'Employees cannot reset their own password. Please contact your manager.',
-        };
-      }
-
-      // Send password reset email
-      await client.auth.resetPasswordForEmail(email);
-
-      _logger.info('Password reset requested for: $email');
-
-      return {
-        'success': true,
-        'message': 'Password reset instructions sent to your email.',
-      };
-    } catch (e, stackTrace) {
-      _logger.error('Password reset request failed',
-          error: e, stackTrace: stackTrace);
-      return {
-        'success': false,
-        'message': _getErrorMessage(e),
-      };
-    }
-  }
-
-  /// Reset password with new password (after clicking email link)
-  Future<Map<String, dynamic>> resetPassword({
-    required String newPassword,
-  }) async {
-    try {
-      await client.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-
-      _logger.info('Password reset successful');
-
-      return {
-        'success': true,
-        'message': 'Password has been reset successfully.',
-      };
-    } catch (e, stackTrace) {
-      _logger.error('Password reset failed', error: e, stackTrace: stackTrace);
-      return {
-        'success': false,
-        'message': _getErrorMessage(e),
-      };
-    }
-  }
-
-  /// Reset employee password (manager only)
-  Future<Map<String, dynamic>> resetEmployeePassword({
-    required String employeeId,
-    required String newPassword,
-  }) async {
-    try {
-      // Verify current user is a manager
-      final currentProfile = await getCurrentUserProfile();
-      if (currentProfile == null) {
-        return {'success': false, 'message': 'Not authenticated'};
-      }
-
-      final currentRole = currentProfile['role'] as String?;
-      if (currentRole != 'manager' && currentRole != 'owner') {
-        return {
-          'success': false,
-          'message': 'Only managers can reset employee passwords.',
-        };
-      }
-
-      // Get employee profile to verify they belong to same org
-      final employeeProfile = await client
-          .from('user_profiles')
-          .select()
-          .eq('id', employeeId)
-          .single();
-
-      // Managers can only reset passwords for employees in their organization
-      if (currentRole == 'manager') {
-        final currentOrgId = currentProfile['organization_id'] as String?;
-        final employeeOrgId = employeeProfile['organization_id'] as String?;
-
-        if (currentOrgId != employeeOrgId) {
-          return {
-            'success': false,
-            'message':
-                'You can only reset passwords for employees in your organization.',
-          };
-        }
-
-        final employeeRole = employeeProfile['role'] as String?;
-        if (employeeRole != 'employee') {
-          return {
-            'success': false,
-            'message': 'You can only reset passwords for employees.',
-          };
-        }
-      }
-
-      // Use admin API to update user password
-      await client.auth.admin.updateUserById(
-        employeeId,
-        attributes: AdminUserAttributes(password: newPassword),
-      );
-
-      _logger.info('Employee password reset by manager: $employeeId');
-
-      return {
-        'success': true,
-        'message': 'Employee password has been reset successfully.',
-      };
-    } catch (e, stackTrace) {
-      _logger.error('Employee password reset failed',
-          error: e, stackTrace: stackTrace);
-      return {
-        'success': false,
-        'message': _getErrorMessage(e),
-      };
-    }
-  }
-
   // =====================================================
   // USER PROFILE
   // =====================================================
-
-  /// Update the current user's password.
-  /// Returns true on success.
-  Future<bool> updatePassword(String newPassword) async {
-    try {
-      if (currentUser == null) throw Exception('Not authenticated');
-
-      // Use auth client to update the user's password
-      await client.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
-
-      _logger.info('User password updated: ${currentUser!.id}');
-      return true;
-    } catch (e, st) {
-      _logger.error('Failed to update password', error: e, stackTrace: st);
-      return false;
-    }
-  }
-
-  /// Delete all data owned by the current user (expenses).
-  /// This is intentionally conservative: it only removes rows directly
-  /// linked to the user's id to avoid accidentally wiping organization-wide data.
-  Future<bool> deleteAllUserData() async {
-    try {
-      if (currentUser == null) throw Exception('Not authenticated');
-      final uid = currentUser!.id;
-
-      // Delete user's expenses
-      await client.from('expenses').delete().eq('user_id', uid);
-
-      _logger.info('Deleted all expense data for user: $uid');
-      return true;
-    } catch (e, st) {
-      _logger.error('Failed to delete user data', error: e, stackTrace: st);
-      return false;
-    }
-  }
 
   /// Get user profile by ID
   Future<UserProfile?> getUserProfile(String userId) async {
@@ -605,12 +201,58 @@ class SupabaseService {
 
       return UserProfile.fromJson(response);
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get user profile',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to get user profile', error: e, stackTrace: stackTrace);
       return null;
+    }
+  }
+
+  /// Get current user profile
+  Future<UserProfile?> getCurrentUserProfile() async {
+    if (currentUser == null) return null;
+    return getUserProfile(currentUser!.id);
+  }
+
+  /// Get organization members
+  Future<List<UserProfile>> getOrganizationMembers(String organizationId) async {
+    try {
+      final response = await client
+          .from('user_profiles')
+          .select()
+          .eq('organization_id', organizationId);
+
+      return response.map((json) => UserProfile.fromJson(json)).toList();
+    } catch (e, stackTrace) {
+      _logger.error('Failed to get organization members',
+          error: e, stackTrace: stackTrace);
+      return [];
+    }
+  }
+
+  /// Remove an employee from the organization
+  Future<bool> removeEmployee(String userId) async {
+    try {
+      await client.from('user_profiles').delete().eq('id', userId);
+
+      _logger.info('Employee removed: $userId');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error('Failed to remove employee', error: e, stackTrace: stackTrace);
+      return false;
+    }
+  }
+
+  /// Update employee status (active/inactive)
+  Future<bool> updateEmployeeStatus(String userId, bool isActive) async {
+    try {
+      await client
+          .from('user_profiles')
+          .update({'is_active': isActive}).eq('id', userId);
+
+      _logger.info('Employee status updated: $userId -> $isActive');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error('Failed to update employee status', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -625,47 +267,8 @@ class SupabaseService {
       _logger.info('User profile updated: ${profile.id}');
       return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to update user profile',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      return false;
-    }
-  }
-
-  /// Get notification settings for the current user (stored in
-  /// user_profiles.settings -> notifications)
-  Future<Map<String, dynamic>?> getNotificationSettingsForCurrentUser() async {
-    try {
-      final profile = await getCurrentUserProfile();
-      if (profile == null) return null;
-      final settings = (profile['settings'] as Map?)?.cast<String, dynamic>();
-      if (settings == null) return null;
-      final notifications = (settings['notifications'] as Map?)?.cast<String, dynamic>();
-      return notifications;
-    } catch (e, st) {
-      _logger.error('Failed to get notification settings', error: e, stackTrace: st);
-      return null;
-    }
-  }
-
-  /// Update the notification settings for the current user. This merges the
-  /// provided `notifications` map into the existing `settings` JSON column
-  /// under the `notifications` key.
-  Future<bool> updateNotificationSettingsForCurrentUser(Map<String, dynamic> notifications) async {
-    try {
-      if (currentUser == null) throw Exception('Not authenticated');
-      final profile = await getCurrentUserProfile();
-      final existingSettings = (profile?['settings'] as Map?)?.cast<String, dynamic>() ?? {};
-      final merged = Map<String, dynamic>.from(existingSettings);
-      merged['notifications'] = notifications;
-
-      await client.from('user_profiles').update({'settings': merged}).eq('id', currentUser!.id);
-      _logger.info('Updated notification settings for user: ${currentUser!.id}');
-      return true;
-    } catch (e, st) {
-      _logger.error('Failed to update notification settings', error: e, stackTrace: st);
+      _logger.error('Failed to update user profile',
+          error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -732,11 +335,7 @@ class SupabaseService {
 
       return Organization.fromJson(response);
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get organization',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to get organization', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -750,15 +349,12 @@ class SupabaseService {
           .eq('status', 'pending')
           .order('created_at', ascending: false);
 
-      return (response as List)
+      return (response as List<dynamic>)
           .map((json) => Organization.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get pending organizations',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to get pending organizations',
+          error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -780,10 +376,9 @@ class SupabaseService {
           .eq('role', 'manager')
           .single();
 
-      await client.from('user_profiles').update({'is_active': true}).eq(
-        'id',
-        managerResponse['id'] as String,
-      );
+      await client
+          .from('user_profiles')
+          .update({'is_active': true}).eq('id', managerResponse['id'] as Object);
 
       // Create audit log
       await _createAuditLog(
@@ -795,11 +390,8 @@ class SupabaseService {
       _logger.info('Organization approved: $organizationId');
       return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to approve organization',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to approve organization',
+          error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -821,11 +413,8 @@ class SupabaseService {
       _logger.info('Organization rejected: $organizationId');
       return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to reject organization',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to reject organization',
+          error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -884,11 +473,7 @@ class SupabaseService {
         'operation': operation,
       };
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to sync category',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to sync category', error: e, stackTrace: stackTrace);
       return {
         'success': false,
         'message': _getErrorMessage(e),
@@ -897,37 +482,23 @@ class SupabaseService {
   }
 
   /// Get all categories for organization
-  Future<List<Map<String, dynamic>>> getCategories([
-    String? organizationId,
-  ]) async {
+  Future<List<Map<String, dynamic>>> getCategories(
+      String organizationId) async {
     try {
-      String? orgId = organizationId;
-      if (orgId == null && currentUser != null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
-      }
-      if (orgId == null) {
-        return [];
-      }
-
       final response = await client
           .from('categories')
           .select()
-          .eq('organization_id', orgId)
+          .eq('organization_id', organizationId)
           .order('name');
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get categories',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to get categories', error: e, stackTrace: stackTrace);
       return [];
     }
   }
 
-  /// Create a new category on server
+  /// Create a new category
   Future<String?> createCategory({
     required String name,
     required String icon,
@@ -935,10 +506,9 @@ class SupabaseService {
   }) async {
     try {
       final profile = await getCurrentUserProfile();
-      if (profile == null) throw Exception('User profile not found');
-
-      final orgId = profile['organization_id'] as String?;
-      if (orgId == null) throw Exception('Organization not found');
+      if (profile == null || profile.organizationId == null) {
+        throw Exception('User profile or organization not found');
+      }
 
       final response = await client
           .from('categories')
@@ -946,60 +516,58 @@ class SupabaseService {
             'name': name,
             'icon': icon,
             'color': color,
-            'organization_id': orgId,
-            'user_id': currentUser!.id,
+            'organization_id': profile.organizationId,
+            'created_by': currentUser!.id,
           })
           .select()
           .single();
 
-      return response['id'] as String;
+      return response['id']?.toString();
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to create category',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to create category', error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
-  /// Update a category on server
-  Future<void> updateCategory({
+  /// Update an existing category
+  Future<bool> updateCategory({
     required String id,
     String? name,
     String? icon,
     String? color,
   }) async {
     try {
-      final updates = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (name != null) updates['name'] = name;
-      if (icon != null) updates['icon'] = icon;
-      if (color != null) updates['color'] = color;
+      final updateData = <String, dynamic>{};
+      if (name != null) updateData['name'] = name;
+      if (icon != null) updateData['icon'] = icon;
+      if (color != null) updateData['color'] = color;
 
-      await client.from('categories').update(updates).eq('id', id);
+      if (updateData.isEmpty) return true;
+
+      await client
+          .from('categories')
+          .update(updateData)
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to update category',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
+      _logger.error('Failed to update category', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
-  /// Delete a category from server
-  Future<void> deleteCategory(String id) async {
+  /// Delete a category
+  Future<bool> deleteCategory(String id) async {
     try {
-      await client.from('categories').delete().eq('id', id);
+      await client
+          .from('categories')
+          .delete()
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to delete category',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
+      _logger.error('Failed to delete category', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -1007,20 +575,20 @@ class SupabaseService {
   // EXPENSES
   // =====================================================
 
-  /// Create a new expense on server
+  /// Create a new expense
   Future<String?> createExpense({
     required String categoryId,
     required double amount,
-    required DateTime expenseDate,
     String? description,
+    required DateTime expenseDate,
     String? receiptUrl,
+    bool isReimbursable = false,
   }) async {
     try {
       final profile = await getCurrentUserProfile();
-      if (profile == null) throw Exception('User profile not found');
-
-      final orgId = profile['organization_id'] as String?;
-      if (orgId == null) throw Exception('Organization not found');
+      if (profile == null || profile.organizationId == null) {
+        throw Exception('User profile or organization not found');
+      }
 
       final response = await client
           .from('expenses')
@@ -1028,68 +596,67 @@ class SupabaseService {
             'category_id': categoryId,
             'amount': amount,
             'description': description,
-            'expense_date': expenseDate.toIso8601String().split('T')[0],
+            'date': expenseDate.toIso8601String(),
             'receipt_url': receiptUrl,
-            'organization_id': orgId,
-            'user_id': currentUser!.id,
+            'is_reimbursable': isReimbursable,
+            'organization_id': profile.organizationId,
+            'created_by': currentUser!.id,
           })
           .select()
           .single();
 
-      return response['id'] as String;
+      return response['id']?.toString();
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to create expense',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to create expense', error: e, stackTrace: stackTrace);
       return null;
     }
   }
 
-  /// Update an expense on server
-  Future<void> updateExpense({
+  /// Update an existing expense
+  Future<bool> updateExpense({
     required String id,
     String? categoryId,
     double? amount,
     String? description,
     DateTime? expenseDate,
     String? receiptUrl,
+    bool? isReimbursable,
   }) async {
     try {
-      final updates = <String, dynamic>{
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      if (categoryId != null) updates['category_id'] = categoryId;
-      if (amount != null) updates['amount'] = amount;
-      if (description != null) updates['description'] = description;
-      if (expenseDate != null) {
-        updates['expense_date'] = expenseDate.toIso8601String().split('T')[0];
-      }
-      if (receiptUrl != null) updates['receipt_url'] = receiptUrl;
+      final updateData = <String, dynamic>{};
+      if (categoryId != null) updateData['category_id'] = categoryId;
+      if (amount != null) updateData['amount'] = amount;
+      if (description != null) updateData['description'] = description;
+      if (expenseDate != null) updateData['date'] = expenseDate.toIso8601String();
+      if (receiptUrl != null) updateData['receipt_url'] = receiptUrl;
+      if (isReimbursable != null) updateData['is_reimbursable'] = isReimbursable;
 
-      await client.from('expenses').update(updates).eq('id', id);
+      if (updateData.isEmpty) return true;
+
+      await client
+          .from('expenses')
+          .update(updateData)
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to update expense',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
+      _logger.error('Failed to update expense', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
-  /// Delete an expense from server
-  Future<void> deleteExpense(String id) async {
+  /// Delete an expense
+  Future<bool> deleteExpense(String id) async {
     try {
-      await client.from('expenses').delete().eq('id', id);
+      await client
+          .from('expenses')
+          .delete()
+          .eq('id', id);
+
+      return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to delete expense',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
+      _logger.error('Failed to delete expense', error: e, stackTrace: stackTrace);
+      return false;
     }
   }
 
@@ -1151,170 +718,32 @@ class SupabaseService {
     }
   }
 
-  /// Get all expenses for organization
-  Future<List<Map<String, dynamic>>> getExpenses([
-    String? organizationId,
-  ]) async {
+  /// Get all expenses for organization with optional date range filtering
+  Future<List<Map<String, dynamic>>> getExpenses(
+    String organizationId, {
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     try {
-      String? orgId = organizationId;
-      if (orgId == null && currentUser != null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
+      var query = client
+          .from('expenses')
+          .select('*, receipts(*)')
+          .eq('organization_id', organizationId);
+
+      // Apply date range filtering if provided
+      if (startDate != null) {
+        query = query.gte('date', startDate.toIso8601String());
       }
-      if (orgId == null) {
-        return [];
+      if (endDate != null) {
+        query = query.lte('date', endDate.toIso8601String());
       }
 
-      final response = await client
-          .from('expenses')
-          .select()
-          .eq('organization_id', orgId)
-          .order('expense_date', ascending: false);
+      final response = await query.order('date', ascending: false);
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
       _logger.error('Failed to get expenses', error: e, stackTrace: stackTrace);
       return [];
-    }
-  }
-
-  /// Export expenses as CSV file and save to the user's Downloads folder.
-  /// Returns the local file path on success, or null on failure.
-  Future<String?> exportExpensesAsCsv({
-    String dateRange = 'All Time',
-    String? categoryName,
-    String? organizationId,
-  }) async {
-    try {
-      String? orgId = organizationId;
-      if (orgId == null) {
-        final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
-      }
-      if (orgId == null) throw Exception('Organization not found');
-
-      // Build base query
-      var query = client
-          .from('expenses')
-          .select(
-            'id,expense_date,amount,description,receipt_url,category_id,created_at,updated_at,user_id',
-          )
-          .eq('organization_id', orgId);
-
-      // Date range filter
-      final DateTime now = DateTime.now();
-      DateTime? fromDate;
-      if (dateRange == 'Last Month') {
-        fromDate = DateTime(now.year, now.month - 1, now.day);
-      } else if (dateRange == 'Last 3 Months') {
-        fromDate = DateTime(now.year, now.month - 3, now.day);
-      } else if (dateRange == 'Last Year') {
-        fromDate = DateTime(now.year - 1, now.month, now.day);
-      }
-      if (fromDate != null) {
-        query =
-            query.gte('expense_date', fromDate.toIso8601String().split('T')[0]);
-      }
-
-      // Category filter (resolve name -> id)
-      if (categoryName != null && categoryName != 'All Categories') {
-        final catResp = await client
-            .from('categories')
-            .select()
-            .eq('organization_id', orgId)
-            .eq('name', categoryName)
-            .maybeSingle();
-        if (catResp != null && catResp['id'] != null) {
-          query = query.eq('category_id', catResp['id'] as String);
-        }
-      }
-
-      final resp = await query.order('expense_date', ascending: false);
-      final rows = List<Map<String, dynamic>>.from(resp as List);
-
-      // Fetch category names for mapping
-      final categoryIds = rows
-          .map((r) => r['category_id'] as String?)
-          .where((id) => id != null)
-          .cast<String>()
-          .toSet()
-          .toList();
-      final Map<String, String> catMap = {};
-      if (categoryIds.isNotEmpty) {
-        // Supabase client version may not expose a direct `in_` helper on the
-        // PostgrestFilterBuilder in this SDK; fetch categories for the
-        // organization and filter locally by the set of ids.
-        final cats = await client
-            .from('categories')
-            .select()
-            .eq('organization_id', orgId)
-            .order('name');
-        for (final c in cats as List) {
-          final cid = c['id']?.toString() ?? '';
-          if (categoryIds.contains(cid)) {
-            catMap[cid] = c['name'] as String? ?? '';
-          }
-        }
-      }
-
-      // Build CSV
-      final sb = StringBuffer();
-      sb.writeln(
-        'id,expense_date,amount,category,description,receipt_url,created_at,updated_at,user_id',
-      );
-      String escape(String? v) {
-        if (v == null) return '';
-        final s = v.replaceAll('"', '""');
-        if (s.contains(',') || s.contains('\n') || s.contains('"')) {
-          return '"$s"';
-        }
-        return s;
-      }
-
-      for (final r in rows) {
-        final id = r['id']?.toString() ?? '';
-        final date = r['expense_date']?.toString() ?? '';
-        final amount = r['amount']?.toString() ?? '';
-        final catId = r['category_id'] as String?;
-        final category = catId != null ? (catMap[catId] ?? catId) : '';
-        final description = r['description']?.toString() ?? '';
-        final receipt = r['receipt_url']?.toString() ?? '';
-        final createdAt = r['created_at']?.toString() ?? '';
-        final updatedAt = r['updated_at']?.toString() ?? '';
-        final userId = r['user_id']?.toString() ?? '';
-
-        sb.writeln(
-          [
-            escape(id),
-            escape(date),
-            escape(amount),
-            escape(category),
-            escape(description),
-            escape(receipt),
-            escape(createdAt),
-            escape(updatedAt),
-            escape(userId),
-          ].join(','),
-        );
-      }
-
-      // Save to Downloads
-      final userProfile = Platform.environment['USERPROFILE'] ?? '.';
-      final downloadsDir = '$userProfile${Platform.pathSeparator}Downloads';
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final fileName = 'expenses-export-$timestamp.csv';
-      final path = '$downloadsDir${Platform.pathSeparator}$fileName';
-
-      final file = File(path);
-      await file.create(recursive: true);
-      await file.writeAsString(sb.toString(), flush: true);
-
-      _logger.info('Expenses exported to CSV: $path');
-      return path;
-    } catch (e, stackTrace) {
-      _logger.error('Failed to export expenses as CSV',
-          error: e, stackTrace: stackTrace);
-      return null;
     }
   }
 
@@ -1344,11 +773,7 @@ class SupabaseService {
       _logger.info('Receipt uploaded: $storagePath');
       return publicUrl;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to upload receipt',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to upload receipt', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -1370,11 +795,7 @@ class SupabaseService {
       _logger.info('Receipt downloaded: $localPath');
       return file;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to download receipt',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to download receipt', error: e, stackTrace: stackTrace);
       return null;
     }
   }
@@ -1390,11 +811,7 @@ class SupabaseService {
       _logger.info('Receipt deleted: $storagePath');
       return true;
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to delete receipt',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to delete receipt', error: e, stackTrace: stackTrace);
       return false;
     }
   }
@@ -1406,8 +823,8 @@ class SupabaseService {
   /// Create audit log entry
   Future<void> _createAuditLog({
     required String userId,
-    required String action,
     String? organizationId,
+    required String action,
     String? tableName,
     int? recordId,
     Map<String, dynamic>? oldData,
@@ -1444,11 +861,7 @@ class SupabaseService {
 
       return List<Map<String, dynamic>>.from(response);
     } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get audit logs',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      _logger.error('Failed to get audit logs', error: e, stackTrace: stackTrace);
       return [];
     }
   }
@@ -1460,9 +873,9 @@ class SupabaseService {
   /// Subscribe to category changes
   RealtimeChannel subscribeToCategories({
     required String organizationId,
-    required void Function(Map<String, dynamic>) onInsert,
-    required void Function(Map<String, dynamic>) onUpdate,
-    required void Function(Map<String, dynamic>) onDelete,
+    required Function(Map<String, dynamic>) onInsert,
+    required Function(Map<String, dynamic>) onUpdate,
+    required Function(Map<String, dynamic>) onDelete,
   }) {
     return client
         .channel('categories:$organizationId')
@@ -1505,9 +918,9 @@ class SupabaseService {
   /// Subscribe to expense changes
   RealtimeChannel subscribeToExpenses({
     required String organizationId,
-    required void Function(Map<String, dynamic>) onInsert,
-    required void Function(Map<String, dynamic>) onUpdate,
-    required void Function(Map<String, dynamic>) onDelete,
+    required Function(Map<String, dynamic>) onInsert,
+    required Function(Map<String, dynamic>) onUpdate,
+    required Function(Map<String, dynamic>) onDelete,
   }) {
     return client
         .channel('expenses:$organizationId')
@@ -1551,117 +964,6 @@ class SupabaseService {
   // UTILITIES
   // =====================================================
 
-  /// Get current user profile
-  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
-    if (currentUser == null) return null;
-    try {
-      final response = await client
-          .from('user_profiles')
-          .select()
-          .eq('id', currentUser!.id)
-          .single();
-      return response;
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get current user profile',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      return null;
-    }
-  }
-
-  /// Get approved organizations
-  Future<List<Map<String, dynamic>>> getApprovedOrganizations() async {
-    try {
-      final response = await client
-          .from('organizations')
-          .select()
-          .eq('status', 'approved')
-          .order('created_at', ascending: false);
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get approved organizations',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      return [];
-    }
-  }
-
-  /// Get rejected organizations
-  Future<List<Map<String, dynamic>>> getRejectedOrganizations() async {
-    try {
-      final response = await client
-          .from('organizations')
-          .select()
-          .eq('status', 'rejected')
-          .order('created_at', ascending: false);
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get rejected organizations',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      return [];
-    }
-  }
-
-  /// Get organization members
-  Future<List<Map<String, dynamic>>> getOrganizationMembers(
-    String organizationId,
-  ) async {
-    try {
-      final response = await client
-          .from('user_profiles')
-          .select()
-          .eq('organization_id', organizationId)
-          .order('full_name');
-      return List<Map<String, dynamic>>.from(response);
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to get organization members',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      return [];
-    }
-  }
-
-  /// Remove employee
-  Future<void> removeEmployee(String userId) async {
-    try {
-      await client.from('user_profiles').delete().eq('id', userId);
-      _logger.info('Employee removed: $userId');
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to remove employee',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
-    }
-  }
-
-  /// Update employee status
-  Future<void> updateEmployeeStatus(String userId, bool isActive) async {
-    try {
-      await client
-          .from('user_profiles')
-          .update({'is_active': isActive}).eq('id', userId);
-      _logger.info('Employee status updated: $userId -> $isActive');
-    } catch (e, stackTrace) {
-      _logger.error(
-        'Failed to update employee status',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      rethrow;
-    }
-  }
-
   /// Get user-friendly error message
   String _getErrorMessage(dynamic error) {
     if (error is AuthException) {
@@ -1682,3 +984,4 @@ class SupabaseService {
     _logger.info('Supabase service disposed');
   }
 }
+

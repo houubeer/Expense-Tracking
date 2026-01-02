@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
+  final int? preSelectedCategoryId;
 
   const AddExpenseScreen({
     this.preSelectedCategoryId,
     super.key,
   });
-  final int? preSelectedCategoryId;
 
   @override
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -27,15 +27,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+        allowMultiple: true, // Enable multiple file selection
       );
 
       if (result != null && result.files.isNotEmpty) {
-        final filePath = result.files.first.path;
-        if (filePath != null) {
+        final filePaths = result.files
+            .where((f) => f.path != null)
+            .map((f) => f.path!)
+            .toList();
+
+        if (filePaths.isNotEmpty) {
           ref
               .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
-                  .notifier,)
-              .updateReceiptPath(filePath);
+                  .notifier)
+              .addReceipts(filePaths);
         }
       }
     } catch (e) {
@@ -53,17 +58,16 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final localizations = AppLocalizations.of(context)!;
     ref.listen<AddExpenseState>(
       addExpenseViewModelProvider(widget.preSelectedCategoryId),
       (previous, next) {
         if (next.isSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(next.successMessage ?? localizations.msgExpenseAdded),
+              content: Text(next.successMessage ?? AppStrings.msgExpenseAdded),
               backgroundColor: colorScheme.tertiary,
               action: SnackBarAction(
-                label: localizations.navViewExpenses,
+                label: AppStrings.navViewExpenses,
                 textColor: Colors.white,
                 onPressed: () => context.go(AppRoutes.viewExpenses),
               ),
@@ -72,7 +76,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           // Reset form after successful submission
           ref
               .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
-                  .notifier,)
+                  .notifier)
               .resetForm(preSelectedCategoryId: widget.preSelectedCategoryId);
         } else if (next.isError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +92,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final state =
         ref.watch(addExpenseViewModelProvider(widget.preSelectedCategoryId));
     final viewModel = ref.read(
-        addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier,);
+        addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier);
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerLowest,
@@ -104,8 +108,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           isReimbursable: state.isReimbursable,
           onReimbursableChanged: viewModel.updateReimbursable,
           receiptPath: state.receiptPath,
+          receipts: state.receipts, // Pass receipts list
           onAttachReceipt: _pickReceiptFile,
           onRemoveReceipt: viewModel.removeReceipt,
+          onRemoveReceiptAt: viewModel.removeReceiptAt, // Pass new method
           onSubmit: state.isSubmitting
               ? null
               : () async {
@@ -123,7 +129,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                   }
                 },
           onReset: () => viewModel.resetForm(
-              preSelectedCategoryId: widget.preSelectedCategoryId,),
+              preSelectedCategoryId: widget.preSelectedCategoryId),
           isSubmitting: state.isSubmitting,
         ),
       ),

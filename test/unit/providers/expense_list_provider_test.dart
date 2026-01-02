@@ -29,19 +29,23 @@ void main() {
       });
 
       test('updates date filter', () {
-        final date = DateTime(2024, 1, 15);
-        const filters = ExpenseFilters(selectedDate: null);
-        final updated = filters.copyWith(selectedDate: date);
+        final startDate = DateTime(2024, 1, 1);
+        final endDate = DateTime(2024, 1, 31);
+        const filters = ExpenseFilters();
+        final updated = filters.copyWith(startDate: startDate, endDate: endDate);
         
-        expect(updated.selectedDate, equals(date));
+        expect(updated.startDate, equals(startDate));
+        expect(updated.endDate, equals(endDate));
       });
 
-      test('clears date filter when clearDate is true', () {
-        final date = DateTime(2024, 1, 15);
-        final filters = ExpenseFilters(selectedDate: date);
-        final updated = filters.copyWith(clearDate: true);
+      test('clears date filter', () {
+        final startDate = DateTime(2024, 1, 1);
+        final endDate = DateTime(2024, 1, 31);
+        final filters = ExpenseFilters(startDate: startDate, endDate: endDate);
+        final updated = filters.copyWith(clearStartDate: true, clearEndDate: true);
         
-        expect(updated.selectedDate, isNull);
+        expect(updated.startDate, isNull);
+        expect(updated.endDate, isNull);
       });
 
       test('updates reimbursable filter', () {
@@ -56,11 +60,13 @@ void main() {
       });
 
       test('preserves other fields when updating one', () {
-        final date = DateTime(2024, 1, 15);
+        final startDate = DateTime(2024, 1, 1);
+        final endDate = DateTime(2024, 1, 31);
         final filters = ExpenseFilters(
           searchQuery: 'test',
           selectedCategoryId: 3,
-          selectedDate: date,
+          startDate: startDate,
+          endDate: endDate,
           reimbursableFilter: ReimbursableFilter.nonReimbursable,
         );
         
@@ -68,7 +74,8 @@ void main() {
         
         expect(updated.searchQuery, equals('updated'));
         expect(updated.selectedCategoryId, equals(3));
-        expect(updated.selectedDate, equals(date));
+        expect(updated.startDate, equals(startDate));
+        expect(updated.endDate, equals(endDate));
         expect(updated.reimbursableFilter, equals(ReimbursableFilter.nonReimbursable));
       });
     });
@@ -157,7 +164,9 @@ void main() {
       notifier.setDateFilter(date);
       
       final filters = container.read(expenseFiltersProvider);
-      expect(filters.selectedDate, equals(date));
+      // setDateFilter sets both start and end to the same date for single-day filtering
+      expect(filters.startDate, equals(date));
+      expect(filters.endDate, equals(date));
     });
 
     test('setReimbursableFilter updates state', () {
@@ -183,7 +192,8 @@ void main() {
       final filters = container.read(expenseFiltersProvider);
       expect(filters.searchQuery, equals('office'));
       expect(filters.selectedCategoryId, equals(2));
-      expect(filters.selectedDate, equals(date));
+      expect(filters.startDate, equals(date));
+      expect(filters.endDate, equals(date));
       expect(
         filters.reimbursableFilter,
         equals(ReimbursableFilter.nonReimbursable),
