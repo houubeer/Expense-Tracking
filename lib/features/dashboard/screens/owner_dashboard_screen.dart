@@ -1,324 +1,217 @@
 import 'package:flutter/material.dart';
-import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
-import 'package:provider/provider.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/view_models/owner_dashboard_view_model.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/repositories/company_repository.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/repositories/manager_repository.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/repositories/subscription_repository.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/repositories/platform_expense_repository.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/services/manager_approval_service.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/services/expense_analytics_service.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/services/subscription_metrics_service.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/layout/page_header.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/cards/kpi_summary_card.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/lists/pending_manager_table.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/lists/active_managers_table.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/charts/expense_category_pie_chart.dart';
-import 'package:expense_tracking_desktop_app/features/dashboard/widgets/charts/platform_growth_line_chart.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/audit_timeline_item.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:intl/intl.dart';
 
 /// Owner/Super Admin Dashboard Screen
-/// Displays platform-wide KPIs, manager approvals, analytics, and audit logs
-class OwnerDashboardScreen extends StatefulWidget {
+/// Displays platform-wide KPIs and pending manager approvals
+class OwnerDashboardScreen extends ConsumerStatefulWidget {
   const OwnerDashboardScreen({super.key});
 
   @override
-  State<OwnerDashboardScreen> createState() => _OwnerDashboardScreenState();
+  ConsumerState<OwnerDashboardScreen> createState() =>
+      _OwnerDashboardScreenState();
 }
 
-class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
-  late final OwnerDashboardViewModel _viewModel;
+class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
+  bool _isLoading = true;
+  String? _error;
+
+  // Stats
+  int _totalCompanies = 0;
+  int _totalUsers = 0; // employees + managers
+  int _pendingCount = 0;
+
+  // Recent activity
+  List<Map<String, dynamic>> _recentOrganizations = [];
+
+  // Pending managers list
+  List<Map<String, dynamic>> _pendingManagers = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Initialize repositories
-    final companyRepo = CompanyRepository();
-    final managerRepo = ManagerRepository();
-    final subscriptionRepo = SubscriptionRepository();
-    final expenseRepo = PlatformExpenseRepository();
-
-    // Initialize services
-    final approvalService = ManagerApprovalService(managerRepo);
-    final analyticsService = ExpenseAnalyticsService(expenseRepo);
-    final metricsService = SubscriptionMetricsService(subscriptionRepo);
-
-    // Initialize view model
-    _viewModel = OwnerDashboardViewModel(
-      companyRepository: companyRepo,
-      managerRepository: managerRepo,
-      subscriptionRepository: subscriptionRepo,
-      expenseRepository: expenseRepo,
-      approvalService: approvalService,
-      analyticsService: analyticsService,
-      metricsService: metricsService,
-    );
+    _loadData();
   }
 
-  @override
-  void dispose() {
-    _viewModel.dispose();
-    super.dispose();
+  Future<void> _loadData() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final supabaseService = ref.read(supabaseServiceProvider);
+
+      // Load pending organizations
+      final pending = await supabaseService.getPendingOrganizations();
+      final active = await supabaseService.getApprovedOrganizations();
+
+      // Get total active employees + managers count
+      final usersResponse = await supabaseService.client
+          .from('user_profiles')
+          .select('id, role, status')
+          .or('role.eq.employee,role.eq.manager')
+          .eq('status', 'active');
+      final usersCount = usersResponse.length;
+
+      setState(() {
+        _pendingManagers = pending
+            .map((org) => {
+                  'id': org.id,
+                  'name': org.managerName ?? 'Unknown',
+                  'email': org.managerEmail,
+                  'company': org.name,
+                  'date': org.createdAt,
+                })
+            .toList();
+        _totalCompanies = active.length; // approved status in DB
+        _totalUsers = usersCount;
+        _pendingCount = pending.length;
+        _recentOrganizations = active.take(5).toList();
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return ChangeNotifierProvider.value(
-      value: _viewModel,
-      child: Scaffold(
-        backgroundColor: colorScheme.surfaceContainerLowest,
-        body: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xxxl),
-          child: Consumer<OwnerDashboardViewModel>(
-            builder: (context, viewModel, child) {
-              if (viewModel.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (viewModel.error != null) {
-                return Center(
-                  child: Text('Error: ${viewModel.error}'),
-                );
-              }
-
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PageHeader(
-                      title: AppLocalizations.of(context)!.ownerDashboard,
-                      subtitle:
-                          AppLocalizations.of(context)!.subtitleOwnerDashboard,
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // KPI Cards Grid (3x2)
-                    _buildKpiGrid(viewModel),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Pending Manager Approvals
-                    _buildPendingApprovals(viewModel),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Active Managers and Charts
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: _buildActiveManagers(viewModel),
-                        ),
-                        const SizedBox(width: AppSpacing.xl),
-                        Expanded(
-                          child: _buildAnalytics(viewModel),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Audit Timeline
-                    _buildAuditTimeline(viewModel),
-                  ],
-                ),
-              );
-            },
+  Future<void> _handleApprove(String orgId, String managerName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Approve Manager'),
+        content: Text('Are you sure you want to approve $managerName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
           ),
-        ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            child: const Text('Approve', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
-  }
 
-  Widget _buildKpiGrid(OwnerDashboardViewModel viewModel) {
-    final colorScheme = Theme.of(context).colorScheme;
+    if (confirmed != true) return;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Wrap(
-          spacing: AppSpacing.xl,
-          runSpacing: AppSpacing.xl,
-          children: [
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.business,
-                title: AppLocalizations.of(context)!.kpiTotalCompanies,
-                value: viewModel.totalCompanies.toString(),
-                color: colorScheme.primary,
-              ),
-            ),
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.supervisor_account,
-                title: AppLocalizations.of(context)!.kpiTotalManagers,
-                value: viewModel.totalManagers.toString(),
-                color: colorScheme.secondary,
-              ),
-            ),
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.people,
-                title: AppLocalizations.of(context)!.kpiTotalEmployees,
-                value: viewModel.totalEmployees.toString(),
-                color: colorScheme.tertiary,
-              ),
-            ),
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.attach_money,
-                title: AppLocalizations.of(context)!.kpiTotalExpenses,
-                value: '\$${viewModel.totalExpenses.toStringAsFixed(2)}',
-                color: colorScheme.error,
-              ),
-            ),
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.pending_actions,
-                title: AppLocalizations.of(context)!.kpiPendingApprovals,
-                value: viewModel.pendingApprovals.toString(),
-                color: Colors.orange,
-                subtitle:
-                    AppLocalizations.of(context)!.kpiPendingApprovalsSubtitle,
-              ),
-            ),
-            SizedBox(
-              width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
-              child: KpiSummaryCard(
-                icon: Icons.trending_up,
-                title: AppLocalizations.of(context)!.kpiMonthlyGrowth,
-                value: '${viewModel.monthlyGrowth.toStringAsFixed(1)}%',
-                color: viewModel.monthlyGrowth >= 0
-                    ? colorScheme.tertiary
-                    : colorScheme.error,
-                subtitle:
-                    AppLocalizations.of(context)!.kpiMonthlyGrowthSubtitle,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _buildPendingApprovals(OwnerDashboardViewModel viewModel) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context)!.headerPendingManagerRequests,
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        SizedBox(
-          height: 400,
-          child: PendingManagerTable(
-            managers: viewModel.getPendingManagers(),
-            onApprove: (id) => _handleApprove(viewModel, id),
-            onReject: (id) => _handleReject(viewModel, id),
-            onView: _handleViewManager,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActiveManagers(OwnerDashboardViewModel viewModel) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context)!.headerActiveManagers,
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        SizedBox(
-          height: 400,
-          child: ActiveManagersTable(
-            managers: viewModel.getActiveManagers(),
-            onView: _handleViewManager,
-            onSuspend: (id) => _handleSuspend(viewModel, id),
-            onDelete: (id) => _handleDelete(viewModel, id),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAnalytics(OwnerDashboardViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 200,
-          child: ExpenseCategoryPieChart(
-            categoryData: viewModel.getExpenseCategoryBreakdown(),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        SizedBox(
-          height: 200,
-          child: PlatformGrowthLineChart(
-            monthlyData: viewModel.getMonthlyTrend(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAuditTimeline(OwnerDashboardViewModel viewModel) {
-    final textTheme = Theme.of(context).textTheme;
-    final auditLogs = viewModel.getAuditLogs();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context)!.headerRecentActivity,
-          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        if (auditLogs.isEmpty)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.all(AppSpacing.xxxl),
-              child: Text(AppLocalizations.of(context)!.msgNoRecentActivity),
-            ),
-          )
-        else
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: auditLogs.length > 10 ? 10 : auditLogs.length,
-            separatorBuilder: (context, index) =>
-                const SizedBox(height: AppSpacing.md),
-            itemBuilder: (context, index) {
-              return AuditTimelineItem(auditLog: auditLogs[index]);
-            },
-          ),
-      ],
-    );
-  }
-
-  Future<void> _handleApprove(
-      OwnerDashboardViewModel viewModel, String id) async {
     try {
-      await viewModel.approveManager(id);
+      final supabaseService = ref.read(supabaseServiceProvider);
+      await supabaseService.approveOrganization(orgId);
+      await _loadData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Manager approved successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(AppLocalizations.of(context)!.msgManagerApproved)),
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
+      }
+    }
+  }
+
+  Future<void> _handleDelete(String orgId, String managerName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Manager & Organization'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Are you sure you want to delete $managerName?'),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.warning, color: Colors.red, size: 20),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This action cannot be undone. The organization and user account will be permanently deleted.',
+                      style: TextStyle(fontSize: 12, color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      final supabaseService = ref.read(supabaseServiceProvider);
+      await supabaseService.deleteOrganizationAndManager(orgId);
+      await _loadData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Organization and manager deleted'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      // Clear Hive session data
+      final box = await Hive.openBox<dynamic>('auth_preferences');
+      await box.clear();
+
+      final supabaseService = ref.read(supabaseServiceProvider);
+      await supabaseService.signOut();
+      if (mounted) {
+        context.go('/auth/login');
       }
     } catch (e) {
       if (mounted) {
@@ -329,186 +222,599 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     }
   }
 
-  Future<void> _handleReject(
-      OwnerDashboardViewModel viewModel, String id) async {
-    // Show dialog to get rejection reason
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (context) => _RejectDialog(),
-    );
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            children: [
+              // Top bar with logout
+              _buildTopBar(),
+              const SizedBox(height: AppSpacing.xl),
 
-    if (reason != null && reason.isNotEmpty) {
-      try {
-        await viewModel.rejectManager(id, reason);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text(AppLocalizations.of(context)!.msgManagerRejected)),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _handleSuspend(
-      OwnerDashboardViewModel viewModel, String id) async {
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (context) => _SuspendDialog(),
-    );
-
-    if (reason != null && reason.isNotEmpty) {
-      try {
-        await viewModel.suspendManager(id, reason);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content:
-                    Text(AppLocalizations.of(context)!.msgManagerSuspended)),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _handleDelete(
-      OwnerDashboardViewModel viewModel, String id) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.dialogTitleConfirmDelete),
-        content: Text(AppLocalizations.of(context)!.dialogDescDeleteManager),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(AppLocalizations.of(context)!.btnCancel),
+              // Main content
+              Expanded(
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null
+                        ? Center(child: Text('Error: $_error'))
+                        : _buildMainContent(),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(AppLocalizations.of(context)!.btnDelete),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Title
+        Text(
+          'Owner Dashboard',
+          style: AppTextStyles.heading1.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        // Logout button
+        ElevatedButton.icon(
+          onPressed: _handleLogout,
+          icon: const Icon(Icons.logout, size: 18),
+          label: const Text('Logout'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMainContent() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left side - Stats and Recent Activity
+        Expanded(
+          flex: 3,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Stat cards row
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildStatCard(
+                        'Active Companies',
+                        _totalCompanies.toString(),
+                        Icons.business,
+                        AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.lg),
+                    Expanded(
+                      child: _buildStatCard(
+                        'Total Users',
+                        _totalUsers.toString(),
+                        Icons.people,
+                        AppColors.green,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.lg),
+                    Expanded(
+                      child: _buildStatCard(
+                        'Pending Approvals',
+                        _pendingCount.toString(),
+                        Icons.pending_actions,
+                        AppColors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xxl),
+
+                // Recent Organizations section
+                _buildRecentOrganizationsSection(),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.xl),
+
+        // Right side - Pending requests floating card
+        Expanded(
+          flex: 2,
+          child: _buildPendingRequestsCard(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(icon, color: Colors.white.withOpacity(0.8), size: 28),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: Colors.white, size: 20),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.9),
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
-
-    if (confirmed == true) {
-      try {
-        await viewModel.deleteManager(id);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(AppLocalizations.of(context)!.msgManagerDeleted)),
-          );
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
-      }
-    }
   }
 
-  void _handleViewManager(String id) {
-    // TODO: Implement manager profile view
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content:
-              Text(AppLocalizations.of(context)!.msgManagerProfileComingSoon)),
+  Widget _buildRecentOrganizationsSection() {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Active Organizations',
+                style: AppTextStyles.heading3.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '${_recentOrganizations.length} active',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          if (_recentOrganizations.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.xl),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.business_outlined,
+                      size: 48,
+                      color: Colors.grey[300],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      'No active organizations yet',
+                      style: TextStyle(color: Colors.grey[500]),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _recentOrganizations.length,
+              separatorBuilder: (_, __) => const Divider(height: 24),
+              itemBuilder: (context, index) {
+                final org = _recentOrganizations[index];
+                return _buildOrganizationRow(org);
+              },
+            ),
+        ],
+      ),
     );
   }
-}
 
-class _RejectDialog extends StatefulWidget {
-  @override
-  State<_RejectDialog> createState() => _RejectDialogState();
-}
+  Widget _buildOrganizationRow(Map<String, dynamic> org) {
+    final createdAt = org['created_at'] != null
+        ? DateTime.tryParse(org['created_at'].toString())
+        : null;
+    final formattedDate = createdAt != null
+        ? DateFormat('MMM d, yyyy').format(createdAt)
+        : 'Unknown';
 
-class _RejectDialogState extends State<_RejectDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(AppLocalizations.of(context)!.dialogTitleRejectManager),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(context)!.dialogLabelReasonRejection,
-          hintText: AppLocalizations.of(context)!.dialogHintEnterReason,
+    return Row(
+      children: [
+        // Company icon
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            Icons.business,
+            color: AppColors.primary,
+            size: 20,
+          ),
         ),
-        maxLines: 3,
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.btnCancel),
+        const SizedBox(width: AppSpacing.md),
+        // Company info
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                org['name'] as String? ?? 'Unknown',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                org['manager_email'] as String? ?? '',
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text(AppLocalizations.of(context)!.dialogActionReject),
+        // Date
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 4,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.green.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            formattedDate,
+            style: TextStyle(
+              color: AppColors.green,
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ],
     );
   }
-}
 
-class _SuspendDialog extends StatefulWidget {
-  @override
-  State<_SuspendDialog> createState() => _SuspendDialogState();
-}
+  Widget _buildPendingRequestsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.orange.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.pending_actions,
+                    color: AppColors.orange,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Pending Requests',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${_pendingManagers.length} awaiting review',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
 
-class _SuspendDialogState extends State<_SuspendDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+          // Table content
+          Expanded(
+            child: _pendingManagers.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline,
+                          size: 48,
+                          color: Colors.grey[300],
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        Text(
+                          'No pending requests',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'All caught up!',
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    itemCount: _pendingManagers.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: AppSpacing.md),
+                    itemBuilder: (context, index) {
+                      final manager = _pendingManagers[index];
+                      return _buildManagerCard(manager);
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(AppLocalizations.of(context)!.dialogTitleSuspendManager),
-      content: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          labelText: AppLocalizations.of(context)!.dialogLabelReasonSuspension,
-          hintText: AppLocalizations.of(context)!.dialogHintEnterReason,
-        ),
-        maxLines: 3,
+  Widget _buildManagerCard(Map<String, dynamic> manager) {
+    final createdAt = manager['date'] != null
+        ? DateTime.tryParse(manager['date'].toString())
+        : null;
+    final formattedDate = createdAt != null
+        ? DateFormat('MMM d, yyyy').format(createdAt)
+        : 'Unknown';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(AppLocalizations.of(context)!.btnCancel),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: Text(AppLocalizations.of(context)!.dialogActionSuspend),
-        ),
-      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Manager info
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.primary.withOpacity(0.1),
+                child: Text(
+                  (manager['name'] as String? ?? 'U').isNotEmpty
+                      ? (manager['name'] as String? ?? 'U')[0].toUpperCase()
+                      : 'U',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      manager['name'] as String? ?? 'Unknown',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    Text(
+                      manager['company'] as String? ?? '',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  'Pending',
+                  style: TextStyle(
+                    color: AppColors.orange,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Email
+          Row(
+            children: [
+              Icon(Icons.email_outlined, size: 14, color: Colors.grey[500]),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  manager['email'] as String? ?? '',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 11,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          // Date
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 14, color: Colors.grey[500]),
+              const SizedBox(width: 6),
+              Text(
+                formattedDate,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          // Action buttons
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _handleDelete(
+                    manager['id'] as String? ?? '',
+                    manager['name'] as String? ?? 'Unknown',
+                  ),
+                  icon: const Icon(Icons.delete_outline, size: 16),
+                  label: const Text('Delete'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => _handleApprove(
+                    manager['id'] as String? ?? '',
+                    manager['name'] as String? ?? 'Unknown',
+                  ),
+                  icon: const Icon(Icons.check, size: 16),
+                  label: const Text('Approve'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
