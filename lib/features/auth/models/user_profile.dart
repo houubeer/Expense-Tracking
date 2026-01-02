@@ -21,6 +21,7 @@ class UserProfile {
   final String? organizationId;
   final String email;
   final String? fullName;
+  final String? avatarUrl;
   final UserRole role;
   final bool isActive;
   final DateTime? lastSyncAt;
@@ -34,6 +35,7 @@ class UserProfile {
     this.organizationId,
     required this.email,
     this.fullName,
+    this.avatarUrl,
     required this.role,
     this.isActive = true,
     this.lastSyncAt,
@@ -49,6 +51,7 @@ class UserProfile {
       organizationId: json['organization_id'] as String?,
       email: json['email'] as String,
       fullName: json['full_name'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
       role: UserRole.fromString(json['role'] as String? ?? 'employee'),
       isActive: json['is_active'] as bool? ?? true,
       lastSyncAt: json['last_sync_at'] != null
@@ -67,6 +70,7 @@ class UserProfile {
       'organization_id': organizationId,
       'email': email,
       'full_name': fullName,
+      'avatar_url': avatarUrl,
       'role': role.value,
       'is_active': isActive,
       'last_sync_at': lastSyncAt?.toIso8601String(),
@@ -82,6 +86,7 @@ class UserProfile {
     String? organizationId,
     String? email,
     String? fullName,
+    String? avatarUrl,
     UserRole? role,
     bool? isActive,
     DateTime? lastSyncAt,
@@ -95,6 +100,7 @@ class UserProfile {
       organizationId: organizationId ?? this.organizationId,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       role: role ?? this.role,
       isActive: isActive ?? this.isActive,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
