@@ -1,16 +1,16 @@
 import 'package:drift/drift.dart';
-import 'connection/connection.dart' as impl;
+import 'package:expense_tracking_desktop_app/database/connection/connection.dart' as impl;
 import 'package:expense_tracking_desktop_app/database/i_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 // Import tables and DAOs
-import 'tables/categories_table.dart';
-import 'tables/expenses_table.dart';
-import 'tables/organizations_table.dart';
-import 'tables/user_profiles_table.dart';
-import 'tables/sync_queue_table.dart';
-import 'daos/category_dao.dart';
-import 'daos/expense_dao.dart';
+import 'package:expense_tracking_desktop_app/database/tables/categories_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/expenses_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/organizations_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/user_profiles_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/sync_queue_table.dart';
+import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
+import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -45,8 +45,6 @@ part 'app_database.g.dart';
   daos: [CategoryDao, ExpenseDao],
 )
 class AppDatabase extends _$AppDatabase implements IDatabase {
-  final ConnectivityService? _connectivityService;
-  final _logger = LoggerService.instance;
 
   /// Creates a new instance of the database with platform-specific connection.
   ///
@@ -60,6 +58,8 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// [e] The query executor to use for database operations.
   /// [_connectivityService] Optional service for monitoring database connectivity.
   AppDatabase.forTesting(super.e, [this._connectivityService]);
+  final ConnectivityService? _connectivityService;
+  final _logger = LoggerService.instance;
 
   /// Provides access to category-related database operations.
   @override
@@ -94,7 +94,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// [to] The target schema version.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async => await m.createAll(),
+        onCreate: (m) async => m.createAll(),
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             // Add categories table
@@ -146,8 +146,8 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
   @override
   Future<T> transaction<T>(Future<T> Function() action,
-      {bool requireNew = false}) async {
-    return await super.transaction(action, requireNew: requireNew);
+      {bool requireNew = false,}) async {
+    return super.transaction(action, requireNew: requireNew);
   }
 
   /// Performs a comprehensive health check on the database.
@@ -196,7 +196,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
       return true;
     } catch (e) {
-      _logger.error('Database health check failed', error: e, stackTrace: null);
+      _logger.error('Database health check failed', error: e);
       return false;
     }
   }
@@ -232,7 +232,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
       _logger.info('Database recovery attempted successfully');
     } catch (e) {
-      _logger.error('Database recovery failed', error: e, stackTrace: null);
+      _logger.error('Database recovery failed', error: e);
       throw Exception('Database recovery failed: $e');
     }
   }
