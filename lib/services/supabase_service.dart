@@ -4,6 +4,7 @@ import 'package:expense_tracking_desktop_app/config/supabase_config.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/organization.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
+import 'package:uuid/uuid.dart';
 
 /// Supabase service for handling all backend operations
 ///
@@ -86,7 +87,6 @@ class SupabaseService {
         'email': trimmedEmail,
         'full_name': fullName,
         'role': 'manager',
-        'is_active': false, // Will be activated when org is approved
       });
 
       // Create organization (pending approval) with manager_name from full_name
@@ -380,6 +380,8 @@ class SupabaseService {
   }
 
   /// Add employee (manager only)
+  /// Note: This creates a user profile without auth credentials
+  /// Employee will need to sign up separately using their email
   Future<Map<String, dynamic>> addEmployee({
     required String email,
     required String password,
@@ -387,35 +389,27 @@ class SupabaseService {
     required String organizationId,
   }) async {
     try {
-      // Create auth user
-      final authResponse = await client.auth.admin.createUser(
-        AdminUserAttributes(
-          email: email,
-          password: password,
-          emailConfirm: true,
-        ),
-      );
+      // Generate a UUID for the employee
+      // Since we can't use admin.createUser in client app (requires service role),
+      // we'll create the profile directly and the employee will sign up later
+      final userId = const Uuid().v4();
 
-      if (authResponse.user == null) {
-        throw Exception('Failed to create employee account');
-      }
-
-      // Create user profile
+      // Create user profile directly
       await client.from('user_profiles').insert({
-        'id': authResponse.user!.id,
+        'id': userId,
         'organization_id': organizationId,
         'email': email,
         'full_name': fullName,
         'role': 'employee',
-        'is_active': true,
+        'status': 'active',
       });
 
-      _logger.info('Employee added: $email');
+      _logger.info('Employee profile created: $email');
 
       return {
         'success': true,
-        'message': 'Employee added successfully',
-        'user_id': authResponse.user!.id,
+        'message': 'Employee profile created successfully',
+        'user_id': userId,
       };
     } catch (e, stackTrace) {
       _logger.error('Failed to add employee', error: e, stackTrace: stackTrace);
@@ -483,8 +477,8 @@ class SupabaseService {
           .eq('role', 'manager')
           .single();
 
-      await client.from('user_profiles').update({'is_active': true}).eq(
-          'id', managerResponse['id'] as String);
+      // Manager activation handled by status field if needed
+      // but is_active column does not exist
 
       // Create audit log
       await _createAuditLog(
