@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/theme/app_theme.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/routes/router.dart' as app_router;
@@ -27,7 +26,7 @@ class ExpenseTrackerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       overrides: [
-        databaseProvider.overrideWithValue(database),
+        databaseStateProvider.overrideWith((ref) => database),
         connectivityServiceProvider.overrideWithValue(connectivityService),
         errorReportingServiceProvider.overrideWithValue(errorReportingService),
       ],
@@ -36,25 +35,17 @@ class ExpenseTrackerApp extends StatelessWidget {
   }
 }
 
-
-class _AppConsumerState extends ConsumerState<_AppConsumer> {
-  late final GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-    // Create router once to avoid rebuilding the navigation tree every frame.
-    _router = app_router.createRouter();
-  }
+class _AppConsumer extends ConsumerWidget {
+  const _AppConsumer();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final locale = ref.watch(localeProvider);
     final router = ref.watch(app_router.routerProvider);
 
     return MaterialApp.router(
-      routerConfig: _router,
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       title: 'ExpenseTracker',
       theme: AppTheme.lightTheme,
