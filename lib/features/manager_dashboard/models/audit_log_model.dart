@@ -21,12 +21,6 @@ enum AuditAction {
 
 /// Audit log model for tracking manager actions and changes
 class AuditLog {
-  final String id;
-  final AuditAction action;
-  final String managerName;
-  final DateTime timestamp;
-  final String details;
-  final String? targetId;
 
   const AuditLog({
     required this.id,
@@ -36,6 +30,27 @@ class AuditLog {
     required this.details,
     this.targetId,
   });
+
+  /// Create AuditLog from JSON
+  factory AuditLog.fromJson(Map<String, dynamic> json) {
+    return AuditLog(
+      id: json['id'] as String,
+      action: AuditAction.values.firstWhere(
+        (e) => e.name == json['action'],
+        orElse: () => AuditAction.approved,
+      ),
+      managerName: json['managerName'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      details: json['details'] as String,
+      targetId: json['targetId'] as String?,
+    );
+  }
+  final String id;
+  final AuditAction action;
+  final String managerName;
+  final DateTime timestamp;
+  final String details;
+  final String? targetId;
 
   /// Get formatted action description
   String get actionDescription {
@@ -65,21 +80,6 @@ class AuditLog {
     } else {
       return 'Just now';
     }
-  }
-
-  /// Create AuditLog from JSON
-  factory AuditLog.fromJson(Map<String, dynamic> json) {
-    return AuditLog(
-      id: json['id'] as String,
-      action: AuditAction.values.firstWhere(
-        (e) => e.name == json['action'],
-        orElse: () => AuditAction.approved,
-      ),
-      managerName: json['managerName'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
-      details: json['details'] as String,
-      targetId: json['targetId'] as String?,
-    );
   }
 
   /// Convert AuditLog to JSON

@@ -18,16 +18,6 @@ enum ExpenseStatus {
 
 /// Manager expense model representing an employee expense submission
 class ManagerExpense {
-  final String id;
-  final String employeeId;
-  final String employeeName;
-  final double amount;
-  final String category;
-  final DateTime date;
-  final String? receiptUrl;
-  final ExpenseStatus status;
-  final String? comment;
-  final String? description;
 
   const ManagerExpense({
     required this.id,
@@ -36,8 +26,7 @@ class ManagerExpense {
     required this.amount,
     required this.category,
     required this.date,
-    this.receiptUrl,
-    required this.status,
+    required this.status, this.receiptUrl,
     this.comment,
     this.description,
   });
@@ -60,6 +49,16 @@ class ManagerExpense {
       description: json['description'] as String?,
     );
   }
+  final String id;
+  final String employeeId;
+  final String employeeName;
+  final double amount;
+  final String category;
+  final DateTime date;
+  final String? receiptUrl;
+  final ExpenseStatus status;
+  final String? comment;
+  final String? description;
 
   /// Convert ManagerExpense to JSON
   Map<String, dynamic> toJson() {
