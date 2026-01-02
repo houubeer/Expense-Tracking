@@ -2,7 +2,7 @@
 /// Only expense service needs these methods, separated from general CRUD
 abstract class ICategoryBudgetManager {
   Future<void> updateCategoryBudget(
-      int categoryId, double budget, int currentVersion);
+      int categoryId, double budget, int currentVersion,);
   Future<void> updateCategorySpent(
-      int categoryId, double spent, int currentVersion);
+      int categoryId, double spent, int currentVersion,);
 }

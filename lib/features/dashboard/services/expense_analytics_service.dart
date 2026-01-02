@@ -3,9 +3,9 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/pla
 /// Service for calculating platform-wide expense analytics
 /// Provides aggregated metrics and insights across all companies
 class ExpenseAnalyticsService {
-  final PlatformExpenseRepository _expenseRepository;
 
   ExpenseAnalyticsService(this._expenseRepository);
+  final PlatformExpenseRepository _expenseRepository;
 
   /// Calculate total expenses across the platform
   double calculateTotalExpenses() {
@@ -26,7 +26,7 @@ class ExpenseAnalyticsService {
     if (total == 0) return {};
     
     return breakdown.map((category, amount) => 
-      MapEntry(category, (amount / total) * 100)
+      MapEntry(category, (amount / total) * 100),
     );
   }
 
@@ -96,10 +96,6 @@ class ExpenseAnalyticsService {
 
 /// Data class for expense statistics
 class ExpenseStatistics {
-  final double totalExpenses;
-  final double monthlyGrowth;
-  final String topCategory;
-  final int categoryCount;
 
   const ExpenseStatistics({
     required this.totalExpenses,
@@ -107,4 +103,8 @@ class ExpenseStatistics {
     required this.topCategory,
     required this.categoryCount,
   });
+  final double totalExpenses;
+  final double monthlyGrowth;
+  final String topCategory;
+  final int categoryCount;
 }

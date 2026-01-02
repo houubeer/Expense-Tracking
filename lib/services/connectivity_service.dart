@@ -57,7 +57,7 @@ class ConnectivityService extends ChangeNotifier {
     _reconnectionAttempts++;
 
     // Calculate exponential backoff delay: 1s, 2s, 4s, 8s (max)
-    final delaySeconds = (1 << (_reconnectionAttempts - 1).clamp(0, 3));
+    final delaySeconds = 1 << (_reconnectionAttempts - 1).clamp(0, 3);
     final delay = Duration(seconds: delaySeconds);
 
     // Cancel existing timer if any
@@ -73,7 +73,7 @@ class ConnectivityService extends ChangeNotifier {
           } else {
             // Try again with increased backoff
             updateState(ConnectionState.disconnected,
-                error: 'Reconnection attempt $_reconnectionAttempts failed');
+                error: 'Reconnection attempt $_reconnectionAttempts failed',);
             if (_reconnectionAttempts < 10) {
               // Limit to 10 attempts
               await attemptReconnection();
@@ -81,7 +81,7 @@ class ConnectivityService extends ChangeNotifier {
           }
         } catch (e) {
           updateState(ConnectionState.disconnected,
-              error: 'Reconnection error: $e');
+              error: 'Reconnection error: $e',);
           if (_reconnectionAttempts < 10) {
             await attemptReconnection();
           }

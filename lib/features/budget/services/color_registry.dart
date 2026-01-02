@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 /// Registry for category colors (OCP compliance)
 /// Allows adding new colors without modifying existing code
 class ColorRegistry {
-  static final ColorRegistry _instance = ColorRegistry._internal();
   factory ColorRegistry() => _instance;
   ColorRegistry._internal();
+  static final ColorRegistry _instance = ColorRegistry._internal();
 
   final List<Color> _colors = [
     const Color(0xFF6366F1), // Indigo

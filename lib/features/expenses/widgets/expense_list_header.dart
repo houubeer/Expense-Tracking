@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import '../../../widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class ExpenseListHeader extends StatelessWidget {
   const ExpenseListHeader({super.key});
@@ -30,7 +30,7 @@ class ExpenseListHeader extends StatelessWidget {
         PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
           icon: Icons.add,
-          child: const Text("Add Expense"),
+          child: const Text('Add Expense'),
         ),
       ],
     );

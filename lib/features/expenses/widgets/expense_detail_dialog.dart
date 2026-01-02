@@ -3,16 +3,16 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import '../../../widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseDetailDialog extends StatelessWidget {
-  final ExpenseWithCategory expenseWithCategory;
 
   const ExpenseDetailDialog({
     required this.expenseWithCategory,
     super.key,
   });
+  final ExpenseWithCategory expenseWithCategory;
 
   IconData _getIconFromCodePoint(String codePointStr) {
     try {

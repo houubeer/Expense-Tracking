@@ -3,14 +3,12 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class ExpenseSearchBar extends StatelessWidget {
-  final String searchQuery;
-  final ValueChanged<String> onSearchChanged;
 
   const ExpenseSearchBar({
-    super.key,
-    required this.searchQuery,
-    required this.onSearchChanged,
+    required this.searchQuery, required this.onSearchChanged, super.key,
   });
+  final String searchQuery;
+  final ValueChanged<String> onSearchChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,6 @@ class ExpenseSearchBar extends StatelessWidget {
           color: searchQuery.isNotEmpty
               ? colorScheme.primary
               : colorScheme.outlineVariant,
-          width: 1,
         ),
       ),
       child: TextField(
@@ -33,12 +30,12 @@ class ExpenseSearchBar extends StatelessWidget {
           hintText: AppStrings.hintSearchExpenses,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
           prefixIcon: Icon(Icons.search,
-              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
+              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search',),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear,
                       color: colorScheme.onSurfaceVariant,
-                      semanticLabel: 'Clear search'),
+                      semanticLabel: 'Clear search',),
                   onPressed: () => onSearchChanged(''),
                 )
               : null,

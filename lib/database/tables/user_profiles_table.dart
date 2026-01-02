@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'organizations_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/organizations_table.dart';
 
 /// User profiles table (extends Supabase auth.users)
 @TableIndex(name: 'idx_user_profiles_org', columns: {#organizationId})

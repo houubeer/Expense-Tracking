@@ -7,9 +7,9 @@ import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budg
 /// Repository that combines category and expense data to provide
 /// a reactive stream of budget information for the UI
 class BudgetRepository implements IBudgetRepository {
-  final AppDatabase _database;
 
   BudgetRepository(this._database);
+  final AppDatabase _database;
 
   /// Watch all category budgets with real-time expense calculations
   /// Returns a stream that automatically updates when:
@@ -37,7 +37,7 @@ class BudgetRepository implements IBudgetRepository {
   /// Watch category budgets filtered by status
   @override
   Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(
-      BudgetStatus status) {
+      BudgetStatus status,) {
     return watchCategoryBudgets().map((budgets) {
       return budgets.where((budget) => budget.status == status).toList();
     });
@@ -101,7 +101,7 @@ class BudgetRepository implements IBudgetRepository {
       watchTotalSpent(),
       (totalBudget, totalSpent) {
         if (totalBudget <= 0) return 0.0;
-        return (totalSpent / totalBudget * 100);
+        return totalSpent / totalBudget * 100;
       },
     );
   }

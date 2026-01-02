@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/layout/dashboard_layout.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/layout/page_header.dart';
@@ -19,17 +20,15 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/services
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
-  final void Function(String) onNavigate;
-
   const ManagerDashboardScreen({
-    super.key,
     required this.onNavigate,
+    super.key,
   });
+  final void Function(String) onNavigate;
 
   @override
   State<ManagerDashboardScreen> createState() => _ManagerDashboardScreenState();
@@ -78,8 +77,9 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 children: [
                   // Page Header
                   PageHeader(
-                    title: AppStrings.titleManagerDashboard,
-                    subtitle: AppStrings.descManagerDashboard,
+                    title: AppLocalizations.of(context)!.titleManagerDashboard,
+                    subtitle:
+                        AppLocalizations.of(context)!.descManagerDashboard,
                   ),
                   const SizedBox(height: AppSpacing.xxl),
 
@@ -127,44 +127,45 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       children: [
         SummaryCard(
           icon: Icons.people,
-          title: 'Total Employees',
+          title: AppLocalizations.of(context)!.kpiTotalEmployees,
           value: '${stats['totalEmployees']}',
           color: colorScheme.primary,
-          subtitle: '${stats['activeEmployees']} active',
+          subtitle:
+              '${stats['activeEmployees']} ${AppLocalizations.of(context)!.active}',
         ),
         SummaryCard(
           icon: Icons.attach_money,
-          title: 'Expenses (Month)',
+          title: AppLocalizations.of(context)!.kpiTotalExpenses,
           value:
               '${(stats['totalExpensesThisMonth'] as double).toStringAsFixed(0)} DZD',
           color: colorScheme.tertiary,
         ),
         SummaryCard(
           icon: Icons.pending_actions,
-          title: 'Pending',
+          title: AppLocalizations.of(context)!.kpiPendingApprovals,
           value: '${stats['pendingApprovals']}',
           color: Colors.orange,
         ),
         SummaryCard(
           icon: Icons.check_circle,
-          title: 'Approved',
+          title: AppLocalizations.of(context)!.statusGood,
           value: '${stats['approvedExpenses']}',
           color: Colors.green,
         ),
         SummaryCard(
           icon: Icons.cancel,
-          title: 'Rejected',
+          title: AppLocalizations.of(context)!.msgExpenseRejected,
           value: '${stats['rejectedExpenses']}',
           color: Colors.red,
         ),
         SummaryCard(
           icon: Icons.account_balance_wallet,
-          title: 'Budget',
+          title: AppLocalizations.of(context)!.labelBudget,
           value:
               '${(stats['usedBudget'] as double).toStringAsFixed(0)} / ${(stats['totalBudget'] as double).toStringAsFixed(0)}',
           color: colorScheme.secondary,
           subtitle:
-              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} DZD left',
+              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} DZD ${AppLocalizations.of(context)!.labelRemaining}',
         ),
       ],
     );
@@ -178,7 +179,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Employee Management',
+              AppLocalizations.of(context)!.labelEmployeeManagement,
               style: AppTextStyles.heading2,
             ),
             Row(
@@ -189,7 +190,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
-                      hintText: 'Search employees...',
+                      hintText:
+                          AppLocalizations.of(context)!.hintSearchEmployees,
                       prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius:
@@ -207,10 +209,12 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 // Department filter
                 DropdownButton<String?>(
                   value: viewModel.departmentFilter,
-                  hint: const Text('Department'),
+                  hint: Text(AppLocalizations.of(context)!.labelDepartment),
                   items: [
-                    const DropdownMenuItem(
-                        value: null, child: Text('All Departments')),
+                    DropdownMenuItem(
+                      child: Text(
+                          AppLocalizations.of(context)!.filterAllDepartments),
+                    ),
                     ...[
                       'Engineering',
                       'Marketing',
@@ -218,9 +222,11 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                       'Product',
                       'Design',
                       'Human Resources',
-                      'Finance'
-                    ].map((dept) =>
-                        DropdownMenuItem(value: dept, child: Text(dept))),
+                      'Finance',
+                    ].map(
+                      (dept) =>
+                          DropdownMenuItem(value: dept, child: Text(dept)),
+                    ),
                   ],
                   onChanged: viewModel.setDepartmentFilter,
                 ),
@@ -228,14 +234,20 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 // Status filter
                 DropdownButton<EmployeeStatus?>(
                   value: viewModel.statusFilter,
-                  hint: const Text('Status'),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('All Statuses')),
+                  hint: Text(AppLocalizations.of(context)!.labelStatus),
+                  items: [
                     DropdownMenuItem(
-                        value: EmployeeStatus.active, child: Text('Active')),
+                        child: Text(
+                            AppLocalizations.of(context)!.filterAllStatuses)),
                     DropdownMenuItem(
-                        value: EmployeeStatus.suspended,
-                        child: Text('Suspended')),
+                      value: EmployeeStatus.active,
+                      child: Text(AppLocalizations.of(context)!.active),
+                    ),
+                    DropdownMenuItem(
+                      value: EmployeeStatus.suspended,
+                      child: Text(
+                          AppLocalizations.of(context)!.labelStatusSuspended),
+                    ),
                   ],
                   onChanged: viewModel.setStatusFilter,
                 ),
@@ -243,7 +255,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 FilledButton.icon(
                   onPressed: () => _showAddEmployeeDialog(context, viewModel),
                   icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-                  label: const Text('Add Employee'),
+                  label: Text(AppLocalizations.of(context)!.labelAddEmployee),
                 ),
               ],
             ),
@@ -282,7 +294,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pending Expense Approvals',
+          AppLocalizations.of(context)!.labelPendingExpenseApprovals,
           style: AppTextStyles.heading2,
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -290,12 +302,14 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           expenses: viewModel.pendingExpenses,
           onApprove: (id) async {
             final success = await viewModel.approveExpense(id);
-            if (success) _showMessage('Expense approved');
+            if (success)
+              _showMessage(AppLocalizations.of(context)!.msgExpenseApproved);
           },
           onReject: (id) async {
             final success =
                 await viewModel.rejectExpense(id, 'Budget exceeded');
-            if (success) _showMessage('Expense rejected');
+            if (success)
+              _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
           },
           onComment: (id) => _showAddCommentDialogById(context, viewModel, id),
           onViewDetails: (expense) =>
@@ -310,7 +324,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Budget Monitoring',
+          AppLocalizations.of(context)!.labelBudgetMonitoring,
           style: AppTextStyles.heading2,
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -339,14 +353,17 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   }
 
   void _showAddEmployeeDialog(
-      BuildContext context, ManagerDashboardViewModel viewModel) {
+    BuildContext context,
+    ManagerDashboardViewModel viewModel,
+  ) {
     showDialog<void>(
       context: context,
       builder: (context) => AddEmployeeForm(
         onSubmit: (employee) async {
           await viewModel.addEmployee(employee);
           if (mounted) {
-            _showMessage('Employee ${employee.name} added successfully');
+            _showMessage(
+                AppLocalizations.of(context)!.msgEmployeeAdded(employee.name));
           }
         },
       ),
@@ -365,12 +382,14 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         onApprove: () async {
           Navigator.of(context).pop();
           final success = await viewModel.approveExpense(expense.id);
-          if (success && mounted) _showMessage('Expense approved');
+          if (success && mounted)
+            _showMessage(AppLocalizations.of(context)!.msgExpenseApproved);
         },
         onReject: () async {
           Navigator.of(context).pop();
           final success = await viewModel.rejectExpense(expense.id, 'Rejected');
-          if (success && mounted) _showMessage('Expense rejected');
+          if (success && mounted)
+            _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
         },
         onAddComment: () {
           Navigator.of(context).pop();
@@ -404,7 +423,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         employeeName: expense.employeeName,
         onSubmit: (comment) async {
           await viewModel.addComment(expense.id, comment);
-          if (mounted) _showMessage('Comment added successfully');
+          if (mounted)
+            _showMessage(AppLocalizations.of(context)!.msgCommentAdded);
         },
       ),
     );
@@ -418,25 +438,29 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   ) {
     switch (action) {
       case 'view':
-        _showMessage('View details for ${employee.name}');
+        _showMessage(
+            AppLocalizations.of(context)!.msgViewDetailsFor(employee.name));
         break;
       case 'suspend':
         if (employee.status == EmployeeStatus.active) {
           _showConfirmDialog(
             context,
-            'Suspend Employee',
-            'Are you sure you want to suspend ${employee.name}?',
+            AppLocalizations.of(context)!.dialogTitleSuspendEmployee,
+            AppLocalizations.of(context)!
+                .dialogDescSuspendEmployee(employee.name),
             () async {
               await viewModel.suspendEmployee(employee.id);
               if (mounted) {
-                _showMessage('${employee.name} suspended');
+                _showMessage(AppLocalizations.of(context)!
+                    .msgEmployeeSuspended(employee.name));
               }
             },
           );
         } else {
           viewModel.activateEmployee(employee.id).then((_) {
             if (mounted) {
-              _showMessage('${employee.name} activated');
+              _showMessage(AppLocalizations.of(context)!
+                  .msgEmployeeActivated(employee.name));
             }
           });
         }
@@ -444,12 +468,13 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       case 'remove':
         _showConfirmDialog(
           context,
-          'Remove Employee',
-          'Are you sure you want to remove ${employee.name}? This action cannot be undone.',
+          AppLocalizations.of(context)!.dialogTitleRemoveEmployee,
+          AppLocalizations.of(context)!.dialogDescRemoveEmployee(employee.name),
           () async {
             await viewModel.removeEmployee(employee.id);
             if (mounted) {
-              _showMessage('${employee.name} removed');
+              _showMessage(AppLocalizations.of(context)!
+                  .msgEmployeeRemoved(employee.name));
             }
           },
         );
@@ -471,14 +496,14 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(AppStrings.btnCancel),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
               onConfirm();
             },
-            child: const Text('Confirm'),
+            child: Text(AppLocalizations.of(context)!.btnConfirm),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracking_desktop_app/features/dashboard/view_models/owner_dashboard_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/dashboard/repositories/company_repository.dart';
@@ -32,18 +33,18 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize repositories
     final companyRepo = CompanyRepository();
     final managerRepo = ManagerRepository();
     final subscriptionRepo = SubscriptionRepository();
     final expenseRepo = PlatformExpenseRepository();
-    
+
     // Initialize services
     final approvalService = ManagerApprovalService(managerRepo);
     final analyticsService = ExpenseAnalyticsService(expenseRepo);
     final metricsService = SubscriptionMetricsService(subscriptionRepo);
-    
+
     // Initialize view model
     _viewModel = OwnerDashboardViewModel(
       companyRepository: companyRepo,
@@ -88,20 +89,21 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const PageHeader(
-                      title: 'Owner Dashboard',
-                      subtitle: 'Platform-wide overview and management',
+                    PageHeader(
+                      title: AppLocalizations.of(context)!.ownerDashboard,
+                      subtitle:
+                          AppLocalizations.of(context)!.subtitleOwnerDashboard,
                     ),
                     const SizedBox(height: AppSpacing.xxl),
-                    
+
                     // KPI Cards Grid (3x2)
                     _buildKpiGrid(viewModel),
                     const SizedBox(height: AppSpacing.xxl),
-                    
+
                     // Pending Manager Approvals
                     _buildPendingApprovals(viewModel),
                     const SizedBox(height: AppSpacing.xxl),
-                    
+
                     // Active Managers and Charts
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +119,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                       ],
                     ),
                     const SizedBox(height: AppSpacing.xxl),
-                    
+
                     // Audit Timeline
                     _buildAuditTimeline(viewModel),
                   ],
@@ -132,7 +134,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
 
   Widget _buildKpiGrid(OwnerDashboardViewModel viewModel) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return LayoutBuilder(
       builder: (context, constraints) {
         return Wrap(
@@ -143,7 +145,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.business,
-                title: 'Total Companies',
+                title: AppLocalizations.of(context)!.kpiTotalCompanies,
                 value: viewModel.totalCompanies.toString(),
                 color: colorScheme.primary,
               ),
@@ -152,7 +154,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.supervisor_account,
-                title: 'Total Managers',
+                title: AppLocalizations.of(context)!.kpiTotalManagers,
                 value: viewModel.totalManagers.toString(),
                 color: colorScheme.secondary,
               ),
@@ -161,7 +163,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.people,
-                title: 'Total Employees',
+                title: AppLocalizations.of(context)!.kpiTotalEmployees,
                 value: viewModel.totalEmployees.toString(),
                 color: colorScheme.tertiary,
               ),
@@ -170,7 +172,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.attach_money,
-                title: 'Total Expenses',
+                title: AppLocalizations.of(context)!.kpiTotalExpenses,
                 value: '\$${viewModel.totalExpenses.toStringAsFixed(2)}',
                 color: colorScheme.error,
               ),
@@ -179,20 +181,24 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.pending_actions,
-                title: 'Pending Approvals',
+                title: AppLocalizations.of(context)!.kpiPendingApprovals,
                 value: viewModel.pendingApprovals.toString(),
                 color: Colors.orange,
-                subtitle: 'Managers awaiting approval',
+                subtitle:
+                    AppLocalizations.of(context)!.kpiPendingApprovalsSubtitle,
               ),
             ),
             SizedBox(
               width: (constraints.maxWidth - AppSpacing.xl * 2) / 3,
               child: KpiSummaryCard(
                 icon: Icons.trending_up,
-                title: 'Monthly Growth',
+                title: AppLocalizations.of(context)!.kpiMonthlyGrowth,
                 value: '${viewModel.monthlyGrowth.toStringAsFixed(1)}%',
-                color: viewModel.monthlyGrowth >= 0 ? colorScheme.tertiary : colorScheme.error,
-                subtitle: 'Platform expense growth',
+                color: viewModel.monthlyGrowth >= 0
+                    ? colorScheme.tertiary
+                    : colorScheme.error,
+                subtitle:
+                    AppLocalizations.of(context)!.kpiMonthlyGrowthSubtitle,
               ),
             ),
           ],
@@ -203,12 +209,12 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
 
   Widget _buildPendingApprovals(OwnerDashboardViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Pending Manager Requests',
+          AppLocalizations.of(context)!.headerPendingManagerRequests,
           style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -218,7 +224,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
             managers: viewModel.getPendingManagers(),
             onApprove: (id) => _handleApprove(viewModel, id),
             onReject: (id) => _handleReject(viewModel, id),
-            onView: (id) => _handleViewManager(id),
+            onView: _handleViewManager,
           ),
         ),
       ],
@@ -227,12 +233,12 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
 
   Widget _buildActiveManagers(OwnerDashboardViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Active Managers',
+          AppLocalizations.of(context)!.headerActiveManagers,
           style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -240,7 +246,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           height: 400,
           child: ActiveManagersTable(
             managers: viewModel.getActiveManagers(),
-            onView: (id) => _handleViewManager(id),
+            onView: _handleViewManager,
             onSuspend: (id) => _handleSuspend(viewModel, id),
             onDelete: (id) => _handleDelete(viewModel, id),
           ),
@@ -273,20 +279,20 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   Widget _buildAuditTimeline(OwnerDashboardViewModel viewModel) {
     final textTheme = Theme.of(context).textTheme;
     final auditLogs = viewModel.getAuditLogs();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Recent Activity',
+          AppLocalizations.of(context)!.headerRecentActivity,
           style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: AppSpacing.lg),
         if (auditLogs.isEmpty)
-          const Center(
+          Center(
             child: Padding(
               padding: EdgeInsets.all(AppSpacing.xxxl),
-              child: Text('No recent activity'),
+              child: Text(AppLocalizations.of(context)!.msgNoRecentActivity),
             ),
           )
         else
@@ -294,7 +300,8 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: auditLogs.length > 10 ? 10 : auditLogs.length,
-            separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
+            separatorBuilder: (context, index) =>
+                const SizedBox(height: AppSpacing.md),
             itemBuilder: (context, index) {
               return AuditTimelineItem(auditLog: auditLogs[index]);
             },
@@ -303,12 +310,14 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     );
   }
 
-  Future<void> _handleApprove(OwnerDashboardViewModel viewModel, String id) async {
+  Future<void> _handleApprove(
+      OwnerDashboardViewModel viewModel, String id) async {
     try {
       await viewModel.approveManager(id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Manager approved successfully')),
+          SnackBar(
+              content: Text(AppLocalizations.of(context)!.msgManagerApproved)),
         );
       }
     } catch (e) {
@@ -320,19 +329,22 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     }
   }
 
-  Future<void> _handleReject(OwnerDashboardViewModel viewModel, String id) async {
+  Future<void> _handleReject(
+      OwnerDashboardViewModel viewModel, String id) async {
     // Show dialog to get rejection reason
     final reason = await showDialog<String>(
       context: context,
       builder: (context) => _RejectDialog(),
     );
-    
+
     if (reason != null && reason.isNotEmpty) {
       try {
         await viewModel.rejectManager(id, reason);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Manager rejected')),
+            SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.msgManagerRejected)),
           );
         }
       } catch (e) {
@@ -345,18 +357,21 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     }
   }
 
-  Future<void> _handleSuspend(OwnerDashboardViewModel viewModel, String id) async {
+  Future<void> _handleSuspend(
+      OwnerDashboardViewModel viewModel, String id) async {
     final reason = await showDialog<String>(
       context: context,
       builder: (context) => _SuspendDialog(),
     );
-    
+
     if (reason != null && reason.isNotEmpty) {
       try {
         await viewModel.suspendManager(id, reason);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Manager suspended')),
+            SnackBar(
+                content:
+                    Text(AppLocalizations.of(context)!.msgManagerSuspended)),
           );
         }
       } catch (e) {
@@ -369,31 +384,33 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
     }
   }
 
-  Future<void> _handleDelete(OwnerDashboardViewModel viewModel, String id) async {
+  Future<void> _handleDelete(
+      OwnerDashboardViewModel viewModel, String id) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this manager? This action cannot be undone.'),
+        title: Text(AppLocalizations.of(context)!.dialogTitleConfirmDelete),
+        content: Text(AppLocalizations.of(context)!.dialogDescDeleteManager),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.btnDelete),
           ),
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       try {
         await viewModel.deleteManager(id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Manager deleted')),
+            SnackBar(
+                content: Text(AppLocalizations.of(context)!.msgManagerDeleted)),
           );
         }
       } catch (e) {
@@ -409,7 +426,9 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   void _handleViewManager(String id) {
     // TODO: Implement manager profile view
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Manager profile view - Coming soon')),
+      SnackBar(
+          content:
+              Text(AppLocalizations.of(context)!.msgManagerProfileComingSoon)),
     );
   }
 }
@@ -431,23 +450,23 @@ class _RejectDialogState extends State<_RejectDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Reject Manager'),
+      title: Text(AppLocalizations.of(context)!.dialogTitleRejectManager),
       content: TextField(
         controller: _controller,
-        decoration: const InputDecoration(
-          labelText: 'Reason for rejection',
-          hintText: 'Enter reason...',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context)!.dialogLabelReasonRejection,
+          hintText: AppLocalizations.of(context)!.dialogHintEnterReason,
         ),
         maxLines: 3,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.btnCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Reject'),
+          child: Text(AppLocalizations.of(context)!.dialogActionReject),
         ),
       ],
     );
@@ -471,23 +490,23 @@ class _SuspendDialogState extends State<_SuspendDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Suspend Manager'),
+      title: Text(AppLocalizations.of(context)!.dialogTitleSuspendManager),
       content: TextField(
         controller: _controller,
-        decoration: const InputDecoration(
-          labelText: 'Reason for suspension',
-          hintText: 'Enter reason...',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context)!.dialogLabelReasonSuspension,
+          hintText: AppLocalizations.of(context)!.dialogHintEnterReason,
         ),
         maxLines: 3,
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.btnCancel),
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(_controller.text),
-          child: const Text('Suspend'),
+          child: Text(AppLocalizations.of(context)!.dialogActionSuspend),
         ),
       ],
     );

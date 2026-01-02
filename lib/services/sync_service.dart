@@ -5,10 +5,10 @@ import 'package:drift/drift.dart' show Value;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-import '../database/app_database.dart';
-import '../database/daos/sync_queue_dao.dart';
-import 'supabase_service.dart';
-import 'logger_service.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/database/daos/sync_queue_dao.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
+import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 
 /// Sync status enum for tracking sync state
 enum SyncStatus {
@@ -26,6 +26,15 @@ enum SyncStatus {
 /// - Last-write-wins conflict resolution
 /// - Automatic retry with exponential backoff
 class SyncService {
+
+  SyncService({
+    required AppDatabase database,
+    required SupabaseService supabaseService,
+    required LoggerService logger,
+  })  : _database = database,
+        _supabaseService = supabaseService,
+        _syncQueueDao = SyncQueueDao(database),
+        _logger = logger;
   final AppDatabase _database;
   final SupabaseService _supabaseService;
   final SyncQueueDao _syncQueueDao;
@@ -49,15 +58,6 @@ class SyncService {
   // Real-time subscriptions
   RealtimeChannel? _categoriesChannel;
   RealtimeChannel? _expensesChannel;
-
-  SyncService({
-    required AppDatabase database,
-    required SupabaseService supabaseService,
-    required LoggerService logger,
-  })  : _database = database,
-        _supabaseService = supabaseService,
-        _syncQueueDao = SyncQueueDao(database),
-        _logger = logger;
 
   /// Initialize the sync service
   Future<void> initialize() async {
@@ -182,7 +182,7 @@ class SyncService {
       _logger.info('SyncService: Full sync completed');
     } catch (e, stack) {
       _logger.error('SyncService: Full sync failed',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
       _updateStatus(SyncStatus.error);
     }
   }
@@ -253,7 +253,7 @@ class SyncService {
       }
     } catch (e, stack) {
       _logger.error('SyncService: Pull categories failed',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
       rethrow;
     }
   }
@@ -295,7 +295,7 @@ class SyncService {
       }
     } catch (e, stack) {
       _logger.error('SyncService: Pull expenses failed',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
       rethrow;
     }
   }
@@ -307,7 +307,7 @@ class SyncService {
     try {
       final pendingItems = await _syncQueueDao.getPendingItems();
       _logger.debug(
-          'SyncService: Processing ${pendingItems.length} pending items');
+          'SyncService: Processing ${pendingItems.length} pending items',);
 
       for (final item in pendingItems) {
         try {
@@ -315,7 +315,7 @@ class SyncService {
           await _syncQueueDao.markSynced(item.id);
         } catch (e) {
           _logger.warning(
-              'SyncService: Failed to process queue item ${item.id}: $e');
+              'SyncService: Failed to process queue item ${item.id}: $e',);
           await _syncQueueDao.markFailed(item.id, e.toString());
         }
       }
@@ -336,7 +336,7 @@ class SyncService {
       await _syncQueueDao.cleanupSyncedItems();
     } catch (e, stack) {
       _logger.error('SyncService: Queue processing failed',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
       rethrow;
     }
   }
@@ -479,11 +479,11 @@ class SyncService {
           isSynced: const Value(true),
           syncedAt: Value(DateTime.now()),
           version: Value(data['version'] as int? ?? 1),
-        ));
+        ),);
   }
 
   Future<void> _updateCategoryFromServer(
-      int localId, Map<String, dynamic> data) async {
+      int localId, Map<String, dynamic> data,) async {
     final colorValue = data['color'];
     final colorInt = colorValue is int
         ? colorValue
@@ -497,7 +497,7 @@ class SyncService {
       isSynced: const Value(true),
       syncedAt: Value(DateTime.now()),
       version: Value(data['version'] as int? ?? 1),
-    ));
+    ),);
   }
 
   Future<void> _insertExpenseFromServer(Map<String, dynamic> data) async {
@@ -506,7 +506,7 @@ class SyncService {
     final category = await _findLocalCategoryByServerId(categoryServerId);
     if (category == null) {
       _logger.warning(
-          'SyncService: Category not found for expense: $categoryServerId');
+          'SyncService: Category not found for expense: $categoryServerId',);
       return;
     }
 
@@ -522,11 +522,11 @@ class SyncService {
           isSynced: const Value(true),
           syncedAt: Value(DateTime.now()),
           version: Value(data['version'] as int? ?? 1),
-        ));
+        ),);
   }
 
   Future<void> _updateExpenseFromServer(
-      int localId, Map<String, dynamic> data) async {
+      int localId, Map<String, dynamic> data,) async {
     // Find local category by server ID
     int? categoryId;
     final categoryServerId = data['category_id'] as String?;
@@ -546,18 +546,18 @@ class SyncService {
       isSynced: const Value(true),
       syncedAt: Value(DateTime.now()),
       version: Value(data['version'] as int? ?? 1),
-    ));
+    ),);
   }
 
   Future<void> _updateLocalCategoryServerId(
-      int localId, String serverId) async {
+      int localId, String serverId,) async {
     await (_database.update(_database.categories)
           ..where((c) => c.id.equals(localId)))
         .write(CategoriesCompanion(
       serverId: Value(int.tryParse(serverId)),
       isSynced: const Value(true),
       syncedAt: Value(DateTime.now()),
-    ));
+    ),);
   }
 
   Future<void> _updateLocalExpenseServerId(int localId, String serverId) async {
@@ -567,7 +567,7 @@ class SyncService {
       serverId: Value(int.tryParse(serverId)),
       isSynced: const Value(true),
       syncedAt: Value(DateTime.now()),
-    ));
+    ),);
   }
 
   // ==================== Periodic Sync ====================
@@ -599,7 +599,7 @@ class SyncService {
       final orgId = profile?.organizationId;
       if (orgId == null) {
         _logger.warning(
-            'SyncService: No organization ID found for real-time subscriptions');
+            'SyncService: No organization ID found for real-time subscriptions',);
         return;
       }
 
@@ -622,7 +622,7 @@ class SyncService {
       _logger.info('SyncService: Real-time subscriptions set up');
     } catch (e, stack) {
       _logger.error('SyncService: Failed to set up real-time subscriptions',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
     }
   }
 
@@ -678,10 +678,10 @@ class SyncService {
             .go();
       }
       _logger.debug(
-          'SyncService: Deleted local record for $table with server ID $serverId');
+          'SyncService: Deleted local record for $table with server ID $serverId',);
     } catch (e, stack) {
       _logger.error('SyncService: Failed to delete local record',
-          error: e, stackTrace: stack);
+          error: e, stackTrace: stack,);
     }
   }
 

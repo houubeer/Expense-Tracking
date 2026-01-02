@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import '../../../widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -18,12 +19,12 @@ class DashboardHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Dashboard',
+              localizations.dashboard,
               style: AppTextStyles.heading1,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Overview of your financial health',
+              localizations.dashboardSubtitle,
               style: AppTextStyles.bodyMedium,
             ),
           ],
@@ -31,9 +32,10 @@ class DashboardHeader extends StatelessWidget {
         PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
           icon: Icons.add,
-          child: const Text(AppStrings.btnAddExpense),
+          child: Text(localizations.addExpense),
         ),
       ],
     );
   }
 }
+

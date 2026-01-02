@@ -4,18 +4,14 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// Table widget for displaying active managers
 class ActiveManagersTable extends StatelessWidget {
+
+  const ActiveManagersTable({
+    required this.managers, required this.onView, required this.onSuspend, required this.onDelete, super.key,
+  });
   final List<Manager> managers;
   final void Function(String managerId) onView;
   final void Function(String managerId) onSuspend;
   final void Function(String managerId) onDelete;
-
-  const ActiveManagersTable({
-    super.key,
-    required this.managers,
-    required this.onView,
-    required this.onSuspend,
-    required this.onDelete,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +64,6 @@ class ActiveManagersTable extends StatelessWidget {
                   child: Text('Email', style: textTheme.titleSmall),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Text('Status', style: textTheme.titleSmall),
                 ),
                 const SizedBox(width: 150),
@@ -101,10 +96,6 @@ class ActiveManagersTable extends StatelessWidget {
 }
 
 class _ManagerRow extends StatelessWidget {
-  final Manager manager;
-  final VoidCallback onView;
-  final VoidCallback onSuspend;
-  final VoidCallback onDelete;
 
   const _ManagerRow({
     required this.manager,
@@ -112,6 +103,10 @@ class _ManagerRow extends StatelessWidget {
     required this.onSuspend,
     required this.onDelete,
   });
+  final Manager manager;
+  final VoidCallback onView;
+  final VoidCallback onSuspend;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +164,6 @@ class _ManagerRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 1,
             child: _StatusBadge(status: manager.status),
           ),
           SizedBox(
@@ -205,9 +199,9 @@ class _ManagerRow extends StatelessWidget {
 }
 
 class _StatusBadge extends StatelessWidget {
-  final ManagerStatus status;
 
   const _StatusBadge({required this.status});
+  final ManagerStatus status;
 
   @override
   Widget build(BuildContext context) {

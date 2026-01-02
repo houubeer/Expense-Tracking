@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 /// Registry for category icons (OCP compliance)
 /// Allows adding new icons without modifying existing code
 class IconRegistry {
-  static final IconRegistry _instance = IconRegistry._internal();
   factory IconRegistry() => _instance;
   IconRegistry._internal();
+  static final IconRegistry _instance = IconRegistry._internal();
 
   final List<IconData> _icons = [
     // Default icons

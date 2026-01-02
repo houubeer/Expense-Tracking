@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 
 /// Budget category model for UI representation
 class BudgetCategory {
-  final String name;
-  final double spent;
-  final double total;
-  final Color color;
 
   BudgetCategory({
     required this.name,
@@ -13,6 +9,10 @@ class BudgetCategory {
     required this.total,
     required this.color,
   });
+  final String name;
+  final double spent;
+  final double total;
+  final Color color;
 
   /// Calculate percentage spent
   double get percentage => total > 0 ? (spent / total) : 0.0;

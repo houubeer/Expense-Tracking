@@ -5,16 +5,15 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 class EmployeeCard extends StatelessWidget {
-  final Employee employee;
-  final VoidCallback? onTap;
-  final void Function(String)? onMenuAction;
 
   const EmployeeCard({
-    super.key,
-    required this.employee,
+    required this.employee, super.key,
     this.onTap,
     this.onMenuAction,
   });
+  final Employee employee;
+  final VoidCallback? onTap;
+  final void Function(String)? onMenuAction;
 
   @override
   Widget build(BuildContext context) {

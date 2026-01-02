@@ -19,13 +19,13 @@ abstract class IExpenseService {
 /// Data class representing an expense with its associated category
 /// Decouples higher layers from DAO-specific implementations
 class ExpenseWithCategory {
-  final Expense expense;
-  final Category category;
 
   ExpenseWithCategory({
     required this.expense,
     required this.category,
   });
+  final Expense expense;
+  final Category category;
 
   // Convenience getters
   int get id => expense.id;

@@ -5,10 +5,6 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Mock reimbursement data model
 class Reimbursement {
-  final String employeeName;
-  final double amount;
-  final bool isPaid;
-  final DateTime? paymentDate;
 
   const Reimbursement({
     required this.employeeName,
@@ -16,27 +12,30 @@ class Reimbursement {
     required this.isPaid,
     this.paymentDate,
   });
+  final String employeeName;
+  final double amount;
+  final bool isPaid;
+  final DateTime? paymentDate;
 }
 
 /// Reimbursement table widget for tracking payments
 /// Displays approved expenses awaiting payment
 class ReimbursementTable extends StatelessWidget {
-  final VoidCallback? onExportExcel;
-  final VoidCallback? onExportPdf;
 
   const ReimbursementTable({
     super.key,
     this.onExportExcel,
     this.onExportPdf,
   });
+  final VoidCallback? onExportExcel;
+  final VoidCallback? onExportPdf;
 
   // Mock reimbursement data
   static final List<Reimbursement> _mockReimbursements = [
-    Reimbursement(
+    const Reimbursement(
       employeeName: 'Sarah Johnson',
       amount: 12500.00,
       isPaid: false,
-      paymentDate: null,
     ),
     Reimbursement(
       employeeName: 'Emily Rodriguez',
