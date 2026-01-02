@@ -44,6 +44,17 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> settings = {};
+    if (json['settings'] != null) {
+      final rawSettings = json['settings'];
+      if (rawSettings is Map) {
+        settings = rawSettings as Map<String, dynamic>;
+      } else if (rawSettings is String) {
+        // Handle case where settings is returned as stringified JSON if needed
+        // For now, simpler safe-guard against cast errors
+      }
+    }
+
     return UserProfile(
       id: json['id'] as String,
       organizationId: json['organization_id'] as String?,
@@ -55,7 +66,7 @@ class UserProfile {
           ? DateTime.parse(json['last_sync_at'] as String)
           : null,
       syncToken: json['sync_token'] as String?,
-      settings: json['settings'] as Map<String, dynamic>? ?? {},
+      settings: settings,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
