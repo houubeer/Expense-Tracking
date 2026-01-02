@@ -3,16 +3,15 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// Page header widget with title and optional action button
 class PageHeader extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final Widget? action;
 
   const PageHeader({
-    super.key,
-    required this.title,
+    required this.title, super.key,
     this.subtitle,
     this.action,
   });
+  final String title;
+  final String? subtitle;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {

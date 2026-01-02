@@ -8,16 +8,13 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class EditCategoryDialog extends StatefulWidget {
+
+  const EditCategoryDialog({
+    required this.categoryRepository, required this.category, required this.budgetController, super.key,
+  });
   final ICategoryRepository categoryRepository;
   final Category category;
   final TextEditingController budgetController;
-
-  const EditCategoryDialog({
-    super.key,
-    required this.categoryRepository,
-    required this.category,
-    required this.budgetController,
-  });
 
   @override
   State<EditCategoryDialog> createState() => _EditCategoryDialogState();
@@ -101,7 +98,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Edit ${widget.category.name}',
-                      style: AppTextStyles.heading3),
+                      style: AppTextStyles.heading3,),
                   IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
@@ -175,7 +172,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       ),
                       child: isSelected
                           ? const Icon(Icons.check,
-                              color: Colors.white, size: AppSpacing.iconMd)
+                              color: Colors.white, size: AppSpacing.iconMd,)
                           : null,
                     ),
                   );
@@ -287,7 +284,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                           messenger.showSnackBar(
                             SnackBar(
                               content: Text(
-                                  'Failed to update category: ${e.toString()}'),
+                                  'Failed to update category: ${e.toString()}',),
                               backgroundColor: colorScheme.error,
                             ),
                           );

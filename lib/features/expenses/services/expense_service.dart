@@ -34,11 +34,6 @@ import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 /// ));
 /// ```
 class ExpenseService implements IExpenseService {
-  final IExpenseRepository _expenseRepository;
-  final ICategoryReader _categoryReader;
-  final ICategoryBudgetManager _categoryBudgetManager;
-  final IDatabase _database;
-  final _logger = LoggerService.instance;
 
   /// Creates a new [ExpenseService] instance.
   ///
@@ -52,6 +47,11 @@ class ExpenseService implements IExpenseService {
     this._categoryBudgetManager,
     this._database,
   );
+  final IExpenseRepository _expenseRepository;
+  final ICategoryReader _categoryReader;
+  final ICategoryBudgetManager _categoryBudgetManager;
+  final IDatabase _database;
+  final _logger = LoggerService.instance;
 
   /// Creates a new expense and updates the associated category's spent amount.
   ///
@@ -101,7 +101,7 @@ class ExpenseService implements IExpenseService {
             );
           } else {
             _logger.warning(
-                'Category not found for expense creation: $categoryId');
+                'Category not found for expense creation: $categoryId',);
           }
         }
 
@@ -109,7 +109,7 @@ class ExpenseService implements IExpenseService {
       });
     } catch (e, stackTrace) {
       _logger.error('Failed to create expense',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
       throw DatabaseException('Failed to create expense', originalError: e);
     }
   }
@@ -187,7 +187,7 @@ class ExpenseService implements IExpenseService {
       });
     } catch (e, stackTrace) {
       _logger.error('Failed to update expense',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
       throw DatabaseException('Failed to update expense', originalError: e);
     }
   }
@@ -233,7 +233,7 @@ class ExpenseService implements IExpenseService {
       });
     } catch (e, stackTrace) {
       _logger.error('Failed to delete expense',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
       throw DatabaseException('Failed to delete expense', originalError: e);
     }
   }

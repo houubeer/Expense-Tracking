@@ -3,22 +3,18 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 
 class KpiSummaryCard extends StatelessWidget {
+
+  const KpiSummaryCard({
+    required this.icon, required this.title, required this.value, required this.color, super.key,
+    this.subtitle,
+    this.onTap,
+  });
   final IconData icon;
   final String title;
   final String value;
   final Color color;
   final String? subtitle;
   final VoidCallback? onTap;
-
-  const KpiSummaryCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.color,
-    this.subtitle,
-    this.onTap,
-  });
 
   @override
   Widget build(BuildContext context) {

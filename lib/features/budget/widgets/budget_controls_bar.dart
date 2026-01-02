@@ -68,7 +68,6 @@ class BudgetControlsBar extends ConsumerWidget {
           color: filter.searchQuery.isNotEmpty
               ? colorScheme.primary
               : colorScheme.outlineVariant,
-          width: 1,
         ),
       ),
       child: TextField(
@@ -79,13 +78,18 @@ class BudgetControlsBar extends ConsumerWidget {
         decoration: InputDecoration(
           hintText: AppStrings.hintSearchCategories,
           hintStyle: AppTextStyles.bodyMedium,
-          prefixIcon: Icon(Icons.search,
-              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search'),
+          prefixIcon: Icon(
+            Icons.search,
+            color: colorScheme.onSurfaceVariant,
+            semanticLabel: 'Search',
+          ),
           suffixIcon: filter.searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear,
-                      color: colorScheme.onSurfaceVariant,
-                      semanticLabel: 'Clear search'),
+                  icon: Icon(
+                    Icons.clear,
+                    color: colorScheme.onSurfaceVariant,
+                    semanticLabel: 'Clear search',
+                  ),
                   onPressed: () {
                     ref.read(budgetFilterProvider.notifier).state =
                         filter.copyWith(searchQuery: '');
@@ -104,7 +108,10 @@ class BudgetControlsBar extends ConsumerWidget {
   }
 
   Widget _buildStatusFilter(
-      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
+    WidgetRef ref,
+    BudgetFilter filter,
+    ColorScheme colorScheme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -141,7 +148,7 @@ class BudgetControlsBar extends ConsumerWidget {
           }).toList(),
           onChanged: (value) {
             ref.read(budgetFilterProvider.notifier).state =
-                filter.copyWith(statusFilter: value!);
+                filter.copyWith(statusFilter: value);
           },
         ),
       ),
@@ -149,7 +156,10 @@ class BudgetControlsBar extends ConsumerWidget {
   }
 
   Widget _buildSortDropdown(
-      WidgetRef ref, BudgetFilter filter, ColorScheme colorScheme) {
+    WidgetRef ref,
+    BudgetFilter filter,
+    ColorScheme colorScheme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -179,7 +189,7 @@ class BudgetControlsBar extends ConsumerWidget {
           }).toList(),
           onChanged: (value) {
             ref.read(budgetFilterProvider.notifier).state =
-                filter.copyWith(sortBy: value!);
+                filter.copyWith(sortBy: value);
           },
         ),
       ),

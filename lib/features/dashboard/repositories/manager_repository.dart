@@ -3,13 +3,13 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/manager_m
 
 /// Repository for managing manager data with in-memory mocked storage
 class ManagerRepository {
-  final List<Manager> _managers = [];
-  final StreamController<List<Manager>> _managersController =
-      StreamController<List<Manager>>.broadcast();
 
   ManagerRepository() {
     _initializeMockData();
   }
+  final List<Manager> _managers = [];
+  final StreamController<List<Manager>> _managersController =
+      StreamController<List<Manager>>.broadcast();
 
   /// Initialize with mock data
   void _initializeMockData() {
@@ -171,7 +171,7 @@ class ManagerRepository {
     return _managers
         .where((m) =>
             m.name.toLowerCase().contains(lowerQuery) ||
-            m.email.toLowerCase().contains(lowerQuery))
+            m.email.toLowerCase().contains(lowerQuery),)
         .toList();
   }
 

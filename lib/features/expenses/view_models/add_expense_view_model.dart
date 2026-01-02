@@ -10,14 +10,14 @@ import 'package:expense_tracking_desktop_app/core/validators/expense_validators.
 import 'package:expense_tracking_desktop_app/core/errors/error_mapper.dart';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
+
+  AddExpenseViewModel(
+      this._expenseService, this._errorReporting, int? preSelectedCategoryId,)
+      : super(AddExpenseState.initial(
+            preSelectedCategoryId: preSelectedCategoryId,),);
   final IExpenseService _expenseService;
   final ErrorReportingService _errorReporting;
   final _logger = LoggerService.instance;
-
-  AddExpenseViewModel(
-      this._expenseService, this._errorReporting, int? preSelectedCategoryId)
-      : super(AddExpenseState.initial(
-            preSelectedCategoryId: preSelectedCategoryId));
 
   @override
   void dispose() {
@@ -143,7 +143,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       );
     } catch (e, stackTrace) {
       _logger.error('AddExpenseViewModel: Failed to create expense',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
 
       // Only report if it's an unexpected error
       if (ErrorMapper.shouldReportError(e)) {
@@ -220,7 +220,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       final newExpense = oldExpense.copyWith(
         amount: amount,
         description: state.descriptionController.text.trim(),
-        categoryId: state.selectedCategoryId!,
+        categoryId: state.selectedCategoryId,
         date: state.selectedDate,
         isReimbursable: state.isReimbursable,
         receiptPath: drift.Value(state.receiptPath),
@@ -235,7 +235,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       );
     } catch (e, stackTrace) {
       _logger.error('AddExpenseViewModel: Failed to update expense',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
 
       // Only report if it's an unexpected error
       if (ErrorMapper.shouldReportError(e)) {

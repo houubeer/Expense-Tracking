@@ -13,23 +13,11 @@ enum SubmissionStatus {
 
 /// Add Expense State - holds form state and submission status
 class AddExpenseState {
-  final SubmissionStatus status;
-  final String? errorMessage;
-  final String? successMessage;
-  final TextEditingController amountController;
-  final TextEditingController descriptionController;
-  final DateTime selectedDate;
-  final int? selectedCategoryId;
-  final bool isReimbursable;
-  final String? receiptPath;
 
   AddExpenseState({
     required this.status,
-    this.errorMessage,
+    required this.amountController, required this.descriptionController, required this.selectedDate, this.errorMessage,
     this.successMessage,
-    required this.amountController,
-    required this.descriptionController,
-    required this.selectedDate,
     this.selectedCategoryId,
     this.isReimbursable = false,
     this.receiptPath,
@@ -42,10 +30,17 @@ class AddExpenseState {
       descriptionController: TextEditingController(),
       selectedDate: DateTime.now(),
       selectedCategoryId: preSelectedCategoryId,
-      isReimbursable: false,
-      receiptPath: null,
     );
   }
+  final SubmissionStatus status;
+  final String? errorMessage;
+  final String? successMessage;
+  final TextEditingController amountController;
+  final TextEditingController descriptionController;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
+  final bool isReimbursable;
+  final String? receiptPath;
 
   AddExpenseState copyWith({
     SubmissionStatus? status,
@@ -86,6 +81,6 @@ final addExpenseViewModelProvider = StateNotifierProvider.autoDispose
     final expenseService = ref.watch(expenseServiceProvider);
     final errorReporting = ref.watch(errorReportingServiceProvider);
     return AddExpenseViewModel(
-        expenseService, errorReporting, preSelectedCategoryId);
+        expenseService, errorReporting, preSelectedCategoryId,);
   },
 );

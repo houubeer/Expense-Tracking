@@ -4,20 +4,15 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// A reusable expense list item widget
 class ExpenseListItem extends StatelessWidget {
+
+  const ExpenseListItem({
+    required this.title, required this.category, required this.date, required this.amount, required this.iconColor, super.key,
+  });
   final String title;
   final String category;
   final String date;
   final double amount;
   final Color iconColor;
-
-  const ExpenseListItem({
-    super.key,
-    required this.title,
-    required this.category,
-    required this.date,
-    required this.amount,
-    required this.iconColor,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +26,7 @@ class ExpenseListItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
           child: Icon(Icons.receipt_long_rounded,
-              color: iconColor, size: AppSpacing.iconSm),
+              color: iconColor, size: AppSpacing.iconSm,),
         ),
         const SizedBox(width: AppSpacing.lg),
         Expanded(
@@ -40,13 +35,13 @@ class ExpenseListItem extends StatelessWidget {
             children: [
               Text(title,
                   style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600)),
-              Text("$category • $date", style: AppTextStyles.caption),
+                      .copyWith(fontWeight: FontWeight.w600),),
+              Text('$category • $date', style: AppTextStyles.caption),
             ],
           ),
         ),
         Text(
-          "-${amount.toStringAsFixed(2)}",
+          '-${amount.toStringAsFixed(2)}',
           style: AppTextStyles.bodyLarge.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,

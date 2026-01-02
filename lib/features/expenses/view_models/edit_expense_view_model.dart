@@ -10,28 +10,12 @@ import 'package:expense_tracking_desktop_app/services/error_reporting_service.da
 
 /// Edit Expense State - holds form state and submission status
 class EditExpenseState {
-  final SubmissionStatus status;
-  final String? errorMessage;
-  final String? successMessage;
-  final TextEditingController amountController;
-  final TextEditingController descriptionController;
-  final DateTime selectedDate;
-  final int? selectedCategoryId;
-  final bool isReimbursable;
-  final String? receiptPath;
-  final Expense originalExpense;
 
   EditExpenseState({
     required this.status,
-    this.errorMessage,
+    required this.amountController, required this.descriptionController, required this.selectedDate, required this.selectedCategoryId, required this.isReimbursable, required this.originalExpense, this.errorMessage,
     this.successMessage,
-    required this.amountController,
-    required this.descriptionController,
-    required this.selectedDate,
-    required this.selectedCategoryId,
-    required this.isReimbursable,
     this.receiptPath,
-    required this.originalExpense,
   });
 
   factory EditExpenseState.fromExpense(Expense expense) {
@@ -46,6 +30,16 @@ class EditExpenseState {
       originalExpense: expense,
     );
   }
+  final SubmissionStatus status;
+  final String? errorMessage;
+  final String? successMessage;
+  final TextEditingController amountController;
+  final TextEditingController descriptionController;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
+  final bool isReimbursable;
+  final String? receiptPath;
+  final Expense originalExpense;
 
   EditExpenseState copyWith({
     SubmissionStatus? status,
@@ -79,13 +73,13 @@ class EditExpenseState {
 
 /// Edit Expense ViewModel
 class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
+
+  EditExpenseViewModel(
+      this._expenseService, this._errorReporting, Expense expense,)
+      : super(EditExpenseState.fromExpense(expense));
   final IExpenseService _expenseService;
   final ErrorReportingService _errorReporting;
   final _logger = LoggerService.instance;
-
-  EditExpenseViewModel(
-      this._expenseService, this._errorReporting, Expense expense)
-      : super(EditExpenseState.fromExpense(expense));
 
   @override
   void dispose() {
@@ -137,17 +131,17 @@ class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
         amount: amount,
         description: description,
         date: state.selectedDate,
-        categoryId: state.selectedCategoryId!,
+        categoryId: state.selectedCategoryId,
         isReimbursable: state.isReimbursable,
         receiptPath: Value(state.receiptPath),
       );
 
       _logger.debug(
-          'EditExpenseViewModel: Updating expense - id=${state.originalExpense.id}');
+          'EditExpenseViewModel: Updating expense - id=${state.originalExpense.id}',);
       await _expenseService.updateExpense(
-          state.originalExpense, updatedExpense);
+          state.originalExpense, updatedExpense,);
       _logger.info(
-          'EditExpenseViewModel: Expense updated successfully - id=${state.originalExpense.id}');
+          'EditExpenseViewModel: Expense updated successfully - id=${state.originalExpense.id}',);
 
       state = state.copyWith(
         status: SubmissionStatus.success,
@@ -157,7 +151,7 @@ class EditExpenseViewModel extends StateNotifier<EditExpenseState> {
       _logger.error(
           'EditExpenseViewModel: Failed to update expense - id=${state.originalExpense.id}',
           error: e,
-          stackTrace: stackTrace);
+          stackTrace: stackTrace,);
       await _errorReporting.reportUIError(
         'EditExpenseViewModel',
         'updateExpense',

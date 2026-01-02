@@ -52,13 +52,6 @@ enum SubscriptionStatus {
 
 /// Subscription model representing a company subscription
 class Subscription {
-  final String id;
-  final String companyId;
-  final SubscriptionPlan plan;
-  final DateTime startDate;
-  final DateTime endDate;
-  final SubscriptionStatus status;
-  final double monthlyRevenue;
 
   const Subscription({
     required this.id,
@@ -88,6 +81,13 @@ class Subscription {
       monthlyRevenue: (json['monthlyRevenue'] as num).toDouble(),
     );
   }
+  final String id;
+  final String companyId;
+  final SubscriptionPlan plan;
+  final DateTime startDate;
+  final DateTime endDate;
+  final SubscriptionStatus status;
+  final double monthlyRevenue;
 
   /// Convert Subscription to JSON
   Map<String, dynamic> toJson() {
