@@ -12,16 +12,15 @@ import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets
 
 /// Card widget displaying a budget category with its details and actions
 class BudgetCategoryCard extends StatelessWidget {
-  final Category category;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
   const BudgetCategoryCard({
-    super.key,
     required this.category,
     required this.onEdit,
     required this.onDelete,
+    super.key,
   });
+  final Category category;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,9 @@ class BudgetCategoryCard extends StatelessWidget {
               color: colorScheme.primary.withValues(alpha: 0.05),
               blurRadius: AppConfig.shadowBlurRadius,
               offset: const Offset(
-                  AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                AppConfig.shadowOffsetX,
+                AppConfig.shadowOffsetY,
+              ),
             ),
           ],
         ),
@@ -119,8 +120,11 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onEdit,
-              icon: const Icon(Icons.edit,
-                  size: AppSpacing.iconXs, semanticLabel: 'Edit'),
+              icon: const Icon(
+                Icons.edit,
+                size: AppSpacing.iconXs,
+                semanticLabel: 'Edit',
+              ),
               label: const Text(AppStrings.btnEdit),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
@@ -135,8 +139,11 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline,
-                  size: AppSpacing.iconSm, semanticLabel: 'Delete category'),
+              icon: const Icon(
+                Icons.delete_outline,
+                size: AppSpacing.iconSm,
+                semanticLabel: 'Delete category',
+              ),
               color: colorScheme.error,
               tooltip: 'Delete Category',
             ),
