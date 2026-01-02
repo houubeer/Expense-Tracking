@@ -40,6 +40,12 @@ class $OrganizationsTable extends Organizations
   late final GeneratedColumn<String> managerEmail = GeneratedColumn<String>(
       'manager_email', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _managerNameMeta =
+      const VerificationMeta('managerName');
+  @override
+  late final GeneratedColumn<String> managerName = GeneratedColumn<String>(
+      'manager_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -47,22 +53,24 @@ class $OrganizationsTable extends Organizations
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('pending'));
-  static const VerificationMeta _currencyMeta =
-      const VerificationMeta('currency');
+  static const VerificationMeta _fiscalYearStartMeta =
+      const VerificationMeta('fiscalYearStart');
   @override
-  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
-      'currency', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('USD'));
-  static const VerificationMeta _timezoneMeta =
-      const VerificationMeta('timezone');
+  late final GeneratedColumn<int> fiscalYearStart = GeneratedColumn<int>(
+      'fiscal_year_start', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _approvedAtMeta =
+      const VerificationMeta('approvedAt');
   @override
-  late final GeneratedColumn<String> timezone = GeneratedColumn<String>(
-      'timezone', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('UTC'));
+  late final GeneratedColumn<DateTime> approvedAt = GeneratedColumn<DateTime>(
+      'approved_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -101,9 +109,11 @@ class $OrganizationsTable extends Organizations
         serverId,
         name,
         managerEmail,
+        managerName,
         status,
-        currency,
-        timezone,
+        fiscalYearStart,
+        approvedAt,
+        createdBy,
         createdAt,
         updatedAt,
         syncedAt,
@@ -140,17 +150,31 @@ class $OrganizationsTable extends Organizations
     } else if (isInserting) {
       context.missing(_managerEmailMeta);
     }
+    if (data.containsKey('manager_name')) {
+      context.handle(
+          _managerNameMeta,
+          managerName.isAcceptableOrUnknown(
+              data['manager_name']!, _managerNameMeta));
+    }
     if (data.containsKey('status')) {
       context.handle(_statusMeta,
           status.isAcceptableOrUnknown(data['status']!, _statusMeta));
     }
-    if (data.containsKey('currency')) {
-      context.handle(_currencyMeta,
-          currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta));
+    if (data.containsKey('fiscal_year_start')) {
+      context.handle(
+          _fiscalYearStartMeta,
+          fiscalYearStart.isAcceptableOrUnknown(
+              data['fiscal_year_start']!, _fiscalYearStartMeta));
     }
-    if (data.containsKey('timezone')) {
-      context.handle(_timezoneMeta,
-          timezone.isAcceptableOrUnknown(data['timezone']!, _timezoneMeta));
+    if (data.containsKey('approved_at')) {
+      context.handle(
+          _approvedAtMeta,
+          approvedAt.isAcceptableOrUnknown(
+              data['approved_at']!, _approvedAtMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -185,12 +209,16 @@ class $OrganizationsTable extends Organizations
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       managerEmail: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}manager_email'])!,
+      managerName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}manager_name']),
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      currency: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}currency'])!,
-      timezone: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}timezone'])!,
+      fiscalYearStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}fiscal_year_start']),
+      approvedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}approved_at']),
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -216,11 +244,17 @@ class Organization extends DataClass implements Insertable<Organization> {
   final String? serverId;
   final String name;
   final String managerEmail;
+  final String? managerName;
 
   /// Status: pending, approved, rejected
   final String status;
-  final String currency;
-  final String timezone;
+
+  /// Fiscal year start month (1-12)
+  final int? fiscalYearStart;
+  final DateTime? approvedAt;
+
+  /// Who created this organization (user_profile id)
+  final String? createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? syncedAt;
@@ -230,9 +264,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       this.serverId,
       required this.name,
       required this.managerEmail,
+      this.managerName,
       required this.status,
-      required this.currency,
-      required this.timezone,
+      this.fiscalYearStart,
+      this.approvedAt,
+      this.createdBy,
       required this.createdAt,
       required this.updatedAt,
       this.syncedAt,
@@ -246,9 +282,19 @@ class Organization extends DataClass implements Insertable<Organization> {
     }
     map['name'] = Variable<String>(name);
     map['manager_email'] = Variable<String>(managerEmail);
+    if (!nullToAbsent || managerName != null) {
+      map['manager_name'] = Variable<String>(managerName);
+    }
     map['status'] = Variable<String>(status);
-    map['currency'] = Variable<String>(currency);
-    map['timezone'] = Variable<String>(timezone);
+    if (!nullToAbsent || fiscalYearStart != null) {
+      map['fiscal_year_start'] = Variable<int>(fiscalYearStart);
+    }
+    if (!nullToAbsent || approvedAt != null) {
+      map['approved_at'] = Variable<DateTime>(approvedAt);
+    }
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || syncedAt != null) {
@@ -266,9 +312,19 @@ class Organization extends DataClass implements Insertable<Organization> {
           : Value(serverId),
       name: Value(name),
       managerEmail: Value(managerEmail),
+      managerName: managerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(managerName),
       status: Value(status),
-      currency: Value(currency),
-      timezone: Value(timezone),
+      fiscalYearStart: fiscalYearStart == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fiscalYearStart),
+      approvedAt: approvedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedAt),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       syncedAt: syncedAt == null && nullToAbsent
@@ -286,9 +342,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       serverId: serializer.fromJson<String?>(json['serverId']),
       name: serializer.fromJson<String>(json['name']),
       managerEmail: serializer.fromJson<String>(json['managerEmail']),
+      managerName: serializer.fromJson<String?>(json['managerName']),
       status: serializer.fromJson<String>(json['status']),
-      currency: serializer.fromJson<String>(json['currency']),
-      timezone: serializer.fromJson<String>(json['timezone']),
+      fiscalYearStart: serializer.fromJson<int?>(json['fiscalYearStart']),
+      approvedAt: serializer.fromJson<DateTime?>(json['approvedAt']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
@@ -303,9 +361,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       'serverId': serializer.toJson<String?>(serverId),
       'name': serializer.toJson<String>(name),
       'managerEmail': serializer.toJson<String>(managerEmail),
+      'managerName': serializer.toJson<String?>(managerName),
       'status': serializer.toJson<String>(status),
-      'currency': serializer.toJson<String>(currency),
-      'timezone': serializer.toJson<String>(timezone),
+      'fiscalYearStart': serializer.toJson<int?>(fiscalYearStart),
+      'approvedAt': serializer.toJson<DateTime?>(approvedAt),
+      'createdBy': serializer.toJson<String?>(createdBy),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
@@ -318,9 +378,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           Value<String?> serverId = const Value.absent(),
           String? name,
           String? managerEmail,
+          Value<String?> managerName = const Value.absent(),
           String? status,
-          String? currency,
-          String? timezone,
+          Value<int?> fiscalYearStart = const Value.absent(),
+          Value<DateTime?> approvedAt = const Value.absent(),
+          Value<String?> createdBy = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt,
           Value<DateTime?> syncedAt = const Value.absent(),
@@ -330,9 +392,13 @@ class Organization extends DataClass implements Insertable<Organization> {
         serverId: serverId.present ? serverId.value : this.serverId,
         name: name ?? this.name,
         managerEmail: managerEmail ?? this.managerEmail,
+        managerName: managerName.present ? managerName.value : this.managerName,
         status: status ?? this.status,
-        currency: currency ?? this.currency,
-        timezone: timezone ?? this.timezone,
+        fiscalYearStart: fiscalYearStart.present
+            ? fiscalYearStart.value
+            : this.fiscalYearStart,
+        approvedAt: approvedAt.present ? approvedAt.value : this.approvedAt,
+        createdBy: createdBy.present ? createdBy.value : this.createdBy,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
@@ -346,9 +412,15 @@ class Organization extends DataClass implements Insertable<Organization> {
       managerEmail: data.managerEmail.present
           ? data.managerEmail.value
           : this.managerEmail,
+      managerName:
+          data.managerName.present ? data.managerName.value : this.managerName,
       status: data.status.present ? data.status.value : this.status,
-      currency: data.currency.present ? data.currency.value : this.currency,
-      timezone: data.timezone.present ? data.timezone.value : this.timezone,
+      fiscalYearStart: data.fiscalYearStart.present
+          ? data.fiscalYearStart.value
+          : this.fiscalYearStart,
+      approvedAt:
+          data.approvedAt.present ? data.approvedAt.value : this.approvedAt,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -363,9 +435,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           ..write('serverId: $serverId, ')
           ..write('name: $name, ')
           ..write('managerEmail: $managerEmail, ')
+          ..write('managerName: $managerName, ')
           ..write('status: $status, ')
-          ..write('currency: $currency, ')
-          ..write('timezone: $timezone, ')
+          ..write('fiscalYearStart: $fiscalYearStart, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -375,8 +449,20 @@ class Organization extends DataClass implements Insertable<Organization> {
   }
 
   @override
-  int get hashCode => Object.hash(id, serverId, name, managerEmail, status,
-      currency, timezone, createdAt, updatedAt, syncedAt, isSynced);
+  int get hashCode => Object.hash(
+      id,
+      serverId,
+      name,
+      managerEmail,
+      managerName,
+      status,
+      fiscalYearStart,
+      approvedAt,
+      createdBy,
+      createdAt,
+      updatedAt,
+      syncedAt,
+      isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -385,9 +471,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           other.serverId == this.serverId &&
           other.name == this.name &&
           other.managerEmail == this.managerEmail &&
+          other.managerName == this.managerName &&
           other.status == this.status &&
-          other.currency == this.currency &&
-          other.timezone == this.timezone &&
+          other.fiscalYearStart == this.fiscalYearStart &&
+          other.approvedAt == this.approvedAt &&
+          other.createdBy == this.createdBy &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.syncedAt == this.syncedAt &&
@@ -399,9 +487,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
   final Value<String?> serverId;
   final Value<String> name;
   final Value<String> managerEmail;
+  final Value<String?> managerName;
   final Value<String> status;
-  final Value<String> currency;
-  final Value<String> timezone;
+  final Value<int?> fiscalYearStart;
+  final Value<DateTime?> approvedAt;
+  final Value<String?> createdBy;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
@@ -411,9 +501,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     this.serverId = const Value.absent(),
     this.name = const Value.absent(),
     this.managerEmail = const Value.absent(),
+    this.managerName = const Value.absent(),
     this.status = const Value.absent(),
-    this.currency = const Value.absent(),
-    this.timezone = const Value.absent(),
+    this.fiscalYearStart = const Value.absent(),
+    this.approvedAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -424,9 +516,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     this.serverId = const Value.absent(),
     required String name,
     required String managerEmail,
+    this.managerName = const Value.absent(),
     this.status = const Value.absent(),
-    this.currency = const Value.absent(),
-    this.timezone = const Value.absent(),
+    this.fiscalYearStart = const Value.absent(),
+    this.approvedAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -438,9 +532,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     Expression<String>? serverId,
     Expression<String>? name,
     Expression<String>? managerEmail,
+    Expression<String>? managerName,
     Expression<String>? status,
-    Expression<String>? currency,
-    Expression<String>? timezone,
+    Expression<int>? fiscalYearStart,
+    Expression<DateTime>? approvedAt,
+    Expression<String>? createdBy,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
@@ -451,9 +547,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       if (serverId != null) 'server_id': serverId,
       if (name != null) 'name': name,
       if (managerEmail != null) 'manager_email': managerEmail,
+      if (managerName != null) 'manager_name': managerName,
       if (status != null) 'status': status,
-      if (currency != null) 'currency': currency,
-      if (timezone != null) 'timezone': timezone,
+      if (fiscalYearStart != null) 'fiscal_year_start': fiscalYearStart,
+      if (approvedAt != null) 'approved_at': approvedAt,
+      if (createdBy != null) 'created_by': createdBy,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
@@ -466,9 +564,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       Value<String?>? serverId,
       Value<String>? name,
       Value<String>? managerEmail,
+      Value<String?>? managerName,
       Value<String>? status,
-      Value<String>? currency,
-      Value<String>? timezone,
+      Value<int?>? fiscalYearStart,
+      Value<DateTime?>? approvedAt,
+      Value<String?>? createdBy,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<DateTime?>? syncedAt,
@@ -478,9 +578,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       serverId: serverId ?? this.serverId,
       name: name ?? this.name,
       managerEmail: managerEmail ?? this.managerEmail,
+      managerName: managerName ?? this.managerName,
       status: status ?? this.status,
-      currency: currency ?? this.currency,
-      timezone: timezone ?? this.timezone,
+      fiscalYearStart: fiscalYearStart ?? this.fiscalYearStart,
+      approvedAt: approvedAt ?? this.approvedAt,
+      createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncedAt: syncedAt ?? this.syncedAt,
@@ -503,14 +605,20 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     if (managerEmail.present) {
       map['manager_email'] = Variable<String>(managerEmail.value);
     }
+    if (managerName.present) {
+      map['manager_name'] = Variable<String>(managerName.value);
+    }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
-    if (currency.present) {
-      map['currency'] = Variable<String>(currency.value);
+    if (fiscalYearStart.present) {
+      map['fiscal_year_start'] = Variable<int>(fiscalYearStart.value);
     }
-    if (timezone.present) {
-      map['timezone'] = Variable<String>(timezone.value);
+    if (approvedAt.present) {
+      map['approved_at'] = Variable<DateTime>(approvedAt.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -534,9 +642,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
           ..write('serverId: $serverId, ')
           ..write('name: $name, ')
           ..write('managerEmail: $managerEmail, ')
+          ..write('managerName: $managerName, ')
           ..write('status: $status, ')
-          ..write('currency: $currency, ')
-          ..write('timezone: $timezone, ')
+          ..write('fiscalYearStart: $fiscalYearStart, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -598,16 +708,17 @@ class $UserProfilesTable extends UserProfiles
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('employee'));
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-      'is_active', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
-      defaultValue: const Constant(true));
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _avatarUrlMeta =
+      const VerificationMeta('avatarUrl');
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+      'avatar_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _settingsMeta =
       const VerificationMeta('settings');
   @override
@@ -622,12 +733,6 @@ class $UserProfilesTable extends UserProfiles
   late final GeneratedColumn<DateTime> lastSyncAt = GeneratedColumn<DateTime>(
       'last_sync_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _syncTokenMeta =
-      const VerificationMeta('syncToken');
-  @override
-  late final GeneratedColumn<String> syncToken = GeneratedColumn<String>(
-      'sync_token', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -668,10 +773,10 @@ class $UserProfilesTable extends UserProfiles
         email,
         fullName,
         role,
-        isActive,
+        status,
+        avatarUrl,
         settings,
         lastSyncAt,
-        syncToken,
         createdAt,
         updatedAt,
         syncedAt,
@@ -714,9 +819,13 @@ class $UserProfilesTable extends UserProfiles
       context.handle(
           _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
     }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('avatar_url')) {
+      context.handle(_avatarUrlMeta,
+          avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta));
     }
     if (data.containsKey('settings')) {
       context.handle(_settingsMeta,
@@ -727,10 +836,6 @@ class $UserProfilesTable extends UserProfiles
           _lastSyncAtMeta,
           lastSyncAt.isAcceptableOrUnknown(
               data['last_sync_at']!, _lastSyncAtMeta));
-    }
-    if (data.containsKey('sync_token')) {
-      context.handle(_syncTokenMeta,
-          syncToken.isAcceptableOrUnknown(data['sync_token']!, _syncTokenMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -769,14 +874,14 @@ class $UserProfilesTable extends UserProfiles
           .read(DriftSqlType.string, data['${effectivePrefix}full_name']),
       role: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status']),
+      avatarUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}avatar_url']),
       settings: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}settings'])!,
       lastSyncAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}last_sync_at']),
-      syncToken: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sync_token']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -808,12 +913,16 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
 
   /// Role: owner, manager, employee
   final String role;
-  final bool isActive;
+
+  /// User status: 'active', 'pending', 'inactive', etc.
+  final String? status;
+
+  /// Avatar URL
+  final String? avatarUrl;
 
   /// User settings as JSON
   final String settings;
   final DateTime? lastSyncAt;
-  final String? syncToken;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? syncedAt;
@@ -825,10 +934,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       required this.email,
       this.fullName,
       required this.role,
-      required this.isActive,
+      this.status,
+      this.avatarUrl,
       required this.settings,
       this.lastSyncAt,
-      this.syncToken,
       required this.createdAt,
       required this.updatedAt,
       this.syncedAt,
@@ -848,13 +957,15 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       map['full_name'] = Variable<String>(fullName);
     }
     map['role'] = Variable<String>(role);
-    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String>(avatarUrl);
+    }
     map['settings'] = Variable<String>(settings);
     if (!nullToAbsent || lastSyncAt != null) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt);
-    }
-    if (!nullToAbsent || syncToken != null) {
-      map['sync_token'] = Variable<String>(syncToken);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -879,14 +990,15 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           ? const Value.absent()
           : Value(fullName),
       role: Value(role),
-      isActive: Value(isActive),
+      status:
+          status == null && nullToAbsent ? const Value.absent() : Value(status),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
       settings: Value(settings),
       lastSyncAt: lastSyncAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncAt),
-      syncToken: syncToken == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncToken),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       syncedAt: syncedAt == null && nullToAbsent
@@ -906,10 +1018,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email: serializer.fromJson<String>(json['email']),
       fullName: serializer.fromJson<String?>(json['fullName']),
       role: serializer.fromJson<String>(json['role']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
+      status: serializer.fromJson<String?>(json['status']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
       settings: serializer.fromJson<String>(json['settings']),
       lastSyncAt: serializer.fromJson<DateTime?>(json['lastSyncAt']),
-      syncToken: serializer.fromJson<String?>(json['syncToken']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
@@ -926,10 +1038,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       'email': serializer.toJson<String>(email),
       'fullName': serializer.toJson<String?>(fullName),
       'role': serializer.toJson<String>(role),
-      'isActive': serializer.toJson<bool>(isActive),
+      'status': serializer.toJson<String?>(status),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
       'settings': serializer.toJson<String>(settings),
       'lastSyncAt': serializer.toJson<DateTime?>(lastSyncAt),
-      'syncToken': serializer.toJson<String?>(syncToken),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
@@ -944,10 +1056,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           String? email,
           Value<String?> fullName = const Value.absent(),
           String? role,
-          bool? isActive,
+          Value<String?> status = const Value.absent(),
+          Value<String?> avatarUrl = const Value.absent(),
           String? settings,
           Value<DateTime?> lastSyncAt = const Value.absent(),
-          Value<String?> syncToken = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt,
           Value<DateTime?> syncedAt = const Value.absent(),
@@ -960,10 +1072,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
         email: email ?? this.email,
         fullName: fullName.present ? fullName.value : this.fullName,
         role: role ?? this.role,
-        isActive: isActive ?? this.isActive,
+        status: status.present ? status.value : this.status,
+        avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
         settings: settings ?? this.settings,
         lastSyncAt: lastSyncAt.present ? lastSyncAt.value : this.lastSyncAt,
-        syncToken: syncToken.present ? syncToken.value : this.syncToken,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
@@ -979,11 +1091,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email: data.email.present ? data.email.value : this.email,
       fullName: data.fullName.present ? data.fullName.value : this.fullName,
       role: data.role.present ? data.role.value : this.role,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      status: data.status.present ? data.status.value : this.status,
+      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
       settings: data.settings.present ? data.settings.value : this.settings,
       lastSyncAt:
           data.lastSyncAt.present ? data.lastSyncAt.value : this.lastSyncAt,
-      syncToken: data.syncToken.present ? data.syncToken.value : this.syncToken,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -1000,10 +1112,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('role: $role, ')
-          ..write('isActive: $isActive, ')
+          ..write('status: $status, ')
+          ..write('avatarUrl: $avatarUrl, ')
           ..write('settings: $settings, ')
           ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('syncToken: $syncToken, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -1020,10 +1132,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email,
       fullName,
       role,
-      isActive,
+      status,
+      avatarUrl,
       settings,
       lastSyncAt,
-      syncToken,
       createdAt,
       updatedAt,
       syncedAt,
@@ -1038,10 +1150,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           other.email == this.email &&
           other.fullName == this.fullName &&
           other.role == this.role &&
-          other.isActive == this.isActive &&
+          other.status == this.status &&
+          other.avatarUrl == this.avatarUrl &&
           other.settings == this.settings &&
           other.lastSyncAt == this.lastSyncAt &&
-          other.syncToken == this.syncToken &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.syncedAt == this.syncedAt &&
@@ -1055,10 +1167,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
   final Value<String> email;
   final Value<String?> fullName;
   final Value<String> role;
-  final Value<bool> isActive;
+  final Value<String?> status;
+  final Value<String?> avatarUrl;
   final Value<String> settings;
   final Value<DateTime?> lastSyncAt;
-  final Value<String?> syncToken;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
@@ -1070,10 +1182,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
     this.role = const Value.absent(),
-    this.isActive = const Value.absent(),
+    this.status = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
     this.settings = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
-    this.syncToken = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1086,10 +1198,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     required String email,
     this.fullName = const Value.absent(),
     this.role = const Value.absent(),
-    this.isActive = const Value.absent(),
+    this.status = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
     this.settings = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
-    this.syncToken = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1102,10 +1214,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     Expression<String>? email,
     Expression<String>? fullName,
     Expression<String>? role,
-    Expression<bool>? isActive,
+    Expression<String>? status,
+    Expression<String>? avatarUrl,
     Expression<String>? settings,
     Expression<DateTime>? lastSyncAt,
-    Expression<String>? syncToken,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
@@ -1118,10 +1230,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       if (email != null) 'email': email,
       if (fullName != null) 'full_name': fullName,
       if (role != null) 'role': role,
-      if (isActive != null) 'is_active': isActive,
+      if (status != null) 'status': status,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (settings != null) 'settings': settings,
       if (lastSyncAt != null) 'last_sync_at': lastSyncAt,
-      if (syncToken != null) 'sync_token': syncToken,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
@@ -1136,10 +1248,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       Value<String>? email,
       Value<String?>? fullName,
       Value<String>? role,
-      Value<bool>? isActive,
+      Value<String?>? status,
+      Value<String?>? avatarUrl,
       Value<String>? settings,
       Value<DateTime?>? lastSyncAt,
-      Value<String?>? syncToken,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<DateTime?>? syncedAt,
@@ -1151,10 +1263,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       role: role ?? this.role,
-      isActive: isActive ?? this.isActive,
+      status: status ?? this.status,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       settings: settings ?? this.settings,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
-      syncToken: syncToken ?? this.syncToken,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncedAt: syncedAt ?? this.syncedAt,
@@ -1183,17 +1295,17 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     if (role.present) {
       map['role'] = Variable<String>(role.value);
     }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String>(avatarUrl.value);
     }
     if (settings.present) {
       map['settings'] = Variable<String>(settings.value);
     }
     if (lastSyncAt.present) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt.value);
-    }
-    if (syncToken.present) {
-      map['sync_token'] = Variable<String>(syncToken.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1219,10 +1331,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('role: $role, ')
-          ..write('isActive: $isActive, ')
+          ..write('status: $status, ')
+          ..write('avatarUrl: $avatarUrl, ')
           ..write('settings: $settings, ')
           ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('syncToken: $syncToken, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -3208,9 +3320,11 @@ typedef $$OrganizationsTableCreateCompanionBuilder = OrganizationsCompanion
   Value<String?> serverId,
   required String name,
   required String managerEmail,
+  Value<String?> managerName,
   Value<String> status,
-  Value<String> currency,
-  Value<String> timezone,
+  Value<int?> fiscalYearStart,
+  Value<DateTime?> approvedAt,
+  Value<String?> createdBy,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3222,9 +3336,11 @@ typedef $$OrganizationsTableUpdateCompanionBuilder = OrganizationsCompanion
   Value<String?> serverId,
   Value<String> name,
   Value<String> managerEmail,
+  Value<String?> managerName,
   Value<String> status,
-  Value<String> currency,
-  Value<String> timezone,
+  Value<int?> fiscalYearStart,
+  Value<DateTime?> approvedAt,
+  Value<String?> createdBy,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3273,14 +3389,21 @@ class $$OrganizationsTableFilterComposer
   ColumnFilters<String> get managerEmail => $composableBuilder(
       column: $table.managerEmail, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get currency => $composableBuilder(
-      column: $table.currency, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart,
+      builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get timezone => $composableBuilder(
-      column: $table.timezone, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -3338,14 +3461,21 @@ class $$OrganizationsTableOrderingComposer
       column: $table.managerEmail,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get currency => $composableBuilder(
-      column: $table.currency, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart,
+      builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get timezone => $composableBuilder(
-      column: $table.timezone, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -3381,14 +3511,20 @@ class $$OrganizationsTableAnnotationComposer
   GeneratedColumn<String> get managerEmail => $composableBuilder(
       column: $table.managerEmail, builder: (column) => column);
 
+  GeneratedColumn<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => column);
+
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
-  GeneratedColumn<String> get currency =>
-      $composableBuilder(column: $table.currency, builder: (column) => column);
+  GeneratedColumn<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart, builder: (column) => column);
 
-  GeneratedColumn<String> get timezone =>
-      $composableBuilder(column: $table.timezone, builder: (column) => column);
+  GeneratedColumn<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3451,9 +3587,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             Value<String?> serverId = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> managerEmail = const Value.absent(),
+            Value<String?> managerName = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String> currency = const Value.absent(),
-            Value<String> timezone = const Value.absent(),
+            Value<int?> fiscalYearStart = const Value.absent(),
+            Value<DateTime?> approvedAt = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3464,9 +3602,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             serverId: serverId,
             name: name,
             managerEmail: managerEmail,
+            managerName: managerName,
             status: status,
-            currency: currency,
-            timezone: timezone,
+            fiscalYearStart: fiscalYearStart,
+            approvedAt: approvedAt,
+            createdBy: createdBy,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3477,9 +3617,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             Value<String?> serverId = const Value.absent(),
             required String name,
             required String managerEmail,
+            Value<String?> managerName = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String> currency = const Value.absent(),
-            Value<String> timezone = const Value.absent(),
+            Value<int?> fiscalYearStart = const Value.absent(),
+            Value<DateTime?> approvedAt = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3490,9 +3632,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             serverId: serverId,
             name: name,
             managerEmail: managerEmail,
+            managerName: managerName,
             status: status,
-            currency: currency,
-            timezone: timezone,
+            fiscalYearStart: fiscalYearStart,
+            approvedAt: approvedAt,
+            createdBy: createdBy,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3551,10 +3695,10 @@ typedef $$UserProfilesTableCreateCompanionBuilder = UserProfilesCompanion
   required String email,
   Value<String?> fullName,
   Value<String> role,
-  Value<bool> isActive,
+  Value<String?> status,
+  Value<String?> avatarUrl,
   Value<String> settings,
   Value<DateTime?> lastSyncAt,
-  Value<String?> syncToken,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3568,10 +3712,10 @@ typedef $$UserProfilesTableUpdateCompanionBuilder = UserProfilesCompanion
   Value<String> email,
   Value<String?> fullName,
   Value<String> role,
-  Value<bool> isActive,
+  Value<String?> status,
+  Value<String?> avatarUrl,
   Value<String> settings,
   Value<DateTime?> lastSyncAt,
-  Value<String?> syncToken,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3622,17 +3766,17 @@ class $$UserProfilesTableFilterComposer
   ColumnFilters<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get settings => $composableBuilder(
       column: $table.settings, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get syncToken => $composableBuilder(
-      column: $table.syncToken, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -3691,17 +3835,17 @@ class $$UserProfilesTableOrderingComposer
   ColumnOrderings<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get settings => $composableBuilder(
       column: $table.settings, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get syncToken => $composableBuilder(
-      column: $table.syncToken, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -3760,17 +3904,17 @@ class $$UserProfilesTableAnnotationComposer
   GeneratedColumn<String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
 
-  GeneratedColumn<bool> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarUrl =>
+      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
 
   GeneratedColumn<String> get settings =>
       $composableBuilder(column: $table.settings, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => column);
-
-  GeneratedColumn<String> get syncToken =>
-      $composableBuilder(column: $table.syncToken, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3834,10 +3978,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             Value<String> email = const Value.absent(),
             Value<String?> fullName = const Value.absent(),
             Value<String> role = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
             Value<String> settings = const Value.absent(),
             Value<DateTime?> lastSyncAt = const Value.absent(),
-            Value<String?> syncToken = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3850,10 +3994,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             email: email,
             fullName: fullName,
             role: role,
-            isActive: isActive,
+            status: status,
+            avatarUrl: avatarUrl,
             settings: settings,
             lastSyncAt: lastSyncAt,
-            syncToken: syncToken,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3866,10 +4010,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             required String email,
             Value<String?> fullName = const Value.absent(),
             Value<String> role = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
             Value<String> settings = const Value.absent(),
             Value<DateTime?> lastSyncAt = const Value.absent(),
-            Value<String?> syncToken = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3882,10 +4026,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             email: email,
             fullName: fullName,
             role: role,
-            isActive: isActive,
+            status: status,
+            avatarUrl: avatarUrl,
             settings: settings,
             lastSyncAt: lastSyncAt,
-            syncToken: syncToken,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,

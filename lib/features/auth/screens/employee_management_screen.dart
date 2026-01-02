@@ -158,17 +158,19 @@ class _EmployeeManagementScreenState
   Future<void> _toggleEmployeeStatus(UserProfile employee) async {
     try {
       final supabaseService = ref.read(supabaseServiceProvider);
+      // Toggle between 'active' and 'inactive' status
+      final newStatus = employee.isActive ? 'inactive' : 'active';
       await supabaseService.updateEmployeeStatus(
         employee.id,
-        !employee.isActive,
+        newStatus,
       );
       await _loadEmployees();
 
       if (!mounted) return;
-      final status = employee.isActive ? 'deactivated' : 'activated';
+      final statusText = employee.isActive ? 'deactivated' : 'activated';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${employee.fullName} has been $status'),
+          content: Text('${employee.fullName} has been $statusText'),
           backgroundColor: AppColors.green,
         ),
       );

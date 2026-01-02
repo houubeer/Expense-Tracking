@@ -23,13 +23,16 @@ class UserProfiles extends Table {
   /// Role: owner, manager, employee
   TextColumn get role => text().withDefault(const Constant('employee'))();
 
-  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  /// User status: 'active', 'pending', 'inactive', etc.
+  TextColumn get status => text().nullable()();
+
+  /// Avatar URL
+  TextColumn get avatarUrl => text().nullable()();
 
   /// User settings as JSON
   TextColumn get settings => text().withDefault(const Constant('{}'))();
 
   DateTimeColumn get lastSyncAt => dateTime().nullable()();
-  TextColumn get syncToken => text().nullable()();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
