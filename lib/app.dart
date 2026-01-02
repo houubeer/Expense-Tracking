@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/theme/app_theme.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/routes/router.dart' as app_router;
@@ -33,16 +34,29 @@ class ExpenseTrackerApp extends StatelessWidget {
   }
 }
 
-class _AppConsumer extends ConsumerWidget {
+class _AppConsumer extends ConsumerStatefulWidget {
   const _AppConsumer();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the theme provider
+  ConsumerState<_AppConsumer> createState() => _AppConsumerState();
+}
+
+class _AppConsumerState extends ConsumerState<_AppConsumer> {
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    // Create router once to avoid rebuilding the navigation tree every frame.
+    _router = app_router.createRouter();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp.router(
-      routerConfig: app_router.createRouter(),
+      routerConfig: _router,
       debugShowCheckedModeBanner: false,
       title: 'ExpenseTracker',
       theme: AppTheme.lightTheme,
