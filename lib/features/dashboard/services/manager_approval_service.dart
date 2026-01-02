@@ -30,7 +30,7 @@ class ManagerApprovalService {
 
     // Create audit log
     _createAuditLog(
-      action: AuditAction.approved,
+      action: 'APPROVE_MANAGER',
       managerName: 'Owner',
       details: 'Approved manager ${manager.name} for ${manager.companyName}',
     );
@@ -55,7 +55,7 @@ class ManagerApprovalService {
 
     // Create audit log
     _createAuditLog(
-      action: AuditAction.rejected,
+      action: 'REJECT_MANAGER',
       managerName: 'Owner',
       details: 'Rejected manager ${manager.name} for ${manager.companyName}. Reason: $reason',
     );
@@ -80,7 +80,7 @@ class ManagerApprovalService {
 
     // Create audit log
     _createAuditLog(
-      action: AuditAction.rejected,
+      action: 'SUSPEND_MANAGER',
       managerName: 'Owner',
       details: 'Suspended manager ${manager.name} from ${manager.companyName}. Reason: $reason',
     );
@@ -105,7 +105,7 @@ class ManagerApprovalService {
 
     // Create audit log
     _createAuditLog(
-      action: AuditAction.approved,
+      action: 'ACTIVATE_MANAGER',
       managerName: 'Owner',
       details: 'Activated manager ${manager.name} for ${manager.companyName}',
     );
@@ -122,7 +122,7 @@ class ManagerApprovalService {
 
     // Create audit log
     _createAuditLog(
-      action: AuditAction.rejected,
+      action: 'DELETE_MANAGER',
       managerName: 'Owner',
       details: 'Deleted manager ${manager.name} from ${manager.companyName}',
     );
@@ -135,16 +135,20 @@ class ManagerApprovalService {
 
   /// Create an audit log entry
   void _createAuditLog({
-    required AuditAction action,
+    required String action,
     required String managerName,
     required String details,
   }) {
     final log = AuditLog(
       id: 'audit_${DateTime.now().millisecondsSinceEpoch}',
+      organizationId: 'owner',
+      userId: 'owner',
+      userEmail: 'owner@system.com',
+      userName: managerName,
       action: action,
-      managerName: managerName,
-      timestamp: DateTime.now(),
-      details: details,
+      tableName: 'managers',
+      description: details,
+      createdAt: DateTime.now(),
     );
     _auditLogs.insert(0, log); // Insert at beginning for chronological order
   }
