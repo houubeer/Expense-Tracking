@@ -1,305 +1,317 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import '../models/expense_model.dart';
+import 'audit_log_repository.dart';
 
-/// Repository providing mock expense data for manager approval workflow
+// Helper for parsing status string to ExpenseStatus
+ExpenseStatus _parseStatus(String? statusStr) {
+  if (statusStr == null) return ExpenseStatus.pending;
+  return ExpenseStatus.values.firstWhere(
+    (e) => e.name == statusStr,
+    orElse: () => ExpenseStatus.pending,
+  );
+}
+
 class ExpenseRepository {
-  // Mock expense data
-  static final List<ManagerExpense> _mockExpenses = [
-    ManagerExpense(
-      id: 'exp001',
-      employeeId: 'emp001',
-      employeeName: 'Sarah Johnson',
-      amount: 12500.00,
-      category: 'Travel',
-      date: DateTime.now().subtract(const Duration(days: 2)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Flight tickets to Paris for client meeting',
-    ),
-    ManagerExpense(
-      id: 'exp002',
-      employeeId: 'emp002',
-      employeeName: 'Michael Chen',
-      amount: 3200.00,
-      category: 'Equipment',
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'New laptop for development work',
-    ),
-    ManagerExpense(
-      id: 'exp003',
-      employeeId: 'emp003',
-      employeeName: 'Emily Rodriguez',
-      amount: 850.00,
-      category: 'Software',
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Adobe Creative Cloud subscription',
-    ),
-    ManagerExpense(
-      id: 'exp004',
-      employeeId: 'emp004',
-      employeeName: 'David Kim',
-      amount: 4500.00,
-      category: 'Marketing',
-      date: DateTime.now().subtract(const Duration(days: 5)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Facebook Ads campaign budget',
-    ),
-    ManagerExpense(
-      id: 'exp005',
-      employeeId: 'emp005',
-      employeeName: 'Jessica Williams',
-      amount: 2100.00,
-      category: 'Entertainment',
-      date: DateTime.now().subtract(const Duration(days: 7)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Client dinner at Le Gourmet',
-    ),
-    ManagerExpense(
-      id: 'exp006',
-      employeeId: 'emp006',
-      employeeName: 'Robert Taylor',
-      amount: 1800.00,
-      category: 'Cloud Services',
-      date: DateTime.now().subtract(const Duration(days: 4)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'AWS infrastructure costs',
-    ),
-    ManagerExpense(
-      id: 'exp007',
-      employeeId: 'emp007',
-      employeeName: 'Amanda Brown',
-      amount: 650.00,
-      category: 'Training',
-      date: DateTime.now().subtract(const Duration(days: 10)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'HR certification course',
-    ),
-    ManagerExpense(
-      id: 'exp008',
-      employeeId: 'emp008',
-      employeeName: 'Christopher Lee',
-      amount: 5200.00,
-      category: 'Travel',
-      date: DateTime.now().subtract(const Duration(days: 15)),
-      receiptUrl: null,
-      status: ExpenseStatus.rejected,
-      comment: 'Travel not pre-approved',
-      description: 'Unauthorized conference trip',
-    ),
-    ManagerExpense(
-      id: 'exp009',
-      employeeId: 'emp009',
-      employeeName: 'Maria Garcia',
-      amount: 420.00,
-      category: 'Office Supplies',
-      date: DateTime.now().subtract(const Duration(days: 6)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Notebooks and pens for team',
-    ),
-    ManagerExpense(
-      id: 'exp010',
-      employeeId: 'emp010',
-      employeeName: 'James Anderson',
-      amount: 1500.00,
-      category: 'Software',
-      date: DateTime.now().subtract(const Duration(days: 8)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Testing automation tools license',
-    ),
-    ManagerExpense(
-      id: 'exp011',
-      employeeId: 'emp011',
-      employeeName: 'Lisa Martinez',
-      amount: 980.00,
-      category: 'Training',
-      date: DateTime.now().subtract(const Duration(days: 12)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Financial modeling workshop',
-    ),
-    ManagerExpense(
-      id: 'exp012',
-      employeeId: 'emp012',
-      employeeName: 'Daniel Wilson',
-      amount: 3400.00,
-      category: 'Travel',
-      date: DateTime.now().subtract(const Duration(days: 9)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Sales conference in Dubai',
-    ),
-    ManagerExpense(
-      id: 'exp013',
-      employeeId: 'emp001',
-      employeeName: 'Sarah Johnson',
-      amount: 750.00,
-      category: 'Equipment',
-      date: DateTime.now().subtract(const Duration(days: 14)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Wireless keyboard and mouse',
-    ),
-    ManagerExpense(
-      id: 'exp014',
-      employeeId: 'emp002',
-      employeeName: 'Michael Chen',
-      amount: 2200.00,
-      category: 'Entertainment',
-      date: DateTime.now().subtract(const Duration(days: 11)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Team building event',
-    ),
-    ManagerExpense(
-      id: 'exp015',
-      employeeId: 'emp004',
-      employeeName: 'David Kim',
-      amount: 1100.00,
-      category: 'Marketing',
-      date: DateTime.now().subtract(const Duration(days: 13)),
-      receiptUrl: null,
-      status: ExpenseStatus.rejected,
-      comment: 'Budget exceeded for this month',
-      description: 'LinkedIn Ads campaign',
-    ),
-    ManagerExpense(
-      id: 'exp016',
-      employeeId: 'emp006',
-      employeeName: 'Robert Taylor',
-      amount: 890.00,
-      category: 'Cloud Services',
-      date: DateTime.now().subtract(const Duration(days: 16)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Database hosting fees',
-    ),
-    ManagerExpense(
-      id: 'exp017',
-      employeeId: 'emp003',
-      employeeName: 'Emily Rodriguez',
-      amount: 1650.00,
-      category: 'Equipment',
-      date: DateTime.now().subtract(const Duration(days: 18)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Drawing tablet for design work',
-    ),
-    ManagerExpense(
-      id: 'exp018',
-      employeeId: 'emp005',
-      employeeName: 'Jessica Williams',
-      amount: 5800.00,
-      category: 'Travel',
-      date: DateTime.now().subtract(const Duration(days: 20)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'Business trip to New York',
-    ),
-    ManagerExpense(
-      id: 'exp019',
-      employeeId: 'emp009',
-      employeeName: 'Maria Garcia',
-      amount: 320.00,
-      category: 'Software',
-      date: DateTime.now().subtract(const Duration(days: 17)),
-      receiptUrl: null,
-      status: ExpenseStatus.pending,
-      description: 'Grammarly Premium subscription',
-    ),
-    ManagerExpense(
-      id: 'exp020',
-      employeeId: 'emp010',
-      employeeName: 'James Anderson',
-      amount: 2900.00,
-      category: 'Training',
-      date: DateTime.now().subtract(const Duration(days: 22)),
-      receiptUrl: null,
-      status: ExpenseStatus.approved,
-      description: 'QA automation bootcamp',
-    ),
-  ];
+  final SupabaseService _supabaseService;
+  final AuditLogRepository _auditLogRepository;
 
-  /// Get all expenses
-  Future<List<ManagerExpense>> getAllExpenses() async {
-    await Future<void>.delayed(const Duration(milliseconds: 300));
-    return List.unmodifiable(_mockExpenses);
+  ExpenseRepository(this._supabaseService, this._auditLogRepository);
+
+  SupabaseClient get _client => _supabaseService.client;
+  User? get _currentUser => _supabaseService.currentUser;
+
+  Future<String> _getCurrentOrgId() async {
+    if (_currentUser == null) {
+      throw Exception('User not authenticated');
+    }
+    final profile = await _client
+        .from('user_profiles')
+        .select('organization_id')
+        .eq('id', _currentUser!.id)
+        .single();
+    final orgId = profile['organization_id'] as String?;
+    if (orgId == null) {
+      throw Exception('User has no organization');
+    }
+    return orgId;
   }
 
-  /// Get pending expenses
-  Future<List<ManagerExpense>> getPendingExpenses() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return _mockExpenses
-        .where((exp) => exp.status == ExpenseStatus.pending)
+  Future<List<ManagerExpense>> _enrichWithProfiles(List<dynamic> data) async {
+    final expenses = data.cast<Map<String, dynamic>>();
+    
+    final userIds = expenses
+        .map((e) => e['created_by'] as String?)
+        .where((id) => id != null)
+        .toSet()
         .toList();
+
+    final Map<String, Map<String, dynamic>> userProfilesMap = {};
+    if (userIds.isNotEmpty) {
+      final profilesResponse = await _client
+          .from('user_profiles')
+          .select('id, full_name, email')
+          .filter('id', 'in', userIds);
+      
+      for (final profile in profilesResponse as List) {
+        final id = profile['id'] as String;
+        userProfilesMap[id] = profile as Map<String, dynamic>;
+      }
+    }
+
+    return expenses.map((expense) {
+      final userId = expense['created_by'] as String?;
+      final userProfile = userProfilesMap[userId];
+
+      return ManagerExpense.fromJson({
+        ...expense,
+        'employeeName': userProfile?['full_name'] ?? 'Unknown',
+      });
+    }).toList();
   }
 
-  /// Get expenses by employee ID
+  Future<List<ManagerExpense>> getAllExpenses() async {
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .order('date', ascending: false);
+
+    return _enrichWithProfiles(response as List);
+  }
+
+  Future<List<ManagerExpense>> getPendingExpenses() async {
+    final orgId = await _getCurrentOrgId();
+
+    // The 'status' column does not exist in the DB.
+    // We fetch all non-reimbursed expenses and treat them as 'pending' for now.
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .order('date', ascending: false);
+    
+    final enriched = await _enrichWithProfiles(response as List);
+    // Filter in-memory: if reimbursed_at is null, assume pending/approved/rejected bucket.
+    // Since we can't distinguish, we return all active non-reimbursed items.
+    return enriched.where((e) => e.reimbursedAt == null).toList();
+  }
+
   Future<List<ManagerExpense>> getExpensesByEmployee(String employeeId) async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return _mockExpenses.where((exp) => exp.employeeId == employeeId).toList();
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .eq('created_by', employeeId)
+        .order('date', ascending: false);
+
+    return _enrichWithProfiles(response as List);
   }
 
-  /// Get expenses by status
   Future<List<ManagerExpense>> getExpensesByStatus(ExpenseStatus status) async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return _mockExpenses.where((exp) => exp.status == status).toList();
+    final orgId = await _getCurrentOrgId();
+
+    // Fetch all and filter in Dart
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .order('date', ascending: false);
+
+    final allExpenses = await _enrichWithProfiles(response as List);
+    
+    // Manual mapping/filtering
+    return allExpenses.where((e) {
+      if (status == ExpenseStatus.approved) {
+        // Assume anything reimbursed is approved
+        return e.reimbursedAt != null;
+      } else if (status == ExpenseStatus.pending) {
+        // Treat everything non-reimbursed as pending for now
+        return e.reimbursedAt == null;
+      } else if (status == ExpenseStatus.rejected) {
+          return (e.notes ?? '').toLowerCase().contains('reject');
+      }
+      return false;
+    }).toList();
   }
 
-  /// Get expenses by date range
   Future<List<ManagerExpense>> getExpensesByDateRange(
       DateTime start, DateTime end) async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return _mockExpenses
-        .where((exp) =>
-            exp.date.isAfter(start.subtract(const Duration(days: 1))) &&
-            exp.date.isBefore(end.add(const Duration(days: 1))))
-        .toList();
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .gte('date', start.toIso8601String().split('T')[0])
+        .lte('date', end.toIso8601String().split('T')[0])
+        .order('date', ascending: false);
+
+    return _enrichWithProfiles(response as List);
   }
 
-  /// Get expenses by category
   Future<List<ManagerExpense>> getExpensesByCategory(String category) async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    return _mockExpenses.where((exp) => exp.category == category).toList();
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .ilike('description', '%$category%')
+        .order('date', ascending: false);
+
+    return _enrichWithProfiles(response as List);
   }
 
-  /// Get total expenses amount
+  Future<List<ManagerExpense>> getReimbursableExpenses() async {
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select()
+        .eq('organization_id', orgId)
+        .eq('is_reimbursable', true)
+        .order('date', ascending: false);
+
+    return _enrichWithProfiles(response as List);
+  }
+
   Future<double> getTotalExpensesAmount() async {
-    await Future<void>.delayed(const Duration(milliseconds: 150));
-    return _mockExpenses.fold<double>(0.0, (sum, exp) => sum + exp.amount);
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select('amount')
+        .eq('organization_id', orgId);
+
+    return (response as List).fold<double>(
+      0.0,
+      (sum, item) => sum + ((item['amount'] as num?)?.toDouble() ?? 0.0),
+    );
   }
 
-  /// Get expense count by status
   Future<Map<ExpenseStatus, int>> getExpenseCountByStatus() async {
-    await Future<void>.delayed(const Duration(milliseconds: 150));
+    final orgId = await _getCurrentOrgId();
+
+    // Select minimal fields to infer status
+    final response = await _client
+        .from('expenses')
+        .select('reimbursed_at')
+        .eq('organization_id', orgId);
+
     final counts = <ExpenseStatus, int>{};
     for (final status in ExpenseStatus.values) {
-      counts[status] =
-          _mockExpenses.where((exp) => exp.status == status).length;
+      counts[status] = 0;
     }
+
+    for (final item in response as List) {
+      final isReimbursed = item['reimbursed_at'] != null;
+      if (isReimbursed) {
+        counts[ExpenseStatus.approved] = (counts[ExpenseStatus.approved] ?? 0) + 1;
+      } else {
+        // Default to pending for all non-reimbursed
+        counts[ExpenseStatus.pending] = (counts[ExpenseStatus.pending] ?? 0) + 1;
+      }
+    }
+
     return counts;
   }
 
-  /// Get all unique categories
   Future<List<String>> getAllCategories() async {
-    await Future<void>.delayed(const Duration(milliseconds: 100));
-    return _mockExpenses.map((exp) => exp.category).toSet().toList()..sort();
+    final orgId = await _getCurrentOrgId();
+
+    final response = await _client
+        .from('expenses')
+        .select('description')
+        .eq('organization_id', orgId);
+
+    // Using description as category proxy if category column missing/unused? 
+    // Logic from previous code preserved.
+    final categories = (response as List)
+        .map((item) => item['description'] as String? ?? 'Other')
+        .toSet()
+        .toList();
+    categories.sort();
+    return categories;
   }
 
-  /// Get expenses for current month
   Future<List<ManagerExpense>> getCurrentMonthExpenses() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
     final now = DateTime.now();
     final startOfMonth = DateTime(now.year, now.month, 1);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
     return getExpensesByDateRange(startOfMonth, endOfMonth);
+  }
+
+  Future<void> approveExpense(String expenseId) async {
+    final orgId = await _getCurrentOrgId();
+    // Update logic to be implemented once schema is updated
+
+    await _auditLogRepository.createAuditLog(
+      organizationId: orgId,
+      action: 'APPROVE_EXPENSE',
+      tableName: 'expenses',
+      recordId: int.parse(expenseId),
+      oldData: {},
+      newData: {'status': 'approved (simulated)'},
+      description: 'Approved expense #$expenseId',
+    );
+  }
+
+  Future<void> rejectExpense(String expenseId, String reason) async {
+    final orgId = await _getCurrentOrgId();
+    await _client
+        .from('expenses')
+        .update({
+          'notes': reason,
+        })
+        .eq('id', int.parse(expenseId))
+        .eq('organization_id', orgId);
+
+    await _auditLogRepository.createAuditLog(
+      organizationId: orgId,
+      action: 'REJECT_EXPENSE',
+      tableName: 'expenses',
+      recordId: int.parse(expenseId),
+      oldData: {},
+      newData: {'notes': reason},
+      description: 'Rejected expense #$expenseId: $reason',
+    );
+  }
+
+  Future<void> addComment(String expenseId, String comment) async {
+    final orgId = await _getCurrentOrgId();
+
+    final oldExpense = await _client
+        .from('expenses')
+        .select()
+        .eq('id', int.parse(expenseId))
+        .eq('organization_id', orgId)
+        .single();
+
+    final existingNotes = oldExpense['notes'] as String? ?? '';
+    // Prevent duplicate newlines if empty
+    final newNotes = existingNotes.isEmpty ? comment : '$existingNotes\n---\n$comment';
+
+    await _client
+        .from('expenses')
+        .update({
+          'notes': newNotes,
+        })
+        .eq('id', int.parse(expenseId))
+        .eq('organization_id', orgId);
+
+    await _auditLogRepository.createAuditLog(
+      organizationId: orgId,
+      action: 'ADD_COMMENT',
+      tableName: 'expenses',
+      recordId: int.parse(expenseId),
+      oldData: {'notes': existingNotes},
+      newData: {'notes': newNotes},
+      description: 'Added comment to expense #$expenseId',
+    );
   }
 }
