@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
@@ -21,7 +22,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Creates the app router
-GoRouter createRouter() {
+final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.home,
@@ -61,8 +62,31 @@ GoRouter createRouter() {
                     children: [
                       Sidebar(
                         currentPath: state.uri.path,
-                        onDestinationSelected: (path) {
-                          context.go(path);
+                        onDestinationSelected: (path) async {
+                          // Present settings as a root-level dialog/overlay so it
+                          // appears above the entire app (including sidebar).
+                          if (path == AppRoutes.settings) {
+                            // Use showGeneralDialog with root navigator so it
+                            // overlays the whole app and can be popped.
+                            showGeneralDialog(
+                              context: context,
+                              barrierDismissible: true,
+                              barrierLabel: 'Settings',
+                              barrierColor: Colors.transparent,
+                              pageBuilder: (ctx, anim1, anim2) {
+                                return const SettingsScreen();
+                              },
+                              transitionBuilder:
+                                  (context, animation, secondary, child) {
+                                return FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                );
+                              },
+                            );
+                          } else {
+                            context.go(path);
+                          }
                         },
                       ),
                       Expanded(
@@ -178,17 +202,6 @@ GoRouter createRouter() {
               },
             ),
           ),
-          GoRoute(
-            path: AppRoutes.settings,
-            pageBuilder: (context, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const SettingsScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-            ),
-          ),
         ],
       ),
       GoRoute(
@@ -211,7 +224,7 @@ GoRouter createRouter() {
       ),
     ],
   );
-}
+});
 
 /// Error screen shown when navigation fails or route is not found
 class _ErrorScreen extends StatelessWidget {
