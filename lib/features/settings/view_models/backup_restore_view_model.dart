@@ -4,10 +4,10 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/features/settings/providers/backup_restore_provider.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
 
 /// ViewModel for backup and restore operations
 class BackupRestoreViewModel {
-
   BackupRestoreViewModel(this._ref);
   final Ref _ref;
 
@@ -101,20 +101,52 @@ class BackupRestoreViewModel {
   Future<bool> restoreBackup(String backupPath) async {
     try {
       _notifier.startRestore();
-      _notifier.updateProgress(0.2);
+      _notifier.updateProgress(0.1);
 
-      // Validate backup first
-      final isValid = await _backupService.validateBackup(backupPath);
-      if (!isValid) {
-        _notifier.restoreFailed('Invalid backup file');
-        return false;
+      // Close the database connection before restoring on Windows
+      // This is critical because SQLite holds a lock on the file
+      final oldDatabase = _ref.read(databaseProvider);
+
+      // Also stop the sync service to prevent it from trying to use the database
+      try {
+        final syncService = _ref.read(syncServiceProvider);
+        syncService.dispose();
+      } catch (e) {
+        // Ignore if sync service can't be stopped
       }
 
-      _notifier.updateProgress(0.5);
+      await oldDatabase.close();
+
+      // Give some time for the OS to release file handles
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      _notifier.updateProgress(0.4);
 
       final success = await _backupService.restoreBackup(backupPath);
 
       if (success) {
+        // Re-initialize database connection
+        final connectivityService = _ref.read(connectivityServiceProvider);
+        final newDatabase = AppDatabase(connectivityService);
+
+        // This is important: verify the new database works
+        await newDatabase.customSelect('SELECT 1').get();
+
+        // Update the provider with the new instance
+        _ref.read(databaseStateProvider.notifier).state = newDatabase;
+
+        // Restart sync service if needed logic could go here,
+        // but getting the provider again should re-create it if it was disposed properly?
+        // No, syncServiceProvider is a Provider (cached), not auto-disposable.
+        // But since we didn't invalidate syncServiceProvider, it likely still holds references to the OLD/Closed DB?
+        // We should invalidate providers that depend on the DB.
+        _ref.invalidate(syncServiceProvider);
+        _ref.invalidate(budgetRepositoryProvider);
+        _ref.invalidate(categoryRepositoryProvider);
+        _ref.invalidate(expenseRepositoryProvider);
+        _ref.invalidate(expenseServiceProvider);
+        _ref.invalidate(receiptUploadServiceProvider);
+
         _notifier.updateProgress(1.0);
         _notifier.completeRestore(AppStrings.msgRestoreSuccess);
         return true;
