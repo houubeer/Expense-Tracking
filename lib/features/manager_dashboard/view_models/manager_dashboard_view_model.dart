@@ -6,6 +6,7 @@ import '../models/audit_log_model.dart';
 import '../repositories/employee_repository.dart';
 import '../repositories/expense_repository.dart';
 import '../repositories/budget_repository.dart';
+import '../repositories/audit_log_repository.dart';
 import '../services/expense_approval_service.dart';
 import '../services/budget_calculation_service.dart';
 
@@ -15,6 +16,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   final EmployeeRepository _employeeRepository;
   final ExpenseRepository _expenseRepository;
   final BudgetRepository _budgetRepository;
+  final AuditLogRepository _auditLogRepository;
   final ExpenseApprovalService _approvalService;
   final BudgetCalculationService _calculationService;
 
@@ -23,6 +25,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   List<ManagerExpense> _pendingExpenses = [];
   List<ManagerExpense> _allExpenses = [];
   List<DepartmentBudget> _budgets = [];
+  List<ManagerExpense> _reimbursableExpenses = [];
   List<AuditLog> _auditLogs = [];
 
   // Filter state
@@ -38,6 +41,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
     this._employeeRepository,
     this._expenseRepository,
     this._budgetRepository,
+    this._auditLogRepository,
     this._approvalService,
     this._calculationService,
   );
@@ -47,6 +51,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   List<ManagerExpense> get pendingExpenses => _pendingExpenses;
   List<ManagerExpense> get allExpenses => _allExpenses;
   List<DepartmentBudget> get budgets => _budgets;
+  List<ManagerExpense> get reimbursableExpenses => _reimbursableExpenses;
   List<AuditLog> get auditLogs => _auditLogs;
   String get searchQuery => _searchQuery;
   String? get departmentFilter => _departmentFilter;
@@ -126,24 +131,33 @@ class ManagerDashboardViewModel extends ChangeNotifier {
 
     try {
       // Load data from repositories in parallel
+
+      // Load data from repositories in parallel
       final results = await Future.wait([
         _employeeRepository.getAllEmployees(),
         _expenseRepository.getPendingExpenses(),
         _expenseRepository.getAllExpenses(),
         _budgetRepository.getDepartmentBudgets(),
+        _expenseRepository.getReimbursableExpenses(),
       ]);
 
       _employees = results[0] as List<Employee>;
       _pendingExpenses = results[1] as List<ManagerExpense>;
       _allExpenses = results[2] as List<ManagerExpense>;
       _budgets = results[3] as List<DepartmentBudget>;
+      _reimbursableExpenses = results[4] as List<ManagerExpense>;
 
-      // Get audit logs from approval service
-      _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+      // Get current organization ID from first employee if available
+      if (_employees.isNotEmpty && _employees.first.organizationId != null) {
+        _auditLogs = await _auditLogRepository.getRecentAuditLogs(
+          _employees.first.organizationId!,
+          limit: 10,
+        );
+      }
 
       _isLoading = false;
       notifyListeners();
-    } catch (e) {
+    } catch (e, stack) {
       _errorMessage = 'Failed to load dashboard data: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
@@ -175,8 +189,8 @@ class ManagerDashboardViewModel extends ChangeNotifier {
           }
         }
 
-        // Refresh audit logs
-        _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+        // Refresh data to get updated audit logs
+        await refreshData();
 
         notifyListeners();
         return true;
@@ -217,8 +231,8 @@ class ManagerDashboardViewModel extends ChangeNotifier {
           }
         }
 
-        // Refresh audit logs
-        _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+        // Refresh data to get updated audit logs
+        await refreshData();
 
         notifyListeners();
         return true;
@@ -283,24 +297,15 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   Future<void> addEmployee(Employee employee) async {
     try {
       await _employeeRepository.addEmployee(employee);
-      _employees.add(employee);
       
-      // Add audit log
-      _auditLogs.insert(
-        0,
-        AuditLog(
-          id: 'audit${DateTime.now().millisecondsSinceEpoch}',
-          action: AuditAction.employeeAdded,
-          managerName: 'Current Manager',
-          timestamp: DateTime.now(),
-          details: 'Added employee ${employee.name}',
-        ),
-      );
+      // Audit log is created by repository
+      await refreshData();
       
       notifyListeners();
-    } catch (e) {
+    } catch (e, stackTrace) {
       _errorMessage = 'Failed to add employee: ${e.toString()}';
       notifyListeners();
+      rethrow; // Re-throw so the UI can catch it
     }
   }
 
@@ -315,17 +320,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
           status: EmployeeStatus.suspended,
         );
         
-        // Add audit log
-        _auditLogs.insert(
-          0,
-          AuditLog(
-            id: 'audit${DateTime.now().millisecondsSinceEpoch}',
-            action: AuditAction.employeeAdded,
-            managerName: 'Current Manager',
-            timestamp: DateTime.now(),
-            details: 'Suspended employee ${_employees[index].name}',
-          ),
-        );
+        // Audit log is created by repository
       }
       
       notifyListeners();
@@ -346,17 +341,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
           status: EmployeeStatus.active,
         );
         
-        // Add audit log
-        _auditLogs.insert(
-          0,
-          AuditLog(
-            id: 'audit${DateTime.now().millisecondsSinceEpoch}',
-            action: AuditAction.employeeAdded,
-            managerName: 'Current Manager',
-            timestamp: DateTime.now(),
-            details: 'Activated employee ${_employees[index].name}',
-          ),
-        );
+        // Audit log is created by repository
       }
       
       notifyListeners();
@@ -374,17 +359,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
       
       _employees.removeWhere((emp) => emp.id == employeeId);
       
-      // Add audit log
-      _auditLogs.insert(
-        0,
-        AuditLog(
-          id: 'audit${DateTime.now().millisecondsSinceEpoch}',
-          action: AuditAction.employeeAdded,
-          managerName: 'Current Manager',
-          timestamp: DateTime.now(),
-          details: 'Removed employee ${employee.name}',
-        ),
-      );
+      // Audit log is created by repository
       
       notifyListeners();
     } catch (e) {
