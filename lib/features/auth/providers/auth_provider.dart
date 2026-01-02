@@ -103,7 +103,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final profileData = await supabaseService.getCurrentUserProfile();
 
       if (profileData != null) {
-        final userProfile = UserProfile.fromJson(profileData);
+        final userProfile = profileData;
 
         // Check if user is pending approval
         final isPending =
