@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
@@ -577,7 +578,22 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                             const SizedBox(height: AppSpacing.xl),
                             AuthButton(
                               text: 'Back to Login',
-                              onPressed: () => context.go('/auth/login'),
+                              onPressed: () async {
+                                // Clear any saved auth data before going to login
+                                try {
+                                  final box = await Hive.openBox<dynamic>(
+                                      'auth_preferences');
+                                  await box.clear();
+                                  final supabaseService =
+                                      ref.read(supabaseServiceProvider);
+                                  await supabaseService.signOut();
+                                } catch (e) {
+                                  // Ignore errors, just navigate
+                                }
+                                if (context.mounted) {
+                                  context.go('/auth/login');
+                                }
+                              },
                             ),
                           ],
                         ),

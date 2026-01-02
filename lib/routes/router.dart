@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
@@ -24,11 +24,67 @@ import 'package:expense_tracking_desktop_app/widgets/connection_status_banner.da
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Check if user is authenticated and get their role for redirect
+Future<String?> _getAuthRedirect() async {
+  try {
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+    if (user == null) return null;
+
+    // Fetch user profile to determine role
+    final profile = await supabase
+        .from('user_profiles')
+        .select('role, status, organization_id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    if (profile == null) return null;
+
+    final role = profile['role'] as String?;
+    final status = profile['status'] as String?;
+
+    // If not active and not owner, they're pending approval
+    // status is 'active' or null (for backwards compatibility) means active
+    if (status != 'active' && status != null && role != 'owner') {
+      return AppRoutes.pendingApproval;
+    }
+
+    switch (role) {
+      case 'owner':
+        return AppRoutes.ownerDashboard;
+      case 'manager':
+        return AppRoutes.managerDashboard;
+      case 'employee':
+        return AppRoutes.home;
+      default:
+        return AppRoutes.home;
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 /// Creates the app router
-final routerProvider = Provider<GoRouter>((ref) {
+GoRouter createRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.login,
+    redirect: (context, state) async {
+      final isAuthRoute = state.uri.path == AppRoutes.login ||
+          state.uri.path == AppRoutes.register ||
+          state.uri.path == AppRoutes.forgotPassword ||
+          state.uri.path.startsWith('/auth/reset-password');
+
+      // Only redirect on login page - check if already authenticated
+      if (state.uri.path == AppRoutes.login) {
+        final redirect = await _getAuthRedirect();
+        if (redirect != null) {
+          return redirect;
+        }
+      }
+
+      return null;
+    },
     errorBuilder: (context, state) => const _ErrorScreen(),
     routes: [
       // Auth routes (no shell/sidebar)
@@ -98,47 +154,28 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
+          // Remove sidebar for owner dashboard
+          final isOwnerDashboard = state.uri.path == AppRoutes.ownerDashboard;
           return Scaffold(
             body: Column(
               children: [
                 const ConnectionStatusBanner(),
                 Expanded(
-                  child: Row(
-                    children: [
-                      Sidebar(
-                        currentPath: state.uri.path,
-                        onDestinationSelected: (path) async {
-                          // Present settings as a root-level dialog/overlay so it
-                          // appears above the entire app (including sidebar).
-                          if (path == AppRoutes.settings) {
-                            // Use showGeneralDialog with root navigator so it
-                            // overlays the whole app and can be popped.
-                            showGeneralDialog(
-                              context: context,
-                              barrierDismissible: true,
-                              barrierLabel: 'Settings',
-                              barrierColor: Colors.transparent,
-                              pageBuilder: (ctx, anim1, anim2) {
-                                return const SettingsScreen();
+                  child: isOwnerDashboard
+                      ? child
+                      : Row(
+                          children: [
+                            Sidebar(
+                              currentPath: state.uri.path,
+                              onDestinationSelected: (path) {
+                                context.go(path);
                               },
-                              transitionBuilder:
-                                  (context, animation, secondary, child) {
-                                return FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                );
-                              },
-                            );
-                          } else {
-                            context.go(path);
-                          }
-                        },
-                      ),
-                      Expanded(
-                        child: child,
-                      ),
-                    ],
-                  ),
+                            ),
+                            Expanded(
+                              child: child,
+                            ),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -247,6 +284,17 @@ final routerProvider = Provider<GoRouter>((ref) {
               },
             ),
           ),
+          GoRoute(
+            path: AppRoutes.settings,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const SettingsScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
         ],
       ),
       GoRoute(
@@ -269,7 +317,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
   );
-});
+}
 
 /// Error screen shown when navigation fails or route is not found
 class _ErrorScreen extends StatelessWidget {
