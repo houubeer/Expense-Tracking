@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
@@ -55,7 +55,7 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.xl),
             _buildProgressBar(),
             const SizedBox(height: AppSpacing.lg),
-            _buildStatsRow(),
+            _buildStatsRow(context),
           ],
         ),
       ),
@@ -93,7 +93,7 @@ class BudgetCategoryCard extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                '${AppStrings.labelMonthlyBudget}: ${category.budget.toStringAsFixed(2)} ${AppStrings.currency}',
+                '${AppLocalizations.of(context)!.labelMonthlyBudget}: ${category.budget.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                 style: AppTextStyles.bodySmall,
               ),
             ],
@@ -106,7 +106,7 @@ class BudgetCategoryCard extends StatelessWidget {
                 '${AppRoutes.addExpense}?categoryId=${category.id}',
               ),
               icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-              label: const Text(AppStrings.btnAddExpense),
+              label: Text(AppLocalizations.of(context)!.btnAddExpense),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
@@ -120,12 +120,12 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             OutlinedButton.icon(
               onPressed: onEdit,
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit,
                 size: AppSpacing.iconXs,
-                semanticLabel: 'Edit',
+                semanticLabel: AppLocalizations.of(context)!.labelEdit,
               ),
-              label: const Text(AppStrings.btnEdit),
+              label: Text(AppLocalizations.of(context)!.btnEdit),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg,
@@ -139,13 +139,13 @@ class BudgetCategoryCard extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             IconButton(
               onPressed: onDelete,
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline,
                 size: AppSpacing.iconSm,
-                semanticLabel: 'Delete category',
+                semanticLabel: AppLocalizations.of(context)!.labelDelete,
               ),
               color: colorScheme.error,
-              tooltip: 'Delete Category',
+              tooltip: AppLocalizations.of(context)!.labelDelete,
             ),
           ],
         ),
@@ -198,13 +198,14 @@ class BudgetCategoryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(BuildContext context) {
     final percentage = BudgetStatusCalculator.calculatePercentage(
       category.spent,
       category.budget,
     );
     final remaining = category.budget - category.spent;
-    final status = BudgetStatusCalculator.getStatusText(percentage);
+    final status =
+        BudgetStatusCalculator.getLocalizedStatusText(context, percentage);
     final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
     final statusIcon = BudgetStatusCalculator.getStatusIcon(percentage);
 
@@ -215,12 +216,12 @@ class BudgetCategoryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppStrings.labelSpent,
+                AppLocalizations.of(context)!.labelSpent,
                 style: AppTextStyles.caption,
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                '${category.spent.toStringAsFixed(2)} ${AppStrings.currency}',
+                '${category.spent.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -233,12 +234,12 @@ class BudgetCategoryCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                AppStrings.labelRemaining,
+                AppLocalizations.of(context)!.labelRemaining,
                 style: AppTextStyles.caption,
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                '${remaining.toStringAsFixed(2)} ${AppStrings.currency}',
+                '${remaining.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),

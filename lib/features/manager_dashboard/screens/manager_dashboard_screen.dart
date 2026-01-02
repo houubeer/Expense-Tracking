@@ -13,14 +13,14 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/expense_details_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/add_comment_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/manager_dashboard_view_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/employee_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/expense_approval_service.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
-import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
@@ -101,8 +101,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
                   // Reimbursements
                   ReimbursementTable(
-                    onExportExcel: () => _showMessage('Export Excel'),
-                    onExportPdf: () => _showMessage('Export PDF'),
+                    onExportExcel: () => _showMessage(
+                        AppLocalizations.of(context)!.msgExportExcel),
+                    onExportPdf: () => _showMessage(
+                        AppLocalizations.of(context)!.msgExportPdf),
                   ),
                 ],
               ),
@@ -131,13 +133,13 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           value: '${stats['totalEmployees']}',
           color: colorScheme.primary,
           subtitle:
-              '${stats['activeEmployees']} ${AppLocalizations.of(context)!.active}',
+              '${stats['activeEmployees']} ${AppLocalizations.of(context)!.labelStatusActive}',
         ),
         SummaryCard(
           icon: Icons.attach_money,
           title: AppLocalizations.of(context)!.kpiTotalExpenses,
           value:
-              '${(stats['totalExpensesThisMonth'] as double).toStringAsFixed(0)} DZD',
+              '${(stats['totalExpensesThisMonth'] as double).toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency}',
           color: colorScheme.tertiary,
         ),
         SummaryCard(
@@ -165,7 +167,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               '${(stats['usedBudget'] as double).toStringAsFixed(0)} / ${(stats['totalBudget'] as double).toStringAsFixed(0)}',
           color: colorScheme.secondary,
           subtitle:
-              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} DZD ${AppLocalizations.of(context)!.labelRemaining}',
+              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency} ${AppLocalizations.of(context)!.labelRemaining}',
         ),
       ],
     );
@@ -216,13 +218,13 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                           AppLocalizations.of(context)!.filterAllDepartments),
                     ),
                     ...[
-                      'Engineering',
-                      'Marketing',
-                      'Sales',
-                      'Product',
-                      'Design',
-                      'Human Resources',
-                      'Finance',
+                      AppLocalizations.of(context)!.deptEngineering,
+                      AppLocalizations.of(context)!.deptMarketing,
+                      AppLocalizations.of(context)!.deptSales,
+                      AppLocalizations.of(context)!.deptProduct,
+                      AppLocalizations.of(context)!.deptDesign,
+                      AppLocalizations.of(context)!.deptHumanResources,
+                      AppLocalizations.of(context)!.deptFinance,
                     ].map(
                       (dept) =>
                           DropdownMenuItem(value: dept, child: Text(dept)),
@@ -241,7 +243,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                             AppLocalizations.of(context)!.filterAllStatuses)),
                     DropdownMenuItem(
                       value: EmployeeStatus.active,
-                      child: Text(AppLocalizations.of(context)!.active),
+                      child:
+                          Text(AppLocalizations.of(context)!.labelStatusActive),
                     ),
                     DropdownMenuItem(
                       value: EmployeeStatus.suspended,
@@ -306,8 +309,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               _showMessage(AppLocalizations.of(context)!.msgExpenseApproved);
           },
           onReject: (id) async {
-            final success =
-                await viewModel.rejectExpense(id, 'Budget exceeded');
+            final success = await viewModel.rejectExpense(
+                id, AppLocalizations.of(context)!.msgExpenseRejected);
             if (success)
               _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
           },
@@ -387,7 +390,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         },
         onReject: () async {
           Navigator.of(context).pop();
-          final success = await viewModel.rejectExpense(expense.id, 'Rejected');
+          final success = await viewModel.rejectExpense(
+              expense.id, AppLocalizations.of(context)!.msgExpenseRejected);
           if (success && mounted)
             _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
         },

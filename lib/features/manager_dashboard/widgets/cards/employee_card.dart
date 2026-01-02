@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/animated_widgets.dart';
 
 class EmployeeCard extends StatelessWidget {
-
   const EmployeeCard({
-    required this.employee, super.key,
+    required this.employee,
+    super.key,
     this.onTap,
     this.onMenuAction,
   });
@@ -138,21 +139,22 @@ class EmployeeCard extends StatelessWidget {
                   ),
                   onSelected: onMenuAction,
                   itemBuilder: (context) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'view',
-                      child: Text('View Details'),
+                      child:
+                          Text(AppLocalizations.of(context)!.labelViewDetails),
                     ),
                     PopupMenuItem(
                       value: 'suspend',
                       child: Text(
                         employee.status == EmployeeStatus.active
-                            ? 'Suspend'
-                            : 'Activate',
+                            ? AppLocalizations.of(context)!.labelSuspend
+                            : AppLocalizations.of(context)!.labelActivate,
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'remove',
-                      child: Text('Remove'),
+                      child: Text(AppLocalizations.of(context)!.labelRemove),
                     ),
                   ],
                 ),
@@ -168,7 +170,7 @@ class EmployeeCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Department',
+                        AppLocalizations.of(context)!.labelDepartment,
                         style: AppTextStyles.caption.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -188,7 +190,7 @@ class EmployeeCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hire Date',
+                        AppLocalizations.of(context)!.labelHireDate,
                         style: AppTextStyles.caption.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),

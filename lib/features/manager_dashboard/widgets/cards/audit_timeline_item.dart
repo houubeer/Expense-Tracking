@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/audit_log_model.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// Audit timeline item widget for displaying audit log entries
 /// Shows avatar, action, manager name, timestamp, and connector line
 class AuditTimelineItem extends StatelessWidget {
-
   const AuditTimelineItem({
-    required this.auditLog, super.key,
+    required this.auditLog,
+    super.key,
     this.isLast = false,
   });
   final AuditLog auditLog;
@@ -60,7 +61,7 @@ class AuditTimelineItem extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    'by ${auditLog.managerName}',
+                    '${AppLocalizations.of(context)!.labelBy} ${auditLog.managerName}',
                     style: AppTextStyles.bodySmall,
                   ),
                   const SizedBox(height: AppSpacing.xs),

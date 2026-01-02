@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -42,12 +43,12 @@ class _EmployeeManagementScreenState
       // Get current user's organization
       final profile = await supabaseService.getCurrentUserProfile();
       if (profile == null) {
-        throw Exception('User profile not found');
+        throw Exception(AppLocalizations.of(context)!.errUserProfileNotFound);
       }
 
       _organizationId = profile['organization_id'] as String?;
       if (_organizationId == null) {
-        throw Exception('No organization associated with this account');
+        throw Exception(AppLocalizations.of(context)!.errNoOrganization);
       }
 
       // Get employees for this organization
@@ -56,7 +57,7 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       setState(() {
-        _employees = employees.map((e) => UserProfile.fromJson(e)).toList();
+        _employees = employees.map(UserProfile.fromJson).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -92,7 +93,8 @@ class _EmployeeManagementScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Employee ${result['fullName']} added successfully'),
+          content: Text(AppLocalizations.of(context)!
+              .msgAddEmployeeSuccess(result['fullName']!)),
           backgroundColor: AppColors.green,
         ),
       );
@@ -100,7 +102,8 @@ class _EmployeeManagementScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to add employee: $e'),
+          content:
+              Text(AppLocalizations.of(context)!.errAddEmployee(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -111,20 +114,21 @@ class _EmployeeManagementScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Employee?'),
+        title: Text(AppLocalizations.of(context)!.titleRemoveEmployee),
         content: Text(
-          'Are you sure you want to remove ${employee.fullName} from the organization? '
-          'This action cannot be undone.',
+          AppLocalizations.of(context)!
+              .msgRemoveEmployeeConfirm(employee.fullName ?? employee.email),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: const Text('Remove', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.actionRemove,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -140,7 +144,8 @@ class _EmployeeManagementScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${employee.fullName} has been removed'),
+          content: Text(AppLocalizations.of(context)!
+              .msgRemoveEmployeeSuccess(employee.fullName ?? employee.email)),
           backgroundColor: AppColors.orange,
         ),
       );
@@ -148,7 +153,8 @@ class _EmployeeManagementScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to remove employee: $e'),
+          content: Text(
+              AppLocalizations.of(context)!.errRemoveEmployee(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -165,10 +171,13 @@ class _EmployeeManagementScreenState
       await _loadEmployees();
 
       if (!mounted) return;
-      final status = employee.isActive ? 'deactivated' : 'activated';
+      final status = employee.isActive
+          ? AppLocalizations.of(context)!.statusDeactivated
+          : AppLocalizations.of(context)!.statusActivated;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${employee.fullName} has been $status'),
+          content: Text(AppLocalizations.of(context)!.msgEmployeeStatusChanged(
+              employee.fullName ?? employee.email, status)),
           backgroundColor: AppColors.green,
         ),
       );
@@ -176,7 +185,8 @@ class _EmployeeManagementScreenState
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to update status: $e'),
+          content:
+              Text(AppLocalizations.of(context)!.errUpdateStatus(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -188,14 +198,14 @@ class _EmployeeManagementScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Team Management'),
+        title: Text(AppLocalizations.of(context)!.titleTeamManagement),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textInverse,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadEmployees,
-            tooltip: 'Refresh',
+            tooltip: AppLocalizations.of(context)!.actionRefresh,
           ),
         ],
       ),
@@ -204,7 +214,7 @@ class _EmployeeManagementScreenState
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textInverse,
         icon: const Icon(Icons.person_add),
-        label: const Text('Add Employee'),
+        label: Text(AppLocalizations.of(context)!.labelAddEmployee),
       ),
       body: _buildBody(),
     );
@@ -249,10 +259,10 @@ class _EmployeeManagementScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: AppColors.red),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.red),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'Error loading employees',
+              AppLocalizations.of(context)!.titleErrorLoadingEmployees,
               style:
                   AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
             ),
@@ -267,7 +277,7 @@ class _EmployeeManagementScreenState
             ElevatedButton.icon(
               onPressed: _loadEmployees,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.actionRetry),
             ),
           ],
         ),
@@ -282,21 +292,21 @@ class _EmployeeManagementScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.group_outlined,
               size: 80,
               color: AppColors.textTertiary,
             ),
             const SizedBox(height: AppSpacing.xl),
             Text(
-              'No Team Members Yet',
+              AppLocalizations.of(context)!.titleNoEmployees,
               style: AppTextStyles.heading2.copyWith(
                 color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Add employees to your organization to start tracking expenses together.',
+              AppLocalizations.of(context)!.msgNoEmployees,
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -306,7 +316,7 @@ class _EmployeeManagementScreenState
             ElevatedButton.icon(
               onPressed: _addEmployee,
               icon: const Icon(Icons.person_add),
-              label: const Text('Add First Employee'),
+              label: Text(AppLocalizations.of(context)!.btnAddFirstEmployee),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.textInverse,

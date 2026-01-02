@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
@@ -96,20 +97,20 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                     child: TextButton.icon(
                       onPressed: () => context.go('/auth/login'),
                       icon: const Icon(Icons.arrow_back, size: 18),
-                      label: const Text('Back to Login'),
+                      label: Text(AppLocalizations.of(context)!.btnBackToLogin),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
                   // Header
-                  Icon(
+                  const Icon(
                     Icons.business_rounded,
                     size: 56,
                     color: AppColors.primary,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    'Register as Manager',
+                    AppLocalizations.of(context)!.titleRegisterManager,
                     style: AppTextStyles.heading1.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -118,7 +119,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Create a new organization and await owner approval',
+                    AppLocalizations.of(context)!.subtitleRegisterManager,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -131,15 +132,19 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
+                        color: AppColors.red.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: AppColors.red.withOpacity(0.3)),
+                        border: Border.all(
+                            color:
+                                AppColors.red.withAlpha((0.3 * 255).round())),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline,
-                              color: AppColors.red, size: 20),
+                          const Icon(
+                            Icons.error_outline,
+                            color: AppColors.red,
+                            size: 20,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
@@ -157,15 +162,18 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   // Organization name
                   AuthTextField(
                     controller: _organizationNameController,
-                    label: 'Organization Name',
-                    hintText: 'Enter your organization name',
+                    label: AppLocalizations.of(context)!.labelOrganizationName,
+                    hintText:
+                        AppLocalizations.of(context)!.hintOrganizationName,
                     prefixIcon: Icons.business_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter organization name';
+                        return AppLocalizations.of(context)!
+                            .errEnterOrganizationName;
                       }
                       if (value.length < 3) {
-                        return 'Organization name must be at least 3 characters';
+                        return AppLocalizations.of(context)!
+                            .errOrganizationNameLength;
                       }
                       return null;
                     },
@@ -175,12 +183,12 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   // Full name
                   AuthTextField(
                     controller: _fullNameController,
-                    label: 'Full Name',
-                    hintText: 'Enter your full name',
+                    label: AppLocalizations.of(context)!.labelFullName,
+                    hintText: AppLocalizations.of(context)!.hintFullName,
                     prefixIcon: Icons.person_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your full name';
+                        return AppLocalizations.of(context)!.errEnterFullName;
                       }
                       return null;
                     },
@@ -190,17 +198,17 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   // Email
                   AuthTextField(
                     controller: _emailController,
-                    label: 'Email',
-                    hintText: 'Enter your email',
+                    label: AppLocalizations.of(context)!.labelEmail,
+                    hintText: AppLocalizations.of(context)!.hintEmail,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return AppLocalizations.of(context)!.errEnterEmail;
                       }
                       if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                           .hasMatch(value)) {
-                        return 'Please enter a valid email';
+                        return AppLocalizations.of(context)!.errInvalidEmail;
                       }
                       return null;
                     },
@@ -210,8 +218,8 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   // Password
                   AuthTextField(
                     controller: _passwordController,
-                    label: 'Password',
-                    hintText: 'Create a password',
+                    label: AppLocalizations.of(context)!.labelPassword,
+                    hintText: AppLocalizations.of(context)!.hintCreatePassword,
                     obscureText: _obscurePassword,
                     prefixIcon: Icons.lock_outlined,
                     suffixIcon: IconButton(
@@ -226,10 +234,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
+                        return AppLocalizations.of(context)!.errEnterPassword;
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return AppLocalizations.of(context)!.errPasswordLength;
                       }
                       return null;
                     },
@@ -239,8 +247,8 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   // Confirm password
                   AuthTextField(
                     controller: _confirmPasswordController,
-                    label: 'Confirm Password',
-                    hintText: 'Confirm your password',
+                    label: AppLocalizations.of(context)!.labelConfirmPassword,
+                    hintText: AppLocalizations.of(context)!.hintConfirmPassword,
                     obscureText: _obscureConfirmPassword,
                     prefixIcon: Icons.lock_outlined,
                     suffixIcon: IconButton(
@@ -250,15 +258,18 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                             : Icons.visibility_off_outlined,
                         color: AppColors.textSecondary,
                       ),
-                      onPressed: () => setState(() =>
-                          _obscureConfirmPassword = !_obscureConfirmPassword),
+                      onPressed: () => setState(
+                        () =>
+                            _obscureConfirmPassword = !_obscureConfirmPassword,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please confirm your password';
+                        return AppLocalizations.of(context)!.errConfirmPassword;
                       }
                       if (value != _passwordController.text) {
-                        return 'Passwords do not match';
+                        return AppLocalizations.of(context)!
+                            .errPasswordsDoNotMatch;
                       }
                       return null;
                     },
@@ -267,7 +278,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
 
                   // Signup button
                   AuthButton(
-                    text: 'Create Organization',
+                    text: AppLocalizations.of(context)!.btnCreateOrganization,
                     onPressed: _handleSignup,
                     isLoading: _isLoading,
                   ),
@@ -294,10 +305,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: AppColors.green.withOpacity(0.1),
+                    color: AppColors.green.withAlpha((0.1 * 255).round()),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle_outline,
                     size: 72,
                     color: AppColors.green,
@@ -305,7 +316,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
-                  'Registration Submitted!',
+                  AppLocalizations.of(context)!.titleRegistrationSubmitted,
                   style: AppTextStyles.heading1.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -314,7 +325,8 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text(
-                  'Your organization "${_organizationNameController.text}" has been created and is pending approval.',
+                  AppLocalizations.of(context)!.msgRegistrationSubmitted(
+                      _organizationNameController.text),
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -331,12 +343,16 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.info_outline,
-                              color: AppColors.primary, size: 20),
+                          const Icon(
+                            Icons.info_outline,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
-                              'What happens next?',
+                              AppLocalizations.of(context)!
+                                  .titleWhatHappensNext,
                               style: AppTextStyles.bodyMedium.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.textPrimary,
@@ -347,17 +363,23 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _buildNextStep(
-                          '1', 'Organization owner will review your request'),
+                        '1',
+                        AppLocalizations.of(context)!.stepReviewRequest,
+                      ),
                       _buildNextStep(
-                          '2', 'Once approved, your account will be activated'),
+                        '2',
+                        AppLocalizations.of(context)!.stepAccountActivation,
+                      ),
                       _buildNextStep(
-                          '3', 'You can then login and manage your team'),
+                        '3',
+                        AppLocalizations.of(context)!.stepLogin,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
                 AuthButton(
-                  text: 'Back to Login',
+                  text: AppLocalizations.of(context)!.btnBackToLogin,
                   onPressed: () => context.go('/auth/login'),
                 ),
               ],
@@ -378,7 +400,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withAlpha((0.1 * 255).round()),
               shape: BoxShape.circle,
             ),
             child: Center(

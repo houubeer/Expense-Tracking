@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/budget_model.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
 
 /// Budget usage card showing department budget progress
 /// Uses color-coded progress bar based on usage percentage
 class BudgetUsageCard extends StatelessWidget {
-
   const BudgetUsageCard({
-    required this.budget, super.key,
+    required this.budget,
+    super.key,
   });
   final DepartmentBudget budget;
 
@@ -32,7 +32,9 @@ class BudgetUsageCard extends StatelessWidget {
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
             offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
+              AppConfig.shadowOffsetX,
+              AppConfig.shadowOffsetY,
+            ),
           ),
         ],
       ),
@@ -68,8 +70,9 @@ class BudgetUsageCard extends StatelessWidget {
                   child: Text(
                     '${(percentage * 100).toStringAsFixed(1)}%',
                     style: AppTextStyles.progressPercentage.copyWith(
-                      color:
-                          percentage > 0.5 ? Colors.white : colorScheme.onSurface,
+                      color: percentage > 0.5
+                          ? Colors.white
+                          : colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -85,12 +88,12 @@ class BudgetUsageCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Total',
+                      AppLocalizations.of(context)!.labelTotal,
                       style: AppTextStyles.caption,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      '${budget.totalBudget.toStringAsFixed(0)} ${AppStrings.currency}',
+                      '${budget.totalBudget.toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency}',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -103,12 +106,12 @@ class BudgetUsageCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.labelSpent,
+                      AppLocalizations.of(context)!.labelSpent,
                       style: AppTextStyles.caption,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      '${budget.usedBudget.toStringAsFixed(0)} ${AppStrings.currency}',
+                      '${budget.usedBudget.toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency}',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -121,12 +124,12 @@ class BudgetUsageCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      AppStrings.labelRemaining,
+                      AppLocalizations.of(context)!.labelRemaining,
                       style: AppTextStyles.caption,
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      '${budget.remainingBudget.toStringAsFixed(0)} ${AppStrings.currency}',
+                      '${budget.remainingBudget.toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency}',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
                         color: statusColor,

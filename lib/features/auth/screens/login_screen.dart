@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
@@ -56,8 +57,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         if (!isActive) {
           setState(() {
-            _errorMessage =
-                'Your account is pending approval. Please wait for the organization owner to approve your access.';
+            _errorMessage = AppLocalizations.of(context)!.msgAccountPending;
             _isLoading = false;
           });
           return;
@@ -104,14 +104,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Logo and title
-                  Icon(
+                  const Icon(
                     Icons.account_balance_wallet_rounded,
                     size: 64,
                     color: AppColors.primary,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    'Expense Tracker',
+                    AppLocalizations.of(context)!.appTitle,
                     style: AppTextStyles.heading1.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -120,7 +120,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Sign in to your account',
+                    AppLocalizations.of(context)!.titleSignIn,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -133,15 +133,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
+                        color: AppColors.red.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(8),
-                        border:
-                            Border.all(color: AppColors.red.withOpacity(0.3)),
+                        border: Border.all(
+                            color:
+                                AppColors.red.withAlpha((0.3 * 255).round())),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline,
-                              color: AppColors.red, size: 20),
+                          const Icon(
+                            Icons.error_outline,
+                            color: AppColors.red,
+                            size: 20,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
@@ -159,17 +163,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // Email field
                   AuthTextField(
                     controller: _emailController,
-                    label: 'Email',
-                    hintText: 'Enter your email',
+                    label: AppLocalizations.of(context)!.labelEmail,
+                    hintText: AppLocalizations.of(context)!.hintEmail,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email_outlined,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return AppLocalizations.of(context)!.errEnterEmail;
                       }
                       if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                           .hasMatch(value)) {
-                        return 'Please enter a valid email';
+                        return AppLocalizations.of(context)!.errInvalidEmail;
                       }
                       return null;
                     },
@@ -179,8 +183,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   // Password field
                   AuthTextField(
                     controller: _passwordController,
-                    label: 'Password',
-                    hintText: 'Enter your password',
+                    label: AppLocalizations.of(context)!.labelPassword,
+                    hintText: AppLocalizations.of(context)!.hintPassword,
                     obscureText: _obscurePassword,
                     prefixIcon: Icons.lock_outlined,
                     suffixIcon: IconButton(
@@ -195,7 +199,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return AppLocalizations.of(context)!.errEnterPassword;
                       }
                       return null;
                     },
@@ -204,7 +208,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // Login button
                   AuthButton(
-                    text: 'Sign In',
+                    text: AppLocalizations.of(context)!.btnSignIn,
                     onPressed: _handleLogin,
                     isLoading: _isLoading,
                   ),
@@ -215,7 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        AppLocalizations.of(context)!.msgNoAccount,
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -223,7 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       TextButton(
                         onPressed: () => context.go('/auth/register'),
                         child: Text(
-                          'Register as Manager',
+                          AppLocalizations.of(context)!.btnRegisterManager,
                           style: AppTextStyles.bodyMedium.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
@@ -238,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextButton(
                     onPressed: () => context.go('/'),
                     child: Text(
-                      'Continue Offline',
+                      AppLocalizations.of(context)!.btnContinueOffline,
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textTertiary,
                       ),
