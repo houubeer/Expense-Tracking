@@ -1,4 +1,4 @@
-import '../models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 
 /// Repository providing mock employee data
 class EmployeeRepository {
