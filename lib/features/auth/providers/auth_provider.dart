@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/organization.dart';
@@ -7,6 +8,7 @@ import 'package:expense_tracking_desktop_app/features/auth/models/organization.d
 class AuthState {
   final bool isAuthenticated;
   final bool isLoading;
+  final bool isPendingApproval;
   final UserProfile? userProfile;
   final Organization? organization;
   final String? errorMessage;
@@ -14,6 +16,7 @@ class AuthState {
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
+    this.isPendingApproval = false,
     this.userProfile,
     this.organization,
     this.errorMessage,
@@ -22,6 +25,7 @@ class AuthState {
   AuthState copyWith({
     bool? isAuthenticated,
     bool? isLoading,
+    bool? isPendingApproval,
     UserProfile? userProfile,
     Organization? organization,
     String? errorMessage,
@@ -29,10 +33,31 @@ class AuthState {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isLoading: isLoading ?? this.isLoading,
+      isPendingApproval: isPendingApproval ?? this.isPendingApproval,
       userProfile: userProfile ?? this.userProfile,
       organization: organization ?? this.organization,
       errorMessage: errorMessage ?? this.errorMessage,
     );
+  }
+
+  /// Check if user can access the app
+  bool get canAccess => isAuthenticated && !isPendingApproval;
+
+  /// Get redirect route based on user role
+  String getRedirectRoute() {
+    if (!isAuthenticated) return '/auth/login';
+    if (isPendingApproval) return '/auth/pending';
+
+    switch (userProfile?.role) {
+      case UserRole.owner:
+        return '/owner';
+      case UserRole.manager:
+        return '/manager';
+      case UserRole.employee:
+        return '/';
+      default:
+        return '/';
+    }
   }
 }
 
@@ -47,9 +72,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
     try {
+      // Check if remember me is enabled
+      final box = await Hive.openBox<dynamic>('auth_preferences');
+      final rememberMe = box.get('remember_me') as bool? ?? true;
+
       final supabaseService = _ref.read(supabaseServiceProvider);
-      if (supabaseService.isAuthenticated) {
+
+      if (supabaseService.isAuthenticated && rememberMe) {
         await _loadUserProfile();
+      } else if (!rememberMe) {
+        // If remember me is off, sign out
+        try {
+          await supabaseService.signOut();
+        } catch (_) {}
+        state = state.copyWith(isLoading: false);
+      } else {
+        state = state.copyWith(isLoading: false);
       }
     } catch (e) {
       state = state.copyWith(
@@ -66,6 +104,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       if (profileData != null) {
         final userProfile = UserProfile.fromJson(profileData);
+
+        // Check if user is pending approval
+        final isPending =
+            !userProfile.isActive && userProfile.role != UserRole.owner;
 
         // Load organization if user has one
         Organization? organization;
@@ -85,6 +127,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         state = state.copyWith(
           isAuthenticated: true,
           isLoading: false,
+          isPendingApproval: isPending,
           userProfile: userProfile,
           organization: organization,
         );
@@ -106,15 +149,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
   }) async {
+    // Check connectivity first
+    final connectivityService = _ref.read(connectivityServiceProvider);
+    if (!connectivityService.isConnected) {
+      state = state.copyWith(
+        errorMessage: 'No internet connection. You must be online to sign in.',
+      );
+      throw Exception('No internet connection. You must be online to sign in.');
+    }
+
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final supabaseService = _ref.read(supabaseServiceProvider);
-      await supabaseService.signIn(email: email, password: password);
+      final result =
+          await supabaseService.signIn(email: email, password: password);
+
+      if (result['success'] != true) {
+        final message = result['message'] as String? ?? 'Login failed';
+        state = state.copyWith(isLoading: false, errorMessage: message);
+        throw Exception(message);
+      }
+
       await _loadUserProfile();
 
-      // Initialize sync service after login
-      final syncService = _ref.read(syncServiceProvider);
-      await syncService.initialize();
+      // Initialize sync service after login (only if user has access)
+      if (state.canAccess) {
+        final syncService = _ref.read(syncServiceProvider);
+        await syncService.initialize();
+      }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -137,6 +199,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> refreshProfile() async {
     await _loadUserProfile();
+  }
+
+  /// Clear any stored session data
+  Future<void> clearSession() async {
+    try {
+      final box = await Hive.openBox<dynamic>('auth_preferences');
+      await box.delete('remembered_email');
+      await box.put('remember_me', false);
+    } catch (_) {}
   }
 }
 

@@ -44,6 +44,9 @@ class AppStrings {
   static const String labelAmount = 'Amount';
   static const String labelCategory = 'Category';
   static const String labelDate = 'Date';
+  static const String labelStartDate = 'Start Date';
+  static const String labelEndDate = 'End Date';
+  static const String labelDateRange = 'Date Range';
   static const String labelDescription = 'Description';
   static const String labelCategoryName = 'Category Name';
   static const String labelMonthlyBudget = 'Monthly Budget';
@@ -53,6 +56,7 @@ class AppStrings {
   static const String labelSpent = 'Spent';
   static const String labelRemaining = 'Remaining';
   static const String labelStatus = 'Status';
+  static const String labelAvailableBudget = 'Available Budget';
 
   // Status messages
   static const String statusGood = 'Good';
@@ -72,6 +76,13 @@ class AppStrings {
 
   // Error messages
   static const String errBudgetNegative = 'Budget cannot be negative';
+  static const String errBudgetExceeded =
+      'Cannot add expense: exceeds available budget';
+  static const String errInsufficientBudget =
+      'Insufficient budget remaining for this category';
+  static const String errBudgetExceededDetails =
+      'This expense ({amount}) exceeds your remaining budget ({remaining})';
+  static const String errInvalidDateRange = 'Start date must be before end date';
 
   // Hints
   static const String hintSearchCategories = 'Search categories...';
@@ -116,15 +127,21 @@ class AppStrings {
 
   // Receipt attachment labels
   static const String labelReceipt = 'Receipt';
+  static const String labelReceipts = 'Receipts';
   static const String labelAttachReceipt = 'Attach Receipt';
+  static const String labelAttachReceipts = 'Attach Receipts';
   static const String labelRemoveReceipt = 'Remove Receipt';
   static const String labelViewReceipt = 'View Receipt';
+  static const String labelAddMoreReceipts = 'Add More Receipts';
   static const String hintAttachReceipt = 'Attach an image or PDF as proof';
   static const String msgReceiptAttached = 'Receipt attached successfully';
+  static const String msgReceiptsAttached = '{count} receipts attached';
   static const String msgReceiptRemoved = 'Receipt removed';
   static const String errReceiptNotFound = 'Receipt file not found';
   static const String errReceiptInvalidFormat =
       'Invalid file format. Please use JPG, PNG, or PDF';
+  static const String msgNoReceipts = 'No receipts attached';
+  static const String labelReceiptCount = '{count} receipt(s)';
 
   // Backup and restore labels
   static const String labelBackup = 'Backup';

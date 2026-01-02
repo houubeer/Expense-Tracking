@@ -26,11 +26,27 @@ class ExpenseFilters extends ConsumerWidget {
     this.reimbursableFilter = ReimbursableFilter.all,
   });
   final int? selectedCategoryId;
-  final DateTime? selectedDate;
+  final DateTime? selectedDate; // Deprecated: kept for backward compatibility
+  final DateTime? startDate; // New: date range support
+  final DateTime? endDate; // New: date range support
   final ReimbursableFilter reimbursableFilter;
   final ValueChanged<int?> onCategoryChanged;
   final ValueChanged<DateTime?> onDateChanged;
+  final void Function(DateTime?, DateTime?)? onDateRangeChanged; // New: date range callback
   final ValueChanged<ReimbursableFilter> onReimbursableFilterChanged;
+
+  const ExpenseFilters({
+    super.key,
+    required this.selectedCategoryId,
+    this.selectedDate,
+    this.startDate,
+    this.endDate,
+    this.reimbursableFilter = ReimbursableFilter.all,
+    required this.onCategoryChanged,
+    required this.onDateChanged,
+    this.onDateRangeChanged,
+    required this.onReimbursableFilterChanged,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -180,6 +196,7 @@ class ExpenseFilters extends ConsumerWidget {
           isExpanded: true,
           items: [
             DropdownMenuItem<int?>(
+              value: null,
               child: Row(
                 children: [
                   Icon(
@@ -221,6 +238,11 @@ class ExpenseFilters extends ConsumerWidget {
   }
 
   Widget _buildDatePicker(BuildContext context, ColorScheme colorScheme) {
+    // Determine display values - prioritize date range over single date
+    final displayStartDate = startDate ?? selectedDate;
+    final displayEndDate = endDate ?? selectedDate;
+    final hasDateFilter = displayStartDate != null || displayEndDate != null;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -238,14 +260,32 @@ class ExpenseFilters extends ConsumerWidget {
       ),
       child: InkWell(
         onTap: () async {
-          final DateTime? picked = await showDatePicker(
+          // Show date range picker
+          final DateTimeRange? pickedRange = await showDateRangePicker(
             context: context,
-            initialDate: selectedDate ?? DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2101),
+            initialDateRange: displayStartDate != null && displayEndDate != null
+                ? DateTimeRange(start: displayStartDate, end: displayEndDate)
+                : null,
+            builder: (context, child) {
+              return Theme(
+                data: Theme.of(context).copyWith(
+                  colorScheme: colorScheme,
+                ),
+                child: child!,
+              );
+            },
           );
-          if (picked != null) {
-            onDateChanged(picked);
+
+          if (pickedRange != null) {
+            // Use date range callback if available, otherwise fall back to single date
+            if (onDateRangeChanged != null) {
+              onDateRangeChanged!(pickedRange.start, pickedRange.end);
+            } else {
+              // Backward compatibility: use start date only
+              onDateChanged(pickedRange.start);
+            }
           }
         },
         child: Padding(
@@ -264,13 +304,15 @@ class ExpenseFilters extends ConsumerWidget {
                       ? AppLocalizations.of(context)!.labelDate
                       : DateFormat('MMM dd, yyyy').format(selectedDate!),
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: selectedDate == null
-                        ? colorScheme.onSurfaceVariant
-                        : colorScheme.onSurface,
+                    color: hasDateFilter
+                        ? colorScheme.onSurface
+                        : colorScheme.onSurfaceVariant,
+                    fontSize: hasDateFilter ? 13 : 14,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (selectedDate != null)
+              if (hasDateFilter)
                 GestureDetector(
                   onTap: () => onDateChanged(null),
                   child: Icon(
@@ -284,5 +326,35 @@ class ExpenseFilters extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _getDateRangeText() {
+    final displayStartDate = startDate ?? selectedDate;
+    final displayEndDate = endDate ?? selectedDate;
+
+    if (displayStartDate == null && displayEndDate == null) {
+      return AppStrings.labelDateRange;
+    }
+
+    if (displayStartDate != null && displayEndDate != null) {
+      // Check if same day
+      if (displayStartDate.year == displayEndDate.year &&
+          displayStartDate.month == displayEndDate.month &&
+          displayStartDate.day == displayEndDate.day) {
+        return DateFormat('MMM dd, yyyy').format(displayStartDate);
+      }
+      // Different days - show range
+      return '${DateFormat('MMM dd').format(displayStartDate)} - ${DateFormat('MMM dd, yyyy').format(displayEndDate)}';
+    }
+
+    if (displayStartDate != null) {
+      return 'From ${DateFormat('MMM dd, yyyy').format(displayStartDate)}';
+    }
+
+    if (displayEndDate != null) {
+      return 'Until ${DateFormat('MMM dd, yyyy').format(displayEndDate)}';
+    }
+
+    return AppStrings.labelDateRange;
   }
 }

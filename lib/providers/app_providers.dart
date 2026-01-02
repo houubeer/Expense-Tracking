@@ -10,8 +10,11 @@ import 'package:expense_tracking_desktop_app/features/expenses/repositories/expe
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/budget_validation_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/receipt_upload_service.dart';
 import 'package:expense_tracking_desktop_app/services/backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
@@ -75,15 +78,28 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
   );
 });
 
+/// Budget validation service provider
+final budgetValidationServiceProvider = Provider<BudgetValidationService>((ref) {
+  final categoryRepository = ref.watch(categoryRepositoryProvider);
+  return BudgetValidationService(categoryRepository);
+});
+
+/// Supabase service provider - singleton instance
+final supabaseServiceProvider = Provider<SupabaseService>((ref) {
+  return SupabaseService();
+});
+
+/// Receipt upload service provider
+final receiptUploadServiceProvider = Provider<ReceiptUploadService>((ref) {
+  final database = ref.watch(databaseProvider);
+  final supabaseService = ref.watch(supabaseServiceProvider);
+  return ReceiptUploadService(database, supabaseService);
+});
+
 /// Backup service provider - handles database backup and restore operations
 final backupServiceProvider = Provider<IBackupService>((ref) {
   final logger = ref.watch(loggerServiceProvider);
   return BackupService(logger: logger);
-});
-
-/// Supabase service provider - singleton for Supabase operations
-final supabaseServiceProvider = Provider<SupabaseService>((ref) {
-  return SupabaseService();
 });
 
 /// Sync service provider - handles offline-first synchronization

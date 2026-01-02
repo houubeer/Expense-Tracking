@@ -8,6 +8,7 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_text_field.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_button.dart';
+import 'package:expense_tracking_desktop_app/features/auth/utils/password_validator.dart';
 
 /// Manager signup screen - creates a new organization pending approval
 class ManagerSignupScreen extends ConsumerStatefulWidget {
@@ -32,6 +33,15 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
   bool _registrationComplete = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Listen to password changes to update requirements display
+    _passwordController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -43,6 +53,16 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
 
   Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Check connectivity - must be online to register
+    final connectivityService = ref.read(connectivityServiceProvider);
+    if (!connectivityService.isConnected) {
+      setState(() {
+        _errorMessage =
+            'No internet connection. You must be online to register.';
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -152,8 +172,26 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                               style: AppTextStyles.bodySmall
                                   .copyWith(color: AppColors.red),
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Tagline
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          'Register as a manager and grow your team',
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withValues(alpha: 0.10),
+                                blurRadius: 8,
+                              ),
+                            ],
                           ),
-                        ],
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
@@ -178,7 +216,47 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: AppSpacing.lg),
+                ),
+              ),
+            ),
+          ),
+          // Right side - Form in Card
+          Expanded(
+            flex: 1,
+            child: Container(
+              color: AppColors.surfaceAlt,
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(AppSpacing.xxxl),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 450),
+                    child: Card(
+                      elevation: 8,
+                      shadowColor: Colors.black.withValues(alpha: 0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.xxl),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Back button
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: TextButton.icon(
+                                  onPressed: () => context.go('/auth/login'),
+                                  icon: const Icon(Icons.arrow_back, size: 18),
+                                  label: const Text('Back to Login'),
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
 
                   // Full name
                   AuthTextField(
@@ -286,7 +364,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -330,16 +408,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.textSecondary,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: AppSpacing.md),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceAlt,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                child: Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         children: [
@@ -358,8 +430,25 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                 color: AppColors.textPrimary,
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Text(
+                          'Your registration has been submitted',
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withValues(alpha: 0.10),
+                                blurRadius: 8,
+                              ),
+                            ],
                           ),
-                        ],
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       _buildNextStep(
@@ -382,10 +471,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                   text: AppLocalizations.of(context)!.btnBackToLogin,
                   onPressed: () => context.go('/auth/login'),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

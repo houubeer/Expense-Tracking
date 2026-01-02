@@ -46,7 +46,7 @@ class _EmployeeManagementScreenState
         throw Exception(AppLocalizations.of(context)!.errUserProfileNotFound);
       }
 
-      _organizationId = profile['organization_id'] as String?;
+      _organizationId = profile.organizationId;
       if (_organizationId == null) {
         throw Exception(AppLocalizations.of(context)!.errNoOrganization);
       }
@@ -57,7 +57,7 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       setState(() {
-        _employees = employees.map(UserProfile.fromJson).toList();
+        _employees = employees;
         _isLoading = false;
       });
     } catch (e) {

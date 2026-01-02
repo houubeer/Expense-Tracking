@@ -1,19 +1,35 @@
 import 'package:expense_tracking_desktop_app/app.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/config/environment.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive for local storage (used by login remember-me, etc.)
+  await Hive.initFlutter();
 
   // Initialize logging service first
   final logger = LoggerService.instance;
   await logger.initialize();
   logger.info(
       'Application starting in ${EnvironmentConfig.environmentName} environment...');
+
+  // Initialize Supabase
+  try {
+    logger.info('Initializing Supabase...');
+    await SupabaseService().initialize();
+    logger.info('Supabase initialized successfully');
+  } catch (e, stackTrace) {
+    logger.error('Failed to initialize Supabase',
+        error: e, stackTrace: stackTrace);
+    rethrow;
+  }
 
   // Initialize error reporting service
   final errorReporting = ErrorReportingService(logger);

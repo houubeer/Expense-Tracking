@@ -1,16 +1,18 @@
 import 'package:drift/drift.dart';
-import 'package:expense_tracking_desktop_app/database/connection/connection.dart' as impl;
+import 'connection/connection.dart' as impl;
 import 'package:expense_tracking_desktop_app/database/i_database.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 // Import tables and DAOs
-import 'package:expense_tracking_desktop_app/database/tables/categories_table.dart';
-import 'package:expense_tracking_desktop_app/database/tables/expenses_table.dart';
-import 'package:expense_tracking_desktop_app/database/tables/organizations_table.dart';
-import 'package:expense_tracking_desktop_app/database/tables/user_profiles_table.dart';
-import 'package:expense_tracking_desktop_app/database/tables/sync_queue_table.dart';
-import 'package:expense_tracking_desktop_app/database/daos/category_dao.dart';
-import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
+import 'tables/categories_table.dart';
+import 'tables/expenses_table.dart';
+import 'tables/receipts_table.dart';
+import 'tables/organizations_table.dart';
+import 'tables/user_profiles_table.dart';
+import 'tables/sync_queue_table.dart';
+import 'daos/category_dao.dart';
+import 'daos/expense_dao.dart';
+import 'daos/receipt_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -40,11 +42,14 @@ part 'app_database.g.dart';
     UserProfiles,
     Categories,
     Expenses,
+    Receipts,
     SyncQueue,
   ],
-  daos: [CategoryDao, ExpenseDao],
+  daos: [CategoryDao, ExpenseDao, ReceiptDao],
 )
 class AppDatabase extends _$AppDatabase implements IDatabase {
+  final ConnectivityService? _connectivityService;
+  final _logger = LoggerService.instance;
 
   /// Creates a new instance of the database with platform-specific connection.
   ///
@@ -58,8 +63,6 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// [e] The query executor to use for database operations.
   /// [_connectivityService] Optional service for monitoring database connectivity.
   AppDatabase.forTesting(super.e, [this._connectivityService]);
-  final ConnectivityService? _connectivityService;
-  final _logger = LoggerService.instance;
 
   /// Provides access to category-related database operations.
   @override
@@ -69,11 +72,15 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   @override
   ExpenseDao get expenseDao => ExpenseDao(this, _connectivityService);
 
+  /// Provides access to receipt-related database operations.
+  @override
+  ReceiptDao get receiptDao => ReceiptDao(this, _connectivityService);
+
   /// The current schema version of the database.
   ///
   /// Increment this value when making schema changes to trigger migrations.
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   /// Handles database schema migrations when the version changes.
   ///
@@ -88,13 +95,14 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
   /// - v4->v5: Added createdAt timestamp to expenses
   /// - v5->v6: Added isReimbursable and receiptPath columns to expenses
   /// - v6->v7: Added organizations, user_profiles, sync_queue tables and sync columns
+  /// - v7->v8: Added receipts table for multiple receipts per expense (0:N)
   ///
   /// [m] The migrator instance that executes schema changes.
   /// [from] The current schema version.
   /// [to] The target schema version.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async => m.createAll(),
+        onCreate: (m) async => await m.createAll(),
         onUpgrade: (m, from, to) async {
           if (from < 2) {
             // Add categories table
@@ -138,6 +146,10 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
             await m.addColumn(expenses, expenses.syncedAt);
             await m.addColumn(expenses, expenses.isSynced);
           }
+          if (from < 8) {
+            // Add receipts table for multiple receipt support (0:N relationship)
+            await m.createTable(receipts);
+          }
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
@@ -146,8 +158,8 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
   @override
   Future<T> transaction<T>(Future<T> Function() action,
-      {bool requireNew = false,}) async {
-    return super.transaction(action, requireNew: requireNew);
+      {bool requireNew = false}) async {
+    return await super.transaction(action, requireNew: requireNew);
   }
 
   /// Performs a comprehensive health check on the database.
@@ -196,7 +208,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
       return true;
     } catch (e) {
-      _logger.error('Database health check failed', error: e);
+      _logger.error('Database health check failed', error: e, stackTrace: null);
       return false;
     }
   }
@@ -232,7 +244,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
       _logger.info('Database recovery attempted successfully');
     } catch (e) {
-      _logger.error('Database recovery failed', error: e);
+      _logger.error('Database recovery failed', error: e, stackTrace: null);
       throw Exception('Database recovery failed: $e');
     }
   }
