@@ -8,11 +8,12 @@
 class SupabaseConfig {
   /// Supabase project URL
   /// Example: https://xxxxxxxxxxxxx.supabase.co
-  static const String supabaseUrl = 'YOUR_SUPABASE_URL';
+  static const String supabaseUrl = 'https://ucehuhjjhomoxywpannd.supabase.co';
 
   /// Supabase anon/public key
   /// This is safe to use in client applications
-  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String supabaseAnonKey =
+      'sb_publishable_DZ4sl4SfHIuUPGuf81RUjA_XvQFNJrV';
 
   /// Storage bucket name for receipts
   static const String receiptsBucket = 'receipts';

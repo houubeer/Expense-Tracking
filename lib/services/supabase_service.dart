@@ -275,9 +275,11 @@ class SupabaseService {
     required String fullName,
   }) async {
     try {
+      // Trim email to avoid accidental leading/trailing whitespace
+      final trimmedEmail = email.trim();
       // Create auth user
       final authResponse = await client.auth.signUp(
-        email: email,
+        email: trimmedEmail,
         password: password,
       );
 
@@ -285,28 +287,37 @@ class SupabaseService {
         throw Exception('Failed to create user account');
       }
 
-      // Create organization (pending approval)
-      final orgResponse = await client
-          .from('organizations')
-          .insert({
-            'name': organizationName,
-            'manager_email': email,
-            'status': 'pending',
-          })
-          .select()
-          .single();
+      // Use the newly created auth user for RLS-compliant inserts
+      final userId = authResponse.user!.id;
 
-      // Create user profile
+      // Create user profile first
       await client.from('user_profiles').insert({
-        'id': authResponse.user!.id,
-        'organization_id': orgResponse['id'],
-        'email': email,
+        'id': userId,
+        'email': trimmedEmail,
         'full_name': fullName,
         'role': 'manager',
         'is_active': false, // Will be activated when org is approved
       });
 
-      _logger.info('Manager signup successful: $email');
+      // Create organization (pending approval) with manager_name from full_name
+      final orgResponse = await client
+          .from('organizations')
+          .insert({
+            'name': organizationName,
+            'manager_email': trimmedEmail,
+            'manager_name': fullName,
+            'status': 'pending',
+            'created_by': userId,
+          })
+          .select()
+          .single();
+
+      // Update user profile with organization_id
+      await client
+          .from('user_profiles')
+          .update({'organization_id': orgResponse['id']}).eq('id', userId);
+
+      _logger.info('Manager signup successful: $trimmedEmail');
 
       return {
         'success': true,
@@ -397,6 +408,150 @@ class SupabaseService {
     } catch (e, stackTrace) {
       _logger.error('Sign out failed', error: e, stackTrace: stackTrace);
       rethrow;
+    }
+  }
+
+  /// Request password reset email (only for managers/owners)
+  Future<Map<String, dynamic>> requestPasswordReset({
+    required String email,
+  }) async {
+    try {
+      // Check if user exists and is a manager or owner
+      final profileResponse = await client
+          .from('user_profiles')
+          .select('role')
+          .eq('email', email)
+          .maybeSingle();
+
+      if (profileResponse == null) {
+        // Don't reveal if user exists - security best practice
+        return {
+          'success': true,
+          'message':
+              'If an account exists with this email, you will receive reset instructions.',
+        };
+      }
+
+      final role = profileResponse['role'] as String?;
+      if (role == 'employee') {
+        return {
+          'success': false,
+          'message':
+              'Employees cannot reset their own password. Please contact your manager.',
+        };
+      }
+
+      // Send password reset email
+      await client.auth.resetPasswordForEmail(email);
+
+      _logger.info('Password reset requested for: $email');
+
+      return {
+        'success': true,
+        'message': 'Password reset instructions sent to your email.',
+      };
+    } catch (e, stackTrace) {
+      _logger.error('Password reset request failed',
+          error: e, stackTrace: stackTrace);
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
+    }
+  }
+
+  /// Reset password with new password (after clicking email link)
+  Future<Map<String, dynamic>> resetPassword({
+    required String newPassword,
+  }) async {
+    try {
+      await client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      _logger.info('Password reset successful');
+
+      return {
+        'success': true,
+        'message': 'Password has been reset successfully.',
+      };
+    } catch (e, stackTrace) {
+      _logger.error('Password reset failed', error: e, stackTrace: stackTrace);
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
+    }
+  }
+
+  /// Reset employee password (manager only)
+  Future<Map<String, dynamic>> resetEmployeePassword({
+    required String employeeId,
+    required String newPassword,
+  }) async {
+    try {
+      // Verify current user is a manager
+      final currentProfile = await getCurrentUserProfile();
+      if (currentProfile == null) {
+        return {'success': false, 'message': 'Not authenticated'};
+      }
+
+      final currentRole = currentProfile['role'] as String?;
+      if (currentRole != 'manager' && currentRole != 'owner') {
+        return {
+          'success': false,
+          'message': 'Only managers can reset employee passwords.',
+        };
+      }
+
+      // Get employee profile to verify they belong to same org
+      final employeeProfile = await client
+          .from('user_profiles')
+          .select()
+          .eq('id', employeeId)
+          .single();
+
+      // Managers can only reset passwords for employees in their organization
+      if (currentRole == 'manager') {
+        final currentOrgId = currentProfile['organization_id'] as String?;
+        final employeeOrgId = employeeProfile['organization_id'] as String?;
+
+        if (currentOrgId != employeeOrgId) {
+          return {
+            'success': false,
+            'message':
+                'You can only reset passwords for employees in your organization.',
+          };
+        }
+
+        final employeeRole = employeeProfile['role'] as String?;
+        if (employeeRole != 'employee') {
+          return {
+            'success': false,
+            'message': 'You can only reset passwords for employees.',
+          };
+        }
+      }
+
+      // Use admin API to update user password
+      await client.auth.admin.updateUserById(
+        employeeId,
+        attributes: AdminUserAttributes(password: newPassword),
+      );
+
+      _logger.info('Employee password reset by manager: $employeeId');
+
+      return {
+        'success': true,
+        'message': 'Employee password has been reset successfully.',
+      };
+    } catch (e, stackTrace) {
+      _logger.error('Employee password reset failed',
+          error: e, stackTrace: stackTrace);
+      return {
+        'success': false,
+        'message': _getErrorMessage(e),
+      };
     }
   }
 

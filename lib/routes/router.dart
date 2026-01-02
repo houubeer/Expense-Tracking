@@ -12,6 +12,9 @@ import 'package:expense_tracking_desktop_app/features/settings/screens/settings_
 import 'package:expense_tracking_desktop_app/features/auth/screens/login_screen.dart';
 import 'package:expense_tracking_desktop_app/features/auth/screens/manager_signup_screen.dart';
 import 'package:expense_tracking_desktop_app/features/auth/screens/employee_management_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/forgot_password_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/reset_password_screen.dart';
+import 'package:expense_tracking_desktop_app/features/auth/screens/pending_approval_screen.dart';
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sidebar.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
@@ -25,7 +28,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.login,
     errorBuilder: (context, state) => const _ErrorScreen(),
     routes: [
       // Auth routes (no shell/sidebar)
@@ -48,6 +51,48 @@ final routerProvider = Provider<GoRouter>((ref) {
             return FadeTransition(opacity: animation, child: child);
           },
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ForgotPasswordScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        pageBuilder: (context, state) {
+          final token = state.uri.queryParameters['token'];
+          final email = state.uri.queryParameters['email'];
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ResetPasswordScreen(token: token, email: email),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.pendingApproval,
+        pageBuilder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: PendingApprovalScreen(
+              userEmail: extra?['email'] as String?,
+              organizationName: extra?['organizationName'] as String?,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          );
+        },
       ),
       // Main app routes with shell/sidebar
       ShellRoute(
