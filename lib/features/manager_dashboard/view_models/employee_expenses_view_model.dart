@@ -1,12 +1,18 @@
 import 'package:flutter/foundation.dart';
-import '../models/expense_model.dart';
-import '../repositories/expense_repository.dart';
-import '../repositories/budget_repository.dart';
-import '../services/budget_calculation_service.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
 
 /// View model for Employee Expenses screen
 /// Manages expense data, filters, and analytics
 class EmployeeExpensesViewModel extends ChangeNotifier {
+
+  EmployeeExpensesViewModel(
+    this._expenseRepository,
+    this._budgetRepository,
+    this._calculationService,
+  );
   final ExpenseRepository _expenseRepository;
   final BudgetRepository _budgetRepository;
   final BudgetCalculationService _calculationService;
@@ -24,12 +30,6 @@ class EmployeeExpensesViewModel extends ChangeNotifier {
   // Loading state
   bool _isLoading = false;
   String? _errorMessage;
-
-  EmployeeExpensesViewModel(
-    this._expenseRepository,
-    this._budgetRepository,
-    this._calculationService,
-  );
 
   // Getters
   List<ManagerExpense> get expenses => _expenses;

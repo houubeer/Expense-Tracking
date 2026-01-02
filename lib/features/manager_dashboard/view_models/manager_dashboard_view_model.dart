@@ -1,17 +1,25 @@
 import 'package:flutter/foundation.dart';
-import '../models/employee_model.dart';
-import '../models/expense_model.dart';
-import '../models/budget_model.dart';
-import '../models/audit_log_model.dart';
-import '../repositories/employee_repository.dart';
-import '../repositories/expense_repository.dart';
-import '../repositories/budget_repository.dart';
-import '../services/expense_approval_service.dart';
-import '../services/budget_calculation_service.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/budget_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/audit_log_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/employee_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/expense_approval_service.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
 
 /// View model for Manager Dashboard screen
 /// Manages state and orchestrates data flow between repositories/services and UI
 class ManagerDashboardViewModel extends ChangeNotifier {
+
+  ManagerDashboardViewModel(
+    this._employeeRepository,
+    this._expenseRepository,
+    this._budgetRepository,
+    this._approvalService,
+    this._calculationService,
+  );
   final EmployeeRepository _employeeRepository;
   final ExpenseRepository _expenseRepository;
   final BudgetRepository _budgetRepository;
@@ -33,14 +41,6 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   // Loading state
   bool _isLoading = false;
   String? _errorMessage;
-
-  ManagerDashboardViewModel(
-    this._employeeRepository,
-    this._expenseRepository,
-    this._budgetRepository,
-    this._approvalService,
-    this._calculationService,
-  );
 
   // Getters
   List<Employee> get employees => _employees;
@@ -139,7 +139,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
       _budgets = results[3] as List<DepartmentBudget>;
 
       // Get audit logs from approval service
-      _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+      _auditLogs = _approvalService.getRecentAuditLogs();
 
       _isLoading = false;
       notifyListeners();
@@ -176,7 +176,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
         }
 
         // Refresh audit logs
-        _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+        _auditLogs = _approvalService.getRecentAuditLogs();
 
         notifyListeners();
         return true;
@@ -218,7 +218,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
         }
 
         // Refresh audit logs
-        _auditLogs = _approvalService.getRecentAuditLogs(limit: 10);
+        _auditLogs = _approvalService.getRecentAuditLogs();
 
         notifyListeners();
         return true;
