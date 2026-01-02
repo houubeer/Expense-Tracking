@@ -5,16 +5,14 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 /// Page header widget matching BudgetScreenHeader style
 /// Displays title, subtitle, and optional action button
 class PageHeader extends StatelessWidget {
+
+  const PageHeader({
+    required this.title, required this.subtitle, super.key,
+    this.actionButton,
+  });
   final String title;
   final String subtitle;
   final Widget? actionButton;
-
-  const PageHeader({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    this.actionButton,
-  });
 
   @override
   Widget build(BuildContext context) {

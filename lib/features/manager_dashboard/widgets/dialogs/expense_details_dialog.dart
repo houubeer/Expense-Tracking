@@ -5,18 +5,17 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class ExpenseDetailsDialog extends StatelessWidget {
-  final ManagerExpense expense;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
-  final VoidCallback? onAddComment;
 
   const ExpenseDetailsDialog({
-    super.key,
-    required this.expense,
+    required this.expense, super.key,
     this.onApprove,
     this.onReject,
     this.onAddComment,
   });
+  final ManagerExpense expense;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+  final VoidCallback? onAddComment;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.receipt_long, color: Colors.white, size: 32),
+                  const Icon(Icons.receipt_long, color: Colors.white, size: 32),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(

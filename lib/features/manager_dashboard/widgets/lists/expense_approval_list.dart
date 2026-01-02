@@ -7,20 +7,19 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 
 class ExpenseApprovalList extends StatelessWidget {
-  final List<ManagerExpense> expenses;
-  final void Function(String expenseId)? onApprove;
-  final void Function(String expenseId)? onReject;
-  final void Function(String expenseId)? onComment;
-  final void Function(ManagerExpense expense)? onViewDetails;
 
   const ExpenseApprovalList({
-    super.key,
-    required this.expenses,
+    required this.expenses, super.key,
     this.onApprove,
     this.onReject,
     this.onComment,
     this.onViewDetails,
   });
+  final List<ManagerExpense> expenses;
+  final void Function(String expenseId)? onApprove;
+  final void Function(String expenseId)? onReject;
+  final void Function(String expenseId)? onComment;
+  final void Function(ManagerExpense expense)? onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -78,11 +77,6 @@ class ExpenseApprovalList extends StatelessWidget {
 }
 
 class _ExpenseApprovalItem extends StatelessWidget {
-  final ManagerExpense expense;
-  final void Function(String)? onApprove;
-  final void Function(String)? onReject;
-  final void Function(String)? onComment;
-  final void Function(ManagerExpense)? onViewDetails;
 
   const _ExpenseApprovalItem({
     required this.expense,
@@ -91,6 +85,11 @@ class _ExpenseApprovalItem extends StatelessWidget {
     this.onComment,
     this.onViewDetails,
   });
+  final ManagerExpense expense;
+  final void Function(String)? onApprove;
+  final void Function(String)? onReject;
+  final void Function(String)? onComment;
+  final void Function(ManagerExpense)? onViewDetails;
 
   @override
   Widget build(BuildContext context) {

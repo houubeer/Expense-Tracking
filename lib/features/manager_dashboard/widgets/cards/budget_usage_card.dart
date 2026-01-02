@@ -9,12 +9,11 @@ import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart
 /// Budget usage card showing department budget progress
 /// Uses color-coded progress bar based on usage percentage
 class BudgetUsageCard extends StatelessWidget {
-  final DepartmentBudget budget;
 
   const BudgetUsageCard({
-    super.key,
-    required this.budget,
+    required this.budget, super.key,
   });
+  final DepartmentBudget budget;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class BudgetUsageCard extends StatelessWidget {
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
             offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
           ),
         ],
       ),

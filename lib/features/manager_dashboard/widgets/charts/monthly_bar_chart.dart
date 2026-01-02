@@ -7,12 +7,11 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 /// Monthly bar chart widget for expense trends
 /// Simple bar chart visualization without external dependencies
 class MonthlyBarChart extends StatelessWidget {
-  final Map<String, double> monthlyData;
 
   const MonthlyBarChart({
-    super.key,
-    required this.monthlyData,
+    required this.monthlyData, super.key,
   });
+  final Map<String, double> monthlyData;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class MonthlyBarChart extends StatelessWidget {
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
             offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
           ),
         ],
       ),
@@ -58,7 +57,7 @@ class MonthlyBarChart extends StatelessWidget {
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xs),
+                        horizontal: AppSpacing.xs,),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -73,7 +72,7 @@ class MonthlyBarChart extends StatelessWidget {
                           height: 150 * heightPercentage,
                           decoration: BoxDecoration(
                             color: colorScheme.primary,
-                            borderRadius: BorderRadius.vertical(
+                            borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(AppSpacing.radiusSm),
                             ),
                           ),
