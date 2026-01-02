@@ -79,28 +79,26 @@ class AuditTimelineItem extends StatelessWidget {
   }
 
   Color _getActionColor(ColorScheme colorScheme) {
-    switch (auditLog.action) {
-      case AuditAction.approved:
-        return Colors.green;
-      case AuditAction.rejected:
-        return Colors.red;
-      case AuditAction.budgetUpdated:
-        return colorScheme.primary;
-      case AuditAction.employeeAdded:
-        return colorScheme.tertiary;
-    }
+    final actionLower = auditLog.action.toLowerCase();
+    if (actionLower.contains('approve')) return Colors.green;
+    if (actionLower.contains('reject')) return Colors.red;
+    if (actionLower.contains('budget')) return colorScheme.primary;
+    if (actionLower.contains('employee')) return colorScheme.tertiary;
+    return colorScheme.outlineVariant;
   }
 
   IconData _getActionIcon() {
-    switch (auditLog.action) {
-      case AuditAction.approved:
-        return Icons.check;
-      case AuditAction.rejected:
-        return Icons.close;
-      case AuditAction.budgetUpdated:
-        return Icons.edit;
-      case AuditAction.employeeAdded:
-        return Icons.person_add;
+    final actionLower = auditLog.action.toLowerCase();
+    if (actionLower.contains('approve')) return Icons.check;
+    if (actionLower.contains('reject')) return Icons.close;
+    if (actionLower.contains('budget')) return Icons.edit;
+    if (actionLower.contains('employee') && actionLower.contains('add')) {
+      return Icons.person_add;
     }
+    if (actionLower.contains('suspend')) return Icons.person_off;
+    if (actionLower.contains('activate')) return Icons.person;
+    if (actionLower.contains('remove')) return Icons.person_remove;
+    if (actionLower.contains('comment')) return Icons.comment;
+    return Icons.info;
   }
 }

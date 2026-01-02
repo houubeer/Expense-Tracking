@@ -1,3 +1,4 @@
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/manager_dashboard_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/layout/dashboard_layout.dart';
@@ -5,8 +6,8 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/summary_card.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/employee_card.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/budget_usage_card.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/employee_details_dialog.dart';
 
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/lists/expense_approval_list.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/lists/reimbursement_table.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/forms/add_employee_form.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/expense_details_dialog.dart';
@@ -15,8 +16,10 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_mod
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/employee_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/audit_log_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/expense_approval_service.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
@@ -43,11 +46,17 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   void initState() {
     super.initState();
     // Initialize view model with dependencies
+    // Note: In production, these should be injected via dependency injection
+    final supabaseService = SupabaseService();
+    final auditLogRepo = AuditLogRepository(supabaseService);
     _viewModel = ManagerDashboardViewModel(
-      EmployeeRepository(),
-      ExpenseRepository(),
-      BudgetRepository(),
-      ExpenseApprovalService(),
+      EmployeeRepository(supabaseService, auditLogRepo),
+      ExpenseRepository(supabaseService, auditLogRepo),
+      BudgetRepository(supabaseService),
+      auditLogRepo,
+      ExpenseApprovalService(
+        ExpenseRepository(supabaseService, auditLogRepo),
+      ),
       BudgetCalculationService(),
     );
     // Load initial data
@@ -72,6 +81,34 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            if (viewModel.errorMessage != null) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading dashboard',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      viewModel.errorMessage!,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(
+                      onPressed: viewModel.loadDashboardData,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,19 +128,12 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                   _buildEmployeeManagement(viewModel),
                   const SizedBox(height: AppSpacing.xxl),
 
-                  // Pending Expense Approvals
-                  _buildPendingApprovals(viewModel),
-                  const SizedBox(height: AppSpacing.xxl),
-
                   // Budget Monitoring
                   _buildBudgetMonitoring(viewModel),
                   const SizedBox(height: AppSpacing.xxl),
 
                   // Reimbursements
-                  ReimbursementTable(
-                    onExportExcel: () => _showMessage('Export Excel'),
-                    onExportPdf: () => _showMessage('Export PDF'),
-                  ),
+                  ReimbursementTable(expenses: viewModel.reimbursableExpenses),
                 ],
               ),
             );
@@ -171,164 +201,153 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   }
 
   Widget _buildEmployeeManagement(ManagerDashboardViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Employee Management',
-              style: AppTextStyles.heading2,
-            ),
-            Row(
-              children: [
-                // Search
-                SizedBox(
-                  width: 250,
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search employees...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusSm),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Employee Management', style: AppTextStyles.heading2),
+              Row(
+                children: [
+                  // Search
+                  SizedBox(
+                    width: 250,
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search employees...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusSm),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                        vertical: AppSpacing.md,
-                      ),
+                      onChanged: viewModel.setSearchQuery,
                     ),
-                    onChanged: viewModel.setSearchQuery,
                   ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                // Department filter
-                DropdownButton<String?>(
-                  value: viewModel.departmentFilter,
-                  hint: const Text('Department'),
-                  items: [
-                    const DropdownMenuItem(
-                        value: null, child: Text('All Departments')),
-                    ...[
-                      'Engineering',
-                      'Marketing',
-                      'Sales',
-                      'Product',
-                      'Design',
-                      'Human Resources',
-                      'Finance'
-                    ].map((dept) =>
-                        DropdownMenuItem(value: dept, child: Text(dept))),
-                  ],
-                  onChanged: viewModel.setDepartmentFilter,
-                ),
-                const SizedBox(width: AppSpacing.md),
-                // Status filter
-                DropdownButton<EmployeeStatus?>(
-                  value: viewModel.statusFilter,
-                  hint: const Text('Status'),
-                  items: const [
-                    DropdownMenuItem(value: null, child: Text('All Statuses')),
-                    DropdownMenuItem(
-                        value: EmployeeStatus.active, child: Text('Active')),
-                    DropdownMenuItem(
-                        value: EmployeeStatus.suspended,
-                        child: Text('Suspended')),
-                  ],
-                  onChanged: viewModel.setStatusFilter,
-                ),
-                const SizedBox(width: AppSpacing.md),
-                FilledButton.icon(
-                  onPressed: () => _showAddEmployeeDialog(context, viewModel),
-                  icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-                  label: const Text('Add Employee'),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        // Employee cards grid
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: AppSpacing.lg,
-            mainAxisSpacing: AppSpacing.lg,
-            childAspectRatio: 1.3,
-          ),
-          itemCount: viewModel.filteredEmployees.length,
-          itemBuilder: (context, index) {
-            return EmployeeCard(
-              employee: viewModel.filteredEmployees[index],
-              onMenuAction: (action) => _handleEmployeeAction(
-                context,
-                viewModel,
-                viewModel.filteredEmployees[index],
-                action,
+                  const SizedBox(width: AppSpacing.md),
+                  // Department filter
+                  DropdownButton<String?>(
+                    value: viewModel.departmentFilter,
+                    hint: const Text('Department'),
+                    items: [
+                      const DropdownMenuItem(
+                          value: null, child: Text('All Departments')),
+                      ...[
+                        'Engineering',
+                        'Marketing',
+                        'Sales',
+                        'Product',
+                        'Design',
+                        'Human Resources',
+                        'Finance'
+                      ].map((dept) =>
+                          DropdownMenuItem(value: dept, child: Text(dept))),
+                    ],
+                    onChanged: viewModel.setDepartmentFilter,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  // Status filter
+                  DropdownButton<EmployeeStatus?>(
+                    value: viewModel.statusFilter,
+                    hint: const Text('Status'),
+                    items: const [
+                      DropdownMenuItem(
+                          value: null, child: Text('All Statuses')),
+                      DropdownMenuItem(
+                          value: EmployeeStatus.active, child: Text('Active')),
+                    ],
+                    onChanged: viewModel.setStatusFilter,
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  FilledButton.icon(
+                    onPressed: () => _showAddEmployeeDialog(context, viewModel),
+                    icon: const Icon(Icons.add, size: AppSpacing.iconXs),
+                    label: const Text('Add Employee'),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
-      ],
-    );
-  }
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
 
-  Widget _buildPendingApprovals(ManagerDashboardViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pending Expense Approvals',
-          style: AppTextStyles.heading2,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        ExpenseApprovalList(
-          expenses: viewModel.pendingExpenses,
-          onApprove: (id) async {
-            final success = await viewModel.approveExpense(id);
-            if (success) _showMessage('Expense approved');
-          },
-          onReject: (id) async {
-            final success =
-                await viewModel.rejectExpense(id, 'Budget exceeded');
-            if (success) _showMessage('Expense rejected');
-          },
-          onComment: (id) => _showAddCommentDialogById(context, viewModel, id),
-          onViewDetails: (expense) =>
-              _showExpenseDetailsDialog(context, viewModel, expense),
-        ),
-      ],
+          // Show either a grid or a placeholder if empty
+          viewModel.filteredEmployees.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  child: Center(
+                    child: Text(
+                      'No employees found.',
+                    ),
+                  ),
+                )
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: AppSpacing.lg,
+                    mainAxisSpacing: AppSpacing.lg,
+                    childAspectRatio: 1.3,
+                  ),
+                  itemCount: viewModel.filteredEmployees.length,
+                  itemBuilder: (context, index) {
+                    return EmployeeCard(
+                      employee: viewModel.filteredEmployees[index],
+                      onMenuAction: (action) => _handleEmployeeAction(
+                        context,
+                        viewModel,
+                        viewModel.filteredEmployees[index],
+                        action,
+                      ),
+                    );
+                  },
+                ),
+        ],
+      ),
     );
   }
 
   Widget _buildBudgetMonitoring(ManagerDashboardViewModel viewModel) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Budget Monitoring',
-          style: AppTextStyles.heading2,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: AppSpacing.lg,
-            mainAxisSpacing: AppSpacing.lg,
-            childAspectRatio: 3,
-          ),
-          itemCount: viewModel.budgets.length,
-          itemBuilder: (context, index) {
-            return BudgetUsageCard(budget: viewModel.budgets[index]);
-          },
-        ),
-      ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Budget Monitoring', style: AppTextStyles.heading2),
+          const SizedBox(height: AppSpacing.lg),
+          viewModel.budgets.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  child: Center(
+                    child: Text(
+                      'No budgets available.',
+                    ),
+                  ),
+                )
+              : GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: AppSpacing.lg,
+                    mainAxisSpacing: AppSpacing.lg,
+                    childAspectRatio: 3,
+                  ),
+                  itemCount: viewModel.budgets.length,
+                  itemBuilder: (context, index) {
+                    return BudgetUsageCard(budget: viewModel.budgets[index]);
+                  },
+                ),
+        ],
+      ),
     );
   }
 
@@ -418,29 +437,14 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   ) {
     switch (action) {
       case 'view':
-        _showMessage('View details for ${employee.name}');
+        showDialog<void>(
+          context: context,
+          builder: (context) => EmployeeDetailsDialog(
+            employee: employee,
+          ),
+        );
         break;
-      case 'suspend':
-        if (employee.status == EmployeeStatus.active) {
-          _showConfirmDialog(
-            context,
-            'Suspend Employee',
-            'Are you sure you want to suspend ${employee.name}?',
-            () async {
-              await viewModel.suspendEmployee(employee.id);
-              if (mounted) {
-                _showMessage('${employee.name} suspended');
-              }
-            },
-          );
-        } else {
-          viewModel.activateEmployee(employee.id).then((_) {
-            if (mounted) {
-              _showMessage('${employee.name} activated');
-            }
-          });
-        }
-        break;
+
       case 'remove':
         _showConfirmDialog(
           context,

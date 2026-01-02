@@ -143,14 +143,6 @@ class EmployeeCard extends StatelessWidget {
                       value: 'view',
                       child: Text('View Details'),
                     ),
-                    PopupMenuItem(
-                      value: 'suspend',
-                      child: Text(
-                        employee.status == EmployeeStatus.active
-                            ? 'Suspend'
-                            : 'Activate',
-                      ),
-                    ),
                     const PopupMenuItem(
                       value: 'remove',
                       child: Text('Remove'),
