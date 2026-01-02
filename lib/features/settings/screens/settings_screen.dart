@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'dart:ui';
-import 'package:go_router/go_router.dart';
-import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/features/settings/providers/theme_provider.dart';
+import 'package:expense_tracking_desktop_app/features/settings/providers/locale_provider.dart';
+import 'package:expense_tracking_desktop_app/features/settings/providers/account_provider.dart';
+import 'package:expense_tracking_desktop_app/features/settings/providers/notifications_provider.dart';
 import 'package:expense_tracking_desktop_app/features/settings/widgets/backup_restore_content.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -40,8 +45,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              // Use a subtle translucent surface color so the backdrop isn't pure black
               child: Container(
-                color: Colors.black.withOpacity(0.2),
+                // Keep transparent-ish but tinted by the theme so underlying content
+                // shows through with a slight tint and no harsh black. Use
+                // onBackground so the tint contrasts the current theme instead
+                // of always using surface (which can be dark).
+                color: colorScheme.onSurface.withAlpha((0.06 * 255).round()),
               ),
             ),
           ),
@@ -56,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withAlpha((0.3 * 255).round()),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -78,14 +88,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Settings',
+                                  AppLocalizations.of(context)!.settings,
                                   style: AppTextStyles.heading2.copyWith(
                                     color: colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
                                 Text(
-                                  'Manage your account preferences and app settings',
+                                  AppLocalizations.of(context)!.manageAccountPreferences,
                                   style: AppTextStyles.bodyMedium.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -96,13 +106,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Container(
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: colorScheme.outlineVariant),
+                                    color: colorScheme.outlineVariant,),
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
                                 icon: const Icon(Icons.close),
-                                onPressed: () => context.go(AppRoutes.home),
-                                tooltip: 'Close Settings',
+                                onPressed: () {
+                                  // Try popping the root navigator first (dialog/modal pushed
+                                  // to the root). If nothing to pop, fall back to navigating
+                                  // home to ensure we don't throw "nothing to pop".
+                                  final rootNav = Navigator.of(context, rootNavigator: true);
+                                  if (rootNav.canPop()) {
+                                    rootNav.pop();
+                                  } else {
+                                    context.go(AppRoutes.home);
+                                  }
+                                },
+                                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                               ),
                             ),
                           ],
@@ -137,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           label: item['label'] as String,
                                           isSelected: isSelected,
                                           onTap: () => setState(
-                                              () => _selectedIndex = index),
+                                              () => _selectedIndex = index,),
                                         );
                                       },
                                     ),
@@ -174,6 +194,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  
+
+
   Widget _buildContent(int index) {
     switch (index) {
       case 0:
@@ -202,10 +225,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 }
 
 class _SettingsMenuItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const _SettingsMenuItem({
     required this.icon,
@@ -213,6 +232,10 @@ class _SettingsMenuItem extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -259,97 +282,158 @@ class _SettingsMenuItem extends StatelessWidget {
   }
 }
 
-class _AccountSettingsContent extends StatelessWidget {
+class _AccountSettingsContent extends ConsumerStatefulWidget {
   const _AccountSettingsContent();
+
+  @override
+  ConsumerState<_AccountSettingsContent> createState() => _AccountSettingsContentState();
+}
+
+class _AccountSettingsContentState extends ConsumerState<_AccountSettingsContent> {
+  final _fullNameController = TextEditingController();
+  final _locationController = TextEditingController();
+  bool _isSaving = false;
+
+  @override
+  void dispose() {
+    _fullNameController.dispose();
+    _locationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final profileAsync = ref.watch(accountProvider);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Account Details',
-            style: AppTextStyles.heading3,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'View and manage your personal information',
-            style: AppTextStyles.bodySmall.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
+    return profileAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, st) => const Center(child: Text('Failed to load account')),
+      data: (profile) {
+  final displayName = profile?.fullName ?? profile?.email ?? '';
+        final created = profile?.createdAt;
+        final memberSince = created != null
+            ? '${created.month}/${created.day}/${created.year}'
+            : '';
+        final location = (profile?.settings ?? {})['location'] as String? ?? '';
 
-          // Profile Header
-          Row(
+        // Initialize controllers if empty
+        if (profile != null) {
+          if (_fullNameController.text.isEmpty) {
+            _fullNameController.text = profile.fullName ?? '';
+          }
+          if (_locationController.text.isEmpty) {
+            _locationController.text = location == '' ? '' : location;
+          }
+        }
+
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
+              Text(
+                AppLocalizations.of(context)!.accountDetails,
+                style: AppTextStyles.heading3,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                AppLocalizations.of(context)!.viewAndManagePersonalInfo,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Profile Header
+              Row(
                 children: [
-                  CircleAvatar(
-                    radius: 36,
-                    backgroundColor: colorScheme.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.person_outline,
-                      size: 36,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: colorScheme.surface,
-                          width: 2,
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 36,
+                        backgroundColor: colorScheme.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.person_outline,
+                          size: 36,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      child: const Icon(
-                        Icons.camera_alt_outlined,
-                        size: 14,
-                        color: Colors.white,
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.surface,
+                              width: 2,
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.camera_alt_outlined,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayName,
+                        style: AppTextStyles.heading3,
+                      ),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        AppLocalizations.of(context)!.memberSince(memberSince),
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(width: AppSpacing.lg),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: AppSpacing.xl),
+              const Divider(),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Editable Fields
+              _buildEditableField(context, AppLocalizations.of(context)!.fullName, _fullNameController),
+              const SizedBox(height: AppSpacing.lg),
+              _buildReadOnlyField(context, AppLocalizations.of(context)!.emailAddress, profile?.email ?? '\u0014'),
+              const SizedBox(height: AppSpacing.lg),
+              _buildEditableField(context, AppLocalizations.of(context)!.location, _locationController),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
                 children: [
-                  Text(
-                    'John Doe',
-                    style: AppTextStyles.heading3,
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'Member since January 15, 2024',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                  FilledButton(
+                    onPressed: _isSaving
+                        ? null
+                        : () async {
+                            setState(() => _isSaving = true);
+                            final notifier = ref.read(accountProvider.notifier);
+                            final okName = await notifier.updateFullName(_fullNameController.text.trim());
+                            final okLoc = await notifier.updateLocation(_locationController.text.trim());
+                            setState(() => _isSaving = false);
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text((okName || okLoc) ? 'Account updated' : 'Failed to update account')),
+                            );
+                          },
+                    child: Text(_isSaving ? 'Saving...' : AppLocalizations.of(context)!.saveChanges),
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.xl),
-          const Divider(),
-          const SizedBox(height: AppSpacing.xl),
-
-          // Fields
-          _buildReadOnlyField(context, 'Full Name', 'John Doe'),
-          const SizedBox(height: AppSpacing.lg),
-          _buildReadOnlyField(context, 'Email Address', 'john.doe@example.com'),
-          const SizedBox(height: AppSpacing.lg),
-          _buildReadOnlyField(context, 'Location', 'New York, USA'),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -403,6 +487,41 @@ class _AccountSettingsContent extends StatelessWidget {
     );
   }
 
+  Widget _buildEditableField(
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withAlpha(70),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      ),
+      child: Row(
+        children: [
+          Icon(_getIconForLabel(label), size: 20, color: colorScheme.onSurfaceVariant),
+          const SizedBox(width: AppSpacing.lg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: AppTextStyles.bodySmall.copyWith(color: colorScheme.onSurfaceVariant)),
+                const SizedBox(height: AppSpacing.xs),
+                TextField(
+                  controller: controller,
+                  decoration: const InputDecoration(border: InputBorder.none, isDense: true),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   IconData _getIconForLabel(String label) {
     switch (label) {
       case 'Full Name':
@@ -427,6 +546,55 @@ class _ExportReportsContent extends StatefulWidget {
 class _ExportReportsContentState extends State<_ExportReportsContent> {
   String _selectedDateRange = 'All Time';
   String _selectedCategory = 'All Categories';
+  bool _isExporting = false;
+  bool _isExportingPdf = false;
+
+  Future<void> _handleCsvExport() async {
+    setState(() => _isExporting = true);
+    final svc = SupabaseService();
+    final path = await svc.exportExpensesAsCsv(
+      dateRange: _selectedDateRange,
+      categoryName: _selectedCategory,
+    );
+    setState(() => _isExporting = false);
+    if (!mounted) return;
+    if (path != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('CSV exported to: $path'),
+        behavior: SnackBarBehavior.floating,
+      ),);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Failed to export CSV'),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+      ),);
+    }
+  }
+
+  Future<void> _handlePdfExport() async {
+    setState(() => _isExportingPdf = true);
+    final svc = SupabaseService();
+    final path = await svc.exportExpensesAsPdf(
+      dateRange: _selectedDateRange,
+      categoryName: _selectedCategory,
+      includeReceipts: true,
+    );
+    setState(() => _isExportingPdf = false);
+    if (!mounted) return;
+    if (path != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('PDF exported to: $path'),
+        behavior: SnackBarBehavior.floating,
+      ),);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Failed to export PDF'),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+      ),);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -458,7 +626,7 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
 
           // Date Range Dropdown
           _buildDropdownLabel(
-              context, 'Date Range', Icons.calendar_today_outlined),
+              context, 'Date Range', Icons.calendar_today_outlined,),
           const SizedBox(height: AppSpacing.xs),
           _buildDropdown(
             context,
@@ -479,7 +647,7 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
               'Food',
               'Transport',
               'Utilities',
-              'Entertainment'
+              'Entertainment',
             ],
             onChanged: (value) => setState(() => _selectedCategory = value!),
           ),
@@ -500,10 +668,13 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
                 'Download data in spreadsheet format (Excel, Google Sheets)',
             icon: Icons.table_chart_outlined,
             iconColor: Colors.green,
-            buttonText: 'Export as CSV',
+            buttonText: _isExporting ? 'Exporting...' : 'Export as CSV',
             buttonColor: Colors.green,
             buttonIcon: Icons.download_outlined,
-            onTap: () {},
+            onTap: () {
+              if (_isExporting) return;
+              _handleCsvExport();
+            },
           ),
           const SizedBox(height: AppSpacing.lg),
 
@@ -514,10 +685,13 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
             description: 'Download formatted report for printing or sharing',
             icon: Icons.picture_as_pdf_outlined,
             iconColor: Colors.red,
-            buttonText: 'Export as PDF',
+            buttonText: _isExportingPdf ? 'Exporting...' : 'Export as PDF',
             buttonColor: Colors.red,
             buttonIcon: Icons.download_outlined,
-            onTap: () {},
+            onTap: () {
+              if (_isExportingPdf) return;
+              _handlePdfExport();
+            },
           ),
         ],
       ),
@@ -525,7 +699,7 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
   }
 
   Widget _buildDropdownLabel(
-      BuildContext context, String label, IconData icon) {
+      BuildContext context, String label, IconData icon,) {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
@@ -560,7 +734,7 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
           value: value,
           isExpanded: true,
           icon: Icon(Icons.keyboard_arrow_down_rounded,
-              color: colorScheme.onSurface),
+              color: colorScheme.onSurface,),
           style:
               AppTextStyles.bodyMedium.copyWith(color: colorScheme.onSurface),
           dropdownColor: colorScheme.surfaceContainerHighest,
@@ -623,7 +797,7 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
           const SizedBox(height: AppSpacing.lg),
           Padding(
             // Button container
-            padding: const EdgeInsets.only(left: 0.0), // Reset padding
+            padding: const EdgeInsets.only(), // Reset padding
             child: SizedBox(
               height: 40,
               child: ElevatedButton.icon(
@@ -728,12 +902,6 @@ class _AppearanceContent extends ConsumerWidget {
 }
 
 class _ThemeCard extends StatelessWidget {
-  final ThemeMode mode;
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const _ThemeCard({
     required this.mode,
@@ -743,6 +911,12 @@ class _ThemeCard extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
+  final ThemeMode mode;
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -762,7 +936,7 @@ class _ThemeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         child: Container(
           padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.xl, horizontal: AppSpacing.md),
+              vertical: AppSpacing.xl, horizontal: AppSpacing.md,),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest.withAlpha(30),
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -811,10 +985,6 @@ class _LanguageContent extends StatefulWidget {
 }
 
 class _LanguageContentState extends State<_LanguageContent> {
-  String _selectedLanguage = 'fr'; // Default to French as in screenshot
-  String _selectedDateFormat = 'MM/DD/YYYY (12/08/2024)';
-  String _selectedTimeFormat = '12-hour (3:45 PM)';
-
   final List<Map<String, String>> _languages = [
     {'code': 'en', 'name': 'English', 'nativeName': 'English'},
     {'code': 'ar', 'name': 'Arabic', 'nativeName': 'العربية'},
@@ -825,153 +995,78 @@ class _LanguageContentState extends State<_LanguageContent> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Language',
-            style: AppTextStyles.heading3,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Select your preferred language',
-            style: AppTextStyles.bodySmall.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
+    return Consumer(
+      builder: (context, ref, child) {
+        final currentLocale = ref.watch(localeProvider);
+        final selectedLanguageCode = currentLocale.languageCode;
 
-          // Search Bar
-          TextField(
-            decoration: InputDecoration(
-              hintText: 'Search languages...',
-              prefixIcon:
-                  Icon(Icons.search, color: colorScheme.onSurfaceVariant),
-              hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-              filled: true,
-              fillColor: colorScheme.surfaceContainerHighest.withAlpha(50),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                borderSide: BorderSide.none,
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Language',
+                style: AppTextStyles.heading3,
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                borderSide: BorderSide(color: colorScheme.primary, width: 2),
-              ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Languages List
-          ..._languages.map((lang) => Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: _LanguageCard(
-                  nativeName: lang['nativeName']!,
-                  englishName: lang['name']!,
-                  isSelected: _selectedLanguage == lang['code'],
-                  onTap: () =>
-                      setState(() => _selectedLanguage = lang['code']!),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Select your preferred language',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
-              )),
+              ),
+              const SizedBox(height: AppSpacing.xl),
 
-          const SizedBox(height: AppSpacing.xl),
-          const Divider(),
-          const SizedBox(height: AppSpacing.xl),
+              // Search Bar
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search languages...',
+                  prefixIcon:
+                      Icon(Icons.search, color: colorScheme.onSurfaceVariant),
+                  hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest.withAlpha(50),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    borderSide: BorderSide(color: colorScheme.primary, width: 2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
 
-          Text(
-            'Regional Settings',
-            style:
-                AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: AppSpacing.lg),
+              // Languages List
+              ..._languages.map((lang) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                    child: _LanguageCard(
+                      nativeName: lang['nativeName']!,
+                      englishName: lang['name']!,
+                      isSelected: selectedLanguageCode == lang['code'],
+                      onTap: () async {
+                        await ref.read(localeProvider.notifier).setLocale(lang['code']!);
+                      },
+                    ),
+                  ),),
 
-          // Date Format
-          _buildDropdownSection(
-            context,
-            label: 'Date Format',
-            value: _selectedDateFormat,
-            items: [
-              'MM/DD/YYYY (12/08/2024)',
-              'DD/MM/YYYY (08/12/2024)',
-              'YYYY-MM-DD (2024-12-08)'
+              const SizedBox(height: AppSpacing.xl),
+              const Divider(),
+              const SizedBox(height: AppSpacing.xl),
             ],
-            onChanged: (val) => setState(() => _selectedDateFormat = val!),
           ),
-          const SizedBox(height: AppSpacing.lg),
-
-          // Time Format
-          _buildDropdownSection(
-            context,
-            label: 'Time Format',
-            value: _selectedTimeFormat,
-            items: ['12-hour (3:45 PM)', '24-hour (15:45)'],
-            onChanged: (val) => setState(() => _selectedTimeFormat = val!),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDropdownSection(
-    BuildContext context, {
-    required String label,
-    required String value,
-    required List<String> items,
-    required ValueChanged<String?> onChanged,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest.withAlpha(50),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            border: Border.all(color: colorScheme.outline.withAlpha(30)),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: value,
-              isExpanded: true,
-              icon: Icon(Icons.keyboard_arrow_down_rounded,
-                  color: colorScheme.onSurface),
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: colorScheme.onSurface),
-              dropdownColor: colorScheme.surfaceContainerHighest,
-              items: items.map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }
 
 class _LanguageCard extends StatelessWidget {
-  final String nativeName;
-  final String englishName;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const _LanguageCard({
     required this.nativeName,
@@ -979,6 +1074,10 @@ class _LanguageCard extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
+  final String nativeName;
+  final String englishName;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -1051,33 +1150,16 @@ class _LanguageCard extends StatelessWidget {
   }
 }
 
-class _NotificationsContent extends StatefulWidget {
+class _NotificationsContent extends ConsumerStatefulWidget {
   const _NotificationsContent();
 
   @override
-  State<_NotificationsContent> createState() => _NotificationsContentState();
+  ConsumerState<_NotificationsContent> createState() => _NotificationsContentState();
 }
 
-class _NotificationsContentState extends State<_NotificationsContent> {
-  // Notification Channels
-  bool _pushEnabled = true;
-  bool _emailEnabled = true;
-
-  // Notification Types
-  bool _newExpenseAdded = true;
-  bool _budgetUpdates = true;
-  bool _budgetLimitWarnings = true;
-  bool _weeklySummary = true;
-  bool _monthlyReports = true;
-
-  // Quiet Hours
-  bool _quietHoursEnabled = false;
-
-  // Using strings for simplicity in this UI demo as per design
-  final TextEditingController _fromTimeController =
-      TextEditingController(text: "10:00 PM");
-  final TextEditingController _toTimeController =
-      TextEditingController(text: "08:00 AM");
+class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
+  final TextEditingController _fromTimeController = TextEditingController();
+  final TextEditingController _toTimeController = TextEditingController();
 
   @override
   void dispose() {
@@ -1089,115 +1171,123 @@ class _NotificationsContentState extends State<_NotificationsContent> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final settingsAsync = ref.watch(notificationsProvider);
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Notifications',
-            style: AppTextStyles.heading3,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Manage how you receive notifications',
-            style: AppTextStyles.bodySmall.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
+    return settingsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Failed to load notifications: $e')),
+      data: (settings) {
+        // Ensure controllers are initialized
+        final quiet = (settings['quietHours'] as Map<String, dynamic>?) ?? {};
+        final from = quiet['from'] as String? ?? '22:00';
+        final to = quiet['to'] as String? ?? '08:00';
+        if (_fromTimeController.text.isEmpty) _fromTimeController.text = from;
+        if (_toTimeController.text.isEmpty) _toTimeController.text = to;
 
-          // Notification Channels
-          Text(
-            'Notification Channels',
-            style:
-                AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _buildToggleTile(
-            context,
-            title: 'Push Notifications',
-            subtitle: 'Receive notifications on your device',
-            icon: Icons.notifications_none_outlined,
-            value: _pushEnabled,
-            onChanged: (val) => setState(() => _pushEnabled = val),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _buildToggleTile(
-            context,
-            title: 'Email Notifications',
-            subtitle: 'Receive updates via email',
-            icon: Icons.mail_outline,
-            value: _emailEnabled,
-            onChanged: (val) => setState(() => _emailEnabled = val),
-          ),
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Notifications', style: AppTextStyles.heading3),
+              const SizedBox(height: AppSpacing.xs),
+              Text('Manage how you receive notifications', style: AppTextStyles.bodySmall.copyWith(color: colorScheme.onSurfaceVariant)),
+              const SizedBox(height: AppSpacing.xl),
 
-          const SizedBox(height: AppSpacing.xl),
+              // Notification Channels
+              Text('Notification Channels', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
+              const SizedBox(height: AppSpacing.md),
+              _buildToggleTile(
+                context,
+                title: 'Push Notifications',
+                subtitle: 'Receive notifications on your device',
+                icon: Icons.notifications_none_outlined,
+                value: (settings['channels']?['push'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setChannel('push', val),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _buildToggleTile(
+                context,
+                title: 'Email Notifications',
+                subtitle: 'Receive updates via email',
+                icon: Icons.mail_outline,
+                value: (settings['channels']?['email'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setChannel('email', val),
+              ),
 
-          // Notification Types
-          Text(
-            'Notification Types',
-            style:
-                AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _buildToggleTile(
-            context,
-            title: 'New Expense Added',
-            subtitle: 'Get notified when a new expense is recorded',
-            icon: Icons.attach_money,
-            value: _newExpenseAdded,
-            onChanged: (val) => setState(() => _newExpenseAdded = val),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _buildToggleTile(
-            context,
-            title: 'Budget Updates',
-            subtitle: 'Get notified about budget status changes',
-            icon: Icons.trending_up,
-            value: _budgetUpdates,
-            onChanged: (val) => setState(() => _budgetUpdates = val),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _buildToggleTile(
-            context,
-            title: 'Budget Limit Warnings',
-            subtitle: 'Alert when approaching or exceeding budget limits',
-            icon: Icons.warning_amber_rounded,
-            value: _budgetLimitWarnings,
-            onChanged: (val) => setState(() => _budgetLimitWarnings = val),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _buildToggleTile(
-            context,
-            title: 'Weekly Summary',
-            subtitle: 'Receive weekly expense summary reports',
-            icon: Icons.notifications_none,
-            value: _weeklySummary,
-            onChanged: (val) => setState(() => _weeklySummary = val),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _buildToggleTile(
-            context,
-            title: 'Monthly Reports',
-            subtitle: 'Get detailed monthly financial reports',
-            icon: Icons.notifications_none,
-            value: _monthlyReports,
-            onChanged: (val) => setState(() => _monthlyReports = val),
-          ),
+              const SizedBox(height: AppSpacing.xl),
 
-          const SizedBox(height: AppSpacing.xl),
+              // Notification Types
+              Text('Notification Types', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
+              const SizedBox(height: AppSpacing.md),
+              _buildToggleTile(
+                context,
+                title: 'New Expense Added',
+                subtitle: 'Get notified when a new expense is recorded',
+                icon: Icons.attach_money,
+                value: (settings['types']?['newExpenseAdded'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setType('newExpenseAdded', val),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _buildToggleTile(
+                context,
+                title: 'Budget Updates',
+                subtitle: 'Get notified about budget status changes',
+                icon: Icons.trending_up,
+                value: (settings['types']?['budgetUpdates'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setType('budgetUpdates', val),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _buildToggleTile(
+                context,
+                title: 'Budget Limit Warnings',
+                subtitle: 'Alert when approaching or exceeding budget limits',
+                icon: Icons.warning_amber_rounded,
+                value: (settings['types']?['budgetLimitWarnings'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setType('budgetLimitWarnings', val),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _buildToggleTile(
+                context,
+                title: 'Weekly Summary',
+                subtitle: 'Receive weekly expense summary reports',
+                icon: Icons.notifications_none,
+                value: (settings['types']?['weeklySummary'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setType('weeklySummary', val),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _buildToggleTile(
+                context,
+                title: 'Monthly Reports',
+                subtitle: 'Get detailed monthly financial reports',
+                icon: Icons.notifications_none,
+                value: (settings['types']?['monthlyReports'] as bool?) ?? true,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setType('monthlyReports', val),
+              ),
 
-          // Quiet Hours
-          Text(
-            'Quiet Hours',
-            style:
-                AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
+              const SizedBox(height: AppSpacing.xl),
+
+              // Quiet Hours
+              Text('Quiet Hours', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600)),
+              const SizedBox(height: AppSpacing.md),
+              _buildQuietHoursCard(context, settings),
+
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                children: [
+                  FilledButton(
+                    onPressed: () async {
+                      final ok = await ref.read(notificationsProvider.notifier).save();
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ok ? 'Notification settings saved' : 'Failed to save settings')));
+                    },
+                    child: const Text('Save Changes'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          _buildQuietHoursCard(context),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1248,15 +1338,21 @@ class _NotificationsContentState extends State<_NotificationsContent> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF3B82F6), // Blue from design
+            activeThumbColor: const Color(0xFF3B82F6), // Blue from design
           ),
         ],
       ),
     );
   }
 
-  Widget _buildQuietHoursCard(BuildContext context) {
+  Widget _buildQuietHoursCard(BuildContext context, Map<String, dynamic> settings) {
     final colorScheme = Theme.of(context).colorScheme;
+    final quiet = (settings['quietHours'] as Map<String, dynamic>?) ?? {};
+    final enabled = quiet['enabled'] as bool? ?? false;
+
+    // Keep controllers updated when settings change
+    if (_fromTimeController.text.isEmpty) _fromTimeController.text = (quiet['from'] as String?) ?? '22:00';
+    if (_toTimeController.text.isEmpty) _toTimeController.text = (quiet['to'] as String?) ?? '08:00';
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -1272,30 +1368,20 @@ class _NotificationsContentState extends State<_NotificationsContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Enable Quiet Hours',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    Text('Enable Quiet Hours', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w500)),
                     const SizedBox(height: 2),
-                    Text(
-                      'Mute notifications during specified times',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                    Text('Mute notifications during specified times', style: AppTextStyles.bodySmall.copyWith(color: colorScheme.onSurfaceVariant)),
                   ],
                 ),
               ),
               Switch(
-                value: _quietHoursEnabled,
-                onChanged: (val) => setState(() => _quietHoursEnabled = val),
-                activeColor: const Color(0xFF3B82F6),
+                value: enabled,
+                onChanged: (val) => ref.read(notificationsProvider.notifier).setQuietHours(enabled: val, from: _fromTimeController.text, to: _toTimeController.text),
+                activeThumbColor: const Color(0xFF3B82F6),
               ),
             ],
           ),
-          if (_quietHoursEnabled) ...[
+          if (enabled) ...[
             const SizedBox(height: AppSpacing.lg),
             const Divider(),
             const SizedBox(height: AppSpacing.lg),
@@ -1305,28 +1391,19 @@ class _NotificationsContentState extends State<_NotificationsContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'From',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                      Text('From', style: AppTextStyles.bodySmall.copyWith(color: colorScheme.onSurfaceVariant)),
                       const SizedBox(height: AppSpacing.xs),
                       TextField(
                         controller: _fromTimeController,
+                        onChanged: (v) => ref.read(notificationsProvider.notifier).setQuietHours(enabled: true, from: v, to: _toTimeController.text),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: colorScheme.surface,
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppSpacing.radiusMd),
-                            borderSide:
-                                BorderSide(color: colorScheme.outlineVariant),
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                            borderSide: BorderSide(color: colorScheme.outlineVariant),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                         ),
                       ),
                     ],
@@ -1337,28 +1414,19 @@ class _NotificationsContentState extends State<_NotificationsContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'To',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                      Text('To', style: AppTextStyles.bodySmall.copyWith(color: colorScheme.onSurfaceVariant)),
                       const SizedBox(height: AppSpacing.xs),
                       TextField(
                         controller: _toTimeController,
+                        onChanged: (v) => ref.read(notificationsProvider.notifier).setQuietHours(enabled: true, from: _fromTimeController.text, to: v),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: colorScheme.surface,
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppSpacing.radiusMd),
-                            borderSide:
-                                BorderSide(color: colorScheme.outlineVariant),
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                            borderSide: BorderSide(color: colorScheme.outlineVariant),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
-                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                         ),
                       ),
                     ],
@@ -1404,14 +1472,14 @@ class _SecurityContent extends StatelessWidget {
                 AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: AppSpacing.md),
-          _buildActionCard(
+            _buildActionCard(
             context,
             icon: Icons.vpn_key_outlined,
             title: 'Change Password',
             subtitle: 'Last changed 30 days ago',
             actions: [
-              FilledButton(
-                onPressed: () {},
+                  FilledButton(
+                    onPressed: () => _handleChangePassword(context),
                 style: FilledButton.styleFrom(
                   backgroundColor: const Color(0xFF3B82F6),
                   foregroundColor: Colors.white,
@@ -1439,9 +1507,9 @@ class _SecurityContent extends StatelessWidget {
             title: 'Authenticator App',
             subtitle: 'Use an authenticator app for additional security',
             trailing: Switch(
-              value: false,
-              onChanged: (val) {},
-              activeColor: const Color(0xFF3B82F6),
+                value: false,
+                onChanged: (val) => _handleToggle2FA(context, val),
+              activeThumbColor: const Color(0xFF3B82F6),
             ),
             actions: [
               OutlinedButton(
@@ -1471,8 +1539,8 @@ class _SecurityContent extends StatelessWidget {
             context,
           ),
           const SizedBox(height: AppSpacing.md),
-          TextButton(
-            onPressed: () {},
+            TextButton(
+              onPressed: () => _handleSignOutOtherSessions(context),
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
               padding: EdgeInsets.zero,
@@ -1516,8 +1584,8 @@ class _SecurityContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                FilledButton(
-                  onPressed: () {},
+                  FilledButton(
+                    onPressed: () => _handleDeleteAllData(context),
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
@@ -1535,11 +1603,142 @@ class _SecurityContent extends StatelessWidget {
     );
   }
 
+  Future<void> _handleChangePassword(BuildContext context) async {
+    final currentPassController = TextEditingController();
+    final newPassController = TextEditingController();
+    final confirmController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Change Password'),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: currentPassController,
+                decoration: const InputDecoration(labelText: 'Current password'),
+                obscureText: true,
+                validator: (v) => (v == null || v.isEmpty) ? 'Enter current password' : null,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: newPassController,
+                decoration: const InputDecoration(labelText: 'New password'),
+                obscureText: true,
+                validator: (v) => (v == null || v.length < 8) ? 'Minimum 8 characters' : null,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: confirmController,
+                decoration: const InputDecoration(labelText: 'Confirm password'),
+                obscureText: true,
+                validator: (v) => v != newPassController.text ? 'Passwords do not match' : null,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? false) {
+                Navigator.of(context).pop(true);
+              }
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != true) return;
+
+    final currentPass = currentPassController.text;
+    final newPass = newPassController.text;
+
+    final email = SupabaseService().currentUser?.email;
+    if (email == null) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No authenticated user found'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    try {
+      // Re-authenticate by signing in with current credentials to verify the password
+      final authResp = await SupabaseService().client.auth.signInWithPassword(
+        email: email,
+        password: currentPass,
+      );
+
+      if (authResp.user == null) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Current password is incorrect'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to verify current password'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final success = await SupabaseService().updatePassword(newPass);
+
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? 'Password updated' : 'Failed to update password'),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+  }
+
+  void _handleToggle2FA(BuildContext context, bool value) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Two-Factor Authentication setup is not available in this build')),
+    );
+  }
+
+  Future<void> _handleSignOutOtherSessions(BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Signing out other sessions is not supported from the client.')),
+    );
+  }
+
+  Future<void> _handleDeleteAllData(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete all data'),
+        content: const Text('This will permanently delete your expense data. Are you sure?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Delete')),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final success = await SupabaseService().deleteAllUserData();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(success ? 'All your expense data was deleted' : 'Failed to delete data')),
+    );
+  }
+
   Widget _buildActionCard(
     BuildContext context, {
-    IconData? icon,
-    required String title,
-    required String subtitle,
+    required String title, required String subtitle, IconData? icon,
     List<Widget>? actions,
     Widget? trailing,
   }) {
@@ -1669,7 +1868,7 @@ class _SecurityContent extends StatelessWidget {
                   child: Text(
                     'Current',
                     style: AppTextStyles.caption.copyWith(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white, fontWeight: FontWeight.bold,),
                   ),
                 )
               else
