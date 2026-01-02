@@ -5,10 +5,10 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/a
 /// Service for handling manager approval workflows
 /// Contains business logic for approving, rejecting, suspending, and activating managers
 class ManagerApprovalService {
-  final ManagerRepository _managerRepository;
-  final List<AuditLog> _auditLogs = [];
 
   ManagerApprovalService(this._managerRepository);
+  final ManagerRepository _managerRepository;
+  final List<AuditLog> _auditLogs = [];
 
   /// Approve a pending manager
   Future<void> approveManager(String managerId) async {

@@ -14,12 +14,11 @@ import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 
 class ExpenseTable extends ConsumerWidget {
-  final List<ExpenseWithCategory> expenses;
 
   const ExpenseTable({
-    super.key,
-    required this.expenses,
+    required this.expenses, super.key,
   });
+  final List<ExpenseWithCategory> expenses;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +29,7 @@ class ExpenseTable extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.receipt_long_outlined,
-                size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128)),
+                size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128),),
             const SizedBox(height: AppSpacing.lg),
             Text(
               'No expenses found',
@@ -69,7 +68,7 @@ class ExpenseTable extends ConsumerWidget {
   Widget _buildTableHeader(ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+          horizontal: AppSpacing.lg, vertical: AppSpacing.md,),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
@@ -77,26 +76,26 @@ class ExpenseTable extends ConsumerWidget {
         children: [
           Expanded(
               flex: 2,
-              child: Text(AppStrings.labelDate, style: AppTextStyles.label)),
+              child: Text(AppStrings.labelDate, style: AppTextStyles.label),),
           Expanded(
               flex: 2,
               child:
-                  Text(AppStrings.labelCategory, style: AppTextStyles.label)),
+                  Text(AppStrings.labelCategory, style: AppTextStyles.label),),
           Expanded(
               flex: 3,
               child: Text(AppStrings.labelDescription,
-                  style: AppTextStyles.label)),
+                  style: AppTextStyles.label,),),
           Expanded(
               flex: 2,
-              child: Text(AppStrings.labelAmount, style: AppTextStyles.label)),
+              child: Text(AppStrings.labelAmount, style: AppTextStyles.label),),
           SizedBox(
               width: 100,
               child: Text('Actions',
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.end)),
+                      color: colorScheme.onSurfaceVariant,),
+                  textAlign: TextAlign.end,),),
         ],
       ),
     );
@@ -112,7 +111,7 @@ class ExpenseTable extends ConsumerWidget {
   }
 
   void _showEditDialog(
-      BuildContext context, WidgetRef ref, ExpenseWithCategory item) {
+      BuildContext context, WidgetRef ref, ExpenseWithCategory item,) {
     final expenseService = ref.read(expenseServiceProvider);
     final categoryRepository = ref.read(categoryRepositoryProvider);
 
@@ -128,7 +127,7 @@ class ExpenseTable extends ConsumerWidget {
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref,
-      ExpenseWithCategory item, ColorScheme colorScheme) {
+      ExpenseWithCategory item, ColorScheme colorScheme,) {
     final expenseService = ref.read(expenseServiceProvider);
 
     showDialog<void>(
@@ -136,7 +135,7 @@ class ExpenseTable extends ConsumerWidget {
       builder: (context) => AlertDialog(
         backgroundColor: colorScheme.surface,
         title: Text(AppStrings.titleDeleteTransaction,
-            style: AppTextStyles.heading3),
+            style: AppTextStyles.heading3,),
         content: const Text(AppStrings.descDeleteTransaction),
         actions: [
           TextButton(
@@ -167,13 +166,13 @@ class ExpenseTable extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                'Failed to restore expense: ${e.toString()}'),
+                                'Failed to restore expense: ${e.toString()}',),
                             backgroundColor: colorScheme.error,
                           ),
                         );
                       }
                     }
-                  });
+                  },);
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -197,10 +196,6 @@ class ExpenseTable extends ConsumerWidget {
 }
 
 class _ExpenseRow extends StatelessWidget {
-  final ExpenseWithCategory item;
-  final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
 
   const _ExpenseRow({
     required this.item,
@@ -208,6 +203,10 @@ class _ExpenseRow extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
   });
+  final ExpenseWithCategory item;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +219,7 @@ class _ExpenseRow extends StatelessWidget {
       hoverColor: colorScheme.primary.withValues(alpha: 0.03),
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg,),
         child: Row(
           children: [
             Expanded(
@@ -237,7 +236,7 @@ class _ExpenseRow extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md, vertical: 6),
+                      horizontal: AppSpacing.md, vertical: 6,),
                   decoration: BoxDecoration(
                     color: categoryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSpacing.xl - 4),
@@ -327,7 +326,7 @@ class _ExpenseRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                "${item.expense.amount.toStringAsFixed(2)} ${AppStrings.currency}",
+                '${item.expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w500,
                   color: colorScheme.onSurface,
@@ -343,7 +342,7 @@ class _ExpenseRow extends StatelessWidget {
                     icon: Icon(Icons.edit_outlined,
                         size: AppSpacing.iconSm,
                         color: colorScheme.primary,
-                        semanticLabel: 'Edit'),
+                        semanticLabel: 'Edit',),
                     onPressed: onEdit,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -354,7 +353,7 @@ class _ExpenseRow extends StatelessWidget {
                     icon: Icon(Icons.delete_outline,
                         size: AppSpacing.iconSm,
                         color: colorScheme.error,
-                        semanticLabel: 'Delete'),
+                        semanticLabel: 'Delete',),
                     onPressed: onDelete,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),

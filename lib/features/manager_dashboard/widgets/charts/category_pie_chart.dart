@@ -6,12 +6,11 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 /// Category pie chart widget for expense distribution
 /// Simple visual representation using colored segments
 class CategoryPieChart extends StatelessWidget {
-  final Map<String, double> categoryData;
 
   const CategoryPieChart({
-    super.key,
-    required this.categoryData,
+    required this.categoryData, super.key,
   });
+  final Map<String, double> categoryData;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +35,7 @@ class CategoryPieChart extends StatelessWidget {
             color: colorScheme.primary.withValues(alpha: 0.05),
             blurRadius: AppConfig.shadowBlurRadius,
             offset: const Offset(
-                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
           ),
         ],
       ),
@@ -50,9 +49,9 @@ class CategoryPieChart extends StatelessWidget {
           const SizedBox(height: AppSpacing.xl),
           // Legend
           ...sortedEntries.take(5).map((entry) {
-            final percentage = (entry.value / total * 100);
+            final percentage = entry.value / total * 100;
             final color = _getCategoryColor(
-                sortedEntries.indexOf(entry), colorScheme);
+                sortedEntries.indexOf(entry), colorScheme,);
 
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),

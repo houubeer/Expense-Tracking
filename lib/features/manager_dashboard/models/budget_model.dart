@@ -1,14 +1,23 @@
 /// Department budget model for tracking budget allocation and usage
 class DepartmentBudget {
-  final String departmentName;
-  final double totalBudget;
-  final double usedBudget;
 
   const DepartmentBudget({
     required this.departmentName,
     required this.totalBudget,
     required this.usedBudget,
   });
+
+  /// Create DepartmentBudget from JSON
+  factory DepartmentBudget.fromJson(Map<String, dynamic> json) {
+    return DepartmentBudget(
+      departmentName: json['departmentName'] as String,
+      totalBudget: (json['totalBudget'] as num).toDouble(),
+      usedBudget: (json['usedBudget'] as num).toDouble(),
+    );
+  }
+  final String departmentName;
+  final double totalBudget;
+  final double usedBudget;
 
   /// Calculate remaining budget
   double get remainingBudget => totalBudget - usedBudget;
@@ -30,15 +39,6 @@ class DepartmentBudget {
 
   /// Check if budget is in danger zone (>= 90%)
   bool get isInDanger => usagePercentage >= 0.9;
-
-  /// Create DepartmentBudget from JSON
-  factory DepartmentBudget.fromJson(Map<String, dynamic> json) {
-    return DepartmentBudget(
-      departmentName: json['departmentName'] as String,
-      totalBudget: (json['totalBudget'] as num).toDouble(),
-      usedBudget: (json['usedBudget'] as num).toDouble(),
-    );
-  }
 
   /// Convert DepartmentBudget to JSON
   Map<String, dynamic> toJson() {

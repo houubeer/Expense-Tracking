@@ -3,13 +3,6 @@ import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// State for backup/restore operations
 class BackupRestoreState {
-  final bool isBackingUp;
-  final bool isRestoring;
-  final String? lastBackupPath;
-  final String? error;
-  final String? successMessage;
-  final BackupInfo? lastBackupInfo;
-  final double? progress;
 
   const BackupRestoreState({
     this.isBackingUp = false,
@@ -25,6 +18,13 @@ class BackupRestoreState {
   factory BackupRestoreState.initial() {
     return const BackupRestoreState();
   }
+  final bool isBackingUp;
+  final bool isRestoring;
+  final String? lastBackupPath;
+  final String? error;
+  final String? successMessage;
+  final BackupInfo? lastBackupInfo;
+  final double? progress;
 
   /// Check if any operation is in progress
   bool get isLoading => isBackingUp || isRestoring;
@@ -117,7 +117,6 @@ class BackupRestoreNotifier extends StateNotifier<BackupRestoreState> {
     state = state.copyWith(
       isBackingUp: false,
       error: errorMessage,
-      progress: null,
     );
   }
 
@@ -145,7 +144,6 @@ class BackupRestoreNotifier extends StateNotifier<BackupRestoreState> {
     state = state.copyWith(
       isRestoring: false,
       error: errorMessage,
-      progress: null,
     );
   }
 

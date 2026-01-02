@@ -4,12 +4,11 @@ import 'package:fl_chart/fl_chart.dart';
 
 /// Line chart widget for platform growth over time
 class PlatformGrowthLineChart extends StatelessWidget {
-  final Map<String, double> monthlyData;
 
   const PlatformGrowthLineChart({
-    super.key,
-    required this.monthlyData,
+    required this.monthlyData, super.key,
   });
+  final Map<String, double> monthlyData;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,6 @@ class PlatformGrowthLineChart extends StatelessWidget {
               child: LineChart(
                 LineChartData(
                   gridData: FlGridData(
-                    show: true,
                     drawVerticalLine: false,
                     horizontalInterval: _calculateInterval(monthlyData.values.toList()),
                     getDrawingHorizontalLine: (value) {
@@ -96,10 +94,10 @@ class PlatformGrowthLineChart extends StatelessWidget {
                       ),
                     ),
                     rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                      
                     ),
                     topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
+                      
                     ),
                   ),
                   borderData: FlBorderData(show: false),
@@ -110,7 +108,6 @@ class PlatformGrowthLineChart extends StatelessWidget {
                       color: colorScheme.primary,
                       barWidth: 3,
                       dotData: FlDotData(
-                        show: true,
                         getDotPainter: (spot, percent, barData, index) {
                           return FlDotCirclePainter(
                             radius: 4,

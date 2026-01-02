@@ -7,12 +7,11 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 /// Add Employee Form Dialog
 /// Desktop-optimized form for adding new employees
 class AddEmployeeForm extends StatefulWidget {
-  final void Function(Employee) onSubmit;
 
   const AddEmployeeForm({
-    super.key,
-    required this.onSubmit,
+    required this.onSubmit, super.key,
   });
+  final void Function(Employee) onSubmit;
 
   @override
   State<AddEmployeeForm> createState() => _AddEmployeeFormState();
@@ -148,7 +147,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 
                 // Department
                 DropdownButtonFormField<String>(
-                  value: _selectedDepartment,
+                  initialValue: _selectedDepartment,
                   decoration: const InputDecoration(
                     labelText: 'Department *',
                     border: OutlineInputBorder(),
@@ -196,7 +195,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 
                 // Status
                 DropdownButtonFormField<EmployeeStatus>(
-                  value: _selectedStatus,
+                  initialValue: _selectedStatus,
                   decoration: const InputDecoration(
                     labelText: 'Status *',
                     border: OutlineInputBorder(),

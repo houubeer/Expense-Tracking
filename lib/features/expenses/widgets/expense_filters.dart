@@ -16,22 +16,17 @@ enum ReimbursableFilter {
 }
 
 class ExpenseFilters extends ConsumerWidget {
+
+  const ExpenseFilters({
+    required this.selectedCategoryId, required this.selectedDate, required this.onCategoryChanged, required this.onDateChanged, required this.onReimbursableFilterChanged, super.key,
+    this.reimbursableFilter = ReimbursableFilter.all,
+  });
   final int? selectedCategoryId;
   final DateTime? selectedDate;
   final ReimbursableFilter reimbursableFilter;
   final ValueChanged<int?> onCategoryChanged;
   final ValueChanged<DateTime?> onDateChanged;
   final ValueChanged<ReimbursableFilter> onReimbursableFilterChanged;
-
-  const ExpenseFilters({
-    super.key,
-    required this.selectedCategoryId,
-    required this.selectedDate,
-    this.reimbursableFilter = ReimbursableFilter.all,
-    required this.onCategoryChanged,
-    required this.onDateChanged,
-    required this.onReimbursableFilterChanged,
-  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,7 +89,7 @@ class ExpenseFilters extends ConsumerWidget {
                 children: [
                   Icon(Icons.monetization_on_outlined,
                       color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconSm),
+                      size: AppSpacing.iconSm,),
                   const SizedBox(width: AppSpacing.sm),
                   const Text(AppStrings.filterAll),
                 ],
@@ -105,7 +100,7 @@ class ExpenseFilters extends ConsumerWidget {
               child: Row(
                 children: [
                   Icon(Icons.check_circle_outline,
-                      color: colorScheme.primary, size: AppSpacing.iconSm),
+                      color: colorScheme.primary, size: AppSpacing.iconSm,),
                   const SizedBox(width: AppSpacing.sm),
                   const Text(AppStrings.filterReimbursable),
                 ],
@@ -117,7 +112,7 @@ class ExpenseFilters extends ConsumerWidget {
                 children: [
                   Icon(Icons.cancel_outlined,
                       color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconSm),
+                      size: AppSpacing.iconSm,),
                   const SizedBox(width: AppSpacing.sm),
                   const Text(AppStrings.filterNonReimbursable),
                 ],
@@ -135,7 +130,7 @@ class ExpenseFilters extends ConsumerWidget {
   }
 
   Widget _buildCategoryDropdown(
-      List<Category> categories, ColorScheme colorScheme) {
+      List<Category> categories, ColorScheme colorScheme,) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -159,7 +154,7 @@ class ExpenseFilters extends ConsumerWidget {
               Icon(Icons.filter_list,
                   color: colorScheme.onSurfaceVariant,
                   size: AppSpacing.iconSm,
-                  semanticLabel: 'Filter'),
+                  semanticLabel: 'Filter',),
               const SizedBox(width: AppSpacing.sm),
               Text(AppStrings.labelCategory, style: AppTextStyles.bodyMedium),
             ],
@@ -167,13 +162,12 @@ class ExpenseFilters extends ConsumerWidget {
           isExpanded: true,
           items: [
             DropdownMenuItem<int?>(
-              value: null,
               child: Row(
                 children: [
                   Icon(Icons.category_outlined,
                       color: colorScheme.onSurfaceVariant,
                       size: AppSpacing.iconSm,
-                      semanticLabel: 'All categories'),
+                      semanticLabel: 'All categories',),
                   const SizedBox(width: AppSpacing.sm),
                   const Text('All Categories'),
                 ],
@@ -238,7 +232,7 @@ class ExpenseFilters extends ConsumerWidget {
           child: Row(
             children: [
               Icon(Icons.calendar_today,
-                  color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm),
+                  color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm,),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -257,7 +251,7 @@ class ExpenseFilters extends ConsumerWidget {
                   onTap: () => onDateChanged(null),
                   child: Icon(Icons.close,
                       color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconXs),
+                      size: AppSpacing.iconXs,),
                 ),
             ],
           ),

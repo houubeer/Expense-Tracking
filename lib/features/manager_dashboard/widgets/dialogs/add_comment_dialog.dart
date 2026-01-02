@@ -3,16 +3,13 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 class AddCommentDialog extends StatefulWidget {
+
+  const AddCommentDialog({
+    required this.expenseId, required this.employeeName, required this.onSubmit, super.key,
+  });
   final String expenseId;
   final String employeeName;
   final void Function(String comment) onSubmit;
-
-  const AddCommentDialog({
-    super.key,
-    required this.expenseId,
-    required this.employeeName,
-    required this.onSubmit,
-  });
 
   @override
   State<AddCommentDialog> createState() => _AddCommentDialogState();

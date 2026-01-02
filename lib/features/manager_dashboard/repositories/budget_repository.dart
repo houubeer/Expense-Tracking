@@ -1,40 +1,40 @@
-import '../models/budget_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/budget_model.dart';
 
 /// Repository providing mock budget data for departments
 class BudgetRepository {
   // Mock department budget data
   static final List<DepartmentBudget> _mockBudgets = [
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Engineering',
       totalBudget: 150000.00,
       usedBudget: 87500.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Marketing',
       totalBudget: 80000.00,
       usedBudget: 62300.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Sales',
       totalBudget: 120000.00,
       usedBudget: 95400.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Product',
       totalBudget: 100000.00,
       usedBudget: 45200.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Design',
       totalBudget: 60000.00,
       usedBudget: 38900.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Human Resources',
       totalBudget: 40000.00,
       usedBudget: 12500.00,
     ),
-    DepartmentBudget(
+    const DepartmentBudget(
       departmentName: 'Finance',
       totalBudget: 50000.00,
       usedBudget: 28700.00,
@@ -62,21 +62,21 @@ class BudgetRepository {
   Future<double> getTotalBudget() async {
     await Future<void>.delayed(const Duration(milliseconds: 150));
     return _mockBudgets.fold<double>(
-        0.0, (sum, budget) => sum + budget.totalBudget);
+        0.0, (sum, budget) => sum + budget.totalBudget,);
   }
 
   /// Get total used budget across all departments
   Future<double> getTotalUsedBudget() async {
     await Future<void>.delayed(const Duration(milliseconds: 150));
     return _mockBudgets.fold<double>(
-        0.0, (sum, budget) => sum + budget.usedBudget);
+        0.0, (sum, budget) => sum + budget.usedBudget,);
   }
 
   /// Get total remaining budget across all departments
   Future<double> getTotalRemainingBudget() async {
     await Future<void>.delayed(const Duration(milliseconds: 150));
     return _mockBudgets.fold<double>(
-        0.0, (sum, budget) => sum + budget.remainingBudget);
+        0.0, (sum, budget) => sum + budget.remainingBudget,);
   }
 
   /// Get category breakdown (mock data for pie chart)
@@ -142,7 +142,7 @@ class BudgetRepository {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
     return months[normalizedMonth - 1];
   }

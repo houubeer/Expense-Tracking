@@ -1,4 +1,4 @@
-import '../models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 /// Repository providing mock expense data for manager approval workflow
 class ExpenseRepository {
@@ -11,7 +11,6 @@ class ExpenseRepository {
       amount: 12500.00,
       category: 'Travel',
       date: DateTime.now().subtract(const Duration(days: 2)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Flight tickets to Paris for client meeting',
     ),
@@ -22,7 +21,6 @@ class ExpenseRepository {
       amount: 3200.00,
       category: 'Equipment',
       date: DateTime.now().subtract(const Duration(days: 1)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'New laptop for development work',
     ),
@@ -33,7 +31,6 @@ class ExpenseRepository {
       amount: 850.00,
       category: 'Software',
       date: DateTime.now().subtract(const Duration(days: 3)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Adobe Creative Cloud subscription',
     ),
@@ -44,7 +41,6 @@ class ExpenseRepository {
       amount: 4500.00,
       category: 'Marketing',
       date: DateTime.now().subtract(const Duration(days: 5)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Facebook Ads campaign budget',
     ),
@@ -55,7 +51,6 @@ class ExpenseRepository {
       amount: 2100.00,
       category: 'Entertainment',
       date: DateTime.now().subtract(const Duration(days: 7)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Client dinner at Le Gourmet',
     ),
@@ -66,7 +61,6 @@ class ExpenseRepository {
       amount: 1800.00,
       category: 'Cloud Services',
       date: DateTime.now().subtract(const Duration(days: 4)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'AWS infrastructure costs',
     ),
@@ -77,7 +71,6 @@ class ExpenseRepository {
       amount: 650.00,
       category: 'Training',
       date: DateTime.now().subtract(const Duration(days: 10)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'HR certification course',
     ),
@@ -88,7 +81,6 @@ class ExpenseRepository {
       amount: 5200.00,
       category: 'Travel',
       date: DateTime.now().subtract(const Duration(days: 15)),
-      receiptUrl: null,
       status: ExpenseStatus.rejected,
       comment: 'Travel not pre-approved',
       description: 'Unauthorized conference trip',
@@ -100,7 +92,6 @@ class ExpenseRepository {
       amount: 420.00,
       category: 'Office Supplies',
       date: DateTime.now().subtract(const Duration(days: 6)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Notebooks and pens for team',
     ),
@@ -111,7 +102,6 @@ class ExpenseRepository {
       amount: 1500.00,
       category: 'Software',
       date: DateTime.now().subtract(const Duration(days: 8)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Testing automation tools license',
     ),
@@ -122,7 +112,6 @@ class ExpenseRepository {
       amount: 980.00,
       category: 'Training',
       date: DateTime.now().subtract(const Duration(days: 12)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Financial modeling workshop',
     ),
@@ -133,7 +122,6 @@ class ExpenseRepository {
       amount: 3400.00,
       category: 'Travel',
       date: DateTime.now().subtract(const Duration(days: 9)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Sales conference in Dubai',
     ),
@@ -144,7 +132,6 @@ class ExpenseRepository {
       amount: 750.00,
       category: 'Equipment',
       date: DateTime.now().subtract(const Duration(days: 14)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Wireless keyboard and mouse',
     ),
@@ -155,7 +142,6 @@ class ExpenseRepository {
       amount: 2200.00,
       category: 'Entertainment',
       date: DateTime.now().subtract(const Duration(days: 11)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Team building event',
     ),
@@ -166,7 +152,6 @@ class ExpenseRepository {
       amount: 1100.00,
       category: 'Marketing',
       date: DateTime.now().subtract(const Duration(days: 13)),
-      receiptUrl: null,
       status: ExpenseStatus.rejected,
       comment: 'Budget exceeded for this month',
       description: 'LinkedIn Ads campaign',
@@ -178,7 +163,6 @@ class ExpenseRepository {
       amount: 890.00,
       category: 'Cloud Services',
       date: DateTime.now().subtract(const Duration(days: 16)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Database hosting fees',
     ),
@@ -189,7 +173,6 @@ class ExpenseRepository {
       amount: 1650.00,
       category: 'Equipment',
       date: DateTime.now().subtract(const Duration(days: 18)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Drawing tablet for design work',
     ),
@@ -200,7 +183,6 @@ class ExpenseRepository {
       amount: 5800.00,
       category: 'Travel',
       date: DateTime.now().subtract(const Duration(days: 20)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'Business trip to New York',
     ),
@@ -211,7 +193,6 @@ class ExpenseRepository {
       amount: 320.00,
       category: 'Software',
       date: DateTime.now().subtract(const Duration(days: 17)),
-      receiptUrl: null,
       status: ExpenseStatus.pending,
       description: 'Grammarly Premium subscription',
     ),
@@ -222,7 +203,6 @@ class ExpenseRepository {
       amount: 2900.00,
       category: 'Training',
       date: DateTime.now().subtract(const Duration(days: 22)),
-      receiptUrl: null,
       status: ExpenseStatus.approved,
       description: 'QA automation bootcamp',
     ),
@@ -256,12 +236,12 @@ class ExpenseRepository {
 
   /// Get expenses by date range
   Future<List<ManagerExpense>> getExpensesByDateRange(
-      DateTime start, DateTime end) async {
+      DateTime start, DateTime end,) async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
     return _mockExpenses
         .where((exp) =>
             exp.date.isAfter(start.subtract(const Duration(days: 1))) &&
-            exp.date.isBefore(end.add(const Duration(days: 1))))
+            exp.date.isBefore(end.add(const Duration(days: 1))),)
         .toList();
   }
 
@@ -298,7 +278,7 @@ class ExpenseRepository {
   Future<List<ManagerExpense>> getCurrentMonthExpenses() async {
     await Future<void>.delayed(const Duration(milliseconds: 250));
     final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfMonth = DateTime(now.year, now.month);
     final endOfMonth = DateTime(now.year, now.month + 1, 0);
     return getExpensesByDateRange(startOfMonth, endOfMonth);
   }

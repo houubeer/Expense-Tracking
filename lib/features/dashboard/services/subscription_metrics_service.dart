@@ -4,9 +4,9 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/sub
 /// Service for calculating subscription and revenue metrics
 /// Provides insights into subscription status and revenue generation
 class SubscriptionMetricsService {
-  final SubscriptionRepository _subscriptionRepository;
 
   SubscriptionMetricsService(this._subscriptionRepository);
+  final SubscriptionRepository _subscriptionRepository;
 
   /// Calculate total monthly revenue from active subscriptions
   double calculateMonthlyRevenue() {
@@ -56,7 +56,7 @@ class SubscriptionMetricsService {
   Map<SubscriptionPlan, double> getRevenueByPlan() {
     final distribution = getPlanDistribution();
     return distribution.map((plan, count) => 
-      MapEntry(plan, plan.monthlyPrice * count)
+      MapEntry(plan, plan.monthlyPrice * count),
     );
   }
 
@@ -103,13 +103,6 @@ class SubscriptionMetricsService {
 
 /// Data class for subscription metrics
 class SubscriptionMetrics {
-  final double monthlyRevenue;
-  final double annualRevenue;
-  final int activeCount;
-  final int expiredCount;
-  final int upgradeActivity;
-  final double health;
-  final SubscriptionPlan mostPopularPlan;
 
   const SubscriptionMetrics({
     required this.monthlyRevenue,
@@ -120,4 +113,11 @@ class SubscriptionMetrics {
     required this.health,
     required this.mostPopularPlan,
   });
+  final double monthlyRevenue;
+  final double annualRevenue;
+  final int activeCount;
+  final int expiredCount;
+  final int upgradeActivity;
+  final double health;
+  final SubscriptionPlan mostPopularPlan;
 }

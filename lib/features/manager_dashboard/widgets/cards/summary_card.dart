@@ -3,20 +3,16 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 class SummaryCard extends StatelessWidget {
+
+  const SummaryCard({
+    required this.icon, required this.title, required this.value, required this.color, super.key,
+    this.subtitle,
+  });
   final IconData icon;
   final String title;
   final String value;
   final Color color;
   final String? subtitle;
-
-  const SummaryCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.color,
-    this.subtitle,
-  });
 
   @override
   Widget build(BuildContext context) {

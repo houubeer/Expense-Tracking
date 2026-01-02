@@ -9,16 +9,13 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class EditExpenseDialog extends StatefulWidget {
+
+  const EditExpenseDialog({
+    required this.expenseService, required this.categoryRepository, required this.expenseWithCategory, super.key,
+  });
   final IExpenseService expenseService;
   final ICategoryRepository categoryRepository;
   final ExpenseWithCategory expenseWithCategory;
-
-  const EditExpenseDialog({
-    super.key,
-    required this.expenseService,
-    required this.categoryRepository,
-    required this.expenseWithCategory,
-  });
 
   @override
   State<EditExpenseDialog> createState() => _EditExpenseDialogState();
@@ -112,7 +109,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           amount: amount,
           description: description,
           date: _selectedDate,
-          categoryId: _selectedCategoryId!,
+          categoryId: _selectedCategoryId,
         );
 
         await widget.expenseService
@@ -155,7 +152,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(AppStrings.titleEditExpense,
-                    style: AppTextStyles.heading3),
+                    style: AppTextStyles.heading3,),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),

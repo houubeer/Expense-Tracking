@@ -6,10 +6,6 @@ import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Filter State
 class ExpenseFilters {
-  final String searchQuery;
-  final int? selectedCategoryId;
-  final DateTime? selectedDate;
-  final ReimbursableFilter reimbursableFilter;
 
   const ExpenseFilters({
     this.searchQuery = '',
@@ -17,6 +13,10 @@ class ExpenseFilters {
     this.selectedDate,
     this.reimbursableFilter = ReimbursableFilter.all,
   });
+  final String searchQuery;
+  final int? selectedCategoryId;
+  final DateTime? selectedDate;
+  final ReimbursableFilter reimbursableFilter;
 
   ExpenseFilters copyWith({
     String? searchQuery,
@@ -127,13 +127,6 @@ final filteredExpensesProvider =
 // Let's recreate that structure but powered by the new providers.
 
 class ExpenseListState {
-  final String searchQuery;
-  final int? selectedCategoryId;
-  final DateTime? selectedDate;
-  final ReimbursableFilter reimbursableFilter;
-  final List<ExpenseWithCategory> filteredExpenses;
-  final bool isLoading;
-  final String? error;
 
   const ExpenseListState({
     required this.searchQuery,
@@ -144,6 +137,13 @@ class ExpenseListState {
     this.isLoading = false,
     this.error,
   });
+  final String searchQuery;
+  final int? selectedCategoryId;
+  final DateTime? selectedDate;
+  final ReimbursableFilter reimbursableFilter;
+  final List<ExpenseWithCategory> filteredExpenses;
+  final bool isLoading;
+  final String? error;
 }
 
 final expenseListViewModelProvider =
@@ -157,7 +157,6 @@ final expenseListViewModelProvider =
 });
 
 class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
-  final ExpenseFiltersNotifier _filtersNotifier;
 
   ExpenseListViewModel(
     ExpenseFilters filters,
@@ -171,7 +170,8 @@ class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
           filteredExpenses: expensesAsync.value ?? [],
           isLoading: expensesAsync.isLoading,
           error: expensesAsync.hasError ? expensesAsync.error.toString() : null,
-        ));
+        ),);
+  final ExpenseFiltersNotifier _filtersNotifier;
 
   void setSearchQuery(String query) {
     _filtersNotifier.setSearchQuery(query);

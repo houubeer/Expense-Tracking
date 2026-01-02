@@ -1,11 +1,11 @@
 /// Repository for aggregating platform-wide expense data
 /// This provides analytics across all companies
 class PlatformExpenseRepository {
-  final List<Expense> _expenses = [];
 
   PlatformExpenseRepository() {
     _initializeMockData();
   }
+  final List<Expense> _expenses = [];
 
   /// Initialize with mock expense data across companies
   void _initializeMockData() {
@@ -123,8 +123,8 @@ class PlatformExpenseRepository {
   /// Get monthly growth percentage
   double getMonthlyGrowth() {
     final now = DateTime.now();
-    final currentMonth = DateTime(now.year, now.month, 1);
-    final lastMonth = DateTime(now.year, now.month - 1, 1);
+    final currentMonth = DateTime(now.year, now.month);
+    final lastMonth = DateTime(now.year, now.month - 1);
 
     final currentMonthExpenses = _expenses
         .where((e) => e.date.isAfter(currentMonth))
@@ -132,7 +132,7 @@ class PlatformExpenseRepository {
 
     final lastMonthExpenses = _expenses
         .where(
-            (e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth))
+            (e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth),)
         .fold(0.0, (sum, e) => sum + e.amount);
 
     if (lastMonthExpenses == 0) return 0.0;
@@ -146,8 +146,8 @@ class PlatformExpenseRepository {
     final trend = <String, double>{};
 
     for (int i = 5; i >= 0; i--) {
-      final month = DateTime(now.year, now.month - i, 1);
-      final nextMonth = DateTime(now.year, now.month - i + 1, 1);
+      final month = DateTime(now.year, now.month - i);
+      final nextMonth = DateTime(now.year, now.month - i + 1);
       final monthName = _getMonthName(month.month);
 
       final monthExpenses = _expenses
@@ -184,7 +184,7 @@ class PlatformExpenseRepository {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
     return months[month - 1];
   }
@@ -192,12 +192,6 @@ class PlatformExpenseRepository {
 
 /// Simple expense model for platform analytics
 class Expense {
-  final String id;
-  final String companyId;
-  final double amount;
-  final String category;
-  final DateTime date;
-  final String description;
 
   const Expense({
     required this.id,
@@ -207,4 +201,10 @@ class Expense {
     required this.date,
     required this.description,
   });
+  final String id;
+  final String companyId;
+  final double amount;
+  final String category;
+  final DateTime date;
+  final String description;
 }

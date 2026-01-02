@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'categories_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/categories_table.dart';
 
 /// Expenses table with optimized indexes for common query patterns
 @TableIndex(name: 'idx_expenses_date', columns: {#date})

@@ -6,14 +6,13 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 /// Audit timeline item widget for displaying audit log entries
 /// Shows avatar, action, manager name, timestamp, and connector line
 class AuditTimelineItem extends StatelessWidget {
-  final AuditLog auditLog;
-  final bool isLast;
 
   const AuditTimelineItem({
-    super.key,
-    required this.auditLog,
+    required this.auditLog, super.key,
     this.isLast = false,
   });
+  final AuditLog auditLog;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {

@@ -8,12 +8,12 @@ import 'package:expense_tracking_desktop_app/config/environment.dart';
 /// Provides structured logging with different levels and log persistence
 /// Automatically sanitizes sensitive data in production
 class LoggerService {
+
+  LoggerService._();
   static LoggerService? _instance;
   late Logger _logger;
   late File? _logFile;
   bool _isInitialized = false;
-
-  LoggerService._();
 
   /// Get singleton instance of LoggerService
   static LoggerService get instance {
@@ -40,11 +40,6 @@ class LoggerService {
       _logger = Logger(
         filter: ProductionFilter(),
         printer: PrettyPrinter(
-          methodCount: 2,
-          errorMethodCount: 8,
-          lineLength: 120,
-          colors: true,
-          printEmojis: true,
           dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
         ),
         output: MultiOutput([
@@ -59,11 +54,6 @@ class LoggerService {
       // Fallback to console-only logger if file initialization fails
       _logger = Logger(
         printer: PrettyPrinter(
-          methodCount: 2,
-          errorMethodCount: 8,
-          lineLength: 120,
-          colors: true,
-          printEmojis: true,
           dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
         ),
       );
@@ -128,7 +118,7 @@ class LoggerService {
     // Replace amount values
     sanitized = sanitized.replaceAllMapped(
       RegExp(r'(amount|budget|spent|balance|price|cost)\s*[=:]\s*[\d.,]+',
-          caseSensitive: false),
+          caseSensitive: false,),
       (match) => '${match.group(1)}=[REDACTED]',
     );
 
@@ -213,7 +203,7 @@ class LoggerService {
       final cutoffDate = DateTime.now().subtract(Duration(days: keepDays));
       final files = await logsDir.list().toList();
 
-      for (var entity in files) {
+      for (final entity in files) {
         if (entity is File) {
           final stat = await entity.stat();
           if (stat.modified.isBefore(cutoffDate)) {
@@ -230,15 +220,15 @@ class LoggerService {
 
 /// Custom file output for logger
 class FileOutput extends LogOutput {
-  final File file;
 
   FileOutput({required this.file});
+  final File file;
 
   @override
   void output(OutputEvent event) {
     try {
       final buffer = StringBuffer();
-      for (var line in event.lines) {
+      for (final line in event.lines) {
         buffer.writeln(line);
       }
       file.writeAsStringSync(
@@ -255,13 +245,13 @@ class FileOutput extends LogOutput {
 
 /// Multiple outputs wrapper
 class MultiOutput extends LogOutput {
-  final List<LogOutput> outputs;
 
   MultiOutput(this.outputs);
+  final List<LogOutput> outputs;
 
   @override
   void output(OutputEvent event) {
-    for (var output in outputs) {
+    for (final output in outputs) {
       try {
         output.output(event);
       } catch (e) {

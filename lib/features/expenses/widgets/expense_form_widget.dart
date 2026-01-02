@@ -195,7 +195,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+                        horizontal: AppSpacing.lg, vertical: AppSpacing.lg,),
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -204,7 +204,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     child: Row(
                       children: [
                         Icon(Icons.calendar_today,
-                            color: colorScheme.onSurfaceVariant),
+                            color: colorScheme.onSurfaceVariant,),
                         const SizedBox(width: AppSpacing.md),
                         Text(
                           DateFormat('MMM dd, yyyy')
@@ -298,7 +298,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   border: Border.all(
                     color: widget.receiptPath != null
-                        ? colorScheme.primary.withOpacity(0.5)
+                        ? colorScheme.primary.withAlpha((0.5 * 255).round())
                         : colorScheme.outlineVariant,
                   ),
                 ),
@@ -386,7 +386,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                       isLoading: widget.isSubmitting,
                       child: Text(widget.isSubmitting
                           ? 'Adding...'
-                          : AppStrings.btnAddExpense),
+                          : AppStrings.btnAddExpense,),
                     ),
                   ],
                 ),

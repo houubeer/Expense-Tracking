@@ -18,13 +18,6 @@ enum CompanyStatus {
 
 /// Company model representing a registered company in the platform
 class Company {
-  final String id;
-  final String name;
-  final int managersCount;
-  final int employeesCount;
-  final String subscriptionPlan;
-  final CompanyStatus status;
-  final DateTime createdDate;
 
   const Company({
     required this.id,
@@ -51,6 +44,13 @@ class Company {
       createdDate: DateTime.parse(json['createdDate'] as String),
     );
   }
+  final String id;
+  final String name;
+  final int managersCount;
+  final int employeesCount;
+  final String subscriptionPlan;
+  final CompanyStatus status;
+  final DateTime createdDate;
 
   /// Convert Company to JSON
   Map<String, dynamic> toJson() {

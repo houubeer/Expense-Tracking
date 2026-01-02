@@ -15,15 +15,6 @@ enum EmployeeStatus {
 
 /// Employee model representing a company employee
 class Employee {
-  final String id;
-  final String name;
-  final String role;
-  final String department;
-  final String email;
-  final String phone;
-  final DateTime hireDate;
-  final EmployeeStatus status;
-  final String? avatarUrl;
 
   const Employee({
     required this.id,
@@ -36,15 +27,6 @@ class Employee {
     required this.status,
     this.avatarUrl,
   });
-
-  /// Get initials from employee name for avatar display
-  String get initials {
-    final parts = name.split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.substring(0, 1).toUpperCase();
-  }
 
   /// Create Employee from JSON
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -62,6 +44,24 @@ class Employee {
       ),
       avatarUrl: json['avatarUrl'] as String?,
     );
+  }
+  final String id;
+  final String name;
+  final String role;
+  final String department;
+  final String email;
+  final String phone;
+  final DateTime hireDate;
+  final EmployeeStatus status;
+  final String? avatarUrl;
+
+  /// Get initials from employee name for avatar display
+  String get initials {
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.substring(0, 1).toUpperCase();
   }
 
   /// Convert Employee to JSON
