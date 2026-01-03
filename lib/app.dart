@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/theme/app_theme.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/routes/router.dart' as app_router;
