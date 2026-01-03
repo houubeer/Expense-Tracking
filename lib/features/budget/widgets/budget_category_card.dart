@@ -204,8 +204,7 @@ class BudgetCategoryCard extends StatelessWidget {
       category.budget,
     );
     final remaining = category.budget - category.spent;
-    final status =
-        BudgetStatusCalculator.getLocalizedStatusText(context, percentage);
+    final status = BudgetStatusCalculator.getStatusText(percentage);
     final statusColor = BudgetStatusCalculator.getStatusColor(percentage);
     final statusIcon = BudgetStatusCalculator.getStatusIcon(percentage);
 
