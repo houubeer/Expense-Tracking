@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// State for backup/restore operations
 class BackupRestoreState {
-
   const BackupRestoreState({
     this.isBackingUp = false,
     this.isRestoring = false,
@@ -134,7 +133,8 @@ class BackupRestoreNotifier extends StateNotifier<BackupRestoreState> {
   void completeRestore(String successMessage) {
     state = state.copyWith(
       isRestoring: false,
-      successMessage: successMessage,
+      successMessage:
+          '$successMessage. Please restart the application for changes to take effect.',
       progress: 1.0,
     );
   }

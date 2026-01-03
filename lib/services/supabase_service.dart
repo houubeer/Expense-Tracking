@@ -5,6 +5,10 @@ import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.d
 import 'package:expense_tracking_desktop_app/features/auth/models/organization.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 /// Supabase service for handling all backend operations
 ///

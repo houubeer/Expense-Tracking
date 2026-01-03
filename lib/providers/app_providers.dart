@@ -35,9 +35,14 @@ final connectivityServiceProvider = Provider<ConnectivityService>((ref) {
   throw UnimplementedError('ConnectivityService provider must be overridden');
 });
 
+/// Database state provider - holds the mutable database instance
+final databaseStateProvider = StateProvider<AppDatabase?>((ref) => null);
+
 /// Database provider - the single source of truth
 final databaseProvider = Provider<AppDatabase>((ref) {
-  throw UnimplementedError('Database provider must be overridden');
+  final db = ref.watch(databaseStateProvider);
+  if (db == null) throw Exception('Database not initialized');
+  return db;
 });
 
 /// Database interface provider - enables DIP compliance
@@ -78,7 +83,8 @@ final expenseServiceProvider = Provider<IExpenseService>((ref) {
 });
 
 /// Budget validation service provider
-final budgetValidationServiceProvider = Provider<BudgetValidationService>((ref) {
+final budgetValidationServiceProvider =
+    Provider<BudgetValidationService>((ref) {
   final categoryRepository = ref.watch(categoryRepositoryProvider);
   return BudgetValidationService(categoryRepository);
 });
