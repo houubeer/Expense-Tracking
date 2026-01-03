@@ -1,23 +1,23 @@
+import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 /// Reimbursement data model
 class Reimbursement {
-  final String employeeName;
-  final double amount;
-  final bool isPaid;
-  final DateTime? paymentDate;
-
   const Reimbursement({
     required this.employeeName,
     required this.amount,
     required this.isPaid,
     this.paymentDate,
   });
+  final String employeeName;
+  final double amount;
+  final bool isPaid;
+  final DateTime? paymentDate;
 }
 
 /// Reimbursement table widget for tracking payments
@@ -50,7 +50,7 @@ class ReimbursementTable extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Reimbursements',
+              AppLocalizations.of(context)!.reimbursements,
               style: AppTextStyles.heading3,
             ),
           ],

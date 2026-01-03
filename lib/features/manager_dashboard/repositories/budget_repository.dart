@@ -204,7 +204,7 @@ class BudgetRepository {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
     return months[(month - 1) % 12];
   }

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class ExpenseDetailsDialog extends StatelessWidget {
-  final ManagerExpense expense;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
-  final VoidCallback? onAddComment;
-
   const ExpenseDetailsDialog({
-    super.key,
     required this.expense,
+    super.key,
     this.onApprove,
     this.onReject,
     this.onAddComment,
   });
+  final ManagerExpense expense;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
+  final VoidCallback? onAddComment;
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +49,14 @@ class ExpenseDetailsDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.receipt_long, color: Colors.white, size: 32),
+                  const Icon(Icons.receipt_long, color: Colors.white, size: 32),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Expense Details',
+                          AppLocalizations.of(context)!.titleExpenseDetails,
                           style: AppTextStyles.heading2.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -119,7 +118,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
                     OutlinedButton.icon(
                       onPressed: onReject,
                       icon: const Icon(Icons.cancel_outlined, size: 18),
-                      label: const Text('Reject'),
+                      label: Text(AppLocalizations.of(context)!.btnReject),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.red,
                         padding: const EdgeInsets.symmetric(
@@ -132,7 +131,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onApprove,
                       icon: const Icon(Icons.check_circle_outline, size: 18),
-                      label: const Text('Approve'),
+                      label: Text(AppLocalizations.of(context)!.btnApprove),
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.green,
                         padding: const EdgeInsets.symmetric(
@@ -146,7 +145,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: onAddComment,
                     icon: const Icon(Icons.comment_outlined, size: 18),
-                    label: const Text('Add Comment'),
+                    label: Text(AppLocalizations.of(context)!.btnAddComment),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
@@ -178,28 +177,29 @@ class ExpenseDetailsDialog extends StatelessWidget {
           _buildInfoRow(
             context,
             icon: Icons.person,
-            label: 'Employee',
+            label: AppLocalizations.of(context)!.labelEmployee,
             value: expense.employeeName,
           ),
           const Divider(height: AppSpacing.lg),
           _buildInfoRow(
             context,
             icon: Icons.category,
-            label: 'Category',
+            label: AppLocalizations.of(context)!.labelCategory,
             value: expense.category,
           ),
           const Divider(height: AppSpacing.lg),
           _buildInfoRow(
             context,
             icon: Icons.calendar_today,
-            label: 'Date',
-            value: '${expense.date.day}/${expense.date.month}/${expense.date.year}',
+            label: AppLocalizations.of(context)!.labelDate,
+            value:
+                '${expense.date.day}/${expense.date.month}/${expense.date.year}',
           ),
           const Divider(height: AppSpacing.lg),
           _buildInfoRow(
             context,
             icon: Icons.info_outline,
-            label: 'Status',
+            label: AppLocalizations.of(context)!.labelStatus,
             value: expense.status.displayName,
             valueColor: _getStatusColor(expense.status),
           ),
@@ -228,14 +228,14 @@ class ExpenseDetailsDialog extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Amount',
+            AppLocalizations.of(context)!.labelAmount,
             style: AppTextStyles.bodyMedium.copyWith(
               color: colorScheme.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            '${expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
+            '${expense.amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
             style: AppTextStyles.heading1.copyWith(
               color: colorScheme.primary,
               fontWeight: FontWeight.bold,
@@ -270,7 +270,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                'Description',
+                AppLocalizations.of(context)!.labelDescription,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -309,7 +309,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                'Receipt',
+                AppLocalizations.of(context)!.labelReceipt,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -320,7 +320,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.open_in_new),
-            label: const Text('View Receipt'),
+            label: Text(AppLocalizations.of(context)!.labelViewReceipt),
           ),
         ],
       ),
@@ -349,7 +349,7 @@ class ExpenseDetailsDialog extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                'Comments',
+                AppLocalizations.of(context)!.labelComments,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                 ),

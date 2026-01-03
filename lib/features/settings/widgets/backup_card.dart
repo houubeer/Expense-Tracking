@@ -6,18 +6,17 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Card widget for backup data functionality
 class BackupCard extends StatelessWidget {
-  final VoidCallback onBackupPressed;
-  final bool isLoading;
-  final double? progress;
-  final String? lastBackupPath;
 
   const BackupCard({
-    super.key,
-    required this.onBackupPressed,
+    required this.onBackupPressed, super.key,
     this.isLoading = false,
     this.progress,
     this.lastBackupPath,
   });
+  final VoidCallback onBackupPressed;
+  final bool isLoading;
+  final double? progress;
+  final String? lastBackupPath;
 
   @override
   Widget build(BuildContext context) {

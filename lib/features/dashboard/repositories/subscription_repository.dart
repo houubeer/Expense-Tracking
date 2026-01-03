@@ -3,13 +3,13 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/subscript
 
 /// Repository for managing subscription data with in-memory mocked storage
 class SubscriptionRepository {
-  final List<Subscription> _subscriptions = [];
-  final StreamController<List<Subscription>> _subscriptionsController =
-      StreamController<List<Subscription>>.broadcast();
 
   SubscriptionRepository() {
     _initializeMockData();
   }
+  final List<Subscription> _subscriptions = [];
+  final StreamController<List<Subscription>> _subscriptionsController =
+      StreamController<List<Subscription>>.broadcast();
 
   /// Initialize with mock data
   void _initializeMockData() {

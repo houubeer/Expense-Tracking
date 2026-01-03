@@ -15,15 +15,15 @@ import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 
 /// Filter model for budget categories
 class BudgetFilter {
-  final String searchQuery;
-  final String statusFilter;
-  final String sortBy;
 
   const BudgetFilter({
     this.searchQuery = '',
     this.statusFilter = 'All',
     this.sortBy = 'Name',
   });
+  final String searchQuery;
+  final String statusFilter;
+  final String sortBy;
 
   BudgetFilter copyWith({
     String? searchQuery,
@@ -40,14 +40,14 @@ class BudgetFilter {
 
 /// ViewModel for budget management - handles ALL business logic, DB operations, and state
 class BudgetViewModel extends ChangeNotifier {
+
+  BudgetViewModel(
+      this._categoryReader, this._categoryWriter, this._errorReporting,);
   final ICategoryReader _categoryReader;
   final ICategoryWriter _categoryWriter;
   final ErrorReportingService _errorReporting;
   final _logger = LoggerService.instance;
   final Map<int, TextEditingController> _controllers = {};
-
-  BudgetViewModel(
-      this._categoryReader, this._categoryWriter, this._errorReporting);
 
   /// Get TextEditingController for a category
   /// UI accesses controllers through ViewModel (not managing lifecycle)
@@ -113,7 +113,7 @@ class BudgetViewModel extends ChangeNotifier {
       _logger.info('BudgetViewModel: Category added successfully - name=$name');
     } catch (e, stackTrace) {
       _logger.error('BudgetViewModel: Failed to add category',
-          error: e, stackTrace: stackTrace);
+          error: e, stackTrace: stackTrace,);
 
       // Only report unexpected errors
       if (ErrorMapper.shouldReportError(e)) {
@@ -137,12 +137,12 @@ class BudgetViewModel extends ChangeNotifier {
       _logger.info('BudgetViewModel: Deleting category - id=$categoryId');
       await _categoryWriter.deleteCategory(categoryId);
       _logger.info(
-          'BudgetViewModel: Category deleted successfully - id=$categoryId');
+          'BudgetViewModel: Category deleted successfully - id=$categoryId',);
     } catch (e, stackTrace) {
       _logger.error(
           'BudgetViewModel: Failed to delete category - id=$categoryId',
           error: e,
-          stackTrace: stackTrace);
+          stackTrace: stackTrace,);
 
       // Only report unexpected errors
       if (ErrorMapper.shouldReportError(e)) {
@@ -169,7 +169,7 @@ class BudgetViewModel extends ChangeNotifier {
     BudgetFilter filter,
   ) {
     // Apply filters
-    var filtered = categories.where((cat) {
+    final filtered = categories.where((cat) {
       // Search filter
       if (filter.searchQuery.isNotEmpty &&
           !cat.name.toLowerCase().contains(filter.searchQuery.toLowerCase())) {
@@ -199,7 +199,7 @@ class BudgetViewModel extends ChangeNotifier {
   @override
   void dispose() {
     // ViewModel manages controller lifecycle, not UI
-    for (var controller in _controllers.values) {
+    for (final controller in _controllers.values) {
       controller.dispose();
     }
     super.dispose();

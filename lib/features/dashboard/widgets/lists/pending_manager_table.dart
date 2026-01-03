@@ -5,18 +5,14 @@ import 'package:intl/intl.dart';
 
 /// Table widget for displaying pending manager requests
 class PendingManagerTable extends StatelessWidget {
+
+  const PendingManagerTable({
+    required this.managers, required this.onApprove, required this.onReject, required this.onView, super.key,
+  });
   final List<Manager> managers;
   final void Function(String managerId) onApprove;
   final void Function(String managerId) onReject;
   final void Function(String managerId) onView;
-
-  const PendingManagerTable({
-    super.key,
-    required this.managers,
-    required this.onApprove,
-    required this.onReject,
-    required this.onView,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +80,6 @@ class PendingManagerTable extends StatelessWidget {
                   child: Text('Phone', style: textTheme.titleSmall),
                 ),
                 Expanded(
-                  flex: 1,
                   child: Text('Date', style: textTheme.titleSmall),
                 ),
                 const SizedBox(width: 150),
@@ -117,10 +112,6 @@ class PendingManagerTable extends StatelessWidget {
 }
 
 class _ManagerRow extends StatelessWidget {
-  final Manager manager;
-  final VoidCallback onApprove;
-  final VoidCallback onReject;
-  final VoidCallback onView;
 
   const _ManagerRow({
     required this.manager,
@@ -128,6 +119,10 @@ class _ManagerRow extends StatelessWidget {
     required this.onReject,
     required this.onView,
   });
+  final Manager manager;
+  final VoidCallback onApprove;
+  final VoidCallback onReject;
+  final VoidCallback onView;
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +172,6 @@ class _ManagerRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 1,
             child: Text(
               dateFormat.format(manager.requestDate),
               style: textTheme.bodySmall,

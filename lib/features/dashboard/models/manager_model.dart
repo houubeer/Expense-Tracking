@@ -21,15 +21,6 @@ enum ManagerStatus {
 
 /// Manager model representing a company manager in the platform
 class Manager {
-  final String id;
-  final String name;
-  final String email;
-  final String companyId;
-  final String companyName;
-  final String phone;
-  final DateTime requestDate;
-  final DateTime? approvalDate;
-  final ManagerStatus status;
 
   const Manager({
     required this.id,
@@ -39,18 +30,8 @@ class Manager {
     required this.companyName,
     required this.phone,
     required this.requestDate,
-    this.approvalDate,
-    required this.status,
+    required this.status, this.approvalDate,
   });
-
-  /// Get initials from manager name for avatar display
-  String get initials {
-    final parts = name.split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.substring(0, 1).toUpperCase();
-  }
 
   /// Create Manager from JSON
   factory Manager.fromJson(Map<String, dynamic> json) {
@@ -70,6 +51,24 @@ class Manager {
         orElse: () => ManagerStatus.pending,
       ),
     );
+  }
+  final String id;
+  final String name;
+  final String email;
+  final String companyId;
+  final String companyName;
+  final String phone;
+  final DateTime requestDate;
+  final DateTime? approvalDate;
+  final ManagerStatus status;
+
+  /// Get initials from manager name for avatar display
+  String get initials {
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.substring(0, 1).toUpperCase();
   }
 
   /// Convert Manager to JSON

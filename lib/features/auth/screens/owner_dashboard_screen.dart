@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
@@ -54,8 +55,8 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       if (!mounted) return;
       setState(() {
         _pendingOrgs = pending;
-        _approvedOrgs = approved.map((e) => Organization.fromJson(e)).toList();
-        _rejectedOrgs = rejected.map((e) => Organization.fromJson(e)).toList();
+        _approvedOrgs = approved.map(Organization.fromJson).toList();
+        _rejectedOrgs = rejected.map(Organization.fromJson).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -76,7 +77,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${org.name} has been approved'),
+          content: Text(AppLocalizations.of(context)!.msgOrgApproved(org.name)),
           backgroundColor: AppColors.green,
         ),
       );
@@ -84,7 +85,8 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to approve: $e'),
+          content:
+              Text(AppLocalizations.of(context)!.errApproveOrg(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -103,7 +105,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${org.name} has been rejected'),
+          content: Text(AppLocalizations.of(context)!.msgOrgRejected(org.name)),
           backgroundColor: AppColors.orange,
         ),
       );
@@ -111,7 +113,8 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to reject: $e'),
+          content:
+              Text(AppLocalizations.of(context)!.errRejectOrg(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -123,13 +126,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Reject ${org.name}?'),
+        title:
+            Text(AppLocalizations.of(context)!.dialogTitleRejectOrg(org.name)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Please provide a reason for rejection:',
+              AppLocalizations.of(context)!.labelRejectReason,
               style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: AppSpacing.md),
@@ -137,7 +141,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
               controller: controller,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'Reason for rejection...',
+                hintText: AppLocalizations.of(context)!.hintRejectReason,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -148,7 +152,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -157,7 +161,8 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: const Text('Reject', style: TextStyle(color: Colors.white)),
+            child: Text(AppLocalizations.of(context)!.actionReject,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -169,25 +174,28 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Organization Management'),
+        title: Text(AppLocalizations.of(context)!.titleOrganizationManagement),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textInverse,
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.textInverse,
-          unselectedLabelColor: AppColors.textInverse.withOpacity(0.7),
+          unselectedLabelColor:
+              AppColors.textInverse.withAlpha((0.7 * 255).round()),
           indicatorColor: AppColors.textInverse,
           tabs: [
             Tab(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Pending'),
+                  Text(AppLocalizations.of(context)!.tabPending),
                   if (_pendingOrgs.isNotEmpty) ...[
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.orange,
                         borderRadius: BorderRadius.circular(12),
@@ -204,15 +212,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
                 ],
               ),
             ),
-            Tab(text: 'Approved (${_approvedOrgs.length})'),
-            Tab(text: 'Rejected (${_rejectedOrgs.length})'),
+            Tab(
+                text:
+                    '${AppLocalizations.of(context)!.tabApproved} (${_approvedOrgs.length})'),
+            Tab(
+                text:
+                    '${AppLocalizations.of(context)!.tabRejected} (${_rejectedOrgs.length})'),
           ],
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadOrganizations,
-            tooltip: 'Refresh',
+            tooltip: AppLocalizations.of(context)!.actionRefresh,
           ),
         ],
       ),
@@ -236,10 +248,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: AppColors.red),
+          const Icon(Icons.error_outline, size: 64, color: AppColors.red),
           const SizedBox(height: AppSpacing.lg),
           Text(
-            'Error loading organizations',
+            AppLocalizations.of(context)!.errLoadOrgs,
             style:
                 AppTextStyles.heading2.copyWith(color: AppColors.textPrimary),
           ),
@@ -254,7 +266,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
           ElevatedButton.icon(
             onPressed: _loadOrganizations,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(AppLocalizations.of(context)!.actionRetry),
           ),
         ],
       ),
@@ -271,14 +283,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.inbox_outlined,
               size: 64,
               color: AppColors.textTertiary,
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No organizations',
+              AppLocalizations.of(context)!.msgNoOrgs,
               style: AppTextStyles.heading2.copyWith(
                 color: AppColors.textSecondary,
               ),

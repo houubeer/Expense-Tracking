@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
@@ -23,11 +25,67 @@ import 'package:expense_tracking_desktop_app/widgets/connection_status_banner.da
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Expose router through Riverpod while keeping a direct factory for non-Riverpod usage.
+final routerProvider = Provider<GoRouter>((ref) => _buildRouter());
+
+/// Check if user is authenticated and get their role for redirect
+Future<String?> _getAuthRedirect() async {
+  try {
+    final supabase = Supabase.instance.client;
+    final user = supabase.auth.currentUser;
+    if (user == null) return null;
+
+    // Fetch user profile to determine role
+    final profile = await supabase
+        .from('user_profiles')
+        .select('role, status, organization_id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+    if (profile == null) return null;
+
+    final role = profile['role'] as String?;
+    final status = profile['status'] as String?;
+
+    // If not active and not owner, they're pending approval
+    // status is 'active' or null (for backwards compatibility) means active
+    if (status != 'active' && status != null && role != 'owner') {
+      return AppRoutes.pendingApproval;
+    }
+
+    switch (role) {
+      case 'owner':
+        return AppRoutes.ownerDashboard;
+      case 'manager':
+        return AppRoutes.managerDashboard;
+      case 'employee':
+        return AppRoutes.home;
+      default:
+        return AppRoutes.home;
+    }
+  } catch (e) {
+    return null;
+  }
+}
+
 /// Creates the app router
-GoRouter createRouter() {
+GoRouter createRouter() => _buildRouter();
+
+GoRouter _buildRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.login,
+    redirect: (context, state) async {
+      // Only redirect on login page - check if already authenticated
+      if (state.uri.path == AppRoutes.login) {
+        final redirect = await _getAuthRedirect();
+        if (redirect != null) {
+          return redirect;
+        }
+      }
+
+      return null;
+    },
     errorBuilder: (context, state) => const _ErrorScreen(),
     routes: [
       // Auth routes (no shell/sidebar)
@@ -97,24 +155,34 @@ GoRouter createRouter() {
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
+          // Remove sidebar for owner dashboard
+          final isOwnerDashboard = state.uri.path == AppRoutes.ownerDashboard;
           return Scaffold(
             body: Column(
               children: [
                 const ConnectionStatusBanner(),
                 Expanded(
-                  child: Row(
-                    children: [
-                      Sidebar(
-                        currentPath: state.uri.path,
-                        onDestinationSelected: (path) {
-                          context.go(path);
-                        },
-                      ),
-                      Expanded(
-                        child: child,
-                      ),
-                    ],
-                  ),
+                  child: isOwnerDashboard
+                      ? child
+                      : Row(
+                          children: [
+                            Sidebar(
+                              currentPath: state.uri.path,
+                              onDestinationSelected: (path) {
+                                // Use push for settings to show as modal overlay
+                                // so the dashboard remains visible behind it
+                                if (path == AppRoutes.settings) {
+                                  context.push(path);
+                                } else {
+                                  context.go(path);
+                                }
+                              },
+                            ),
+                            Expanded(
+                              child: child,
+                            ),
+                          ],
+                        ),
                 ),
               ],
             ),
@@ -217,17 +285,6 @@ GoRouter createRouter() {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const OwnerDashboardScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-            ),
-          ),
-          GoRoute(
-            path: AppRoutes.settings,
-            pageBuilder: (context, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const SettingsScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);

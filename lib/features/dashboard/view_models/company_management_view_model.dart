@@ -6,6 +6,14 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/sub
 /// ViewModel for Company Management
 /// Manages company list, search, filtering, and CRUD operations
 class CompanyManagementViewModel extends ChangeNotifier {
+
+  CompanyManagementViewModel({
+    required CompanyRepository companyRepository,
+    required SubscriptionRepository subscriptionRepository,
+  })  : _companyRepository = companyRepository,
+        _subscriptionRepository = subscriptionRepository {
+    loadCompanies();
+  }
   final CompanyRepository _companyRepository;
   final SubscriptionRepository _subscriptionRepository;
 
@@ -16,14 +24,6 @@ class CompanyManagementViewModel extends ChangeNotifier {
   String? _error;
   String _searchQuery = '';
   CompanyStatus? _statusFilter;
-
-  CompanyManagementViewModel({
-    required CompanyRepository companyRepository,
-    required SubscriptionRepository subscriptionRepository,
-  })  : _companyRepository = companyRepository,
-        _subscriptionRepository = subscriptionRepository {
-    loadCompanies();
-  }
 
   // Getters
   List<Company> get companies => _companies;

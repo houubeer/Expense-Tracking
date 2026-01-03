@@ -42,8 +42,8 @@ class ManagerExpense {
     required this.amount,
     required this.category,
     required this.date,
-    this.receiptUrl,
     required this.status,
+    this.receiptUrl,
     this.comment,
     this.description,
     this.organizationId,
@@ -68,12 +68,18 @@ class ManagerExpense {
 
     return ManagerExpense(
       id: json['id']?.toString() ?? '',
-      employeeId: json['created_by']?.toString() ?? json['employeeId']?.toString() ?? '',
-      employeeName: json['employeeName'] as String? ?? json['employee_name'] as String? ?? 'Unknown',
+      employeeId: json['created_by']?.toString() ??
+          json['employeeId']?.toString() ??
+          '',
+      employeeName: json['employeeName'] as String? ??
+          json['employee_name'] as String? ??
+          'Unknown',
       amount: (json['amount'] as num).toDouble(),
-      category: json['category'] as String? ?? json['description'] as String? ?? 'Other',
-      date: json['date'] != null 
-          ? DateTime.parse(json['date'] as String) 
+      category: json['category'] as String? ??
+          json['description'] as String? ??
+          'Other',
+      date: json['date'] != null
+          ? DateTime.parse(json['date'] as String)
           : DateTime.now(),
       receiptUrl: receipts?.isNotEmpty == true ? receipts!.first : null,
       receiptUrls: receipts,
@@ -83,8 +89,8 @@ class ManagerExpense {
       organizationId: json['organization_id'] as String?,
       budgetId: json['budget_id']?.toString(),
       isReimbursable: json['is_reimbursable'] as bool?,
-      reimbursedAt: json['reimbursed_at'] != null 
-          ? DateTime.parse(json['reimbursed_at'] as String) 
+      reimbursedAt: json['reimbursed_at'] != null
+          ? DateTime.parse(json['reimbursed_at'] as String)
           : null,
       notes: json['notes'] as String?,
     );
@@ -109,7 +115,8 @@ class ManagerExpense {
       'amount': amount,
       'description': description ?? category,
       'date': date.toIso8601String().split('T')[0],
-      'receipt_urls': receiptUrls ?? (receiptUrl != null ? [receiptUrl!] : null),
+      'receipt_urls':
+          receiptUrls ?? (receiptUrl != null ? [receiptUrl!] : null),
       'status': status.name,
       'notes': notes ?? comment,
       'organization_id': organizationId,

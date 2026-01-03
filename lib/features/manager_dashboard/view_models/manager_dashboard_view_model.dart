@@ -131,21 +131,17 @@ class ManagerDashboardViewModel extends ChangeNotifier {
 
     try {
       // Load data from repositories in parallel
-
-      // Load data from repositories in parallel
       final results = await Future.wait([
         _employeeRepository.getAllEmployees(),
         _expenseRepository.getPendingExpenses(),
         _expenseRepository.getAllExpenses(),
         _budgetRepository.getDepartmentBudgets(),
-        _expenseRepository.getReimbursableExpenses(),
       ]);
 
       _employees = results[0] as List<Employee>;
       _pendingExpenses = results[1] as List<ManagerExpense>;
       _allExpenses = results[2] as List<ManagerExpense>;
       _budgets = results[3] as List<DepartmentBudget>;
-      _reimbursableExpenses = results[4] as List<ManagerExpense>;
 
       // Get current organization ID from first employee if available
       if (_employees.isNotEmpty && _employees.first.organizationId != null) {
@@ -297,10 +293,10 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   Future<void> addEmployee(Employee employee) async {
     try {
       await _employeeRepository.addEmployee(employee);
-      
+
       // Audit log is created by repository
       await refreshData();
-      
+
       notifyListeners();
     } catch (e, stackTrace) {
       _errorMessage = 'Failed to add employee: ${e.toString()}';
@@ -313,16 +309,16 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   Future<void> suspendEmployee(String employeeId) async {
     try {
       await _employeeRepository.suspendEmployee(employeeId);
-      
+
       final index = _employees.indexWhere((emp) => emp.id == employeeId);
       if (index != -1) {
         _employees[index] = _employees[index].copyWith(
           status: EmployeeStatus.suspended,
         );
-        
+
         // Audit log is created by repository
       }
-      
+
       notifyListeners();
     } catch (e) {
       _errorMessage = 'Failed to suspend employee: ${e.toString()}';
@@ -334,16 +330,16 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   Future<void> activateEmployee(String employeeId) async {
     try {
       await _employeeRepository.activateEmployee(employeeId);
-      
+
       final index = _employees.indexWhere((emp) => emp.id == employeeId);
       if (index != -1) {
         _employees[index] = _employees[index].copyWith(
           status: EmployeeStatus.active,
         );
-        
+
         // Audit log is created by repository
       }
-      
+
       notifyListeners();
     } catch (e) {
       _errorMessage = 'Failed to activate employee: ${e.toString()}';
@@ -356,11 +352,11 @@ class ManagerDashboardViewModel extends ChangeNotifier {
     try {
       final employee = _employees.firstWhere((emp) => emp.id == employeeId);
       await _employeeRepository.removeEmployee(employeeId);
-      
+
       _employees.removeWhere((emp) => emp.id == employeeId);
-      
+
       // Audit log is created by repository
-      
+
       notifyListeners();
     } catch (e) {
       _errorMessage = 'Failed to remove employee: ${e.toString()}';

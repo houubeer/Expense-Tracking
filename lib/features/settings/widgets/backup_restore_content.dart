@@ -129,7 +129,6 @@ class BackupRestoreContent extends ConsumerWidget {
       dialogTitle: AppStrings.labelSelectBackupFile,
       type: FileType.custom,
       allowedExtensions: ['sqlite'],
-      allowMultiple: false,
     );
 
     if (result == null || result.files.isEmpty) {
@@ -138,7 +137,9 @@ class BackupRestoreContent extends ConsumerWidget {
 
     final filePath = result.files.first.path;
     if (filePath == null) {
-      _showErrorSnackBar(context, 'Invalid file path');
+      if (context.mounted) {
+        _showErrorSnackBar(context, 'Invalid file path');
+      }
       return;
     }
 
@@ -177,7 +178,6 @@ class BackupRestoreContent extends ConsumerWidget {
         ),
         backgroundColor: AppColors.red,
         behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
       ),
     );
   }

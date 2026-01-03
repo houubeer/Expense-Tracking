@@ -40,6 +40,12 @@ class $OrganizationsTable extends Organizations
   late final GeneratedColumn<String> managerEmail = GeneratedColumn<String>(
       'manager_email', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _managerNameMeta =
+      const VerificationMeta('managerName');
+  @override
+  late final GeneratedColumn<String> managerName = GeneratedColumn<String>(
+      'manager_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
   late final GeneratedColumn<String> status = GeneratedColumn<String>(
@@ -47,22 +53,24 @@ class $OrganizationsTable extends Organizations
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('pending'));
-  static const VerificationMeta _currencyMeta =
-      const VerificationMeta('currency');
+  static const VerificationMeta _fiscalYearStartMeta =
+      const VerificationMeta('fiscalYearStart');
   @override
-  late final GeneratedColumn<String> currency = GeneratedColumn<String>(
-      'currency', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('USD'));
-  static const VerificationMeta _timezoneMeta =
-      const VerificationMeta('timezone');
+  late final GeneratedColumn<int> fiscalYearStart = GeneratedColumn<int>(
+      'fiscal_year_start', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _approvedAtMeta =
+      const VerificationMeta('approvedAt');
   @override
-  late final GeneratedColumn<String> timezone = GeneratedColumn<String>(
-      'timezone', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('UTC'));
+  late final GeneratedColumn<DateTime> approvedAt = GeneratedColumn<DateTime>(
+      'approved_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -101,9 +109,11 @@ class $OrganizationsTable extends Organizations
         serverId,
         name,
         managerEmail,
+        managerName,
         status,
-        currency,
-        timezone,
+        fiscalYearStart,
+        approvedAt,
+        createdBy,
         createdAt,
         updatedAt,
         syncedAt,
@@ -140,17 +150,31 @@ class $OrganizationsTable extends Organizations
     } else if (isInserting) {
       context.missing(_managerEmailMeta);
     }
+    if (data.containsKey('manager_name')) {
+      context.handle(
+          _managerNameMeta,
+          managerName.isAcceptableOrUnknown(
+              data['manager_name']!, _managerNameMeta));
+    }
     if (data.containsKey('status')) {
       context.handle(_statusMeta,
           status.isAcceptableOrUnknown(data['status']!, _statusMeta));
     }
-    if (data.containsKey('currency')) {
-      context.handle(_currencyMeta,
-          currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta));
+    if (data.containsKey('fiscal_year_start')) {
+      context.handle(
+          _fiscalYearStartMeta,
+          fiscalYearStart.isAcceptableOrUnknown(
+              data['fiscal_year_start']!, _fiscalYearStartMeta));
     }
-    if (data.containsKey('timezone')) {
-      context.handle(_timezoneMeta,
-          timezone.isAcceptableOrUnknown(data['timezone']!, _timezoneMeta));
+    if (data.containsKey('approved_at')) {
+      context.handle(
+          _approvedAtMeta,
+          approvedAt.isAcceptableOrUnknown(
+              data['approved_at']!, _approvedAtMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -185,12 +209,16 @@ class $OrganizationsTable extends Organizations
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       managerEmail: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}manager_email'])!,
+      managerName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}manager_name']),
       status: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}status'])!,
-      currency: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}currency'])!,
-      timezone: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}timezone'])!,
+      fiscalYearStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}fiscal_year_start']),
+      approvedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}approved_at']),
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -216,11 +244,17 @@ class Organization extends DataClass implements Insertable<Organization> {
   final String? serverId;
   final String name;
   final String managerEmail;
+  final String? managerName;
 
   /// Status: pending, approved, rejected
   final String status;
-  final String currency;
-  final String timezone;
+
+  /// Fiscal year start month (1-12)
+  final int? fiscalYearStart;
+  final DateTime? approvedAt;
+
+  /// Who created this organization (user_profile id)
+  final String? createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? syncedAt;
@@ -230,9 +264,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       this.serverId,
       required this.name,
       required this.managerEmail,
+      this.managerName,
       required this.status,
-      required this.currency,
-      required this.timezone,
+      this.fiscalYearStart,
+      this.approvedAt,
+      this.createdBy,
       required this.createdAt,
       required this.updatedAt,
       this.syncedAt,
@@ -246,9 +282,19 @@ class Organization extends DataClass implements Insertable<Organization> {
     }
     map['name'] = Variable<String>(name);
     map['manager_email'] = Variable<String>(managerEmail);
+    if (!nullToAbsent || managerName != null) {
+      map['manager_name'] = Variable<String>(managerName);
+    }
     map['status'] = Variable<String>(status);
-    map['currency'] = Variable<String>(currency);
-    map['timezone'] = Variable<String>(timezone);
+    if (!nullToAbsent || fiscalYearStart != null) {
+      map['fiscal_year_start'] = Variable<int>(fiscalYearStart);
+    }
+    if (!nullToAbsent || approvedAt != null) {
+      map['approved_at'] = Variable<DateTime>(approvedAt);
+    }
+    if (!nullToAbsent || createdBy != null) {
+      map['created_by'] = Variable<String>(createdBy);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || syncedAt != null) {
@@ -266,9 +312,19 @@ class Organization extends DataClass implements Insertable<Organization> {
           : Value(serverId),
       name: Value(name),
       managerEmail: Value(managerEmail),
+      managerName: managerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(managerName),
       status: Value(status),
-      currency: Value(currency),
-      timezone: Value(timezone),
+      fiscalYearStart: fiscalYearStart == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fiscalYearStart),
+      approvedAt: approvedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(approvedAt),
+      createdBy: createdBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdBy),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       syncedAt: syncedAt == null && nullToAbsent
@@ -286,9 +342,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       serverId: serializer.fromJson<String?>(json['serverId']),
       name: serializer.fromJson<String>(json['name']),
       managerEmail: serializer.fromJson<String>(json['managerEmail']),
+      managerName: serializer.fromJson<String?>(json['managerName']),
       status: serializer.fromJson<String>(json['status']),
-      currency: serializer.fromJson<String>(json['currency']),
-      timezone: serializer.fromJson<String>(json['timezone']),
+      fiscalYearStart: serializer.fromJson<int?>(json['fiscalYearStart']),
+      approvedAt: serializer.fromJson<DateTime?>(json['approvedAt']),
+      createdBy: serializer.fromJson<String?>(json['createdBy']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
@@ -303,9 +361,11 @@ class Organization extends DataClass implements Insertable<Organization> {
       'serverId': serializer.toJson<String?>(serverId),
       'name': serializer.toJson<String>(name),
       'managerEmail': serializer.toJson<String>(managerEmail),
+      'managerName': serializer.toJson<String?>(managerName),
       'status': serializer.toJson<String>(status),
-      'currency': serializer.toJson<String>(currency),
-      'timezone': serializer.toJson<String>(timezone),
+      'fiscalYearStart': serializer.toJson<int?>(fiscalYearStart),
+      'approvedAt': serializer.toJson<DateTime?>(approvedAt),
+      'createdBy': serializer.toJson<String?>(createdBy),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
@@ -318,9 +378,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           Value<String?> serverId = const Value.absent(),
           String? name,
           String? managerEmail,
+          Value<String?> managerName = const Value.absent(),
           String? status,
-          String? currency,
-          String? timezone,
+          Value<int?> fiscalYearStart = const Value.absent(),
+          Value<DateTime?> approvedAt = const Value.absent(),
+          Value<String?> createdBy = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt,
           Value<DateTime?> syncedAt = const Value.absent(),
@@ -330,9 +392,13 @@ class Organization extends DataClass implements Insertable<Organization> {
         serverId: serverId.present ? serverId.value : this.serverId,
         name: name ?? this.name,
         managerEmail: managerEmail ?? this.managerEmail,
+        managerName: managerName.present ? managerName.value : this.managerName,
         status: status ?? this.status,
-        currency: currency ?? this.currency,
-        timezone: timezone ?? this.timezone,
+        fiscalYearStart: fiscalYearStart.present
+            ? fiscalYearStart.value
+            : this.fiscalYearStart,
+        approvedAt: approvedAt.present ? approvedAt.value : this.approvedAt,
+        createdBy: createdBy.present ? createdBy.value : this.createdBy,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
@@ -346,9 +412,15 @@ class Organization extends DataClass implements Insertable<Organization> {
       managerEmail: data.managerEmail.present
           ? data.managerEmail.value
           : this.managerEmail,
+      managerName:
+          data.managerName.present ? data.managerName.value : this.managerName,
       status: data.status.present ? data.status.value : this.status,
-      currency: data.currency.present ? data.currency.value : this.currency,
-      timezone: data.timezone.present ? data.timezone.value : this.timezone,
+      fiscalYearStart: data.fiscalYearStart.present
+          ? data.fiscalYearStart.value
+          : this.fiscalYearStart,
+      approvedAt:
+          data.approvedAt.present ? data.approvedAt.value : this.approvedAt,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -363,9 +435,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           ..write('serverId: $serverId, ')
           ..write('name: $name, ')
           ..write('managerEmail: $managerEmail, ')
+          ..write('managerName: $managerName, ')
           ..write('status: $status, ')
-          ..write('currency: $currency, ')
-          ..write('timezone: $timezone, ')
+          ..write('fiscalYearStart: $fiscalYearStart, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -375,8 +449,20 @@ class Organization extends DataClass implements Insertable<Organization> {
   }
 
   @override
-  int get hashCode => Object.hash(id, serverId, name, managerEmail, status,
-      currency, timezone, createdAt, updatedAt, syncedAt, isSynced);
+  int get hashCode => Object.hash(
+      id,
+      serverId,
+      name,
+      managerEmail,
+      managerName,
+      status,
+      fiscalYearStart,
+      approvedAt,
+      createdBy,
+      createdAt,
+      updatedAt,
+      syncedAt,
+      isSynced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -385,9 +471,11 @@ class Organization extends DataClass implements Insertable<Organization> {
           other.serverId == this.serverId &&
           other.name == this.name &&
           other.managerEmail == this.managerEmail &&
+          other.managerName == this.managerName &&
           other.status == this.status &&
-          other.currency == this.currency &&
-          other.timezone == this.timezone &&
+          other.fiscalYearStart == this.fiscalYearStart &&
+          other.approvedAt == this.approvedAt &&
+          other.createdBy == this.createdBy &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.syncedAt == this.syncedAt &&
@@ -399,9 +487,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
   final Value<String?> serverId;
   final Value<String> name;
   final Value<String> managerEmail;
+  final Value<String?> managerName;
   final Value<String> status;
-  final Value<String> currency;
-  final Value<String> timezone;
+  final Value<int?> fiscalYearStart;
+  final Value<DateTime?> approvedAt;
+  final Value<String?> createdBy;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
@@ -411,9 +501,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     this.serverId = const Value.absent(),
     this.name = const Value.absent(),
     this.managerEmail = const Value.absent(),
+    this.managerName = const Value.absent(),
     this.status = const Value.absent(),
-    this.currency = const Value.absent(),
-    this.timezone = const Value.absent(),
+    this.fiscalYearStart = const Value.absent(),
+    this.approvedAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -424,9 +516,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     this.serverId = const Value.absent(),
     required String name,
     required String managerEmail,
+    this.managerName = const Value.absent(),
     this.status = const Value.absent(),
-    this.currency = const Value.absent(),
-    this.timezone = const Value.absent(),
+    this.fiscalYearStart = const Value.absent(),
+    this.approvedAt = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -438,9 +532,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     Expression<String>? serverId,
     Expression<String>? name,
     Expression<String>? managerEmail,
+    Expression<String>? managerName,
     Expression<String>? status,
-    Expression<String>? currency,
-    Expression<String>? timezone,
+    Expression<int>? fiscalYearStart,
+    Expression<DateTime>? approvedAt,
+    Expression<String>? createdBy,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
@@ -451,9 +547,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       if (serverId != null) 'server_id': serverId,
       if (name != null) 'name': name,
       if (managerEmail != null) 'manager_email': managerEmail,
+      if (managerName != null) 'manager_name': managerName,
       if (status != null) 'status': status,
-      if (currency != null) 'currency': currency,
-      if (timezone != null) 'timezone': timezone,
+      if (fiscalYearStart != null) 'fiscal_year_start': fiscalYearStart,
+      if (approvedAt != null) 'approved_at': approvedAt,
+      if (createdBy != null) 'created_by': createdBy,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
@@ -466,9 +564,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       Value<String?>? serverId,
       Value<String>? name,
       Value<String>? managerEmail,
+      Value<String?>? managerName,
       Value<String>? status,
-      Value<String>? currency,
-      Value<String>? timezone,
+      Value<int?>? fiscalYearStart,
+      Value<DateTime?>? approvedAt,
+      Value<String?>? createdBy,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<DateTime?>? syncedAt,
@@ -478,9 +578,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
       serverId: serverId ?? this.serverId,
       name: name ?? this.name,
       managerEmail: managerEmail ?? this.managerEmail,
+      managerName: managerName ?? this.managerName,
       status: status ?? this.status,
-      currency: currency ?? this.currency,
-      timezone: timezone ?? this.timezone,
+      fiscalYearStart: fiscalYearStart ?? this.fiscalYearStart,
+      approvedAt: approvedAt ?? this.approvedAt,
+      createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncedAt: syncedAt ?? this.syncedAt,
@@ -503,14 +605,20 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
     if (managerEmail.present) {
       map['manager_email'] = Variable<String>(managerEmail.value);
     }
+    if (managerName.present) {
+      map['manager_name'] = Variable<String>(managerName.value);
+    }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
-    if (currency.present) {
-      map['currency'] = Variable<String>(currency.value);
+    if (fiscalYearStart.present) {
+      map['fiscal_year_start'] = Variable<int>(fiscalYearStart.value);
     }
-    if (timezone.present) {
-      map['timezone'] = Variable<String>(timezone.value);
+    if (approvedAt.present) {
+      map['approved_at'] = Variable<DateTime>(approvedAt.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -534,9 +642,11 @@ class OrganizationsCompanion extends UpdateCompanion<Organization> {
           ..write('serverId: $serverId, ')
           ..write('name: $name, ')
           ..write('managerEmail: $managerEmail, ')
+          ..write('managerName: $managerName, ')
           ..write('status: $status, ')
-          ..write('currency: $currency, ')
-          ..write('timezone: $timezone, ')
+          ..write('fiscalYearStart: $fiscalYearStart, ')
+          ..write('approvedAt: $approvedAt, ')
+          ..write('createdBy: $createdBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -598,16 +708,17 @@ class $UserProfilesTable extends UserProfiles
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       defaultValue: const Constant('employee'));
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-      'is_active', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
-      defaultValue: const Constant(true));
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _avatarUrlMeta =
+      const VerificationMeta('avatarUrl');
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+      'avatar_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _settingsMeta =
       const VerificationMeta('settings');
   @override
@@ -622,12 +733,6 @@ class $UserProfilesTable extends UserProfiles
   late final GeneratedColumn<DateTime> lastSyncAt = GeneratedColumn<DateTime>(
       'last_sync_at', aliasedName, true,
       type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _syncTokenMeta =
-      const VerificationMeta('syncToken');
-  @override
-  late final GeneratedColumn<String> syncToken = GeneratedColumn<String>(
-      'sync_token', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -668,10 +773,10 @@ class $UserProfilesTable extends UserProfiles
         email,
         fullName,
         role,
-        isActive,
+        status,
+        avatarUrl,
         settings,
         lastSyncAt,
-        syncToken,
         createdAt,
         updatedAt,
         syncedAt,
@@ -714,9 +819,13 @@ class $UserProfilesTable extends UserProfiles
       context.handle(
           _roleMeta, role.isAcceptableOrUnknown(data['role']!, _roleMeta));
     }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    if (data.containsKey('status')) {
+      context.handle(_statusMeta,
+          status.isAcceptableOrUnknown(data['status']!, _statusMeta));
+    }
+    if (data.containsKey('avatar_url')) {
+      context.handle(_avatarUrlMeta,
+          avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta));
     }
     if (data.containsKey('settings')) {
       context.handle(_settingsMeta,
@@ -727,10 +836,6 @@ class $UserProfilesTable extends UserProfiles
           _lastSyncAtMeta,
           lastSyncAt.isAcceptableOrUnknown(
               data['last_sync_at']!, _lastSyncAtMeta));
-    }
-    if (data.containsKey('sync_token')) {
-      context.handle(_syncTokenMeta,
-          syncToken.isAcceptableOrUnknown(data['sync_token']!, _syncTokenMeta));
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -769,14 +874,14 @@ class $UserProfilesTable extends UserProfiles
           .read(DriftSqlType.string, data['${effectivePrefix}full_name']),
       role: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}role'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      status: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}status']),
+      avatarUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}avatar_url']),
       settings: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}settings'])!,
       lastSyncAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}last_sync_at']),
-      syncToken: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}sync_token']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -808,12 +913,16 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
 
   /// Role: owner, manager, employee
   final String role;
-  final bool isActive;
+
+  /// User status: 'active', 'pending', 'inactive', etc.
+  final String? status;
+
+  /// Avatar URL
+  final String? avatarUrl;
 
   /// User settings as JSON
   final String settings;
   final DateTime? lastSyncAt;
-  final String? syncToken;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? syncedAt;
@@ -825,10 +934,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       required this.email,
       this.fullName,
       required this.role,
-      required this.isActive,
+      this.status,
+      this.avatarUrl,
       required this.settings,
       this.lastSyncAt,
-      this.syncToken,
       required this.createdAt,
       required this.updatedAt,
       this.syncedAt,
@@ -848,13 +957,15 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       map['full_name'] = Variable<String>(fullName);
     }
     map['role'] = Variable<String>(role);
-    map['is_active'] = Variable<bool>(isActive);
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String>(avatarUrl);
+    }
     map['settings'] = Variable<String>(settings);
     if (!nullToAbsent || lastSyncAt != null) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt);
-    }
-    if (!nullToAbsent || syncToken != null) {
-      map['sync_token'] = Variable<String>(syncToken);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -879,14 +990,15 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           ? const Value.absent()
           : Value(fullName),
       role: Value(role),
-      isActive: Value(isActive),
+      status:
+          status == null && nullToAbsent ? const Value.absent() : Value(status),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
       settings: Value(settings),
       lastSyncAt: lastSyncAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSyncAt),
-      syncToken: syncToken == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncToken),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       syncedAt: syncedAt == null && nullToAbsent
@@ -906,10 +1018,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email: serializer.fromJson<String>(json['email']),
       fullName: serializer.fromJson<String?>(json['fullName']),
       role: serializer.fromJson<String>(json['role']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
+      status: serializer.fromJson<String?>(json['status']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
       settings: serializer.fromJson<String>(json['settings']),
       lastSyncAt: serializer.fromJson<DateTime?>(json['lastSyncAt']),
-      syncToken: serializer.fromJson<String?>(json['syncToken']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
@@ -926,10 +1038,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       'email': serializer.toJson<String>(email),
       'fullName': serializer.toJson<String?>(fullName),
       'role': serializer.toJson<String>(role),
-      'isActive': serializer.toJson<bool>(isActive),
+      'status': serializer.toJson<String?>(status),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
       'settings': serializer.toJson<String>(settings),
       'lastSyncAt': serializer.toJson<DateTime?>(lastSyncAt),
-      'syncToken': serializer.toJson<String?>(syncToken),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
@@ -944,10 +1056,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           String? email,
           Value<String?> fullName = const Value.absent(),
           String? role,
-          bool? isActive,
+          Value<String?> status = const Value.absent(),
+          Value<String?> avatarUrl = const Value.absent(),
           String? settings,
           Value<DateTime?> lastSyncAt = const Value.absent(),
-          Value<String?> syncToken = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt,
           Value<DateTime?> syncedAt = const Value.absent(),
@@ -960,10 +1072,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
         email: email ?? this.email,
         fullName: fullName.present ? fullName.value : this.fullName,
         role: role ?? this.role,
-        isActive: isActive ?? this.isActive,
+        status: status.present ? status.value : this.status,
+        avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
         settings: settings ?? this.settings,
         lastSyncAt: lastSyncAt.present ? lastSyncAt.value : this.lastSyncAt,
-        syncToken: syncToken.present ? syncToken.value : this.syncToken,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
         syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
@@ -979,11 +1091,11 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email: data.email.present ? data.email.value : this.email,
       fullName: data.fullName.present ? data.fullName.value : this.fullName,
       role: data.role.present ? data.role.value : this.role,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      status: data.status.present ? data.status.value : this.status,
+      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
       settings: data.settings.present ? data.settings.value : this.settings,
       lastSyncAt:
           data.lastSyncAt.present ? data.lastSyncAt.value : this.lastSyncAt,
-      syncToken: data.syncToken.present ? data.syncToken.value : this.syncToken,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
@@ -1000,10 +1112,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('role: $role, ')
-          ..write('isActive: $isActive, ')
+          ..write('status: $status, ')
+          ..write('avatarUrl: $avatarUrl, ')
           ..write('settings: $settings, ')
           ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('syncToken: $syncToken, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -1020,10 +1132,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
       email,
       fullName,
       role,
-      isActive,
+      status,
+      avatarUrl,
       settings,
       lastSyncAt,
-      syncToken,
       createdAt,
       updatedAt,
       syncedAt,
@@ -1038,10 +1150,10 @@ class UserProfile extends DataClass implements Insertable<UserProfile> {
           other.email == this.email &&
           other.fullName == this.fullName &&
           other.role == this.role &&
-          other.isActive == this.isActive &&
+          other.status == this.status &&
+          other.avatarUrl == this.avatarUrl &&
           other.settings == this.settings &&
           other.lastSyncAt == this.lastSyncAt &&
-          other.syncToken == this.syncToken &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.syncedAt == this.syncedAt &&
@@ -1055,10 +1167,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
   final Value<String> email;
   final Value<String?> fullName;
   final Value<String> role;
-  final Value<bool> isActive;
+  final Value<String?> status;
+  final Value<String?> avatarUrl;
   final Value<String> settings;
   final Value<DateTime?> lastSyncAt;
-  final Value<String?> syncToken;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
@@ -1070,10 +1182,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
     this.role = const Value.absent(),
-    this.isActive = const Value.absent(),
+    this.status = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
     this.settings = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
-    this.syncToken = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1086,10 +1198,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     required String email,
     this.fullName = const Value.absent(),
     this.role = const Value.absent(),
-    this.isActive = const Value.absent(),
+    this.status = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
     this.settings = const Value.absent(),
     this.lastSyncAt = const Value.absent(),
-    this.syncToken = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
@@ -1102,10 +1214,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     Expression<String>? email,
     Expression<String>? fullName,
     Expression<String>? role,
-    Expression<bool>? isActive,
+    Expression<String>? status,
+    Expression<String>? avatarUrl,
     Expression<String>? settings,
     Expression<DateTime>? lastSyncAt,
-    Expression<String>? syncToken,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
@@ -1118,10 +1230,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       if (email != null) 'email': email,
       if (fullName != null) 'full_name': fullName,
       if (role != null) 'role': role,
-      if (isActive != null) 'is_active': isActive,
+      if (status != null) 'status': status,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (settings != null) 'settings': settings,
       if (lastSyncAt != null) 'last_sync_at': lastSyncAt,
-      if (syncToken != null) 'sync_token': syncToken,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
@@ -1136,10 +1248,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       Value<String>? email,
       Value<String?>? fullName,
       Value<String>? role,
-      Value<bool>? isActive,
+      Value<String?>? status,
+      Value<String?>? avatarUrl,
       Value<String>? settings,
       Value<DateTime?>? lastSyncAt,
-      Value<String?>? syncToken,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt,
       Value<DateTime?>? syncedAt,
@@ -1151,10 +1263,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       role: role ?? this.role,
-      isActive: isActive ?? this.isActive,
+      status: status ?? this.status,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
       settings: settings ?? this.settings,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
-      syncToken: syncToken ?? this.syncToken,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       syncedAt: syncedAt ?? this.syncedAt,
@@ -1183,17 +1295,17 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
     if (role.present) {
       map['role'] = Variable<String>(role.value);
     }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String>(avatarUrl.value);
     }
     if (settings.present) {
       map['settings'] = Variable<String>(settings.value);
     }
     if (lastSyncAt.present) {
       map['last_sync_at'] = Variable<DateTime>(lastSyncAt.value);
-    }
-    if (syncToken.present) {
-      map['sync_token'] = Variable<String>(syncToken.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1219,10 +1331,10 @@ class UserProfilesCompanion extends UpdateCompanion<UserProfile> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('role: $role, ')
-          ..write('isActive: $isActive, ')
+          ..write('status: $status, ')
+          ..write('avatarUrl: $avatarUrl, ')
           ..write('settings: $settings, ')
           ..write('lastSyncAt: $lastSyncAt, ')
-          ..write('syncToken: $syncToken, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
@@ -2576,6 +2688,531 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   }
 }
 
+class $ReceiptsTable extends Receipts with TableInfo<$ReceiptsTable, Receipt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReceiptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _expenseIdMeta =
+      const VerificationMeta('expenseId');
+  @override
+  late final GeneratedColumn<int> expenseId = GeneratedColumn<int>(
+      'expense_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES expenses (id) ON DELETE CASCADE'));
+  static const VerificationMeta _localPathMeta =
+      const VerificationMeta('localPath');
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+      'local_path', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _remoteUrlMeta =
+      const VerificationMeta('remoteUrl');
+  @override
+  late final GeneratedColumn<String> remoteUrl = GeneratedColumn<String>(
+      'remote_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _fileNameMeta =
+      const VerificationMeta('fileName');
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+      'file_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _fileTypeMeta =
+      const VerificationMeta('fileType');
+  @override
+  late final GeneratedColumn<String> fileType = GeneratedColumn<String>(
+      'file_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _fileSizeMeta =
+      const VerificationMeta('fileSize');
+  @override
+  late final GeneratedColumn<int> fileSize = GeneratedColumn<int>(
+      'file_size', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _uploadStatusMeta =
+      const VerificationMeta('uploadStatus');
+  @override
+  late final GeneratedColumn<String> uploadStatus = GeneratedColumn<String>(
+      'upload_status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('local'));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _uploadedAtMeta =
+      const VerificationMeta('uploadedAt');
+  @override
+  late final GeneratedColumn<DateTime> uploadedAt = GeneratedColumn<DateTime>(
+      'uploaded_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        expenseId,
+        localPath,
+        remoteUrl,
+        fileName,
+        fileType,
+        fileSize,
+        uploadStatus,
+        createdAt,
+        uploadedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'receipts';
+  @override
+  VerificationContext validateIntegrity(Insertable<Receipt> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(_expenseIdMeta,
+          expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta));
+    } else if (isInserting) {
+      context.missing(_expenseIdMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(_localPathMeta,
+          localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta));
+    }
+    if (data.containsKey('remote_url')) {
+      context.handle(_remoteUrlMeta,
+          remoteUrl.isAcceptableOrUnknown(data['remote_url']!, _remoteUrlMeta));
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(_fileNameMeta,
+          fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta));
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    if (data.containsKey('file_type')) {
+      context.handle(_fileTypeMeta,
+          fileType.isAcceptableOrUnknown(data['file_type']!, _fileTypeMeta));
+    } else if (isInserting) {
+      context.missing(_fileTypeMeta);
+    }
+    if (data.containsKey('file_size')) {
+      context.handle(_fileSizeMeta,
+          fileSize.isAcceptableOrUnknown(data['file_size']!, _fileSizeMeta));
+    }
+    if (data.containsKey('upload_status')) {
+      context.handle(
+          _uploadStatusMeta,
+          uploadStatus.isAcceptableOrUnknown(
+              data['upload_status']!, _uploadStatusMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('uploaded_at')) {
+      context.handle(
+          _uploadedAtMeta,
+          uploadedAt.isAcceptableOrUnknown(
+              data['uploaded_at']!, _uploadedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Receipt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Receipt(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      expenseId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}expense_id'])!,
+      localPath: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}local_path']),
+      remoteUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remote_url']),
+      fileName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}file_name'])!,
+      fileType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}file_type'])!,
+      fileSize: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}file_size']),
+      uploadStatus: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}upload_status'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      uploadedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}uploaded_at']),
+    );
+  }
+
+  @override
+  $ReceiptsTable createAlias(String alias) {
+    return $ReceiptsTable(attachedDatabase, alias);
+  }
+}
+
+class Receipt extends DataClass implements Insertable<Receipt> {
+  /// Auto-increment primary key
+  final int id;
+
+  /// Foreign key to expenses table
+  final int expenseId;
+
+  /// Local file path (for offline support)
+  final String? localPath;
+
+  /// Remote URL (Supabase Storage URL after upload)
+  final String? remoteUrl;
+
+  /// Original filename
+  final String fileName;
+
+  /// File type (jpg, png, pdf, etc.)
+  final String fileType;
+
+  /// File size in bytes
+  final int? fileSize;
+
+  /// Upload status: 'local', 'uploading', 'uploaded', 'failed'
+  final String uploadStatus;
+
+  /// Timestamp when receipt was added
+  final DateTime createdAt;
+
+  /// Timestamp when successfully uploaded to remote storage
+  final DateTime? uploadedAt;
+  const Receipt(
+      {required this.id,
+      required this.expenseId,
+      this.localPath,
+      this.remoteUrl,
+      required this.fileName,
+      required this.fileType,
+      this.fileSize,
+      required this.uploadStatus,
+      required this.createdAt,
+      this.uploadedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['expense_id'] = Variable<int>(expenseId);
+    if (!nullToAbsent || localPath != null) {
+      map['local_path'] = Variable<String>(localPath);
+    }
+    if (!nullToAbsent || remoteUrl != null) {
+      map['remote_url'] = Variable<String>(remoteUrl);
+    }
+    map['file_name'] = Variable<String>(fileName);
+    map['file_type'] = Variable<String>(fileType);
+    if (!nullToAbsent || fileSize != null) {
+      map['file_size'] = Variable<int>(fileSize);
+    }
+    map['upload_status'] = Variable<String>(uploadStatus);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || uploadedAt != null) {
+      map['uploaded_at'] = Variable<DateTime>(uploadedAt);
+    }
+    return map;
+  }
+
+  ReceiptsCompanion toCompanion(bool nullToAbsent) {
+    return ReceiptsCompanion(
+      id: Value(id),
+      expenseId: Value(expenseId),
+      localPath: localPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(localPath),
+      remoteUrl: remoteUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteUrl),
+      fileName: Value(fileName),
+      fileType: Value(fileType),
+      fileSize: fileSize == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fileSize),
+      uploadStatus: Value(uploadStatus),
+      createdAt: Value(createdAt),
+      uploadedAt: uploadedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(uploadedAt),
+    );
+  }
+
+  factory Receipt.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Receipt(
+      id: serializer.fromJson<int>(json['id']),
+      expenseId: serializer.fromJson<int>(json['expenseId']),
+      localPath: serializer.fromJson<String?>(json['localPath']),
+      remoteUrl: serializer.fromJson<String?>(json['remoteUrl']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+      fileType: serializer.fromJson<String>(json['fileType']),
+      fileSize: serializer.fromJson<int?>(json['fileSize']),
+      uploadStatus: serializer.fromJson<String>(json['uploadStatus']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      uploadedAt: serializer.fromJson<DateTime?>(json['uploadedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'expenseId': serializer.toJson<int>(expenseId),
+      'localPath': serializer.toJson<String?>(localPath),
+      'remoteUrl': serializer.toJson<String?>(remoteUrl),
+      'fileName': serializer.toJson<String>(fileName),
+      'fileType': serializer.toJson<String>(fileType),
+      'fileSize': serializer.toJson<int?>(fileSize),
+      'uploadStatus': serializer.toJson<String>(uploadStatus),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'uploadedAt': serializer.toJson<DateTime?>(uploadedAt),
+    };
+  }
+
+  Receipt copyWith(
+          {int? id,
+          int? expenseId,
+          Value<String?> localPath = const Value.absent(),
+          Value<String?> remoteUrl = const Value.absent(),
+          String? fileName,
+          String? fileType,
+          Value<int?> fileSize = const Value.absent(),
+          String? uploadStatus,
+          DateTime? createdAt,
+          Value<DateTime?> uploadedAt = const Value.absent()}) =>
+      Receipt(
+        id: id ?? this.id,
+        expenseId: expenseId ?? this.expenseId,
+        localPath: localPath.present ? localPath.value : this.localPath,
+        remoteUrl: remoteUrl.present ? remoteUrl.value : this.remoteUrl,
+        fileName: fileName ?? this.fileName,
+        fileType: fileType ?? this.fileType,
+        fileSize: fileSize.present ? fileSize.value : this.fileSize,
+        uploadStatus: uploadStatus ?? this.uploadStatus,
+        createdAt: createdAt ?? this.createdAt,
+        uploadedAt: uploadedAt.present ? uploadedAt.value : this.uploadedAt,
+      );
+  Receipt copyWithCompanion(ReceiptsCompanion data) {
+    return Receipt(
+      id: data.id.present ? data.id.value : this.id,
+      expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      remoteUrl: data.remoteUrl.present ? data.remoteUrl.value : this.remoteUrl,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+      fileType: data.fileType.present ? data.fileType.value : this.fileType,
+      fileSize: data.fileSize.present ? data.fileSize.value : this.fileSize,
+      uploadStatus: data.uploadStatus.present
+          ? data.uploadStatus.value
+          : this.uploadStatus,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      uploadedAt:
+          data.uploadedAt.present ? data.uploadedAt.value : this.uploadedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Receipt(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('localPath: $localPath, ')
+          ..write('remoteUrl: $remoteUrl, ')
+          ..write('fileName: $fileName, ')
+          ..write('fileType: $fileType, ')
+          ..write('fileSize: $fileSize, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('uploadedAt: $uploadedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, expenseId, localPath, remoteUrl, fileName,
+      fileType, fileSize, uploadStatus, createdAt, uploadedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Receipt &&
+          other.id == this.id &&
+          other.expenseId == this.expenseId &&
+          other.localPath == this.localPath &&
+          other.remoteUrl == this.remoteUrl &&
+          other.fileName == this.fileName &&
+          other.fileType == this.fileType &&
+          other.fileSize == this.fileSize &&
+          other.uploadStatus == this.uploadStatus &&
+          other.createdAt == this.createdAt &&
+          other.uploadedAt == this.uploadedAt);
+}
+
+class ReceiptsCompanion extends UpdateCompanion<Receipt> {
+  final Value<int> id;
+  final Value<int> expenseId;
+  final Value<String?> localPath;
+  final Value<String?> remoteUrl;
+  final Value<String> fileName;
+  final Value<String> fileType;
+  final Value<int?> fileSize;
+  final Value<String> uploadStatus;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> uploadedAt;
+  const ReceiptsCompanion({
+    this.id = const Value.absent(),
+    this.expenseId = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.remoteUrl = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.fileType = const Value.absent(),
+    this.fileSize = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+  });
+  ReceiptsCompanion.insert({
+    this.id = const Value.absent(),
+    required int expenseId,
+    this.localPath = const Value.absent(),
+    this.remoteUrl = const Value.absent(),
+    required String fileName,
+    required String fileType,
+    this.fileSize = const Value.absent(),
+    this.uploadStatus = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.uploadedAt = const Value.absent(),
+  })  : expenseId = Value(expenseId),
+        fileName = Value(fileName),
+        fileType = Value(fileType);
+  static Insertable<Receipt> custom({
+    Expression<int>? id,
+    Expression<int>? expenseId,
+    Expression<String>? localPath,
+    Expression<String>? remoteUrl,
+    Expression<String>? fileName,
+    Expression<String>? fileType,
+    Expression<int>? fileSize,
+    Expression<String>? uploadStatus,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? uploadedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expenseId != null) 'expense_id': expenseId,
+      if (localPath != null) 'local_path': localPath,
+      if (remoteUrl != null) 'remote_url': remoteUrl,
+      if (fileName != null) 'file_name': fileName,
+      if (fileType != null) 'file_type': fileType,
+      if (fileSize != null) 'file_size': fileSize,
+      if (uploadStatus != null) 'upload_status': uploadStatus,
+      if (createdAt != null) 'created_at': createdAt,
+      if (uploadedAt != null) 'uploaded_at': uploadedAt,
+    });
+  }
+
+  ReceiptsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? expenseId,
+      Value<String?>? localPath,
+      Value<String?>? remoteUrl,
+      Value<String>? fileName,
+      Value<String>? fileType,
+      Value<int?>? fileSize,
+      Value<String>? uploadStatus,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? uploadedAt}) {
+    return ReceiptsCompanion(
+      id: id ?? this.id,
+      expenseId: expenseId ?? this.expenseId,
+      localPath: localPath ?? this.localPath,
+      remoteUrl: remoteUrl ?? this.remoteUrl,
+      fileName: fileName ?? this.fileName,
+      fileType: fileType ?? this.fileType,
+      fileSize: fileSize ?? this.fileSize,
+      uploadStatus: uploadStatus ?? this.uploadStatus,
+      createdAt: createdAt ?? this.createdAt,
+      uploadedAt: uploadedAt ?? this.uploadedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (expenseId.present) {
+      map['expense_id'] = Variable<int>(expenseId.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (remoteUrl.present) {
+      map['remote_url'] = Variable<String>(remoteUrl.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (fileType.present) {
+      map['file_type'] = Variable<String>(fileType.value);
+    }
+    if (fileSize.present) {
+      map['file_size'] = Variable<int>(fileSize.value);
+    }
+    if (uploadStatus.present) {
+      map['upload_status'] = Variable<String>(uploadStatus.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (uploadedAt.present) {
+      map['uploaded_at'] = Variable<DateTime>(uploadedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReceiptsCompanion(')
+          ..write('id: $id, ')
+          ..write('expenseId: $expenseId, ')
+          ..write('localPath: $localPath, ')
+          ..write('remoteUrl: $remoteUrl, ')
+          ..write('fileName: $fileName, ')
+          ..write('fileType: $fileType, ')
+          ..write('fileSize: $fileSize, ')
+          ..write('uploadStatus: $uploadStatus, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('uploadedAt: $uploadedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SyncQueueTable extends SyncQueue
     with TableInfo<$SyncQueueTable, SyncQueueData> {
   @override
@@ -3130,6 +3767,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UserProfilesTable userProfiles = $UserProfilesTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
+  late final $ReceiptsTable receipts = $ReceiptsTable(this);
   late final $SyncQueueTable syncQueue = $SyncQueueTable(this);
   late final Index idxOrganizationsStatus = Index('idx_organizations_status',
       'CREATE INDEX idx_organizations_status ON organizations (status)');
@@ -3171,6 +3809,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       'CREATE INDEX idx_sync_queue_table ON sync_queue (target_table)');
   late final CategoryDao categoryDao = CategoryDao(this as AppDatabase);
   late final ExpenseDao expenseDao = ExpenseDao(this as AppDatabase);
+  late final ReceiptDao receiptDao = ReceiptDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3180,6 +3819,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         userProfiles,
         categories,
         expenses,
+        receipts,
         syncQueue,
         idxOrganizationsStatus,
         idxOrganizationsManagerEmail,
@@ -3200,6 +3840,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         idxSyncQueueCreated,
         idxSyncQueueTable
       ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
+        [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('expenses',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('receipts', kind: UpdateKind.delete),
+            ],
+          ),
+        ],
+      );
 }
 
 typedef $$OrganizationsTableCreateCompanionBuilder = OrganizationsCompanion
@@ -3208,9 +3860,11 @@ typedef $$OrganizationsTableCreateCompanionBuilder = OrganizationsCompanion
   Value<String?> serverId,
   required String name,
   required String managerEmail,
+  Value<String?> managerName,
   Value<String> status,
-  Value<String> currency,
-  Value<String> timezone,
+  Value<int?> fiscalYearStart,
+  Value<DateTime?> approvedAt,
+  Value<String?> createdBy,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3222,9 +3876,11 @@ typedef $$OrganizationsTableUpdateCompanionBuilder = OrganizationsCompanion
   Value<String?> serverId,
   Value<String> name,
   Value<String> managerEmail,
+  Value<String?> managerName,
   Value<String> status,
-  Value<String> currency,
-  Value<String> timezone,
+  Value<int?> fiscalYearStart,
+  Value<DateTime?> approvedAt,
+  Value<String?> createdBy,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3273,14 +3929,21 @@ class $$OrganizationsTableFilterComposer
   ColumnFilters<String> get managerEmail => $composableBuilder(
       column: $table.managerEmail, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get currency => $composableBuilder(
-      column: $table.currency, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart,
+      builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get timezone => $composableBuilder(
-      column: $table.timezone, builder: (column) => ColumnFilters(column));
+  ColumnFilters<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -3338,14 +4001,21 @@ class $$OrganizationsTableOrderingComposer
       column: $table.managerEmail,
       builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get status => $composableBuilder(
       column: $table.status, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get currency => $composableBuilder(
-      column: $table.currency, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart,
+      builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get timezone => $composableBuilder(
-      column: $table.timezone, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -3381,14 +4051,20 @@ class $$OrganizationsTableAnnotationComposer
   GeneratedColumn<String> get managerEmail => $composableBuilder(
       column: $table.managerEmail, builder: (column) => column);
 
+  GeneratedColumn<String> get managerName => $composableBuilder(
+      column: $table.managerName, builder: (column) => column);
+
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
-  GeneratedColumn<String> get currency =>
-      $composableBuilder(column: $table.currency, builder: (column) => column);
+  GeneratedColumn<int> get fiscalYearStart => $composableBuilder(
+      column: $table.fiscalYearStart, builder: (column) => column);
 
-  GeneratedColumn<String> get timezone =>
-      $composableBuilder(column: $table.timezone, builder: (column) => column);
+  GeneratedColumn<DateTime> get approvedAt => $composableBuilder(
+      column: $table.approvedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3451,9 +4127,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             Value<String?> serverId = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> managerEmail = const Value.absent(),
+            Value<String?> managerName = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String> currency = const Value.absent(),
-            Value<String> timezone = const Value.absent(),
+            Value<int?> fiscalYearStart = const Value.absent(),
+            Value<DateTime?> approvedAt = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3464,9 +4142,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             serverId: serverId,
             name: name,
             managerEmail: managerEmail,
+            managerName: managerName,
             status: status,
-            currency: currency,
-            timezone: timezone,
+            fiscalYearStart: fiscalYearStart,
+            approvedAt: approvedAt,
+            createdBy: createdBy,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3477,9 +4157,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             Value<String?> serverId = const Value.absent(),
             required String name,
             required String managerEmail,
+            Value<String?> managerName = const Value.absent(),
             Value<String> status = const Value.absent(),
-            Value<String> currency = const Value.absent(),
-            Value<String> timezone = const Value.absent(),
+            Value<int?> fiscalYearStart = const Value.absent(),
+            Value<DateTime?> approvedAt = const Value.absent(),
+            Value<String?> createdBy = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3490,9 +4172,11 @@ class $$OrganizationsTableTableManager extends RootTableManager<
             serverId: serverId,
             name: name,
             managerEmail: managerEmail,
+            managerName: managerName,
             status: status,
-            currency: currency,
-            timezone: timezone,
+            fiscalYearStart: fiscalYearStart,
+            approvedAt: approvedAt,
+            createdBy: createdBy,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3551,10 +4235,10 @@ typedef $$UserProfilesTableCreateCompanionBuilder = UserProfilesCompanion
   required String email,
   Value<String?> fullName,
   Value<String> role,
-  Value<bool> isActive,
+  Value<String?> status,
+  Value<String?> avatarUrl,
   Value<String> settings,
   Value<DateTime?> lastSyncAt,
-  Value<String?> syncToken,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3568,10 +4252,10 @@ typedef $$UserProfilesTableUpdateCompanionBuilder = UserProfilesCompanion
   Value<String> email,
   Value<String?> fullName,
   Value<String> role,
-  Value<bool> isActive,
+  Value<String?> status,
+  Value<String?> avatarUrl,
   Value<String> settings,
   Value<DateTime?> lastSyncAt,
-  Value<String?> syncToken,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
   Value<DateTime?> syncedAt,
@@ -3622,17 +4306,17 @@ class $$UserProfilesTableFilterComposer
   ColumnFilters<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get settings => $composableBuilder(
       column: $table.settings, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get syncToken => $composableBuilder(
-      column: $table.syncToken, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnFilters(column));
@@ -3691,17 +4375,17 @@ class $$UserProfilesTableOrderingComposer
   ColumnOrderings<String> get role => $composableBuilder(
       column: $table.role, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<bool> get isActive => $composableBuilder(
-      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get status => $composableBuilder(
+      column: $table.status, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get avatarUrl => $composableBuilder(
+      column: $table.avatarUrl, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get settings => $composableBuilder(
       column: $table.settings, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get syncToken => $composableBuilder(
-      column: $table.syncToken, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
       column: $table.createdAt, builder: (column) => ColumnOrderings(column));
@@ -3760,17 +4444,17 @@ class $$UserProfilesTableAnnotationComposer
   GeneratedColumn<String> get role =>
       $composableBuilder(column: $table.role, builder: (column) => column);
 
-  GeneratedColumn<bool> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarUrl =>
+      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
 
   GeneratedColumn<String> get settings =>
       $composableBuilder(column: $table.settings, builder: (column) => column);
 
   GeneratedColumn<DateTime> get lastSyncAt => $composableBuilder(
       column: $table.lastSyncAt, builder: (column) => column);
-
-  GeneratedColumn<String> get syncToken =>
-      $composableBuilder(column: $table.syncToken, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -3834,10 +4518,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             Value<String> email = const Value.absent(),
             Value<String?> fullName = const Value.absent(),
             Value<String> role = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
             Value<String> settings = const Value.absent(),
             Value<DateTime?> lastSyncAt = const Value.absent(),
-            Value<String?> syncToken = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3850,10 +4534,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             email: email,
             fullName: fullName,
             role: role,
-            isActive: isActive,
+            status: status,
+            avatarUrl: avatarUrl,
             settings: settings,
             lastSyncAt: lastSyncAt,
-            syncToken: syncToken,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -3866,10 +4550,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             required String email,
             Value<String?> fullName = const Value.absent(),
             Value<String> role = const Value.absent(),
-            Value<bool> isActive = const Value.absent(),
+            Value<String?> status = const Value.absent(),
+            Value<String?> avatarUrl = const Value.absent(),
             Value<String> settings = const Value.absent(),
             Value<DateTime?> lastSyncAt = const Value.absent(),
-            Value<String?> syncToken = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<DateTime?> syncedAt = const Value.absent(),
@@ -3882,10 +4566,10 @@ class $$UserProfilesTableTableManager extends RootTableManager<
             email: email,
             fullName: fullName,
             role: role,
-            isActive: isActive,
+            status: status,
+            avatarUrl: avatarUrl,
             settings: settings,
             lastSyncAt: lastSyncAt,
-            syncToken: syncToken,
             createdAt: createdAt,
             updatedAt: updatedAt,
             syncedAt: syncedAt,
@@ -4371,6 +5055,21 @@ final class $$ExpensesTableReferences
     return ProcessedTableManager(
         manager.$state.copyWith(prefetchedData: [item]));
   }
+
+  static MultiTypedResultKey<$ReceiptsTable, List<Receipt>> _receiptsRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.receipts,
+          aliasName:
+              $_aliasNameGenerator(db.expenses.id, db.receipts.expenseId));
+
+  $$ReceiptsTableProcessedTableManager get receiptsRefs {
+    final manager = $$ReceiptsTableTableManager($_db, $_db.receipts)
+        .filter((f) => f.expenseId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_receiptsRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$ExpensesTableFilterComposer
@@ -4444,6 +5143,27 @@ class $$ExpensesTableFilterComposer
                   $removeJoinBuilderFromRootComposer,
             ));
     return composer;
+  }
+
+  Expression<bool> receiptsRefs(
+      Expression<bool> Function($$ReceiptsTableFilterComposer f) f) {
+    final $$ReceiptsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.receipts,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReceiptsTableFilterComposer(
+              $db: $db,
+              $table: $db.receipts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
   }
 }
 
@@ -4591,6 +5311,27 @@ class $$ExpensesTableAnnotationComposer
             ));
     return composer;
   }
+
+  Expression<T> receiptsRefs<T extends Object>(
+      Expression<T> Function($$ReceiptsTableAnnotationComposer a) f) {
+    final $$ReceiptsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.receipts,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReceiptsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.receipts,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$ExpensesTableTableManager extends RootTableManager<
@@ -4604,7 +5345,7 @@ class $$ExpensesTableTableManager extends RootTableManager<
     $$ExpensesTableUpdateCompanionBuilder,
     (Expense, $$ExpensesTableReferences),
     Expense,
-    PrefetchHooks Function({bool categoryId})> {
+    PrefetchHooks Function({bool categoryId, bool receiptsRefs})> {
   $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
       : super(TableManagerState(
           db: db,
@@ -4687,10 +5428,10 @@ class $$ExpensesTableTableManager extends RootTableManager<
               .map((e) =>
                   (e.readTable(table), $$ExpensesTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({categoryId = false}) {
+          prefetchHooksCallback: ({categoryId = false, receiptsRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [if (receiptsRefs) db.receipts],
               addJoins: <
                   T extends TableManagerState<
                       dynamic,
@@ -4718,7 +5459,20 @@ class $$ExpensesTableTableManager extends RootTableManager<
                 return state;
               },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (receiptsRefs)
+                    await $_getPrefetchedData<Expense, $ExpensesTable, Receipt>(
+                        currentTable: table,
+                        referencedTable:
+                            $$ExpensesTableReferences._receiptsRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ExpensesTableReferences(db, table, p0)
+                                .receiptsRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.expenseId == item.id),
+                        typedResults: items)
+                ];
               },
             );
           },
@@ -4736,7 +5490,347 @@ typedef $$ExpensesTableProcessedTableManager = ProcessedTableManager<
     $$ExpensesTableUpdateCompanionBuilder,
     (Expense, $$ExpensesTableReferences),
     Expense,
-    PrefetchHooks Function({bool categoryId})>;
+    PrefetchHooks Function({bool categoryId, bool receiptsRefs})>;
+typedef $$ReceiptsTableCreateCompanionBuilder = ReceiptsCompanion Function({
+  Value<int> id,
+  required int expenseId,
+  Value<String?> localPath,
+  Value<String?> remoteUrl,
+  required String fileName,
+  required String fileType,
+  Value<int?> fileSize,
+  Value<String> uploadStatus,
+  Value<DateTime> createdAt,
+  Value<DateTime?> uploadedAt,
+});
+typedef $$ReceiptsTableUpdateCompanionBuilder = ReceiptsCompanion Function({
+  Value<int> id,
+  Value<int> expenseId,
+  Value<String?> localPath,
+  Value<String?> remoteUrl,
+  Value<String> fileName,
+  Value<String> fileType,
+  Value<int?> fileSize,
+  Value<String> uploadStatus,
+  Value<DateTime> createdAt,
+  Value<DateTime?> uploadedAt,
+});
+
+final class $$ReceiptsTableReferences
+    extends BaseReferences<_$AppDatabase, $ReceiptsTable, Receipt> {
+  $$ReceiptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ExpensesTable _expenseIdTable(_$AppDatabase db) => db.expenses
+      .createAlias($_aliasNameGenerator(db.receipts.expenseId, db.expenses.id));
+
+  $$ExpensesTableProcessedTableManager get expenseId {
+    final $_column = $_itemColumn<int>('expense_id')!;
+
+    final manager = $$ExpensesTableTableManager($_db, $_db.expenses)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$ReceiptsTableFilterComposer
+    extends Composer<_$AppDatabase, $ReceiptsTable> {
+  $$ReceiptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+      column: $table.localPath, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get remoteUrl => $composableBuilder(
+      column: $table.remoteUrl, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+      column: $table.fileName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get fileType => $composableBuilder(
+      column: $table.fileType, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get fileSize => $composableBuilder(
+      column: $table.fileSize, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uploadStatus => $composableBuilder(
+      column: $table.uploadStatus, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get uploadedAt => $composableBuilder(
+      column: $table.uploadedAt, builder: (column) => ColumnFilters(column));
+
+  $$ExpensesTableFilterComposer get expenseId {
+    final $$ExpensesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpensesTableFilterComposer(
+              $db: $db,
+              $table: $db.expenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ReceiptsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReceiptsTable> {
+  $$ReceiptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+      column: $table.localPath, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get remoteUrl => $composableBuilder(
+      column: $table.remoteUrl, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+      column: $table.fileName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get fileType => $composableBuilder(
+      column: $table.fileType, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get fileSize => $composableBuilder(
+      column: $table.fileSize, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uploadStatus => $composableBuilder(
+      column: $table.uploadStatus,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get uploadedAt => $composableBuilder(
+      column: $table.uploadedAt, builder: (column) => ColumnOrderings(column));
+
+  $$ExpensesTableOrderingComposer get expenseId {
+    final $$ExpensesTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpensesTableOrderingComposer(
+              $db: $db,
+              $table: $db.expenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ReceiptsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReceiptsTable> {
+  $$ReceiptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<String> get remoteUrl =>
+      $composableBuilder(column: $table.remoteUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+
+  GeneratedColumn<String> get fileType =>
+      $composableBuilder(column: $table.fileType, builder: (column) => column);
+
+  GeneratedColumn<int> get fileSize =>
+      $composableBuilder(column: $table.fileSize, builder: (column) => column);
+
+  GeneratedColumn<String> get uploadStatus => $composableBuilder(
+      column: $table.uploadStatus, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get uploadedAt => $composableBuilder(
+      column: $table.uploadedAt, builder: (column) => column);
+
+  $$ExpensesTableAnnotationComposer get expenseId {
+    final $$ExpensesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenses,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpensesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.expenses,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ReceiptsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ReceiptsTable,
+    Receipt,
+    $$ReceiptsTableFilterComposer,
+    $$ReceiptsTableOrderingComposer,
+    $$ReceiptsTableAnnotationComposer,
+    $$ReceiptsTableCreateCompanionBuilder,
+    $$ReceiptsTableUpdateCompanionBuilder,
+    (Receipt, $$ReceiptsTableReferences),
+    Receipt,
+    PrefetchHooks Function({bool expenseId})> {
+  $$ReceiptsTableTableManager(_$AppDatabase db, $ReceiptsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReceiptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReceiptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReceiptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> expenseId = const Value.absent(),
+            Value<String?> localPath = const Value.absent(),
+            Value<String?> remoteUrl = const Value.absent(),
+            Value<String> fileName = const Value.absent(),
+            Value<String> fileType = const Value.absent(),
+            Value<int?> fileSize = const Value.absent(),
+            Value<String> uploadStatus = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> uploadedAt = const Value.absent(),
+          }) =>
+              ReceiptsCompanion(
+            id: id,
+            expenseId: expenseId,
+            localPath: localPath,
+            remoteUrl: remoteUrl,
+            fileName: fileName,
+            fileType: fileType,
+            fileSize: fileSize,
+            uploadStatus: uploadStatus,
+            createdAt: createdAt,
+            uploadedAt: uploadedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int expenseId,
+            Value<String?> localPath = const Value.absent(),
+            Value<String?> remoteUrl = const Value.absent(),
+            required String fileName,
+            required String fileType,
+            Value<int?> fileSize = const Value.absent(),
+            Value<String> uploadStatus = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> uploadedAt = const Value.absent(),
+          }) =>
+              ReceiptsCompanion.insert(
+            id: id,
+            expenseId: expenseId,
+            localPath: localPath,
+            remoteUrl: remoteUrl,
+            fileName: fileName,
+            fileType: fileType,
+            fileSize: fileSize,
+            uploadStatus: uploadStatus,
+            createdAt: createdAt,
+            uploadedAt: uploadedAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) =>
+                  (e.readTable(table), $$ReceiptsTableReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: ({expenseId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (expenseId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.expenseId,
+                    referencedTable:
+                        $$ReceiptsTableReferences._expenseIdTable(db),
+                    referencedColumn:
+                        $$ReceiptsTableReferences._expenseIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$ReceiptsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ReceiptsTable,
+    Receipt,
+    $$ReceiptsTableFilterComposer,
+    $$ReceiptsTableOrderingComposer,
+    $$ReceiptsTableAnnotationComposer,
+    $$ReceiptsTableCreateCompanionBuilder,
+    $$ReceiptsTableUpdateCompanionBuilder,
+    (Receipt, $$ReceiptsTableReferences),
+    Receipt,
+    PrefetchHooks Function({bool expenseId})>;
 typedef $$SyncQueueTableCreateCompanionBuilder = SyncQueueCompanion Function({
   Value<int> id,
   required String syncId,
@@ -5004,6 +6098,8 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$ExpensesTableTableManager get expenses =>
       $$ExpensesTableTableManager(_db, _db.expenses);
+  $$ReceiptsTableTableManager get receipts =>
+      $$ReceiptsTableTableManager(_db, _db.receipts);
   $$SyncQueueTableTableManager get syncQueue =>
       $$SyncQueueTableTableManager(_db, _db.syncQueue);
 }

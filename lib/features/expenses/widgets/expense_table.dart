@@ -4,7 +4,7 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_detail_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/edit_expense_dialog.dart';
@@ -14,12 +14,11 @@ import 'package:drift/drift.dart' as drift;
 import 'package:expense_tracking_desktop_app/features/shared/widgets/common/success_snackbar.dart';
 
 class ExpenseTable extends ConsumerWidget {
-  final List<ExpenseWithCategory> expenses;
-
   const ExpenseTable({
-    super.key,
     required this.expenses,
+    super.key,
   });
+  final List<ExpenseWithCategory> expenses;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,11 +28,14 @@ class ExpenseTable extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.receipt_long_outlined,
-                size: 64, color: colorScheme.onSurfaceVariant.withAlpha(128)),
+            Icon(
+              Icons.receipt_long_outlined,
+              size: 64,
+              color: colorScheme.onSurfaceVariant.withAlpha(128),
+            ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No expenses found',
+              AppLocalizations.of(context)!.titleNoExpenses,
               style: AppTextStyles.heading3
                   .copyWith(color: colorScheme.onSurfaceVariant),
             ),
@@ -44,7 +46,7 @@ class ExpenseTable extends ConsumerWidget {
 
     return Column(
       children: [
-        _buildTableHeader(colorScheme),
+        _buildTableHeader(context, colorScheme),
         const SizedBox(height: AppSpacing.sm),
         Expanded(
           child: ListView.separated(
@@ -66,37 +68,51 @@ class ExpenseTable extends ConsumerWidget {
     );
   }
 
-  Widget _buildTableHeader(ColorScheme colorScheme) {
+  Widget _buildTableHeader(BuildContext context, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       decoration: BoxDecoration(
         border: Border(bottom: BorderSide(color: colorScheme.outlineVariant)),
       ),
       child: Row(
         children: [
           Expanded(
-              flex: 2,
-              child: Text(AppStrings.labelDate, style: AppTextStyles.label)),
+            flex: 2,
+            child: Text(AppLocalizations.of(context)!.labelDate,
+                style: AppTextStyles.label),
+          ),
           Expanded(
-              flex: 2,
-              child:
-                  Text(AppStrings.labelCategory, style: AppTextStyles.label)),
+            flex: 2,
+            child: Text(AppLocalizations.of(context)!.labelCategory,
+                style: AppTextStyles.label),
+          ),
           Expanded(
-              flex: 3,
-              child: Text(AppStrings.labelDescription,
-                  style: AppTextStyles.label)),
+            flex: 3,
+            child: Text(
+              AppLocalizations.of(context)!.labelDescription,
+              style: AppTextStyles.label,
+            ),
+          ),
           Expanded(
-              flex: 2,
-              child: Text(AppStrings.labelAmount, style: AppTextStyles.label)),
+            flex: 2,
+            child: Text(AppLocalizations.of(context)!.labelAmount,
+                style: AppTextStyles.label),
+          ),
           SizedBox(
-              width: 100,
-              child: Text('Actions',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.end)),
+            width: 100,
+            child: Text(
+              AppLocalizations.of(context)!.colActions,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.end,
+            ),
+          ),
         ],
       ),
     );
@@ -112,7 +128,10 @@ class ExpenseTable extends ConsumerWidget {
   }
 
   void _showEditDialog(
-      BuildContext context, WidgetRef ref, ExpenseWithCategory item) {
+    BuildContext context,
+    WidgetRef ref,
+    ExpenseWithCategory item,
+  ) {
     final expenseService = ref.read(expenseServiceProvider);
     final categoryRepository = ref.read(categoryRepositoryProvider);
 
@@ -127,21 +146,27 @@ class ExpenseTable extends ConsumerWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, WidgetRef ref,
-      ExpenseWithCategory item, ColorScheme colorScheme) {
+  void _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    ExpenseWithCategory item,
+    ColorScheme colorScheme,
+  ) {
     final expenseService = ref.read(expenseServiceProvider);
 
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colorScheme.surface,
-        title: Text(AppStrings.titleDeleteTransaction,
-            style: AppTextStyles.heading3),
-        content: const Text(AppStrings.descDeleteTransaction),
+        title: Text(
+          AppLocalizations.of(context)!.titleDeleteTransaction,
+          style: AppTextStyles.heading3,
+        ),
+        content: Text(AppLocalizations.of(context)!.descDeleteTransaction),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(AppStrings.btnCancel),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -151,36 +176,40 @@ class ExpenseTable extends ConsumerWidget {
 
                 if (context.mounted) {
                   SuccessSnackbar.show(
-                      context, AppStrings.msgTransactionDeleted,
-                      onUndo: () async {
-                    try {
-                      final expense = ExpensesCompanion(
-                        amount: drift.Value(item.expense.amount),
-                        date: drift.Value(item.expense.date),
-                        description: drift.Value(item.expense.description),
-                        categoryId: drift.Value(item.expense.categoryId),
-                        createdAt: drift.Value(item.expense.createdAt),
-                      );
-                      await expenseService.createExpense(expense);
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                                'Failed to restore expense: ${e.toString()}'),
-                            backgroundColor: colorScheme.error,
-                          ),
+                    context,
+                    AppLocalizations.of(context)!.msgTransactionDeleted,
+                    onUndo: () async {
+                      try {
+                        final expense = ExpensesCompanion(
+                          amount: drift.Value(item.expense.amount),
+                          date: drift.Value(item.expense.date),
+                          description: drift.Value(item.expense.description),
+                          categoryId: drift.Value(item.expense.categoryId),
+                          createdAt: drift.Value(item.expense.createdAt),
                         );
+                        await expenseService.createExpense(expense);
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(context)!
+                                    .errRestoreExpense(e.toString()),
+                              ),
+                              backgroundColor: colorScheme.error,
+                            ),
+                          );
+                        }
                       }
-                    }
-                  });
+                    },
+                  );
                 }
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content:
-                          Text('Failed to delete expense: ${e.toString()}'),
+                      content: Text(AppLocalizations.of(context)!
+                          .errDeleteExpense(e.toString())),
                       backgroundColor: colorScheme.error,
                     ),
                   );
@@ -188,7 +217,7 @@ class ExpenseTable extends ConsumerWidget {
               }
             },
             style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
-            child: const Text(AppStrings.btnDelete),
+            child: Text(AppLocalizations.of(context)!.btnDelete),
           ),
         ],
       ),
@@ -197,17 +226,16 @@ class ExpenseTable extends ConsumerWidget {
 }
 
 class _ExpenseRow extends StatelessWidget {
-  final ExpenseWithCategory item;
-  final VoidCallback onTap;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-
   const _ExpenseRow({
     required this.item,
     required this.onTap,
     required this.onEdit,
     required this.onDelete,
   });
+  final ExpenseWithCategory item;
+  final VoidCallback onTap;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +248,9 @@ class _ExpenseRow extends StatelessWidget {
       hoverColor: colorScheme.primary.withValues(alpha: 0.03),
       child: Container(
         padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
         child: Row(
           children: [
             Expanded(
@@ -237,7 +267,9 @@ class _ExpenseRow extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md, vertical: 6),
+                    horizontal: AppSpacing.md,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: categoryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppSpacing.xl - 4),
@@ -299,7 +331,8 @@ class _ExpenseRow extends StatelessWidget {
                           ),
                           const SizedBox(width: 2),
                           Text(
-                            'Reimb',
+                            AppLocalizations.of(context)!
+                                .labelReimbursableShort,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -313,7 +346,7 @@ class _ExpenseRow extends StatelessWidget {
                   if (item.expense.receiptPath != null) ...[
                     const SizedBox(width: AppSpacing.sm),
                     Tooltip(
-                      message: AppStrings.msgReceiptAttached,
+                      message: AppLocalizations.of(context)!.msgReceiptAttached,
                       child: Icon(
                         Icons.attachment,
                         size: 14,
@@ -327,7 +360,7 @@ class _ExpenseRow extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Text(
-                "${item.expense.amount.toStringAsFixed(2)} ${AppStrings.currency}",
+                '${item.expense.amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w500,
                   color: colorScheme.onSurface,
@@ -340,25 +373,29 @@ class _ExpenseRow extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.edit_outlined,
-                        size: AppSpacing.iconSm,
-                        color: colorScheme.primary,
-                        semanticLabel: 'Edit'),
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      size: AppSpacing.iconSm,
+                      color: colorScheme.primary,
+                      semanticLabel: AppLocalizations.of(context)!.labelEdit,
+                    ),
                     onPressed: onEdit,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    tooltip: 'Edit expense',
+                    tooltip: AppLocalizations.of(context)!.tooltipEditExpense,
                   ),
                   const SizedBox(width: AppSpacing.lg),
                   IconButton(
-                    icon: Icon(Icons.delete_outline,
-                        size: AppSpacing.iconSm,
-                        color: colorScheme.error,
-                        semanticLabel: 'Delete'),
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: AppSpacing.iconSm,
+                      color: colorScheme.error,
+                      semanticLabel: AppLocalizations.of(context)!.labelDelete,
+                    ),
                     onPressed: onDelete,
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
-                    tooltip: 'Delete expense',
+                    tooltip: AppLocalizations.of(context)!.tooltipDeleteExpense,
                   ),
                 ],
               ),

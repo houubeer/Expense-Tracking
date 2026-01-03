@@ -7,9 +7,9 @@ import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// ViewModel for backup and restore operations
 class BackupRestoreViewModel {
-  final Ref _ref;
 
   BackupRestoreViewModel(this._ref);
+  final Ref _ref;
 
   /// Access backup service
   IBackupService get _backupService => _ref.read(backupServiceProvider);
@@ -74,7 +74,6 @@ class BackupRestoreViewModel {
         dialogTitle: AppStrings.labelSelectBackupFile,
         type: FileType.custom,
         allowedExtensions: ['sqlite'],
-        allowMultiple: false,
       );
 
       if (result == null || result.files.isEmpty) {
@@ -134,12 +133,12 @@ class BackupRestoreViewModel {
 
   /// Get info about a backup file
   Future<BackupInfo?> getBackupInfo(String backupPath) async {
-    return await _backupService.getBackupInfo(backupPath);
+    return _backupService.getBackupInfo(backupPath);
   }
 
   /// Validate a backup file
   Future<bool> validateBackup(String backupPath) async {
-    return await _backupService.validateBackup(backupPath);
+    return _backupService.validateBackup(backupPath);
   }
 
   /// Clear any error messages

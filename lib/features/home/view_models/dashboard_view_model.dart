@@ -6,19 +6,28 @@ import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_p
 import 'package:rxdart/rxdart.dart';
 
 class DashboardViewModel extends ChangeNotifier {
-  final IDashboardBudgetReader _budgetReader;
-  final IExpenseService _expenseService;
 
   DashboardViewModel(this._budgetReader, this._expenseService);
+  final IDashboardBudgetReader _budgetReader;
+  final IExpenseService _expenseService;
 
   /// Combines all streams into a single DashboardState stream
   /// This flattens the nested StreamBuilders into one clean stream
   Stream<DashboardState> watchDashboardState() {
-    return Rx.combineLatest4(
-      _budgetReader.watchActiveCategoryBudgets(),
-      _budgetReader.watchTotalBudget(),
-      _budgetReader.watchTotalSpent(),
-      _expenseService.watchExpensesWithCategory(),
+    // Ensure each source stream emits an initial value so combineLatest
+    // can produce an initial DashboardState immediately instead of
+    // waiting for all streams to emit (which can cause the UI to show
+    // an indefinite loading state if one source is delayed).
+    final budgets$ = _budgetReader.watchActiveCategoryBudgets().startWith(<CategoryBudgetView>[]);
+    final totalBudget$ = _budgetReader.watchTotalBudget().startWith(0.0);
+    final totalExpenses$ = _budgetReader.watchTotalSpent().startWith(0.0);
+    final expenses$ = _expenseService.watchExpensesWithCategory().startWith(<ExpenseWithCategory>[]);
+
+    return Rx.combineLatest4<List<CategoryBudgetView>, double, double, List<ExpenseWithCategory>, DashboardState>(
+      budgets$,
+      totalBudget$,
+      totalExpenses$,
+      expenses$,
       (
         List<CategoryBudgetView> budgets,
         double totalBudget,

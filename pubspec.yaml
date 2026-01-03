@@ -24,12 +24,14 @@ dependencies:
   sqlite3: ^2.4.0
   path_provider: ^2.1.1
   path: ^1.8.3
+  shared_preferences: ^2.2.2
 
   # UI Components & Icons
   cupertino_icons: ^1.0.6
   google_fonts: ^6.1.0
-  intl: ^0.19.0
-
+  intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
   # Charts & Data Visualization
   fl_chart: ^0.65.0
 
@@ -48,6 +50,8 @@ dependencies:
   uuid: ^4.5.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  # PDF generation for exports
+  pdf: ^3.9.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +75,7 @@ dev_dependencies:
   faker: ^2.2.0
 
 # App Icons Configuration
+  matcher: any
 flutter_icons:
   android: false
   ios: false
@@ -88,6 +93,7 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  generate: true
 
   # Assets
   assets:

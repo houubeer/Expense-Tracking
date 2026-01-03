@@ -43,6 +43,14 @@ abstract class IBackupService {
 
 /// Information about a backup file.
 class BackupInfo {
+
+  const BackupInfo({
+    required this.path,
+    required this.fileName,
+    required this.sizeInBytes,
+    required this.createdAt,
+    required this.isValid,
+  });
   /// The file path of the backup.
   final String path;
 
@@ -58,14 +66,6 @@ class BackupInfo {
   /// Whether the backup is valid.
   final bool isValid;
 
-  const BackupInfo({
-    required this.path,
-    required this.fileName,
-    required this.sizeInBytes,
-    required this.createdAt,
-    required this.isValid,
-  });
-
   /// Returns a human-readable file size.
   String get formattedSize {
     if (sizeInBytes < 1024) return '$sizeInBytes B';
@@ -78,10 +78,10 @@ class BackupInfo {
 
 /// Exception thrown when backup operations fail.
 class BackupException implements Exception {
-  final String message;
-  final dynamic originalError;
 
   BackupException(this.message, {this.originalError});
+  final String message;
+  final dynamic originalError;
 
   @override
   String toString() => 'BackupException: $message';
@@ -89,10 +89,10 @@ class BackupException implements Exception {
 
 /// Exception thrown when restore operations fail.
 class RestoreException implements Exception {
-  final String message;
-  final dynamic originalError;
 
   RestoreException(this.message, {this.originalError});
+  final String message;
+  final dynamic originalError;
 
   @override
   String toString() => 'RestoreException: $message';

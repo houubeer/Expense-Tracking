@@ -1,5 +1,6 @@
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/manager_dashboard_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/layout/dashboard_layout.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/layout/page_header.dart';
@@ -13,6 +14,9 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/expense_details_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/add_comment_dialog.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/manager_dashboard_view_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/constants/spacing.dart';
+import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/employee_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
@@ -27,12 +31,11 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/e
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
-  final void Function(String) onNavigate;
-
   const ManagerDashboardScreen({
-    super.key,
     required this.onNavigate,
+    super.key,
   });
+  final void Function(String) onNavigate;
 
   @override
   State<ManagerDashboardScreen> createState() => _ManagerDashboardScreenState();
@@ -157,44 +160,45 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       children: [
         SummaryCard(
           icon: Icons.people,
-          title: 'Total Employees',
+          title: AppLocalizations.of(context)!.kpiTotalEmployees,
           value: '${stats['totalEmployees']}',
           color: colorScheme.primary,
-          subtitle: '${stats['activeEmployees']} active',
+          subtitle:
+              '${stats['activeEmployees']} ${AppLocalizations.of(context)!.labelStatusActive}',
         ),
         SummaryCard(
           icon: Icons.attach_money,
-          title: 'Expenses (Month)',
+          title: AppLocalizations.of(context)!.kpiTotalExpenses,
           value:
-              '${(stats['totalExpensesThisMonth'] as double).toStringAsFixed(0)} DZD',
+              '${(stats['totalExpensesThisMonth'] as double).toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency}',
           color: colorScheme.tertiary,
         ),
         SummaryCard(
           icon: Icons.pending_actions,
-          title: 'Pending',
+          title: AppLocalizations.of(context)!.kpiPendingApprovals,
           value: '${stats['pendingApprovals']}',
           color: Colors.orange,
         ),
         SummaryCard(
           icon: Icons.check_circle,
-          title: 'Approved',
+          title: AppLocalizations.of(context)!.statusGood,
           value: '${stats['approvedExpenses']}',
           color: Colors.green,
         ),
         SummaryCard(
           icon: Icons.cancel,
-          title: 'Rejected',
+          title: AppLocalizations.of(context)!.msgExpenseRejected,
           value: '${stats['rejectedExpenses']}',
           color: Colors.red,
         ),
         SummaryCard(
           icon: Icons.account_balance_wallet,
-          title: 'Budget',
+          title: AppLocalizations.of(context)!.labelBudget,
           value:
               '${(stats['usedBudget'] as double).toStringAsFixed(0)} / ${(stats['totalBudget'] as double).toStringAsFixed(0)}',
           color: colorScheme.secondary,
           subtitle:
-              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} DZD left',
+              '${(stats['remainingBudget'] as double).toStringAsFixed(0)} ${AppLocalizations.of(context)!.currency} ${AppLocalizations.of(context)!.labelRemaining}',
         ),
       ],
     );
@@ -358,14 +362,17 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   }
 
   void _showAddEmployeeDialog(
-      BuildContext context, ManagerDashboardViewModel viewModel) {
+    BuildContext context,
+    ManagerDashboardViewModel viewModel,
+  ) {
     showDialog<void>(
       context: context,
       builder: (context) => AddEmployeeForm(
         onSubmit: (employee) async {
           await viewModel.addEmployee(employee);
           if (mounted) {
-            _showMessage('Employee ${employee.name} added successfully');
+            _showMessage(
+                AppLocalizations.of(context)!.msgEmployeeAdded(employee.name));
           }
         },
       ),
@@ -384,12 +391,15 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         onApprove: () async {
           Navigator.of(context).pop();
           final success = await viewModel.approveExpense(expense.id);
-          if (success && mounted) _showMessage('Expense approved');
+          if (success && mounted)
+            _showMessage(AppLocalizations.of(context)!.msgExpenseApproved);
         },
         onReject: () async {
           Navigator.of(context).pop();
-          final success = await viewModel.rejectExpense(expense.id, 'Rejected');
-          if (success && mounted) _showMessage('Expense rejected');
+          final success = await viewModel.rejectExpense(
+              expense.id, AppLocalizations.of(context)!.msgExpenseRejected);
+          if (success && mounted)
+            _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
         },
         onAddComment: () {
           Navigator.of(context).pop();
@@ -423,7 +433,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         employeeName: expense.employeeName,
         onSubmit: (comment) async {
           await viewModel.addComment(expense.id, comment);
-          if (mounted) _showMessage('Comment added successfully');
+          if (mounted)
+            _showMessage(AppLocalizations.of(context)!.msgCommentAdded);
         },
       ),
     );
@@ -448,12 +459,13 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       case 'remove':
         _showConfirmDialog(
           context,
-          'Remove Employee',
-          'Are you sure you want to remove ${employee.name}? This action cannot be undone.',
+          AppLocalizations.of(context)!.dialogTitleRemoveEmployee,
+          AppLocalizations.of(context)!.dialogDescRemoveEmployee(employee.name),
           () async {
             await viewModel.removeEmployee(employee.id);
             if (mounted) {
-              _showMessage('${employee.name} removed');
+              _showMessage(AppLocalizations.of(context)!
+                  .msgEmployeeRemoved(employee.name));
             }
           },
         );
@@ -475,14 +487,14 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(AppStrings.btnCancel),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
               onConfirm();
             },
-            child: const Text('Confirm'),
+            child: Text(AppLocalizations.of(context)!.btnConfirm),
           ),
         ],
       ),

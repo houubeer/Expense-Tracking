@@ -12,6 +12,24 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/manager_m
 /// ViewModel for Owner Dashboard
 /// Manages dashboard state, KPIs, and user interactions
 class OwnerDashboardViewModel extends ChangeNotifier {
+
+  OwnerDashboardViewModel({
+    required CompanyRepository companyRepository,
+    required ManagerRepository managerRepository,
+    required SubscriptionRepository subscriptionRepository,
+    required PlatformExpenseRepository expenseRepository,
+    required ManagerApprovalService approvalService,
+    required ExpenseAnalyticsService analyticsService,
+    required SubscriptionMetricsService metricsService,
+  })  : _companyRepository = companyRepository,
+        _managerRepository = managerRepository,
+        _subscriptionRepository = subscriptionRepository,
+        _expenseRepository = expenseRepository,
+        _approvalService = approvalService,
+        _analyticsService = analyticsService,
+        _metricsService = metricsService {
+    loadDashboardData();
+  }
   final CompanyRepository _companyRepository;
   final ManagerRepository _managerRepository;
   // ignore: unused_field
@@ -31,24 +49,6 @@ class OwnerDashboardViewModel extends ChangeNotifier {
   double _monthlyGrowth = 0.0;
   bool _isLoading = false;
   String? _error;
-
-  OwnerDashboardViewModel({
-    required CompanyRepository companyRepository,
-    required ManagerRepository managerRepository,
-    required SubscriptionRepository subscriptionRepository,
-    required PlatformExpenseRepository expenseRepository,
-    required ManagerApprovalService approvalService,
-    required ExpenseAnalyticsService analyticsService,
-    required SubscriptionMetricsService metricsService,
-  })  : _companyRepository = companyRepository,
-        _managerRepository = managerRepository,
-        _subscriptionRepository = subscriptionRepository,
-        _expenseRepository = expenseRepository,
-        _approvalService = approvalService,
-        _analyticsService = analyticsService,
-        _metricsService = metricsService {
-    loadDashboardData();
-  }
 
   // Getters
   int get totalCompanies => _totalCompanies;

@@ -10,14 +10,13 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sect
 import 'package:fl_chart/fl_chart.dart';
 
 class BudgetOverviewCard extends StatelessWidget {
-  final List<CategoryBudgetView> budgetData;
-  final int itemsToShow;
 
   const BudgetOverviewCard({
-    super.key,
-    required this.budgetData,
+    required this.budgetData, super.key,
     this.itemsToShow = 5, // Default to 5, but can be changed
   });
+  final List<CategoryBudgetView> budgetData;
+  final int itemsToShow;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +75,7 @@ class BudgetOverviewCard extends StatelessWidget {
     // Calculate "Others" total - only if they have expenses
     double othersSpent = 0;
     double othersTotal = 0;
-    for (var budget in otherBudgets) {
+    for (final budget in otherBudgets) {
       if (budget.totalSpent > 0) {
         othersSpent += budget.totalSpent;
       }
@@ -178,9 +177,9 @@ class BudgetOverviewCard extends StatelessWidget {
 }
 
 class _BudgetLegendItem extends StatelessWidget {
-  final CategoryBudgetView budgetView;
 
   const _BudgetLegendItem({required this.budgetView});
+  final CategoryBudgetView budgetView;
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +199,7 @@ class _BudgetLegendItem extends StatelessWidget {
                 color: color.withAlpha(77),
                 blurRadius: AppConfig.shadowBlurRadiusSm,
                 offset: const Offset(
-                    AppConfig.shadowOffsetX, AppConfig.shadowOffsetY),
+                    AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
               ),
             ],
           ),
@@ -256,15 +255,15 @@ class _BudgetLegendItem extends StatelessWidget {
 }
 
 class _OthersLegendItem extends StatelessWidget {
-  final List<CategoryBudgetView> otherBudgets;
-  final double othersSpent;
-  final double othersTotal;
 
   const _OthersLegendItem({
     required this.otherBudgets,
     required this.othersSpent,
     required this.othersTotal,
   });
+  final List<CategoryBudgetView> otherBudgets;
+  final double othersSpent;
+  final double othersTotal;
 
   @override
   Widget build(BuildContext context) {

@@ -48,35 +48,23 @@ class Employee {
     return name.substring(0, 1).toUpperCase();
   }
 
-  /// Create Employee from JSON (database format from user_profiles)
+  /// Create Employee from JSON (robust, supports settings/department fallback)
   factory Employee.fromJson(Map<String, dynamic> json) {
-    // metadata/settings handling associated with user_profiles
     Map<String, dynamic> settings = {};
     if (json['settings'] != null) {
-       if (json['settings'] is Map) {
-         settings = json['settings'] as Map<String, dynamic>;
-       } else if (json['settings'] is String) {
-         // Handle case where settings is returned as stringified JSON
-         try {
-           // We can't import dart:convert here easily without checking imports, 
-           // but Supabase usually handles this. If it's a string, it might be raw JSON.
-           // However, let's just be safe and ignore if not a Map for now, 
-           // or assume the caller handles it. 
-           // actually, let's just try to cast if it's a map, else empty.
-         } catch (_) {}
-       }
+      if (json['settings'] is Map) {
+        settings = json['settings'] as Map<String, dynamic>;
+      } else if (json['settings'] is String) {
+        // Optionally: parse stringified JSON if needed
+      }
     }
-    
-    // Better implementation:
     final rawSettings = json['settings'];
     if (rawSettings is Map) {
       settings = rawSettings as Map<String, dynamic>;
     }
-    
-    final dept = json['department'] as String? ?? 
-                settings['department'] as String? ?? 
-                'General';
-
+    final dept = json['department'] as String? ??
+        settings['department'] as String? ??
+        'General';
     return Employee(
       id: json['id'] as String,
       name: json['full_name'] as String? ?? json['name'] as String? ?? '',

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_button.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
+import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Screen shown when a user's account is pending approval
 class PendingApprovalScreen extends ConsumerWidget {
@@ -16,6 +19,24 @@ class PendingApprovalScreen extends ConsumerWidget {
     this.organizationName,
     this.userEmail,
   });
+
+  Future<void> _handleBackToLogin(WidgetRef ref, BuildContext context) async {
+    try {
+      // Clear remembered session data
+      final box = await Hive.openBox<dynamic>('auth_preferences');
+      await box.clear();
+
+      // Sign out from Supabase
+      final supabaseService = ref.read(supabaseServiceProvider);
+      await supabaseService.signOut();
+    } catch (_) {
+      // If cleanup fails, still attempt navigation
+    }
+
+    if (context.mounted) {
+      context.go(AppRoutes.login);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -245,8 +266,7 @@ class PendingApprovalScreen extends ConsumerWidget {
                             // Back to login button
                             AuthButton(
                               text: 'Back to Login',
-                              onPressed: () => context.go('/auth/login'),
-                              isOutlined: true,
+                              onPressed: () => _handleBackToLogin(ref, context),
                             ),
                             const SizedBox(height: AppSpacing.md),
 

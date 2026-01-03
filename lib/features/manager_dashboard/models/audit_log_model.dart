@@ -1,3 +1,25 @@
+
+/// Audit action enumeration for tracking manager actions
+enum AuditAction {
+  approved,
+  rejected,
+  budgetUpdated,
+  employeeAdded;
+
+  String get displayName {
+    switch (this) {
+      case AuditAction.approved:
+        return 'Approved';
+      case AuditAction.rejected:
+        return 'Rejected';
+      case AuditAction.budgetUpdated:
+        return 'Budget Updated';
+      case AuditAction.employeeAdded:
+        return 'Employee Added';
+    }
+  }
+}
+
 /// Audit log model for tracking manager actions and changes
 class AuditLog {
   final String id;
@@ -5,7 +27,7 @@ class AuditLog {
   final String userId;
   final String userEmail;
   final String userName;
-  final String action;
+  final String action; // string for DB compatibility
   final String tableName;
   final int? recordId;
   final Map<String, dynamic>? oldData;
@@ -28,52 +50,6 @@ class AuditLog {
     required this.createdAt,
   });
 
-  /// Get formatted action description
-  String get actionDescription => description ?? action;
-
-  /// Get display name for UI (user-friendly action name)
-  String get displayAction {
-    final actionLower = action.toLowerCase();
-    if (actionLower.contains('approve')) return 'approved expense';
-    if (actionLower.contains('reject')) return 'rejected expense';
-    if (actionLower.contains('budget')) return 'updated budget';
-    if (actionLower.contains('employee') && actionLower.contains('add')) {
-      return 'added new employee';
-    }
-    if (actionLower.contains('suspend')) return 'suspended employee';
-    if (actionLower.contains('activate')) return 'activated employee';
-    if (actionLower.contains('remove')) return 'removed employee';
-    if (actionLower.contains('comment')) return 'added comment';
-    return action;
-  }
-
-  /// Legacy compatibility - use userName as managerName
-  String get managerName => userName;
-
-  /// Legacy compatibility - use createdAt as timestamp
-  DateTime get timestamp => createdAt;
-
-  /// Legacy compatibility - use description as details
-  String get details => description ?? action;
-
-  /// Legacy compatibility - use recordId as targetId
-  String? get targetId => recordId?.toString();
-
-  /// Get time ago string (e.g., "2 hours ago")
-  String get timeAgo {
-    final now = DateTime.now();
-    final difference = now.difference(createdAt);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
-    } else {
-      return 'Just now';
-    }
-  }
 
   /// Create AuditLog from JSON (database format)
   factory AuditLog.fromJson(Map<String, dynamic> json) {
@@ -140,5 +116,74 @@ class AuditLog {
       description: description ?? this.description,
       createdAt: createdAt ?? this.createdAt,
     );
+  }
+
+  /// Get AuditAction enum from string action
+  AuditAction? get actionEnum {
+    try {
+      return AuditAction.values.firstWhere((e) => e.name == action);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Get formatted action description
+  String get actionDescription {
+    final act = actionEnum;
+    if (act != null) {
+      switch (act) {
+        case AuditAction.approved:
+          return 'approved expense';
+        case AuditAction.rejected:
+          return 'rejected expense';
+        case AuditAction.budgetUpdated:
+          return 'updated budget';
+        case AuditAction.employeeAdded:
+          return 'added new employee';
+      }
+    }
+    final actionLower = action.toLowerCase();
+    if (actionLower.contains('approve')) return 'approved expense';
+    if (actionLower.contains('reject')) return 'rejected expense';
+    if (actionLower.contains('budget')) return 'updated budget';
+    if (actionLower.contains('employee') && actionLower.contains('add')) {
+      return 'added new employee';
+    }
+    if (actionLower.contains('suspend')) return 'suspended employee';
+    if (actionLower.contains('activate')) return 'activated employee';
+    if (actionLower.contains('remove')) return 'removed employee';
+    if (actionLower.contains('comment')) return 'added comment';
+    return action;
+  }
+
+  /// Get display name for UI (user-friendly action name)
+  String get displayAction => actionDescription;
+
+  /// Legacy compatibility - use userName as managerName
+  String get managerName => userName;
+
+  /// Legacy compatibility - use createdAt as timestamp
+  DateTime get timestamp => createdAt;
+
+  /// Legacy compatibility - use description as details
+  String get details => description ?? action;
+
+  /// Legacy compatibility - use recordId as targetId
+  String? get targetId => recordId?.toString();
+
+  /// Get time ago string (e.g., "2 hours ago")
+  String get timeAgo {
+    final now = DateTime.now();
+    final difference = now.difference(createdAt);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours > 1 ? 's' : ''} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes > 1 ? 's' : ''} ago';
+    } else {
+      return 'Just now';
+    }
   }
 }

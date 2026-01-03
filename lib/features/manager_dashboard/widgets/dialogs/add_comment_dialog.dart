@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 class AddCommentDialog extends StatefulWidget {
-  final String expenseId;
-  final String employeeName;
-  final void Function(String comment) onSubmit;
-
   const AddCommentDialog({
-    super.key,
     required this.expenseId,
     required this.employeeName,
     required this.onSubmit,
+    super.key,
   });
+  final String expenseId;
+  final String employeeName;
+  final void Function(String comment) onSubmit;
 
   @override
   State<AddCommentDialog> createState() => _AddCommentDialogState();
@@ -72,7 +72,7 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Add Comment',
+                          AppLocalizations.of(context)!.titleAddComment,
                           style: AppTextStyles.heading3.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -95,8 +95,8 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 maxLines: 5,
                 autofocus: true,
                 decoration: InputDecoration(
-                  labelText: 'Comment',
-                  hintText: 'Enter your comment here...',
+                  labelText: AppLocalizations.of(context)!.labelComment,
+                  hintText: AppLocalizations.of(context)!.hintComment,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                   ),
@@ -105,10 +105,10 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a comment';
+                    return AppLocalizations.of(context)!.errCommentRequired;
                   }
                   if (value.trim().length < 3) {
-                    return 'Comment must be at least 3 characters';
+                    return AppLocalizations.of(context)!.errCommentLength;
                   }
                   return null;
                 },
@@ -119,13 +119,13 @@ class _AddCommentDialogState extends State<AddCommentDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text(AppLocalizations.of(context)!.btnCancel),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   FilledButton.icon(
                     onPressed: _handleSubmit,
                     icon: const Icon(Icons.send, size: 18),
-                    label: const Text('Submit'),
+                    label: Text(AppLocalizations.of(context)!.btnSubmit),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,

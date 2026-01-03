@@ -7,15 +7,6 @@ import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard
 
 /// Dashboard state model - holds all computed dashboard data
 class DashboardState {
-  final int activeCategories;
-  final double totalBudget;
-  final double totalExpenses;
-  final double totalBalance;
-  final double dailyAverage;
-  final List<ExpenseWithCategory> recentExpenses;
-  final List<CategoryBudgetView> budgetData;
-  final double reimbursableTotal;
-  final int reimbursableCount;
 
   const DashboardState({
     required this.activeCategories,
@@ -28,6 +19,49 @@ class DashboardState {
     this.reimbursableTotal = 0.0,
     this.reimbursableCount = 0,
   });
+
+  factory DashboardState.loading() {
+    return const DashboardState(
+      activeCategories: 0,
+      totalBudget: 0,
+      totalExpenses: 0,
+      totalBalance: 0,
+      dailyAverage: 0,
+      recentExpenses: [],
+      budgetData: [],
+    );
+  }
+
+  /// Create dashboard state from stream data (all calculations here)
+  factory DashboardState.fromData({
+    required List<CategoryBudgetView> budgets,
+    required double totalBudget,
+    required double totalExpenses,
+    required List<ExpenseWithCategory> expenses,
+    double reimbursableTotal = 0.0,
+    int reimbursableCount = 0,
+  }) {
+    return DashboardState(
+      activeCategories: budgets.length,
+      totalBudget: totalBudget,
+      totalExpenses: totalExpenses,
+      totalBalance: totalBudget - totalExpenses,
+      dailyAverage: totalExpenses / 30,
+      recentExpenses: expenses.take(10).toList(),
+      budgetData: budgets,
+      reimbursableTotal: reimbursableTotal,
+      reimbursableCount: reimbursableCount,
+    );
+  }
+  final int activeCategories;
+  final double totalBudget;
+  final double totalExpenses;
+  final double totalBalance;
+  final double dailyAverage;
+  final List<ExpenseWithCategory> recentExpenses;
+  final List<CategoryBudgetView> budgetData;
+  final double reimbursableTotal;
+  final int reimbursableCount;
 
   // Computed properties (logic in state, not UI)
   String get balanceTrend {
@@ -55,42 +89,6 @@ class DashboardState {
 
   String get categoriesTrend =>
       activeCategories > 0 ? '+$activeCategories' : '0';
-
-  factory DashboardState.loading() {
-    return const DashboardState(
-      activeCategories: 0,
-      totalBudget: 0,
-      totalExpenses: 0,
-      totalBalance: 0,
-      dailyAverage: 0,
-      recentExpenses: [],
-      budgetData: [],
-      reimbursableTotal: 0,
-      reimbursableCount: 0,
-    );
-  }
-
-  /// Create dashboard state from stream data (all calculations here)
-  factory DashboardState.fromData({
-    required List<CategoryBudgetView> budgets,
-    required double totalBudget,
-    required double totalExpenses,
-    required List<ExpenseWithCategory> expenses,
-    double reimbursableTotal = 0.0,
-    int reimbursableCount = 0,
-  }) {
-    return DashboardState(
-      activeCategories: budgets.length,
-      totalBudget: totalBudget,
-      totalExpenses: totalExpenses,
-      totalBalance: totalBudget - totalExpenses,
-      dailyAverage: totalExpenses / 30,
-      recentExpenses: expenses.take(10).toList(),
-      budgetData: budgets,
-      reimbursableTotal: reimbursableTotal,
-      reimbursableCount: reimbursableCount,
-    );
-  }
 }
 
 /// Dashboard ViewModel Provider

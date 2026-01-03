@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -225,10 +226,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xl),
+                      const SizedBox(height: AppSpacing.lg),
+
                       // App name
                       Text(
-                        'Expense Tracker',
+                        AppLocalizations.of(context)!.appName,
                         style: AppTextStyles.heading1.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -244,7 +246,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: AppSpacing.sm),
                       // Tagline
                       Text(
-                        'Manage your expenses effortlessly',
+                        AppLocalizations.of(context)!.appTagline,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
                           shadows: [

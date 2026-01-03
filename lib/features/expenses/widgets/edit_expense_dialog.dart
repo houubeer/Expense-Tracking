@@ -5,20 +5,19 @@ import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_f
 import 'package:expense_tracking_desktop_app/features/shared/widgets/snackbars/success_snackbar.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 class EditExpenseDialog extends StatefulWidget {
-  final IExpenseService expenseService;
-  final ICategoryRepository categoryRepository;
-  final ExpenseWithCategory expenseWithCategory;
-
   const EditExpenseDialog({
-    super.key,
     required this.expenseService,
     required this.categoryRepository,
     required this.expenseWithCategory,
+    super.key,
   });
+  final IExpenseService expenseService;
+  final ICategoryRepository categoryRepository;
+  final ExpenseWithCategory expenseWithCategory;
 
   @override
   State<EditExpenseDialog> createState() => _EditExpenseDialogState();
@@ -54,7 +53,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
         final colorScheme = Theme.of(context).colorScheme;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Please select a category'),
+            content: Text(AppLocalizations.of(context)!.errCategoryRequired),
             backgroundColor: colorScheme.error,
           ),
         );
@@ -69,7 +68,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Amount must be greater than 0'),
+              content: Text(AppLocalizations.of(context)!.errAmountPositive),
               backgroundColor: colorScheme.error,
             ),
           );
@@ -85,8 +84,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:
-                  const Text('Date cannot be more than 1 year in the future'),
+              content: Text(AppLocalizations.of(context)!.errDateFuture),
               backgroundColor: colorScheme.error,
             ),
           );
@@ -97,8 +95,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content:
-                  const Text('Date cannot be more than 10 years in the past'),
+              content: Text(AppLocalizations.of(context)!.errDatePast),
               backgroundColor: colorScheme.error,
             ),
           );
@@ -112,7 +109,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           amount: amount,
           description: description,
           date: _selectedDate,
-          categoryId: _selectedCategoryId!,
+          categoryId: _selectedCategoryId,
         );
 
         await widget.expenseService
@@ -120,14 +117,16 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
 
         if (mounted) {
           Navigator.pop(context);
-          SuccessSnackbar.show(context, 'Expense updated successfully');
+          SuccessSnackbar.show(
+              context, AppLocalizations.of(context)!.msgExpenseUpdated);
         }
       } catch (e) {
         if (mounted) {
           final colorScheme = Theme.of(context).colorScheme;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to update expense: ${e.toString()}'),
+              content: Text(
+                  AppLocalizations.of(context)!.errUpdateExpense(e.toString())),
               backgroundColor: colorScheme.error,
             ),
           );
@@ -154,13 +153,15 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(AppStrings.titleEditExpense,
-                    style: AppTextStyles.heading3),
+                Text(
+                  AppLocalizations.of(context)!.titleEditExpense,
+                  style: AppTextStyles.heading3,
+                ),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
                   color: colorScheme.onSurfaceVariant,
-                  tooltip: 'Close',
+                  tooltip: AppLocalizations.of(context)!.tooltipClose,
                 ),
               ],
             ),
@@ -193,12 +194,12 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: colorScheme.onSurfaceVariant,
                   ),
-                  child: const Text(AppStrings.btnCancel),
+                  child: Text(AppLocalizations.of(context)!.btnCancel),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 PrimaryButton(
                   onPressed: _updateExpense,
-                  child: const Text('Update Expense'),
+                  child: Text(AppLocalizations.of(context)!.btnUpdateExpense),
                 ),
               ],
             ),

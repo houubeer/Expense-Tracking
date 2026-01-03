@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import '../models/employee_model.dart';
 import 'audit_log_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 
 class EmployeeRepository {
   final SupabaseService _supabaseService;

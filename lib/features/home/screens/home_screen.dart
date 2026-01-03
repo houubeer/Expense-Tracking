@@ -57,7 +57,6 @@ class HomeScreen extends ConsumerWidget {
                       else
                         BudgetOverviewCard(
                           budgetData: state.budgetData,
-                          itemsToShow: 5,
                         ),
                       if (screenWidth > 1100)
                         const SizedBox(width: AppSpacing.xl),

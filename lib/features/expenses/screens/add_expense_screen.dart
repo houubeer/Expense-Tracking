@@ -27,16 +27,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
-        allowMultiple: false,
+        allowMultiple: true, // Enable multiple file selection
       );
 
       if (result != null && result.files.isNotEmpty) {
-        final filePath = result.files.first.path;
-        if (filePath != null) {
+        final filePaths = result.files
+            .where((f) => f.path != null)
+            .map((f) => f.path!)
+            .toList();
+
+        if (filePaths.isNotEmpty) {
           ref
               .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
                   .notifier)
-              .updateReceiptPath(filePath);
+              .addReceipts(filePaths);
         }
       }
     } catch (e) {
@@ -104,8 +108,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           isReimbursable: state.isReimbursable,
           onReimbursableChanged: viewModel.updateReimbursable,
           receiptPath: state.receiptPath,
+          receipts: state.receipts, // Pass receipts list
           onAttachReceipt: _pickReceiptFile,
           onRemoveReceipt: viewModel.removeReceipt,
+          onRemoveReceiptAt: viewModel.removeReceiptAt, // Pass new method
           onSubmit: state.isSubmitting
               ? null
               : () async {

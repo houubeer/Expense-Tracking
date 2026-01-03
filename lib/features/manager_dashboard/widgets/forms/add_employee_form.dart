@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Add Employee Form Dialog
 /// Desktop-optimized form for adding new employees
 class AddEmployeeForm extends StatefulWidget {
-  final void Function(Employee) onSubmit;
-
   const AddEmployeeForm({
-    super.key,
     required this.onSubmit,
+    super.key,
   });
+  final void Function(Employee) onSubmit;
 
   @override
   State<AddEmployeeForm> createState() => _AddEmployeeFormState();
@@ -29,15 +28,15 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
   EmployeeStatus _selectedStatus = EmployeeStatus.active;
   DateTime _hireDate = DateTime.now();
 
-  final List<String> _departments = [
-    'Engineering',
-    'Marketing',
-    'Sales',
-    'Product',
-    'Design',
-    'Human Resources',
-    'Finance',
-  ];
+  List<String> _getDepartments(BuildContext context) => [
+        AppLocalizations.of(context)!.deptEngineering,
+        AppLocalizations.of(context)!.deptMarketing,
+        AppLocalizations.of(context)!.deptSales,
+        AppLocalizations.of(context)!.deptProduct,
+        AppLocalizations.of(context)!.deptDesign,
+        AppLocalizations.of(context)!.deptHumanResources,
+        AppLocalizations.of(context)!.deptFinance,
+      ];
 
   @override
   void dispose() {
@@ -63,12 +62,12 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
               children: [
                 // Header
                 Text(
-                  'Add New Employee',
+                  AppLocalizations.of(context)!.labelAddNewEmployee,
                   style: AppTextStyles.heading2,
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Fill in the employee details below',
+                  AppLocalizations.of(context)!.labelFillEmployeeDetails,
                   style: AppTextStyles.bodyMedium,
                 ),
                 const SizedBox(height: AppSpacing.xxl),
@@ -76,14 +75,15 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Full Name
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Full Name *',
+                  decoration: InputDecoration(
+                    labelText: '${AppLocalizations.of(context)!.fullName} *',
                     hintText: 'John Doe',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter employee name';
+                      return AppLocalizations.of(context)!
+                          .errEmployeeNameRequired;
                     }
                     return null;
                   },
@@ -93,18 +93,18 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Email
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email *',
+                  decoration: InputDecoration(
+                    labelText: '${AppLocalizations.of(context)!.labelEmail} *',
                     hintText: 'john.doe@company.com',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter email';
+                      return AppLocalizations.of(context)!.errEnterEmail;
                     }
                     if (!value.contains('@')) {
-                      return 'Please enter a valid email';
+                      return AppLocalizations.of(context)!.errInvalidEmail;
                     }
                     return null;
                   },
@@ -114,15 +114,15 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Phone
                 TextFormField(
                   controller: _phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone *',
+                  decoration: InputDecoration(
+                    labelText: '${AppLocalizations.of(context)!.location} *',
                     hintText: '+213 555-0123',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter phone number';
+                      return AppLocalizations.of(context)!.errPhoneRequired;
                     }
                     return null;
                   },
@@ -132,14 +132,14 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Role
                 TextFormField(
                   controller: _roleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Role *',
-                    hintText: 'Software Engineer',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: '${AppLocalizations.of(context)!.labelRole} *',
+                    hintText: AppLocalizations.of(context)!.hintRole,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter role';
+                      return AppLocalizations.of(context)!.errRoleRequired;
                     }
                     return null;
                   },
@@ -149,11 +149,12 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Department
                 DropdownButtonFormField<String>(
                   value: _selectedDepartment,
-                  decoration: const InputDecoration(
-                    labelText: 'Department *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText:
+                        '${AppLocalizations.of(context)!.labelDepartment} *',
+                    border: const OutlineInputBorder(),
                   ),
-                  items: _departments.map((dept) {
+                  items: _getDepartments(context).map((dept) {
                     return DropdownMenuItem(
                       value: dept,
                       child: Text(dept),
@@ -181,10 +182,11 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                     }
                   },
                   child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Hire Date *',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
+                    decoration: InputDecoration(
+                      labelText:
+                          '${AppLocalizations.of(context)!.labelHireDate} *',
+                      border: const OutlineInputBorder(),
+                      suffixIcon: const Icon(Icons.calendar_today),
                     ),
                     child: Text(
                       '${_hireDate.day}/${_hireDate.month}/${_hireDate.year}',
@@ -197,14 +199,16 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Status
                 DropdownButtonFormField<EmployeeStatus>(
                   value: _selectedStatus,
-                  decoration: const InputDecoration(
-                    labelText: 'Status *',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: '${AppLocalizations.of(context)!.labelStatus} *',
+                    border: const OutlineInputBorder(),
                   ),
                   items: EmployeeStatus.values.map((status) {
                     return DropdownMenuItem(
                       value: status,
-                      child: Text(status.displayName),
+                      child: Text(status == EmployeeStatus.suspended
+                          ? AppLocalizations.of(context)!.labelStatusSuspended
+                          : status.displayName),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -221,12 +225,13 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                   children: [
                     OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text(AppStrings.btnCancel),
+                      child: Text(AppLocalizations.of(context)!.btnCancel),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     FilledButton(
                       onPressed: _handleSubmit,
-                      child: const Text('Add Employee'),
+                      child:
+                          Text(AppLocalizations.of(context)!.labelAddEmployee),
                     ),
                   ],
                 ),

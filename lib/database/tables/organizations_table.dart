@@ -13,12 +13,18 @@ class Organizations extends Table {
 
   TextColumn get name => text().withLength(min: 1, max: 200)();
   TextColumn get managerEmail => text()();
+  TextColumn get managerName => text().nullable()();
 
   /// Status: pending, approved, rejected
   TextColumn get status => text().withDefault(const Constant('pending'))();
 
-  TextColumn get currency => text().withDefault(const Constant('USD'))();
-  TextColumn get timezone => text().withDefault(const Constant('UTC'))();
+  /// Fiscal year start month (1-12)
+  IntColumn get fiscalYearStart => integer().nullable()();
+
+  DateTimeColumn get approvedAt => dateTime().nullable()();
+
+  /// Who created this organization (user_profile id)
+  TextColumn get createdBy => text().nullable()();
 
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
