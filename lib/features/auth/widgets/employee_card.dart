@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
 
 /// Card widget for displaying employee information
 class EmployeeCard extends StatelessWidget {
-  final UserProfile employee;
-  final VoidCallback? onToggleStatus;
-  final VoidCallback? onRemove;
-
   const EmployeeCard({
-    super.key,
     required this.employee,
+    super.key,
     this.onToggleStatus,
     this.onRemove,
   });
+  final UserProfile employee;
+  final VoidCallback? onToggleStatus;
+  final VoidCallback? onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class EmployeeCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -33,7 +33,7 @@ class EmployeeCard extends StatelessWidget {
             // Avatar
             CircleAvatar(
               radius: 24,
-              backgroundColor: _getRoleColor().withOpacity(0.1),
+              backgroundColor: _getRoleColor().withAlpha((0.1 * 255).round()),
               child: Text(
                 _getInitials(),
                 style: AppTextStyles.heading3.copyWith(
@@ -52,7 +52,8 @@ class EmployeeCard extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        employee.fullName ?? 'Unknown',
+                        employee.fullName ??
+                            AppLocalizations.of(context)!.labelUnknown,
                         style: AppTextStyles.heading3.copyWith(
                           fontWeight: FontWeight.w600,
                           color: AppColors.textPrimary,
@@ -74,13 +75,14 @@ class EmployeeCard extends StatelessWidget {
             ),
 
             // Status indicator
-            _buildStatusIndicator(),
+            _buildStatusIndicator(context),
             const SizedBox(width: AppSpacing.md),
 
             // Actions
             if (onToggleStatus != null || onRemove != null)
               PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert, color: AppColors.textSecondary),
+                icon:
+                    const Icon(Icons.more_vert, color: AppColors.textSecondary),
                 onSelected: (value) {
                   switch (value) {
                     case 'toggle':
@@ -107,7 +109,9 @@ class EmployeeCard extends StatelessWidget {
                                 : AppColors.green,
                           ),
                           const SizedBox(width: AppSpacing.sm),
-                          Text(employee.isActive ? 'Deactivate' : 'Activate'),
+                          Text(employee.isActive
+                              ? AppLocalizations.of(context)!.labelDeactivate
+                              : AppLocalizations.of(context)!.labelActivate),
                         ],
                       ),
                     ),
@@ -116,11 +120,16 @@ class EmployeeCard extends StatelessWidget {
                       value: 'remove',
                       child: Row(
                         children: [
-                          Icon(Icons.delete_outline,
-                              size: 20, color: AppColors.red),
+                          const Icon(
+                            Icons.delete_outline,
+                            size: 20,
+                            color: AppColors.red,
+                          ),
                           const SizedBox(width: AppSpacing.sm),
-                          Text('Remove',
-                              style: TextStyle(color: AppColors.red)),
+                          Text(
+                            AppLocalizations.of(context)!.labelRemove,
+                            style: const TextStyle(color: AppColors.red),
+                          ),
                         ],
                       ),
                     ),
@@ -147,7 +156,7 @@ class EmployeeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: _getRoleColor().withOpacity(0.1),
+        color: _getRoleColor().withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -161,13 +170,13 @@ class EmployeeCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusIndicator() {
+  Widget _buildStatusIndicator(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: employee.isActive
-            ? AppColors.green.withOpacity(0.1)
-            : AppColors.textTertiary.withOpacity(0.1),
+            ? AppColors.green.withAlpha((0.1 * 255).round())
+            : AppColors.textTertiary.withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -184,7 +193,9 @@ class EmployeeCard extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            employee.isActive ? 'Active' : 'Inactive',
+            employee.isActive
+                ? AppLocalizations.of(context)!.labelStatusActive
+                : AppLocalizations.of(context)!.statusInactive,
             style: AppTextStyles.bodySmall.copyWith(
               color:
                   employee.isActive ? AppColors.green : AppColors.textTertiary,

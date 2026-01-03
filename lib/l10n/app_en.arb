@@ -1,22 +1,250 @@
 {
   "appTitle": "Expense Tracker",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "titleSignIn": "Sign in to your account",
+  "titleManagerDashboard": "Manager Dashboard",
+  "descManagerDashboard": "Monitor organization expenses, approve reimbursements, and manage employees.",
+  "kpiTotalEmployees": "Total Employees",
+  "kpiTotalExpenses": "Total Expenses (Month)",
+  "kpiPendingApprovals": "Pending Approvals",
+  "labelEmployeeManagement": "Employee Management",
+  "hintSearchEmployees": "Search employees...",
+  "labelDepartment": "Department",
+  "filterAllDepartments": "All Departments",
+  "labelStatus": "Status",
+  "filterAllStatuses": "All Statuses",
+  "labelAddEmployee": "Add Employee",
+  "labelPendingExpenseApprovals": "Pending Expense Approvals",
+  "msgExpenseApproved": "Expense approved successfully",
+  "msgExpenseRejected": "Expense rejected",
+  "labelBudgetMonitoring": "Budget Monitoring",
+  "msgEmployeeAdded": "Employee {name} added",
+  "@msgEmployeeAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "msgCommentAdded": "Comment added successfully",
+  "msgViewDetailsFor": "Viewing details for {name}",
+  "@msgViewDetailsFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogTitleSuspendEmployee": "Suspend Employee",
+  "dialogDescSuspendEmployee": "Are you sure you want to suspend {name}? They will no longer be able to submit expenses.",
+  "@dialogDescSuspendEmployee": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "msgEmployeeSuspended": "Employee {name} suspended",
+  "@msgEmployeeSuspended": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "msgEmployeeActivated": "Employee {name} activated",
+  "@msgEmployeeActivated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogTitleRemoveEmployee": "Remove Employee",
+  "dialogDescRemoveEmployee": "Are you sure you want to remove {name}? This action cannot be undone.",
+  "@dialogDescRemoveEmployee": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "msgEmployeeRemoved": "Employee {name} removed",
+  "@msgEmployeeRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "btnCancel": "Cancel",
+  "btnConfirm": "Confirm",
   "dashboard": "Dashboard",
-  "dashboardSubtitle": "Overview of your financial health",
-  "addExpense": "Add Expense",
+  "expenses": "Expenses",
+  "budgets": "Budgets",
+  "reports": "Reports",
   "settings": "Settings",
-  "manageAccountPreferences": "Manage your account preferences and app settings",
+  "totalBalance": "Total Balance",
+  "monthlyBudget": "Monthly Budget",
+  "recentTransactions": "Recent Transactions",
+  "addExpense": "Add Expense",
+  "editExpense": "Edit Expense",
+  "category": "Category",
+  "amount": "Amount",
+  "date": "Date",
+  "description": "Description",
+  "save": "Save",
+  "delete": "Delete",
+  "filterAll": "All",
+  "filterFood": "Food",
+  "filterTransport": "Transport",
+  "filterShopping": "Shopping",
+  "filterEntertainment": "Entertainment",
+  "filterHealth": "Health",
+  "filterOther": "Other",
+  "statusGood": "Good",
+  "statusWarning": "Warning",
+  "statusInRisk": "At Risk",
+  "labelSpent": "Spent",
+  "labelRemaining": "Remaining",
+  "labelMonthlyBudget": "Monthly Budget",
+  "titleCategoryBudget": "Category Budget Status",
+  "titleNoExpenses": "No Expenses Found",
+  "colActions": "Actions",
+  "titleDeleteTransaction": "Delete Transaction",
+  "descDeleteTransaction": "Are you sure you want to delete this transaction? This action can be undone.",
+  "btnDelete": "Delete",
+  "msgTransactionDeleted": "Transaction deleted",
+  "errRestoreExpense": "Failed to restore expense: {error}",
+  "@errRestoreExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errDeleteExpense": "Failed to delete expense: {error}",
+  "@errDeleteExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "labelReimbursableShort": "Reimbursable",
+  "tooltipEditExpense": "Edit Expense",
+  "tooltipDeleteExpense": "Delete Expense",
+  "errPickFile": "Failed to pick file: {error}",
+  "@errPickFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "navViewExpenses": "View Expenses",
+  "errAmountPositive": "Amount must be positive",
+  "errDateFuture": "Date cannot be in the future",
+  "errDatePast": "Date is too far in the past",
+  "msgExpenseUpdated": "Expense updated successfully",
+  "errUpdateExpense": "Failed to update expense: {error}",
+  "@errUpdateExpense": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleEditExpense": "Edit Expense",
+  "tooltipClose": "Close",
+  "btnUpdateExpense": "Update Expense",
+  "btnClose": "Close",
+  "msgErrorWithParam": "An error occurred: {error}",
+  "@msgErrorWithParam": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "btnAddExpense": "Add Expense",
+  "btnEdit": "Edit",
+  "labelEdit": "Edit",
+  "labelDelete": "Delete",
+  "msgExpenseDeleted": "Expense deleted",
+  "errAmountRequired": "Please enter an amount",
+  "errInvalidNumber": "Please enter a valid number",
+  "errCategoryRequired": "Please select a category",
+  "errDescriptionRequired": "Please enter a description",
+  "labelAmount": "Amount",
+  "labelCategory": "Category",
+  "labelDate": "Date",
+  "labelDescription": "Description",
+  "labelReimbursable": "Reimbursable",
+  "labelReimbursableExpense": "Reimbursable Expense",
+  "labelReimbursableHint": "Can be claimed back from company",
+  "labelReceipt": "Receipt",
+  "msgReceiptAttached": "Receipt Attached",
+  "labelRemoveReceipt": "Remove Receipt",
+  "labelAttachReceipt": "Attach Receipt",
+  "btnReset": "Reset",
+  "msgAddingExpense": "Adding...",
+  "hintSelectCategory": "Select Category",
+  "hintDescription": "What was this for?",
+  "semanticSelectDate": "Select Date. Current: {date}",
+  "@semanticSelectDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "currency": "DZD",
+  "filterReimbursable": "Reimbursable",
+  "filterNonReimbursable": "Non-Reimbursable",
+  "semanticFilter": "Filter List",
+  "semanticAllCategories": "All Categories",
+  "filterAllCategories": "All Categories",
+  "msgAccountPending": "Your account is pending approval",
+  "labelEmail": "Email",
+  "hintEmail": "email@example.com",
+  "errEnterEmail": "Please enter your email",
+  "errInvalidEmail": "Please enter a valid email",
+  "labelPassword": "Password",
+  "hintPassword": "Enter your password",
+  "errEnterPassword": "Please enter your password",
+  "btnSignIn": "Sign In",
+  "msgNoAccount": "Don't have an account?",
+  "btnRegisterManager": "Register as Manager",
+  "btnContinueOffline": "Continue Offline",
   "accountDetails": "Account Details",
+  "exportReports": "Export Reports",
+  "appearance": "Appearance",
+  "language": "Language",
+  "notifications": "Notifications",
+  "security": "Security",
+  "backupRestore": "Backup & Restore",
+  "manageAccountPreferences": "Manage your account preferences",
   "viewAndManagePersonalInfo": "View and manage your personal information",
   "memberSince": "Member since {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "errGeneric": "Something went wrong",
+  "msgCategoryUpdated": "Profile updated",
+  "saveChanges": "Save Changes",
   "fullName": "Full Name",
   "emailAddress": "Email Address",
   "location": "Location",
-  "saveChanges": "Save Changes",
-  "exportReports": "Export Reports",
   "downloadExpenseData": "Download your expense data in CSV or PDF format",
   "filterOptions": "Filter Options",
   "dateRange": "Date Range",
-  "category": "Category",
   "exportFormat": "Export Format",
   "csvExport": "CSV Export",
   "csvExportDesc": "Download data in spreadsheet format (Excel, Google Sheets)",
@@ -24,15 +252,13 @@
   "pdfExport": "PDF Export",
   "pdfExportDesc": "Download formatted report for printing or sharing",
   "exportAsPdf": "Export as PDF",
-  "appearance": "Appearance",
   "customizeAppLook": "Customize how the app looks on your device",
   "themeMode": "Theme Mode",
   "light": "Light",
   "dark": "Dark",
   "system": "System",
-  "language": "Language",
   "selectPreferredLanguage": "Select your preferred language",
-  "notifications": "Notifications",
+  "hintSearchCategories": "Search...",
   "manageNotifications": "Manage how you receive notifications",
   "notificationChannels": "Notification Channels",
   "pushNotifications": "Push Notifications",
@@ -55,7 +281,6 @@
   "muteNotifications": "Mute notifications during specified times",
   "from": "From",
   "to": "To",
-  "security": "Security",
   "manageSecurity": "Manage your account security and privacy settings",
   "password": "Password",
   "changePassword": "Change Password",
@@ -68,170 +293,272 @@
   "signOutOtherSessions": "Sign out all other sessions",
   "deleteAllData": "Delete All Data",
   "deleteAllDataDesc": "Permanently delete all your expense data. This action cannot be undone.",
-  "backupRestore": "Backup & Restore",
-  "account": "Account",
-  "totalBalance": "Total Balance",
-  "numberofCategories": "Number of Categories",
   "active": "Active",
-  "expenses": "Expenses",
-  "dailyAvgSpending": "Daily Avg Spending",
-  "currency": "DZD",
-  "navViewExpenses": "View Expenses",
-  "navBudgets": "Budgets",
-  "navManageBudgets": "Manage Budgets",
-  "navManagerDashboard": "Manager Dashboard",
-  "navViewAll": "View All",
-  "btnCancel": "Cancel",
-  "btnDelete": "Delete",
-  "btnSave": "Save",
-  "btnAdd": "Add",
-  "btnEdit": "Edit",
-  "btnClose": "Close",
-  "btnUndo": "Undo",
-  "btnReset": "Reset",
-  "btnAddCategory": "Add Category",
-  "titleEditExpense": "Edit Expense",
-  "titleBudgetManagement": "Budget Management",
-  "titleAddCategory": "Add New Category",
-  "titleDeleteCategory": "Delete Category",
-  "titleDeleteTransaction": "Delete Expense",
-  "titleBudgetOverview": "Budget Overview",
-  "titleRecentExpenses": "Recent Expenses",
-  "titleManagerDashboard": "Manager Dashboard",
-  "titleEmployeeExpenses": "Employee Expenses",
-  "labelAmount": "Amount",
-  "labelDate": "Date",
-  "labelDescription": "Description",
-  "labelCategoryName": "Category Name",
-  "labelMonthlyBudget": "Monthly Budget",
-  "labelBudget": "Budget",
-  "labelColor": "Color",
-  "labelIcon": "Icon",
-  "labelSpent": "Spent",
-  "labelRemaining": "Remaining",
-  "labelStatus": "Status",
-  "statusGood": "Good",
-  "statusWarning": "Warning",
-  "statusInRisk": "In Risk",
-  "msgCategoryAdded": "Category added successfully",
-  "msgCategoryUpdated": "Updated",
-  "msgCategoryDeleted": "Category deleted",
-  "msgExpenseAdded": "Expense added successfully",
-  "msgExpenseUpdated": "Expense updated successfully",
-  "msgTransactionDeleted": "Expense deleted",
-  "msgNoExpensesYet": "No expenses yet",
-  "msgNoBudgetsYet": "No budgets set yet. Go to Budgets to create one.",
-  "errBudgetNegative": "Budget cannot be negative",
-  "hintSearchCategories": "Search categories...",
-  "hintSearchExpenses": "Search expenses...",
-  "hintDescription": "What was this expense for?",
-  "descManageBudgets": "Manage your categories and budget limits",
-  "descManagerDashboard": "Monitor employees, approve expenses, and control budgets",
-  "descEmployeeExpenses": "View and manage employee expense submissions",
-  "descDeleteCategory": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
-  "descDeleteTransaction": "Are you sure you want to delete this expense? This action cannot be undone.",
-  "descNoCategoriesFound": "No categories found.",
-  "descNoMatchingCategories": "No categories match your filters",
-  "filterAll": "All",
-  "filterSortByName": "Name",
-  "filterSortByBudget": "Budget",
-  "filterSortBySpent": "Spent",
-  "filterSortByPercentage": "Percentage",
-  "filterReimbursable": "Reimbursable",
-  "filterNonReimbursable": "Non-Reimbursable",
-  "labelReimbursable": "Reimbursable",
-  "labelReimbursableExpense": "Mark as Reimbursable",
-  "labelReimbursableHint": "Check if this expense should be reimbursed by the company",
-  "titleReimbursableSummary": "Reimbursable Expenses",
-  "labelTotalReimbursable": "Total Reimbursable",
-  "labelPendingReimbursement": "Pending Reimbursement",
-  "labelReimbursableOwed": "Amount Owed",
-  "msgNoReimbursableExpenses": "No reimbursable expenses",
-  "labelReceipt": "Receipt",
-  "labelAttachReceipt": "Attach Receipt",
-  "labelRemoveReceipt": "Remove Receipt",
+  "reimbursements": "Reimbursements",
+  "exportExcel": "Export Excel",
+  "labelEmployee": "Employee",
+  "labelApprovedAmount": "Approved Amount",
+  "labelPaymentDate": "Payment Date",
+  "statusPaid": "Paid",
+  "statusUnpaid": "Unpaid",
+  "labelAddNewEmployee": "Add New Employee",
+  "labelFillEmployeeDetails": "Fill in the employee details below",
+  "labelRole": "Role",
+  "hintRole": "Software Engineer",
+  "errEmployeeNameRequired": "Please enter employee name",
+  "errPhoneRequired": "Please enter phone number",
+  "errRoleRequired": "Please enter role",
+  "labelHireDate": "Hire Date",
+  "labelStatusSuspended": "Suspended",
+  "deptEngineering": "Engineering",
+  "deptMarketing": "Marketing",
+  "deptSales": "Sales",
+  "deptProduct": "Product",
+  "deptDesign": "Design",
+  "deptHumanResources": "Human Resources",
+  "deptFinance": "Finance",
+  "btnBackToLogin": "Back to Login",
+  "titleRegisterManager": "Register Organization",
+  "subtitleRegisterManager": "Create a new organization account for your team",
+  "labelOrganizationName": "Organization Name",
+  "hintOrganizationName": "Acme Corp",
+  "errEnterOrganizationName": "Please enter organization name",
+  "errOrganizationNameLength": "Name must be at least 3 characters",
+  "labelFullName": "Full Name",
+  "hintFullName": "John Doe",
+  "errEnterFullName": "Please enter your full name",
+  "hintCreatePassword": "Create a secure password",
+  "errPasswordLength": "Password must be at least 6 characters",
+  "labelConfirmPassword": "Confirm Password",
+  "hintConfirmPassword": "Repeat your password",
+  "errConfirmPassword": "Please confirm your password",
+  "errPasswordsDoNotMatch": "Passwords do not match",
+  "btnCreateOrganization": "Create Organization",
+  "titleRegistrationSubmitted": "Registration Submitted",
+  "msgRegistrationSubmitted": "Your request for {name} has been submitted and is pending approval by the administrator.",
+  "@msgRegistrationSubmitted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "titleWhatHappensNext": "What happens next?",
+  "stepReviewRequest": "Administrator reviews your request",
+  "stepAccountActivation": "Account is activated upon approval",
+  "stepLogin": "You can then log in and start managing",
+  "errUserProfileNotFound": "User profile not found",
+  "errNoOrganization": "No organization associated with this account",
+  "msgAddEmployeeSuccess": "Employee {name} has been added successfully",
+  "@msgAddEmployeeSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errAddEmployee": "Failed to add employee: {error}",
+  "@errAddEmployee": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "msgRemoveEmployeeConfirm": "Are you sure you want to remove {name} from the team?",
+  "@msgRemoveEmployeeConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "actionRemove": "Remove",
+  "msgRemoveEmployeeSuccess": "Employee {name} has been removed successfully",
+  "@msgRemoveEmployeeSuccess": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errRemoveEmployee": "Failed to remove employee: {error}",
+  "@errRemoveEmployee": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "statusDeactivated": "Deactivated",
+  "statusActivated": "Activated",
+  "msgEmployeeStatusChanged": "Employee {name} status changed to {status}",
+  "@msgEmployeeStatusChanged": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "errUpdateStatus": "Failed to update status: {error}",
+  "@errUpdateStatus": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleTeamManagement": "Team Management",
+  "actionRefresh": "Refresh",
+  "titleErrorLoadingEmployees": "Error Loading Employees",
+  "actionRetry": "Retry",
+  "titleNoEmployees": "No Employees Yet",
+  "msgNoEmployees": "You haven't added any employees to your team yet.",
+  "btnAddFirstEmployee": "Add Your First Employee",
+  "titleOrganizationManagement": "Organization Management",
+  "tabPending": "Pending",
+  "tabApproved": "Approved",
+  "tabRejected": "Rejected",
+  "msgOrgApproved": "Organization {name} has been approved",
+  "@msgOrgApproved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errApproveOrg": "Failed to approve organization: {error}",
+  "@errApproveOrg": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "msgOrgRejected": "Organization {name} has been rejected",
+  "@msgOrgRejected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errRejectOrg": "Failed to reject organization: {error}",
+  "@errRejectOrg": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "dialogTitleRejectOrg": "Reject {name}?",
+  "@dialogTitleRejectOrg": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "labelRejectReason": "Please provide a reason for rejection:",
+  "hintRejectReason": "Reason for rejection...",
+  "actionReject": "Reject",
+  "errLoadOrgs": "Error loading organizations",
+  "msgNoOrgs": "No organizations found",
+  "titleExpenseDetails": "Expense Details",
+  "btnApprove": "Approve",
+  "btnReject": "Reject",
+  "btnAddComment": "Add Comment",
+  "labelComments": "Comments",
   "labelViewReceipt": "View Receipt",
-  "hintAttachReceipt": "Attach an image or PDF as proof",
-  "msgReceiptAttached": "Receipt attached successfully",
-  "msgReceiptRemoved": "Receipt removed",
-  "errReceiptNotFound": "Receipt file not found",
-  "errReceiptInvalidFormat": "Invalid file format. Please use JPG, PNG, or PDF",
-  "labelBackup": "Backup",
-  "labelRestore": "Restore",
-  "titleBackupData": "Backup Data",
-  "titleRestoreData": "Restore Data",
-  "btnBackupNow": "Backup Now",
-  "btnRestoreNow": "Restore Now",
-  "msgBackupSuccess": "Backup created successfully",
-  "msgRestoreSuccess": "Data restored successfully",
-  "msgBackupFailed": "Backup failed",
-  "msgRestoreFailed": "Restore failed",
-  "descBackup": "Create a backup file of all your expenses and categories",
-  "descRestore": "Restore your data from a previous backup file",
-  "descRestoreWarning": "Warning: This will replace all current data with the backup data",
-  "labelChooseBackupLocation": "Choose backup location",
-  "labelSelectBackupFile": "Select backup file",
+  "titleAddComment": "Add Comment",
+  "labelComment": "Comment",
+  "hintComment": "Enter your comment here...",
+  "errCommentRequired": "Please enter a comment",
+  "errCommentLength": "Comment must be at least 3 characters",
+  "btnSubmit": "Submit",
+  "labelTotal": "Total",
+  "titleNoPendingApprovals": "No pending approvals",
+  "msgAllExpensesProcessed": "All expenses have been processed",
+  "tooltipViewDetails": "View Details",
+  "tooltipApprove": "Approve",
+  "tooltipReject": "Reject",
+  "tooltipComment": "Comment",
+  "titleRejectExpense": "Reject Expense",
+  "labelRejectionReason": "Rejection Reason",
+  "hintRejectionReason": "Enter reason for rejection",
+  "labelViewDetails": "View Details",
+  "labelSuspend": "Suspend",
+  "labelActivate": "Activate",
+  "labelRemove": "Remove",
+  "labelBy": "by",
+  "labelStatusActive": "Active",
+  "msgExportExcel": "Exporting to Excel...",
+  "msgExportPdf": "Exporting to PDF...",
+  "labelBudget": "Budget",
+  "labelDescCreateAccount": "Create a new account for a team member",
+  "labelTemporaryPassword": "Temporary Password",
+  "hintTemporaryPassword": "Create a temporary password",
+  "msgPasswordChangeHint": "The employee can change this password after first login.",
+  "labelDeactivate": "Deactivate",
+  "statusInactive": "Inactive",
+  "labelUnknown": "Unknown",
   "ownerDashboard": "Owner Dashboard",
-  "subtitleOwnerDashboard": "Platform-wide overview and management",
+  "subtitleOwnerDashboard": "Manage organizations, approve managers, and monitor platform activity",
   "kpiTotalCompanies": "Total Companies",
   "kpiTotalManagers": "Total Managers",
-  "kpiTotalEmployees": "Total Employees",
-  "kpiTotalExpenses": "Total Expenses",
-  "kpiPendingApprovals": "Pending Approvals",
-  "kpiPendingApprovalsSubtitle": "Managers awaiting approval",
+  "kpiPendingApprovalsSubtitle": "Managers waiting for approval",
   "kpiMonthlyGrowth": "Monthly Growth",
-  "kpiMonthlyGrowthSubtitle": "Platform expense growth",
+  "kpiMonthlyGrowthSubtitle": "Platform-wide growth",
   "headerPendingManagerRequests": "Pending Manager Requests",
   "headerActiveManagers": "Active Managers",
   "headerRecentActivity": "Recent Activity",
-  "msgNoRecentActivity": "No recent activity",
+  "msgNoRecentActivity": "No recent activity found",
   "msgManagerApproved": "Manager approved successfully",
   "msgManagerRejected": "Manager rejected",
-  "msgManagerSuspended": "Manager suspended",
-  "msgManagerDeleted": "Manager deleted",
-  "msgManagerProfileComingSoon": "Manager profile view - Coming soon",
+  "msgManagerSuspended": "Manager account suspended",
+  "dialogTitleConfirmDelete": "Confirm Delete",
+  "dialogDescDeleteManager": "Are you sure you want to delete this manager? This action cannot be undone.",
+  "msgManagerDeleted": "Manager account deleted",
+  "msgManagerProfileComingSoon": "Manager profile view is coming soon",
   "dialogTitleRejectManager": "Reject Manager",
-  "dialogLabelReasonRejection": "Reason for rejection",
+  "dialogLabelReasonRejection": "Reason for Rejection",
   "dialogHintEnterReason": "Enter reason...",
   "dialogActionReject": "Reject",
   "dialogTitleSuspendManager": "Suspend Manager",
-  "dialogLabelReasonSuspension": "Reason for suspension",
+  "dialogLabelReasonSuspension": "Reason for Suspension",
   "dialogActionSuspend": "Suspend",
-  "dialogTitleConfirmDelete": "Confirm Delete",
-  "dialogDescDeleteManager": "Are you sure you want to delete this manager? This action cannot be undone.",
-  "labelEmployeeManagement": "Employee Management",
-  "hintSearchEmployees": "Search employees...",
-  "labelDepartment": "Department",
-  "filterAllDepartments": "All Departments",
-  "filterAllStatuses": "All Statuses",
-  "labelStatusSuspended": "Suspended",
-  "labelAddEmployee": "Add Employee",
-  "labelPendingExpenseApprovals": "Pending Expense Approvals",
-  "msgExpenseApproved": "Expense approved",
-  "msgExpenseRejected": "Expense rejected",
-  "labelBudgetMonitoring": "Budget Monitoring",
-  "msgEmployeeAdded": "Employee {name} added successfully",
-  "msgCommentAdded": "Comment added successfully",
-  "msgViewDetailsFor": "View details for {name}",
-  "dialogTitleSuspendEmployee": "Suspend Employee",
-  "dialogDescSuspendEmployee": "Are you sure you want to suspend {name}?",
-  "msgEmployeeSuspended": "{name} suspended",
-  "msgEmployeeActivated": "{name} activated",
-  "dialogTitleRemoveEmployee": "Remove Employee",
-  "dialogDescRemoveEmployee": "Are you sure you want to remove {name}? This action cannot be undone.",
-  "msgEmployeeRemoved": "{name} removed",
-  "btnConfirm": "Confirm",
-  "msgAddCategoryFailed": "Failed to add category: {error}",
-  "msgDeleteCategoryFailed": "Failed to delete category: {error}",
-
+  "titleRemoveEmployee": "Remove Employee",
+  "msgExpenseAdded": "Expense added successfully",
+  "navBudgets": "Budgets",
+  "navManagerDashboard": "Manager Dashboard",
+  "titleViewExpenses": "View Expenses",
+  "subtitleViewExpenses": "Browse and manage your expenses",
+  "hintSearchExpenses": "Search expenses...",
   "searchSemanticLabel": "Search",
   "clearSearchSemanticLabel": "Clear search",
-  "clearSearchTooltip": "Clear search",
-  "sortLabel": "Sort: {sort}",
-  "@sortLabel": {
-    "description": "Prefix for sorting dropdown. Example: 'Sort: Name'",
+  "dashboardSubtitle": "Track your spending and manage your finances",
+  "numberofCategories": "Categories",
+  "dailyAvgSpending": "Daily Average",
+  "msgCategoryAdded": "Category added successfully",
+  "msgAddCategoryFailed": "Failed to add category: {error}",
+  "@msgAddCategoryFailed": {
     "placeholders": {
-      "sort": {}
+      "error": {
+        "type": "String"
+      }
     }
-  }
+  },
+  "msgCategoryDeleted": "Category deleted successfully",
+  "msgDeleteCategoryFailed": "Failed to delete category: {error}",
+  "@msgDeleteCategoryFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "actionRemove": "Remove"
 }

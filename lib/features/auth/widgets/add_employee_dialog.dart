@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/colors.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_text_field.dart';
@@ -57,10 +58,10 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withAlpha((0.1 * 255).round()),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.person_add_rounded,
                         color: AppColors.primary,
                         size: 24,
@@ -72,14 +73,15 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Add Employee',
+                            AppLocalizations.of(context)!.labelAddEmployee,
                             style: AppTextStyles.heading3.copyWith(
                               fontWeight: FontWeight.bold,
                               color: AppColors.textPrimary,
                             ),
                           ),
                           Text(
-                            'Create a new account for a team member',
+                            AppLocalizations.of(context)!
+                                .labelDescCreateAccount,
                             style: AppTextStyles.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -89,7 +91,8 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.close, color: AppColors.textSecondary),
+                      icon: const Icon(Icons.close,
+                          color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -100,12 +103,12 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                 // Full name
                 AuthTextField(
                   controller: _fullNameController,
-                  label: 'Full Name',
-                  hintText: 'Enter employee\'s full name',
+                  label: AppLocalizations.of(context)!.fullName,
+                  hintText: AppLocalizations.of(context)!.hintFullName,
                   prefixIcon: Icons.person_outlined,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter full name';
+                      return AppLocalizations.of(context)!.errEnterFullName;
                     }
                     return null;
                   },
@@ -115,17 +118,17 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                 // Email
                 AuthTextField(
                   controller: _emailController,
-                  label: 'Email',
-                  hintText: 'Enter employee\'s email',
+                  label: AppLocalizations.of(context)!.labelEmail,
+                  hintText: AppLocalizations.of(context)!.hintEmail,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter email';
+                      return AppLocalizations.of(context)!.errEnterEmail;
                     }
                     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                         .hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return AppLocalizations.of(context)!.errInvalidEmail;
                     }
                     return null;
                   },
@@ -135,8 +138,8 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                 // Temporary password
                 AuthTextField(
                   controller: _passwordController,
-                  label: 'Temporary Password',
-                  hintText: 'Create a temporary password',
+                  label: AppLocalizations.of(context)!.labelTemporaryPassword,
+                  hintText: AppLocalizations.of(context)!.hintTemporaryPassword,
                   obscureText: _obscurePassword,
                   prefixIcon: Icons.lock_outlined,
                   suffixIcon: IconButton(
@@ -151,17 +154,17 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return AppLocalizations.of(context)!.errEnterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return AppLocalizations.of(context)!.errPasswordLength;
                     }
                     return null;
                   },
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'The employee can change this password after first login.',
+                  AppLocalizations.of(context)!.msgPasswordChangeHint,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textTertiary,
                   ),
@@ -175,15 +178,16 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
-                        'Cancel',
-                        style: TextStyle(color: AppColors.textSecondary),
+                        AppLocalizations.of(context)!.btnCancel,
+                        style: const TextStyle(color: AppColors.textSecondary),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     ElevatedButton.icon(
                       onPressed: _submit,
                       icon: const Icon(Icons.person_add, size: 18),
-                      label: const Text('Add Employee'),
+                      label:
+                          Text(AppLocalizations.of(context)!.labelAddEmployee),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.textInverse,

@@ -1,12 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/utils/icon_utils.dart';
@@ -84,7 +84,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount Field
-              Text(AppStrings.labelAmount, style: AppTextStyles.label),
+              Text(AppLocalizations.of(context)!.labelAmount,
+                  style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.amountController,
@@ -96,7 +97,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 style: AppTextStyles.bodyLarge,
                 decoration: InputDecoration(
                   hintText: '0.00',
-                  suffixText: AppStrings.currency,
+                  suffixText: AppLocalizations.of(context)!.currency,
                   filled: true,
                   fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
@@ -114,10 +115,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
+                    return AppLocalizations.of(context)!.errAmountRequired;
                   }
                   if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                    return AppLocalizations.of(context)!.errInvalidNumber;
                   }
                   return null;
                 },
@@ -125,7 +126,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Category Dropdown
-              Text(AppStrings.labelCategory, style: AppTextStyles.label),
+              Text(AppLocalizations.of(context)!.labelCategory,
+                  style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
                 stream:
@@ -156,7 +158,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     }).toList(),
                     onChanged: widget.onCategoryChanged,
                     decoration: InputDecoration(
-                      hintText: 'Select Category',
+                      hintText:
+                          AppLocalizations.of(context)!.hintSelectCategory,
                       filled: true,
                       fillColor: colorScheme.surface,
                       border: OutlineInputBorder(
@@ -179,7 +182,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     ),
                     validator: (value) {
                       if (value == null) {
-                        return 'Please select a category';
+                        return AppLocalizations.of(context)!
+                            .errCategoryRequired;
                       }
                       return null;
                     },
@@ -189,18 +193,21 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: 24),
 
               // Date Picker
-              Text('Date', style: AppTextStyles.label),
+              Text(AppLocalizations.of(context)!.labelDate,
+                  style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               Semantics(
                 button: true,
-                label:
-                    'Select date, currently ${DateFormat('MMM dd, yyyy').format(widget.selectedDate)}',
+                label: AppLocalizations.of(context)!.semanticSelectDate(
+                    DateFormat('MMM dd, yyyy').format(widget.selectedDate)),
                 child: InkWell(
                   onTap: () => _selectDate(context),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.lg,
+                    ),
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -208,8 +215,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.calendar_today,
-                            color: colorScheme.onSurfaceVariant),
+                        Icon(
+                          Icons.calendar_today,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
                         const SizedBox(width: AppSpacing.md),
                         Text(
                           DateFormat('MMM dd, yyyy')
@@ -224,14 +233,15 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Description Field
-              Text(AppStrings.labelDescription, style: AppTextStyles.label),
+              Text(AppLocalizations.of(context)!.labelDescription,
+                  style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.descriptionController,
                 maxLines: 3,
                 style: AppTextStyles.bodyLarge,
                 decoration: InputDecoration(
-                  hintText: AppStrings.hintDescription,
+                  hintText: AppLocalizations.of(context)!.hintDescription,
                   filled: true,
                   fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
@@ -249,7 +259,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                    return AppLocalizations.of(context)!.errDescriptionRequired;
                   }
                   return null;
                 },
@@ -266,15 +276,14 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                 child: CheckboxListTile(
                   value: widget.isReimbursable,
                   onChanged: widget.onReimbursableChanged != null
-                      ? (value) =>
-                          widget.onReimbursableChanged!(value ?? false)
+                      ? (value) => widget.onReimbursableChanged!(value ?? false)
                       : null,
                   title: Text(
-                    AppStrings.labelReimbursableExpense,
+                    AppLocalizations.of(context)!.labelReimbursableExpense,
                     style: AppTextStyles.bodyLarge,
                   ),
                   subtitle: Text(
-                    AppStrings.labelReimbursableHint,
+                    AppLocalizations.of(context)!.labelReimbursableHint,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -294,7 +303,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Receipt Attachment Section
-              Text(AppStrings.labelReceipts, style: AppTextStyles.label),
+              Text(AppLocalizations.of(context)!.labelReceipt,
+                  style: AppTextStyles.label),
               const SizedBox(height: AppSpacing.sm),
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),
@@ -307,16 +317,54 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                         : colorScheme.outlineVariant,
                   ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Display attached receipts
-                    if (widget.receipts.isNotEmpty) ...[
-                      ...widget.receipts.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final receipt = entry.value;
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: widget.receiptPath != null
+                    ? Row(
+                        children: [
+                          Icon(
+                            Icons.attachment,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)!
+                                      .msgReceiptAttached,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                                Text(
+                                  _getFileName(widget.receiptPath!),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: colorScheme.error,
+                            ),
+                            onPressed: widget.onRemoveReceipt,
+                            tooltip: AppLocalizations.of(context)!
+                                .labelRemoveReceipt,
+                          ),
+                        ],
+                      )
+                    : InkWell(
+                        onTap: widget.onAttachReceipt,
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppSpacing.sm,
+                          ),
                           child: Row(
                             children: [
                               Icon(
@@ -412,16 +460,18 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     TertiaryButton(
                       onPressed: widget.isSubmitting ? null : widget.onReset,
                       icon: Icons.refresh,
-                      child: const Text(AppStrings.btnReset),
+                      child: Text(AppLocalizations.of(context)!.btnReset),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     PrimaryButton(
                       onPressed: widget.onSubmit,
                       icon: Icons.add,
                       isLoading: widget.isSubmitting,
-                      child: Text(widget.isSubmitting
-                          ? 'Adding...'
-                          : AppStrings.btnAddExpense),
+                      child: Text(
+                        widget.isSubmitting
+                            ? AppLocalizations.of(context)!.msgAddingExpense
+                            : AppLocalizations.of(context)!.btnAddExpense,
+                      ),
                     ),
                   ],
                 ),

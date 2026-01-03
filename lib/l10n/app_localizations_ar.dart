@@ -12,57 +12,464 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'متتبع النفقات';
 
   @override
+  String get titleSignIn => 'تسجيل الدخول إلى حسابك';
+
+  @override
+  String get titleManagerDashboard => 'لوحة تحكم المدير';
+
+  @override
+  String get descManagerDashboard => 'مراقبة نفقات المنظمة، والموافقة على التعويضات، وإدارة الموظفين.';
+
+  @override
+  String get kpiTotalEmployees => 'إجمالي الموظفين';
+
+  @override
+  String get kpiTotalExpenses => 'إجمالي النفقات (الشهر)';
+
+  @override
+  String get kpiPendingApprovals => 'الموافقات المعلقة';
+
+  @override
+  String get labelEmployeeManagement => 'إدارة الموظفين';
+
+  @override
+  String get hintSearchEmployees => 'البحث عن موظفين...';
+
+  @override
+  String get labelDepartment => 'القسم';
+
+  @override
+  String get filterAllDepartments => 'جميع الأقسام';
+
+  @override
+  String get labelStatus => 'الحالة';
+
+  @override
+  String get filterAllStatuses => 'جميع الحالات';
+
+  @override
+  String get labelAddEmployee => 'إضافة موظف';
+
+  @override
+  String get labelPendingExpenseApprovals => 'موافقات النفقات المعلقة';
+
+  @override
+  String get msgExpenseApproved => 'تمت الموافقة على النفقة بنجاح';
+
+  @override
+  String get msgExpenseRejected => 'تم رفض النفقة';
+
+  @override
+  String get labelBudgetMonitoring => 'مراقبة الميزانية';
+
+  @override
+  String msgEmployeeAdded(String name) {
+    return 'تم إضافة الموظف $name';
+  }
+
+  @override
+  String get msgCommentAdded => 'تم إضافة التعليق بنجاح';
+
+  @override
+  String msgViewDetailsFor(String name) {
+    return 'عرض التفاصيل لـ $name';
+  }
+
+  @override
+  String get dialogTitleSuspendEmployee => 'توقيف موظف';
+
+  @override
+  String dialogDescSuspendEmployee(String name) {
+    return 'هل أنت متأكد أنك تريد توقيف $name؟ لن يتمكن من تقديم النفقات بعد الآن.';
+  }
+
+  @override
+  String msgEmployeeSuspended(String name) {
+    return 'تم توقيف الموظف $name';
+  }
+
+  @override
+  String msgEmployeeActivated(String name) {
+    return 'تم تفعيل الموظف $name';
+  }
+
+  @override
+  String get dialogTitleRemoveEmployee => 'إزالة موظف';
+
+  @override
+  String dialogDescRemoveEmployee(String name) {
+    return 'هل أنت متأكد أنك تريد إزالة $name؟ لا يمكن التراجع عن هذا الإجراء.';
+  }
+
+  @override
+  String msgEmployeeRemoved(String name) {
+    return 'تم إزالة الموظف $name';
+  }
+
+  @override
+  String get btnCancel => 'إلغاء';
+
+  @override
+  String get btnConfirm => 'تأكيد';
+
+  @override
   String get dashboard => 'لوحة التحكم';
 
   @override
-  String get dashboardSubtitle => 'نظرة عامة على صحتك المالية';
+  String get expenses => 'النفقات';
 
   @override
-  String get addExpense => 'إضافة نفقة';
+  String get budgets => 'الميزانيات';
+
+  @override
+  String get reports => 'التقارير';
 
   @override
   String get settings => 'الإعدادات';
 
   @override
-  String get manageAccountPreferences => 'إدارة تفضيلات حسابك وإعدادات التطبيق';
+  String get totalBalance => 'إجمالي الرصيد';
+
+  @override
+  String get monthlyBudget => 'الميزانية الشهرية';
+
+  @override
+  String get recentTransactions => 'المعاملات الأخيرة';
+
+  @override
+  String get addExpense => 'إضافة نفقة';
+
+  @override
+  String get editExpense => 'تعديل النفقة';
+
+  @override
+  String get category => 'الفئة';
+
+  @override
+  String get amount => 'المبلغ';
+
+  @override
+  String get date => 'التاريخ';
+
+  @override
+  String get description => 'الوصف';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get filterAll => 'الكل';
+
+  @override
+  String get filterFood => 'طعام';
+
+  @override
+  String get filterTransport => 'نقل';
+
+  @override
+  String get filterShopping => 'تسوق';
+
+  @override
+  String get filterEntertainment => 'ترفيه';
+
+  @override
+  String get filterHealth => 'صحة';
+
+  @override
+  String get filterOther => 'أخرى';
+
+  @override
+  String get statusGood => 'جيد';
+
+  @override
+  String get statusWarning => 'تحذير';
+
+  @override
+  String get statusInRisk => 'في خطر';
+
+  @override
+  String get labelSpent => 'تم إنفاقه';
+
+  @override
+  String get labelRemaining => 'المتبقي';
+
+  @override
+  String get labelMonthlyBudget => 'الميزانية الشهرية';
+
+  @override
+  String get titleCategoryBudget => 'حالة ميزانية الفئة';
+
+  @override
+  String get titleNoExpenses => 'لم يتم العثور على نفقات';
+
+  @override
+  String get colActions => 'الإجراءات';
+
+  @override
+  String get titleDeleteTransaction => 'حذف المعاملة';
+
+  @override
+  String get descDeleteTransaction => 'هل أنت متأكد أنك تريد حذف هذه المعاملة؟ يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get btnDelete => 'حذف';
+
+  @override
+  String get msgTransactionDeleted => 'تم حذف المعاملة';
+
+  @override
+  String errRestoreExpense(String error) {
+    return 'فشل في استعادة النفقة: $error';
+  }
+
+  @override
+  String errDeleteExpense(String error) {
+    return 'فشل في حذف النفقة: $error';
+  }
+
+  @override
+  String get labelReimbursableShort => 'قابل للاسترداد';
+
+  @override
+  String get tooltipEditExpense => 'تعديل النفقة';
+
+  @override
+  String get tooltipDeleteExpense => 'حذف النفقة';
+
+  @override
+  String errPickFile(String error) {
+    return 'فشل في اختيار الملف: $error';
+  }
+
+  @override
+  String get navViewExpenses => 'عرض النفقات';
+
+  @override
+  String get errAmountPositive => 'يجب أن يكون المبلغ موجباً';
+
+  @override
+  String get errDateFuture => 'لا يمكن أن يكون التاريخ في المستقبل';
+
+  @override
+  String get errDatePast => 'التاريخ قديم جداً';
+
+  @override
+  String get msgExpenseUpdated => 'تم تحديث النفقة بنجاح';
+
+  @override
+  String errUpdateExpense(String error) {
+    return 'فشل في تحديث النفقة: $error';
+  }
+
+  @override
+  String get titleEditExpense => 'تعديل النفقة';
+
+  @override
+  String get tooltipClose => 'إغلاق';
+
+  @override
+  String get btnUpdateExpense => 'تحديث النفقة';
+
+  @override
+  String get btnClose => 'إغلاق';
+
+  @override
+  String msgErrorWithParam(String error) {
+    return 'حدث خطأ: $error';
+  }
+
+  @override
+  String get btnAddExpense => 'إضافة نفقة';
+
+  @override
+  String get btnEdit => 'تعديل';
+
+  @override
+  String get labelEdit => 'تعديل';
+
+  @override
+  String get labelDelete => 'حذف';
+
+  @override
+  String get msgExpenseDeleted => 'تم حذف النفقة';
+
+  @override
+  String get errAmountRequired => 'يرجى إدخال المبلغ';
+
+  @override
+  String get errInvalidNumber => 'يرجى إدخال رقم صالح';
+
+  @override
+  String get errCategoryRequired => 'يرجى اختيار فئة';
+
+  @override
+  String get errDescriptionRequired => 'يرجى إدخال وصف';
+
+  @override
+  String get labelAmount => 'المبلغ';
+
+  @override
+  String get labelCategory => 'الفئة';
+
+  @override
+  String get labelDate => 'التاريخ';
+
+  @override
+  String get labelDescription => 'الوصف';
+
+  @override
+  String get labelReimbursable => 'قابل للتعويض';
+
+  @override
+  String get labelReimbursableExpense => 'نفقة قابلة للتعويض';
+
+  @override
+  String get labelReimbursableHint => 'يمكن استردادها من الشركة';
+
+  @override
+  String get labelReceipt => 'الإيصال';
+
+  @override
+  String get msgReceiptAttached => 'تم إرفاق الإيصال';
+
+  @override
+  String get labelRemoveReceipt => 'إزالة الإيصال';
+
+  @override
+  String get labelAttachReceipt => 'إرفاق إيصال';
+
+  @override
+  String get btnReset => 'إعادة تعيين';
+
+  @override
+  String get msgAddingExpense => 'جاري الإضافة...';
+
+  @override
+  String get hintSelectCategory => 'اختر فئة';
+
+  @override
+  String get hintDescription => 'ماذا كان هذا من أجل؟';
+
+  @override
+  String semanticSelectDate(String date) {
+    return 'اختر التاريخ. الحالي: $date';
+  }
+
+  @override
+  String get currency => 'د.ج';
+
+  @override
+  String get filterReimbursable => 'قابل للتعويض';
+
+  @override
+  String get filterNonReimbursable => 'غير قابل للتعويض';
+
+  @override
+  String get semanticFilter => 'تصفية القائمة';
+
+  @override
+  String get semanticAllCategories => 'جميع الفئات';
+
+  @override
+  String get filterAllCategories => 'جميع الفئات';
+
+  @override
+  String get msgAccountPending => 'حسابك في انتظار الموافقة';
+
+  @override
+  String get labelEmail => 'البريد الإلكتروني';
+
+  @override
+  String get hintEmail => 'email@example.com';
+
+  @override
+  String get errEnterEmail => 'يرجى إدخال بريدك الإلكتروني';
+
+  @override
+  String get errInvalidEmail => 'يرجى إدخال بريد إلكتروني صالح';
+
+  @override
+  String get labelPassword => 'كلمة المرور';
+
+  @override
+  String get hintPassword => 'أدخل كلمة المرور الخاصة بك';
+
+  @override
+  String get errEnterPassword => 'يرجى إدخال كلمة المرور الخاصة بك';
+
+  @override
+  String get btnSignIn => 'تسجيل الدخول';
+
+  @override
+  String get msgNoAccount => 'ليس لديك حساب؟';
+
+  @override
+  String get btnRegisterManager => 'سجل كمدير';
+
+  @override
+  String get btnContinueOffline => 'المتابعة بدون اتصال';
 
   @override
   String get accountDetails => 'تفاصيل الحساب';
 
   @override
+  String get exportReports => 'تصدير التقارير';
+
+  @override
+  String get appearance => 'المظهر';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get security => 'الأمان';
+
+  @override
+  String get backupRestore => 'النسخ الاحتياطي والاستعادة';
+
+  @override
+  String get manageAccountPreferences => 'إدارة تفضيلات حسابك';
+
+  @override
   String get viewAndManagePersonalInfo => 'عرض وإدارة معلوماتك الشخصية';
 
   @override
-  String memberSince(Object date) {
+  String memberSince(String date) {
     return 'عضو منذ $date';
   }
 
   @override
-  String get fullName => 'الاسم الكامل';
+  String get errGeneric => 'حدث خطأ ما';
 
   @override
-  String get emailAddress => 'البريد الإلكتروني';
-
-  @override
-  String get location => 'الموقع';
+  String get msgCategoryUpdated => 'تم تحديث الملف الشخصي';
 
   @override
   String get saveChanges => 'حفظ التغييرات';
 
   @override
-  String get exportReports => 'تصدير التقارير';
+  String get fullName => 'الاسم الكامل';
 
   @override
-  String get downloadExpenseData => 'قم بتنزيل بيانات نفقاتك بتنسيق CSV أو PDF';
+  String get emailAddress => 'عنوان البريد الإلكتروني';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get downloadExpenseData => 'قم بتنزيل بيانات النفقات الخاصة بك بتنسيق CSV أو PDF';
 
   @override
   String get filterOptions => 'خيارات التصفية';
 
   @override
-  String get dateRange => 'النطاق الزمني';
-
-  @override
-  String get category => 'الفئة';
+  String get dateRange => 'نطاق التاريخ';
 
   @override
   String get exportFormat => 'تنسيق التصدير';
@@ -86,13 +493,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exportAsPdf => 'تصدير كـ PDF';
 
   @override
-  String get appearance => 'المظهر';
-
-  @override
   String get customizeAppLook => 'تخصيص مظهر التطبيق على جهازك';
 
   @override
-  String get themeMode => 'وضع السمة';
+  String get themeMode => 'وضع السمات';
 
   @override
   String get light => 'فاتح';
@@ -104,13 +508,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get system => 'النظام';
 
   @override
-  String get language => 'اللغة';
-
-  @override
   String get selectPreferredLanguage => 'اختر لغتك المفضلة';
 
   @override
-  String get notifications => 'الإشعارات';
+  String get hintSearchCategories => 'بحث...';
 
   @override
   String get manageNotifications => 'إدارة كيفية تلقي الإشعارات';
@@ -134,22 +535,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notificationTypes => 'أنواع الإشعارات';
 
   @override
-  String get newExpenseAdded => 'تمت إضافة مصروف جديد';
+  String get newExpenseAdded => 'تم إضافة نفقة جديدة';
 
   @override
-  String get notifyNewExpense => 'تلقي إشعار عند تسجيل مصروف جديد';
+  String get notifyNewExpense => 'احصل على إشعار عند تسجيل نفقة جديدة';
 
   @override
   String get budgetUpdates => 'تحديثات الميزانية';
 
   @override
-  String get notifyBudgetUpdates => 'تلقي إشعار بتغييرات حالة الميزانية';
+  String get notifyBudgetUpdates => 'احصل على إشعار حول تغييرات حالة الميزانية';
 
   @override
-  String get budgetLimitWarnings => 'تحذيرات حد الميزانية';
+  String get budgetLimitWarnings => 'تحذيرات حدود الميزانية';
 
   @override
-  String get notifyBudgetLimit => 'تنبيه عند الاقتراب أو تجاوز حدود الميزانية';
+  String get notifyBudgetLimit => 'تنبيه عند الاقتراب من حدود الميزانية أو تجاوزها';
 
   @override
   String get weeklySummary => 'ملخص أسبوعي';
@@ -161,16 +562,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get monthlyReports => 'تقارير شهرية';
 
   @override
-  String get notifyMonthlyReports => 'الحصول على تقارير مالية شهرية مفصلة';
+  String get notifyMonthlyReports => 'احصل على تقارير مالية شهرية مفصلة';
 
   @override
-  String get quietHours => 'ساعات الصمت';
+  String get quietHours => 'ساعات الهدوء';
 
   @override
-  String get enableQuietHours => 'تفعيل ساعات الصمت';
+  String get enableQuietHours => 'تفعيل ساعات الهدوء';
 
   @override
-  String get muteNotifications => 'كتم الإشعارات خلال الأوقات المحددة';
+  String get muteNotifications => 'كتم الإشعارات خلال أوقات محددة';
 
   @override
   String get from => 'من';
@@ -179,10 +580,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get to => 'إلى';
 
   @override
-  String get security => 'الأمان';
-
-  @override
-  String get manageSecurity => 'إدارة أمان حسابك وإعدادات الخصوصية';
+  String get manageSecurity => 'إدارة إعدادات أمان وخصوصية حسابك';
 
   @override
   String get password => 'كلمة المرور';
@@ -215,492 +613,483 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteAllData => 'حذف جميع البيانات';
 
   @override
-  String get deleteAllDataDesc => 'سيتم حذف جميع بيانات نفقاتك نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
-
-  @override
-  String get backupRestore => 'النسخ الاحتياطي والاستعادة';
-
-  @override
-  String get account => 'الحساب';
-
-  @override
-  String get totalBalance => 'إجمالي الرصيد';
-
-  @override
-  String get numberofCategories => 'عدد الفئات';
+  String get deleteAllDataDesc => 'حذف جميع بيانات النفقات الخاصة بك نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get active => 'نشط';
 
   @override
-  String get expenses => 'النفقات';
+  String get reimbursements => 'التعويضات';
 
   @override
-  String get dailyAvgSpending => 'متوسط الإنفاق اليومي';
+  String get exportExcel => 'تصدير إكسل';
 
   @override
-  String get currency => 'DZD';
+  String get labelEmployee => 'الموظف';
 
   @override
-  String get navViewExpenses => 'عرض النفقات';
+  String get labelApprovedAmount => 'المبلغ المعتمد';
 
   @override
-  String get navBudgets => 'الميزانيات';
+  String get labelPaymentDate => 'تاريخ الدفع';
 
   @override
-  String get navManageBudgets => 'إدارة الميزانيات';
+  String get statusPaid => 'مدفوع';
 
   @override
-  String get navManagerDashboard => 'لوحة تحكم المدير';
+  String get statusUnpaid => 'غير مدفوع';
 
   @override
-  String get navViewAll => 'عرض الكل';
+  String get labelAddNewEmployee => 'إضافة موظف جديد';
 
   @override
-  String get btnCancel => 'إلغاء';
+  String get labelFillEmployeeDetails => 'املأ تفاصيل الموظف أدناه';
 
   @override
-  String get btnDelete => 'حذف';
+  String get labelRole => 'الدور';
 
   @override
-  String get btnSave => 'حفظ';
+  String get hintRole => 'مهندس برمجيات';
 
   @override
-  String get btnAdd => 'إضافة';
+  String get errEmployeeNameRequired => 'يرجى إدخال اسم الموظف';
 
   @override
-  String get btnEdit => 'تعديل';
+  String get errPhoneRequired => 'يرجى إدخال رقم الهاتف';
 
   @override
-  String get btnClose => 'إغلاق';
+  String get errRoleRequired => 'يرجى إدخال الدور';
 
   @override
-  String get btnUndo => 'تراجع';
+  String get labelHireDate => 'تاريخ التوظيف';
 
   @override
-  String get btnReset => 'إعادة تعيين';
+  String get labelStatusSuspended => 'موقوف';
 
   @override
-  String get btnAddCategory => 'إضافة فئة';
+  String get deptEngineering => 'الهندسة';
 
   @override
-  String get titleEditExpense => 'تعديل النفقة';
+  String get deptMarketing => 'التسويق';
 
   @override
-  String get titleBudgetManagement => 'إدارة الميزانيات';
+  String get deptSales => 'المبيعات';
 
   @override
-  String get titleAddCategory => 'إضافة فئة جديدة';
+  String get deptProduct => 'المنتج';
 
   @override
-  String get titleDeleteCategory => 'حذف الفئة';
+  String get deptDesign => 'التصميم';
 
   @override
-  String get titleDeleteTransaction => 'حذف النفقة';
+  String get deptHumanResources => 'الموارد البشرية';
 
   @override
-  String get titleBudgetOverview => 'نظرة عامة على الميزانية';
+  String get deptFinance => 'المالية';
 
   @override
-  String get titleRecentExpenses => 'النفقات الأخيرة';
+  String get btnBackToLogin => 'العودة إلى تسجيل الدخول';
 
   @override
-  String get titleManagerDashboard => 'لوحة تحكم المدير';
+  String get titleRegisterManager => 'تسجيل منظمة';
 
   @override
-  String get titleEmployeeExpenses => 'نفقات الموظفين';
+  String get subtitleRegisterManager => 'إنشاء حساب منظمة جديد لفريقك';
 
   @override
-  String get labelAmount => 'المبلغ';
+  String get labelOrganizationName => 'اسم المنظمة';
 
   @override
-  String get labelDate => 'التاريخ';
+  String get hintOrganizationName => 'Acme Corp';
 
   @override
-  String get labelDescription => 'الوصف';
+  String get errEnterOrganizationName => 'يرجى إدخال اسم المنظمة';
 
   @override
-  String get labelCategoryName => 'اسم الفئة';
+  String get errOrganizationNameLength => 'يجب أن يكون الاسم 3 أحرف على الأقل';
 
   @override
-  String get labelMonthlyBudget => 'الميزانية الشهرية';
+  String get labelFullName => 'الاسم الكامل';
 
   @override
-  String get labelBudget => 'الميزانية';
+  String get hintFullName => 'فلان الفلاني';
 
   @override
-  String get labelColor => 'اللون';
+  String get errEnterFullName => 'يرجى إدخال اسمك الكامل';
 
   @override
-  String get labelIcon => 'الرمز';
+  String get hintCreatePassword => 'أنشئ كلمة مرور آمنة';
 
   @override
-  String get labelSpent => 'المصروف';
+  String get errPasswordLength => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
 
   @override
-  String get labelRemaining => 'المتبقي';
+  String get labelConfirmPassword => 'تأكيد كلمة المرور';
 
   @override
-  String get labelStatus => 'الحالة';
+  String get hintConfirmPassword => 'كرر كلمة المرور الخاصة بك';
 
   @override
-  String get statusGood => 'جيد';
+  String get errConfirmPassword => 'يرجى تأكيد كلمة المرور';
 
   @override
-  String get statusWarning => 'تحذير';
+  String get errPasswordsDoNotMatch => 'كلمات المرور غير متطابقة';
 
   @override
-  String get statusInRisk => 'في خطر';
+  String get btnCreateOrganization => 'إنشاء منظمة';
 
   @override
-  String get msgCategoryAdded => 'تمت إضافة الفئة بنجاح';
+  String get titleRegistrationSubmitted => 'تم تقديم التسجيل';
 
   @override
-  String get msgCategoryUpdated => 'تم التحديث';
-
-  @override
-  String get msgCategoryDeleted => 'تم حذف الفئة';
-
-  @override
-  String get msgExpenseAdded => 'تمت إضافة النفقة بنجاح';
-
-  @override
-  String get msgExpenseUpdated => 'تم تحديث النفقة بنجاح';
-
-  @override
-  String get msgTransactionDeleted => 'تم حذف النفقة';
-
-  @override
-  String get msgNoExpensesYet => 'لا توجد نفقات حتى الآن';
-
-  @override
-  String get msgNoBudgetsYet => 'لم يتم تعيين أي ميزانيات. انتقل إلى الميزانيات لإنشاء واحدة.';
-
-  @override
-  String get errBudgetNegative => 'لا يمكن أن تكون الميزانية سالبة';
-
-  @override
-  String get hintSearchCategories => 'ابحث عن فئات...';
-
-  @override
-  String get hintSearchExpenses => 'ابحث عن نفقات...';
-
-  @override
-  String get hintDescription => 'ما الغرض من هذه النفقة؟';
-
-  @override
-  String get descManageBudgets => 'إدارة الفئات والحدود الميزانية';
-
-  @override
-  String get descManagerDashboard => 'مراقبة الموظفين والموافقة على النفقات والتحكم في الميزانيات';
-
-  @override
-  String get descEmployeeExpenses => 'عرض وإدارة طلبات نفقات الموظفين';
-
-  @override
-  String descDeleteCategory(Object name) {
-    return 'هل أنت متأكد من رغبتك في حذف \"$name\"؟ لا يمكن التراجع عن هذا الإجراء.';
+  String msgRegistrationSubmitted(String name) {
+    return 'تم تقديم طلبك لـ $name وهو بانتظار موافقة المسؤول.';
   }
 
   @override
-  String get descDeleteTransaction => 'هل أنت متأكد من رغبتك في حذف هذه النفقة؟ لا يمكن التراجع عن هذا الإجراء.';
+  String get titleWhatHappensNext => 'ماذا يحدث بعد ذلك؟';
 
   @override
-  String get descNoCategoriesFound => 'لم يتم العثور على أي فئات.';
+  String get stepReviewRequest => 'يقوم المسؤول بمراجعة طلبك';
 
   @override
-  String get descNoMatchingCategories => 'لا توجد فئات تطابق عوامل التصفية الخاصة بك';
+  String get stepAccountActivation => 'تفعيل الحساب بعد الموافقة';
 
   @override
-  String get filterAll => 'الكل';
+  String get stepLogin => 'يمكنك بعد ذلك تسجيل الدخول وبدء الإدارة';
 
   @override
-  String get filterSortByName => 'الاسم';
+  String get errUserProfileNotFound => 'ملف تعريف المستخدم غير موجود';
 
   @override
-  String get filterSortByBudget => 'الميزانية';
+  String get errNoOrganization => 'لا توجد منظمة مرتبطة بهذا الحساب';
 
   @override
-  String get filterSortBySpent => 'المصروف';
+  String msgAddEmployeeSuccess(String name) {
+    return 'تم إضافة الموظف $name بنجاح';
+  }
 
   @override
-  String get filterSortByPercentage => 'النسبة المئوية';
+  String errAddEmployee(String error) {
+    return 'فشل في إضافة الموظف: $error';
+  }
 
   @override
-  String get filterReimbursable => 'قابل للاسترجاع';
+  String msgRemoveEmployeeConfirm(String name) {
+    return 'هل أنت متأكد أنك تريد إزالة $name من الفريق؟';
+  }
 
   @override
-  String get filterNonReimbursable => 'غير قابل للاسترجاع';
+  String get actionRemove => 'إزالة';
 
   @override
-  String get labelReimbursable => 'قابل للاسترجاع';
+  String msgRemoveEmployeeSuccess(String name) {
+    return 'تم إزالة الموظف $name بنجاح';
+  }
 
   @override
-  String get labelReimbursableExpense => 'تمييز كقابل للاسترجاع';
+  String errRemoveEmployee(String error) {
+    return 'فشل في إزالة الموظف: $error';
+  }
 
   @override
-  String get labelReimbursableHint => 'تحقق إذا كان يجب استرجاع هذه النفقة من قبل الشركة';
+  String get statusDeactivated => 'تم إلغاء التنشيط';
 
   @override
-  String get titleReimbursableSummary => 'النفقات القابلة للاسترجاع';
+  String get statusActivated => 'تم التنشيط';
 
   @override
-  String get labelTotalReimbursable => 'إجمالي قابل للاسترجاع';
+  String msgEmployeeStatusChanged(String name, String status) {
+    return 'تم تغيير حالة الموظف $name إلى $status';
+  }
 
   @override
-  String get labelPendingReimbursement => 'في انتظار الاسترجاع';
+  String errUpdateStatus(String error) {
+    return 'فشل في تحديث الحالة: $error';
+  }
 
   @override
-  String get labelReimbursableOwed => 'المبلغ المستحق';
+  String get titleTeamManagement => 'إدارة الفريق';
 
   @override
-  String get msgNoReimbursableExpenses => 'لا توجد نفقات قابلة للاسترجاع';
+  String get actionRefresh => 'تحديث';
 
   @override
-  String get labelReceipt => 'الإيصال';
+  String get titleErrorLoadingEmployees => 'خطأ في تحميل الموظفين';
 
   @override
-  String get labelAttachReceipt => 'إرفاق الإيصال';
+  String get actionRetry => 'إعادة المحاولة';
 
   @override
-  String get labelRemoveReceipt => 'إزالة الإيصال';
+  String get titleNoEmployees => 'لا يوجد موظفون بعد';
+
+  @override
+  String get msgNoEmployees => 'لم تقم بإضافة أي موظفين إلى فريقك بعد.';
+
+  @override
+  String get btnAddFirstEmployee => 'أضف موظفك الأول';
+
+  @override
+  String get titleOrganizationManagement => 'إدارة المنظمات';
+
+  @override
+  String get tabPending => 'قيد الانتظار';
+
+  @override
+  String get tabApproved => 'مقبول';
+
+  @override
+  String get tabRejected => 'مرفوض';
+
+  @override
+  String msgOrgApproved(String name) {
+    return 'تمت الموافقة على المنظمة $name';
+  }
+
+  @override
+  String errApproveOrg(String error) {
+    return 'فشل في الموافقة على المنظمة: $error';
+  }
+
+  @override
+  String msgOrgRejected(String name) {
+    return 'تم رفض المنظمة $name';
+  }
+
+  @override
+  String errRejectOrg(String error) {
+    return 'فشل في رفض المنظمة: $error';
+  }
+
+  @override
+  String dialogTitleRejectOrg(String name) {
+    return 'رفض $name؟';
+  }
+
+  @override
+  String get labelRejectReason => 'يرجى تقديم سبب الرفض:';
+
+  @override
+  String get hintRejectReason => 'سبب الرفض...';
+
+  @override
+  String get actionReject => 'رفض';
+
+  @override
+  String get errLoadOrgs => 'خطأ في تحميل المنظمات';
+
+  @override
+  String get msgNoOrgs => 'لم يتم العثور على منظمات';
+
+  @override
+  String get titleExpenseDetails => 'تفاصيل النفقة';
+
+  @override
+  String get btnApprove => 'موافقة';
+
+  @override
+  String get btnReject => 'رفض';
+
+  @override
+  String get btnAddComment => 'إضافة تعليق';
+
+  @override
+  String get labelComments => 'التعليقات';
 
   @override
   String get labelViewReceipt => 'عرض الإيصال';
 
   @override
-  String get hintAttachReceipt => 'إرفاق صورة أو PDF كدليل';
+  String get titleAddComment => 'إضافة تعليق';
 
   @override
-  String get msgReceiptAttached => 'تم إرفاق الإيصال بنجاح';
+  String get labelComment => 'تعليق';
 
   @override
-  String get msgReceiptRemoved => 'تم إزالة الإيصال';
+  String get hintComment => 'أدخل تعليقك هنا...';
 
   @override
-  String get errReceiptNotFound => 'ملف الإيصال غير موجود';
+  String get errCommentRequired => 'يرجى إدخال تعليق';
 
   @override
-  String get errReceiptInvalidFormat => 'صيغة ملف غير صالحة. يرجى استخدام JPG أو PNG أو PDF';
+  String get errCommentLength => 'يجب أن يكون التعليق 3 أحرف على الأقل';
 
   @override
-  String get labelBackup => 'Backup';
+  String get btnSubmit => 'إرسال';
 
   @override
-  String get labelRestore => 'Restore';
+  String get labelTotal => 'الإجمالي';
 
   @override
-  String get titleBackupData => 'Backup Data';
+  String get titleNoPendingApprovals => 'لا توجد موافقات معلقة';
 
   @override
-  String get titleRestoreData => 'Restore Data';
+  String get msgAllExpensesProcessed => 'تمت معالجة جميع النفقات';
 
   @override
-  String get btnBackupNow => 'Backup Now';
+  String get tooltipViewDetails => 'عرض التفاصيل';
 
   @override
-  String get btnRestoreNow => 'Restore Now';
+  String get tooltipApprove => 'موافقة';
 
   @override
-  String get msgBackupSuccess => 'Backup created successfully';
+  String get tooltipReject => 'رفض';
 
   @override
-  String get msgRestoreSuccess => 'Data restored successfully';
+  String get tooltipComment => 'تعليق';
 
   @override
-  String get msgBackupFailed => 'Backup failed';
+  String get titleRejectExpense => 'رفض النفقة';
 
   @override
-  String get msgRestoreFailed => 'Restore failed';
+  String get labelRejectionReason => 'سبب الرفض';
 
   @override
-  String get descBackup => 'Create a backup file of all your expenses and categories';
+  String get hintRejectionReason => 'أدخل سبب الرفض';
 
   @override
-  String get descRestore => 'Restore your data from a previous backup file';
+  String get labelViewDetails => 'عرض التفاصيل';
 
   @override
-  String get descRestoreWarning => 'Warning: This will replace all current data with the backup data';
+  String get labelSuspend => 'تعليق';
 
   @override
-  String get labelChooseBackupLocation => 'Choose backup location';
+  String get labelActivate => 'تفعيل';
 
   @override
-  String get labelSelectBackupFile => 'Select backup file';
+  String get labelRemove => 'إزالة';
 
   @override
-  String get ownerDashboard => 'Owner Dashboard';
+  String get labelBy => 'بواسطة';
 
   @override
-  String get subtitleOwnerDashboard => 'Platform-wide overview and management';
+  String get labelStatusActive => 'نشط';
 
   @override
-  String get kpiTotalCompanies => 'Total Companies';
+  String get msgExportExcel => 'جاري التصدير إلى Excel...';
 
   @override
-  String get kpiTotalManagers => 'Total Managers';
+  String get msgExportPdf => 'جاري التصدير إلى PDF...';
 
   @override
-  String get kpiTotalEmployees => 'Total Employees';
+  String get labelBudget => 'الميزانية';
 
   @override
-  String get kpiTotalExpenses => 'Total Expenses';
+  String get labelDescCreateAccount => 'إنشاء حساب جديد لعضو في الفريق';
 
   @override
-  String get kpiPendingApprovals => 'Pending Approvals';
+  String get labelTemporaryPassword => 'كلمة مرور مؤقتة';
 
   @override
-  String get kpiPendingApprovalsSubtitle => 'Managers awaiting approval';
+  String get hintTemporaryPassword => 'إنشاء كلمة مرور مؤقتة';
 
   @override
-  String get kpiMonthlyGrowth => 'Monthly Growth';
+  String get msgPasswordChangeHint => 'يمكن للموظف تغيير كلمة المرور هذه بعد تسجيل الدخول الأول.';
 
   @override
-  String get kpiMonthlyGrowthSubtitle => 'Platform expense growth';
+  String get labelDeactivate => 'تعطيل';
 
   @override
-  String get headerPendingManagerRequests => 'Pending Manager Requests';
+  String get statusInactive => 'غير نشط';
 
   @override
-  String get headerActiveManagers => 'Active Managers';
+  String get labelUnknown => 'غير معروف';
 
   @override
-  String get headerRecentActivity => 'Recent Activity';
+  String get ownerDashboard => 'لوحة تحكم المالك';
 
   @override
-  String get msgNoRecentActivity => 'No recent activity';
+  String get subtitleOwnerDashboard => 'إدارة الشركات، الموافقة على المدراء، ومراقبة نشاط المنصة';
 
   @override
-  String get msgManagerApproved => 'Manager approved successfully';
+  String get kpiTotalCompanies => 'إجمالي الشركات';
 
   @override
-  String get msgManagerRejected => 'Manager rejected';
+  String get kpiTotalManagers => 'إجمالي المدراء';
 
   @override
-  String get msgManagerSuspended => 'Manager suspended';
+  String get kpiPendingApprovalsSubtitle => 'مدراء بانتظار الموافقة';
 
   @override
-  String get msgManagerDeleted => 'Manager deleted';
+  String get kpiMonthlyGrowth => 'النمو الشهري';
 
   @override
-  String get msgManagerProfileComingSoon => 'Manager profile view - Coming soon';
+  String get kpiMonthlyGrowthSubtitle => 'النمو على مستوى المنصة';
 
   @override
-  String get dialogTitleRejectManager => 'Reject Manager';
+  String get headerPendingManagerRequests => 'طلبات المدراء المعلقة';
 
   @override
-  String get dialogLabelReasonRejection => 'Reason for rejection';
+  String get headerActiveManagers => 'المدراء النشطون';
 
   @override
-  String get dialogHintEnterReason => 'Enter reason...';
+  String get headerRecentActivity => 'النشاط الأخير';
 
   @override
-  String get dialogActionReject => 'Reject';
+  String get msgNoRecentActivity => 'لم يتم العثور على نشاط أخير';
 
   @override
-  String get dialogTitleSuspendManager => 'Suspend Manager';
+  String get msgManagerApproved => 'تمت الموافقة على المدير بنجاح';
 
   @override
-  String get dialogLabelReasonSuspension => 'Reason for suspension';
+  String get msgManagerRejected => 'تم رفض المدير';
 
   @override
-  String get dialogActionSuspend => 'Suspend';
+  String get msgManagerSuspended => 'تم تعليق حساب المدير';
 
   @override
-  String get dialogTitleConfirmDelete => 'Confirm Delete';
+  String get dialogTitleConfirmDelete => 'تأكيد الحذف';
 
   @override
-  String get dialogDescDeleteManager => 'Are you sure you want to delete this manager? This action cannot be undone.';
+  String get dialogDescDeleteManager => 'هل أنت متأكد أنك تريد حذف هذا المدير؟ هذا الإجراء غير قابل للتراجع.';
 
   @override
-  String get labelEmployeeManagement => 'Employee Management';
+  String get msgManagerDeleted => 'تم حذف حساب المدير';
 
   @override
-  String get hintSearchEmployees => 'Search employees...';
+  String get msgManagerProfileComingSoon => 'عرض ملف المدير سيأتي قريباً';
 
   @override
-  String get labelDepartment => 'Department';
+  String get dialogTitleRejectManager => 'رفض المدير';
 
   @override
-  String get filterAllDepartments => 'All Departments';
+  String get dialogLabelReasonRejection => 'سبب الرفض';
 
   @override
-  String get filterAllStatuses => 'All Statuses';
+  String get dialogHintEnterReason => 'أدخل السبب...';
 
   @override
-  String get labelStatusSuspended => 'Suspended';
+  String get dialogActionReject => 'رفض';
 
   @override
-  String get labelAddEmployee => 'Add Employee';
+  String get dialogTitleSuspendManager => 'تعليق المدير';
 
   @override
-  String get labelPendingExpenseApprovals => 'Pending Expense Approvals';
+  String get dialogLabelReasonSuspension => 'سبب التعليق';
 
   @override
-  String get msgExpenseApproved => 'Expense approved';
+  String get dialogActionSuspend => 'تعليق';
 
   @override
-  String get msgExpenseRejected => 'Expense rejected';
+  String get titleRemoveEmployee => 'إزالة الموظف';
 
   @override
-  String get labelBudgetMonitoring => 'Budget Monitoring';
+  String get msgExpenseAdded => 'تمت إضافة النفقة بنجاح';
 
   @override
-  String msgEmployeeAdded(Object name) {
-    return 'Employee $name added successfully';
-  }
+  String get navBudgets => 'الميزانيات';
 
   @override
-  String get msgCommentAdded => 'Comment added successfully';
+  String get navManagerDashboard => 'لوحة تحكم المدير';
 
   @override
-  String msgViewDetailsFor(Object name) {
-    return 'View details for $name';
-  }
+  String get titleViewExpenses => 'عرض النفقات';
 
   @override
-  String get dialogTitleSuspendEmployee => 'Suspend Employee';
+  String get subtitleViewExpenses => 'تصفح وإدارة نفقاتك';
 
   @override
-  String dialogDescSuspendEmployee(Object name) {
-    return 'Are you sure you want to suspend $name?';
-  }
-
-  @override
-  String msgEmployeeSuspended(Object name) {
-    return '$name suspended';
-  }
-
-  @override
-  String msgEmployeeActivated(Object name) {
-    return '$name activated';
-  }
-
-  @override
-  String get dialogTitleRemoveEmployee => 'Remove Employee';
-
-  @override
-  String dialogDescRemoveEmployee(Object name) {
-    return 'Are you sure you want to remove $name? This action cannot be undone.';
-  }
-
-  @override
-  String msgEmployeeRemoved(Object name) {
-    return '$name removed';
-  }
-
-  @override
-  String get btnConfirm => 'Confirm';
-
-  @override
-  String msgAddCategoryFailed(Object error) {
-    return 'Failed to add category: $error';
-  }
-
-  @override
-  String msgDeleteCategoryFailed(Object error) {
-    return 'Failed to delete category: $error';
-  }
+  String get hintSearchExpenses => 'البحث عن نفقات...';
 
   @override
   String get searchSemanticLabel => 'بحث';
@@ -709,10 +1098,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get clearSearchSemanticLabel => 'مسح البحث';
 
   @override
-  String get clearSearchTooltip => 'مسح البحث';
+  String get dashboardSubtitle => 'تتبع إنفاقك وإدارة أموالك';
 
   @override
-  String sortLabel(Object sort) {
-    return 'ترتيب: $sort';
+  String get numberofCategories => 'الفئات';
+
+  @override
+  String get dailyAvgSpending => 'المتوسط اليومي';
+
+  @override
+  String get msgCategoryAdded => 'تمت إضافة الفئة بنجاح';
+
+  @override
+  String msgAddCategoryFailed(String error) {
+    return 'فشل في إضافة الفئة: $error';
+  }
+
+  @override
+  String get msgCategoryDeleted => 'تم حذف الفئة بنجاح';
+
+  @override
+  String msgDeleteCategoryFailed(String error) {
+    return 'فشل في حذف الفئة: $error';
   }
 }

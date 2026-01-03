@@ -5,6 +5,15 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Reusable button for authentication forms
 class AuthButton extends StatelessWidget {
+
+  const AuthButton({
+    required this.text, required this.onPressed, super.key,
+    this.isLoading = false,
+    this.isOutlined = false,
+    this.icon,
+    this.backgroundColor,
+    this.textColor,
+  });
   final String text;
   final VoidCallback onPressed;
   final bool isLoading;
@@ -12,17 +21,6 @@ class AuthButton extends StatelessWidget {
   final IconData? icon;
   final Color? backgroundColor;
   final Color? textColor;
-
-  const AuthButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-    this.isLoading = false,
-    this.isOutlined = false,
-    this.icon,
-    this.backgroundColor,
-    this.textColor,
-  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseDetailDialog extends StatelessWidget {
-
   const ExpenseDetailDialog({
     required this.expenseWithCategory,
     super.key,
@@ -67,7 +66,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Expense Details',
+                            AppLocalizations.of(context)!.titleExpenseDetails,
                             style: AppTextStyles.heading3,
                           ),
                           const SizedBox(height: AppSpacing.xs),
@@ -82,10 +81,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, semanticLabel: 'Close'),
+                      icon: Icon(Icons.close,
+                          semanticLabel:
+                              AppLocalizations.of(context)!.tooltipClose),
                       onPressed: () => Navigator.of(context).pop(),
                       color: colorScheme.onSurfaceVariant,
-                      tooltip: 'Close',
+                      tooltip: AppLocalizations.of(context)!.tooltipClose,
                     ),
                   ],
                 ),
@@ -95,8 +96,8 @@ class ExpenseDetailDialog extends StatelessWidget {
 
                 // Amount
                 _buildDetailRow(
-                  AppStrings.labelAmount,
-                  '${expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
+                  AppLocalizations.of(context)!.labelAmount,
+                  '${expense.amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                   Icons.attach_money,
                   colorScheme.tertiary,
                 ),
@@ -104,7 +105,7 @@ class ExpenseDetailDialog extends StatelessWidget {
 
                 // Date
                 _buildDetailRow(
-                  AppStrings.labelDate,
+                  AppLocalizations.of(context)!.labelDate,
                   dateStr,
                   Icons.calendar_today,
                   colorScheme.secondary,
@@ -113,7 +114,7 @@ class ExpenseDetailDialog extends StatelessWidget {
 
                 // Description
                 _buildDetailRow(
-                  AppStrings.labelDescription,
+                  AppLocalizations.of(context)!.labelDescription,
                   expense.description,
                   Icons.description,
                   colorScheme.secondary,
@@ -132,7 +133,7 @@ class ExpenseDetailDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Category Budget',
+                        AppLocalizations.of(context)!.titleCategoryBudget,
                         style: AppTextStyles.label,
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -143,12 +144,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppStrings.labelBudget,
+                                AppLocalizations.of(context)!.labelBudget,
                                 style: AppTextStyles.caption,
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Text(
-                                '${category.budget.toStringAsFixed(2)} ${AppStrings.currency}',
+                                '${category.budget.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -159,12 +160,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppStrings.labelSpent,
+                                AppLocalizations.of(context)!.labelSpent,
                                 style: AppTextStyles.caption,
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Text(
-                                '${category.spent.toStringAsFixed(2)} ${AppStrings.currency}',
+                                '${category.spent.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.w600,
                                   color: categoryColor,
@@ -176,12 +177,12 @@ class ExpenseDetailDialog extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                AppStrings.labelRemaining,
+                                AppLocalizations.of(context)!.labelRemaining,
                                 style: AppTextStyles.caption,
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Text(
-                                '${(category.budget - category.spent).toStringAsFixed(2)} ${AppStrings.currency}',
+                                '${(category.budget - category.spent).toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -200,8 +201,8 @@ class ExpenseDetailDialog extends StatelessWidget {
                   width: double.infinity,
                   child: PrimaryButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child:
-                        Text(AppStrings.btnClose, style: AppTextStyles.button),
+                    child: Text(AppLocalizations.of(context)!.btnClose,
+                        style: AppTextStyles.button),
                   ),
                 ),
               ],

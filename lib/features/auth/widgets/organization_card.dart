@@ -7,20 +7,19 @@ import 'package:intl/intl.dart';
 
 /// Card widget for displaying organization information
 class OrganizationCard extends StatelessWidget {
-  final Organization organization;
-  final bool showActions;
-  final bool showReason;
-  final VoidCallback? onApprove;
-  final VoidCallback? onReject;
 
   const OrganizationCard({
-    super.key,
-    required this.organization,
+    required this.organization, super.key,
     this.showActions = false,
     this.showReason = false,
     this.onApprove,
     this.onReject,
   });
+  final Organization organization;
+  final bool showActions;
+  final bool showReason;
+  final VoidCallback? onApprove;
+  final VoidCallback? onReject;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class OrganizationCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.border),
+        side: const BorderSide(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -42,7 +41,7 @@ class OrganizationCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: _getStatusColor().withOpacity(0.1),
+                    color: _getStatusColor().withAlpha((0.1 * 255).round()),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -105,7 +104,7 @@ class OrganizationCard extends StatelessWidget {
                     label: const Text('Reject'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.red,
-                      side: BorderSide(color: AppColors.red),
+                      side: const BorderSide(color: AppColors.red),
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.lg,
                         vertical: AppSpacing.sm,
@@ -139,7 +138,7 @@ class OrganizationCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: _getStatusColor().withOpacity(0.1),
+  color: _getStatusColor().withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(

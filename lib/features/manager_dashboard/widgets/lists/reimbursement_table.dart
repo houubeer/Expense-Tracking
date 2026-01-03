@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Mock reimbursement data model
 class Reimbursement {
-
   const Reimbursement({
     required this.employeeName,
     required this.amount,
@@ -21,7 +20,6 @@ class Reimbursement {
 /// Reimbursement table widget for tracking payments
 /// Displays approved expenses awaiting payment
 class ReimbursementTable extends StatelessWidget {
-
   const ReimbursementTable({
     super.key,
     this.onExportExcel,
@@ -69,7 +67,7 @@ class ReimbursementTable extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Reimbursements',
+              AppLocalizations.of(context)!.reimbursements,
               style: AppTextStyles.heading3,
             ),
             Row(
@@ -77,7 +75,7 @@ class ReimbursementTable extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onExportExcel,
                   icon: const Icon(Icons.table_chart, size: AppSpacing.iconXs),
-                  label: const Text('Export Excel'),
+                  label: Text(AppLocalizations.of(context)!.exportExcel),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.lg,
@@ -88,8 +86,9 @@ class ReimbursementTable extends StatelessWidget {
                 const SizedBox(width: AppSpacing.sm),
                 OutlinedButton.icon(
                   onPressed: onExportPdf,
-                  icon: const Icon(Icons.picture_as_pdf, size: AppSpacing.iconXs),
-                  label: const Text('Export PDF'),
+                  icon:
+                      const Icon(Icons.picture_as_pdf, size: AppSpacing.iconXs),
+                  label: Text(AppLocalizations.of(context)!.exportAsPdf),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.lg,
@@ -116,7 +115,7 @@ class ReimbursementTable extends StatelessWidget {
             columns: [
               DataColumn(
                 label: Text(
-                  'Employee',
+                  AppLocalizations.of(context)!.labelEmployee,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -124,7 +123,7 @@ class ReimbursementTable extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  'Approved Amount',
+                  AppLocalizations.of(context)!.labelApprovedAmount,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -132,7 +131,7 @@ class ReimbursementTable extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  AppStrings.labelStatus,
+                  AppLocalizations.of(context)!.labelStatus,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -140,7 +139,7 @@ class ReimbursementTable extends StatelessWidget {
               ),
               DataColumn(
                 label: Text(
-                  'Payment Date',
+                  AppLocalizations.of(context)!.labelPaymentDate,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -158,7 +157,7 @@ class ReimbursementTable extends StatelessWidget {
                   ),
                   DataCell(
                     Text(
-                      '${reimbursement.amount.toStringAsFixed(2)} ${AppStrings.currency}',
+                      '${reimbursement.amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -174,10 +173,13 @@ class ReimbursementTable extends StatelessWidget {
                         color: reimbursement.isPaid
                             ? Colors.green.withValues(alpha: 0.2)
                             : Colors.orange.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius:
+                            BorderRadius.circular(AppSpacing.radiusSm),
                       ),
                       child: Text(
-                        reimbursement.isPaid ? 'Paid' : 'Unpaid',
+                        reimbursement.isPaid
+                            ? AppLocalizations.of(context)!.statusPaid
+                            : AppLocalizations.of(context)!.statusUnpaid,
                         style: AppTextStyles.bodySmall.copyWith(
                           fontWeight: FontWeight.w600,
                           color: reimbursement.isPaid
