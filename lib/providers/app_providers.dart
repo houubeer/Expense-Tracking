@@ -18,7 +18,6 @@ import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
-import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/services/sync_service.dart';
 
 /// Logger service provider - centralized logging

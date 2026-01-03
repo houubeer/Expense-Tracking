@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/tables/receipts_table.dart';
-import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 
 part 'receipt_dao.g.dart';
 
@@ -11,9 +10,7 @@ part 'receipt_dao.g.dart';
 /// Follows the DAO pattern to encapsulate all database operations for receipts.
 @DriftAccessor(tables: [Receipts])
 class ReceiptDao extends DatabaseAccessor<AppDatabase> with _$ReceiptDaoMixin {
-  final ConnectivityService? _connectivityService;
-
-  ReceiptDao(AppDatabase db, [this._connectivityService]) : super(db);
+  ReceiptDao(AppDatabase db) : super(db);
 
   /// Watch all receipts for a specific expense
   ///

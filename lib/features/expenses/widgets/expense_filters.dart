@@ -17,25 +17,6 @@ enum ReimbursableFilter {
 
 class ExpenseFilters extends ConsumerWidget {
   const ExpenseFilters({
-    required this.selectedCategoryId,
-    required this.selectedDate,
-    required this.onCategoryChanged,
-    required this.onDateChanged,
-    required this.onReimbursableFilterChanged,
-    super.key,
-    this.reimbursableFilter = ReimbursableFilter.all,
-  });
-  final int? selectedCategoryId;
-  final DateTime? selectedDate; // Deprecated: kept for backward compatibility
-  final DateTime? startDate; // New: date range support
-  final DateTime? endDate; // New: date range support
-  final ReimbursableFilter reimbursableFilter;
-  final ValueChanged<int?> onCategoryChanged;
-  final ValueChanged<DateTime?> onDateChanged;
-  final void Function(DateTime?, DateTime?)? onDateRangeChanged; // New: date range callback
-  final ValueChanged<ReimbursableFilter> onReimbursableFilterChanged;
-
-  const ExpenseFilters({
     super.key,
     required this.selectedCategoryId,
     this.selectedDate,
@@ -47,6 +28,16 @@ class ExpenseFilters extends ConsumerWidget {
     this.onDateRangeChanged,
     required this.onReimbursableFilterChanged,
   });
+  
+  final int? selectedCategoryId;
+  final DateTime? selectedDate;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final ReimbursableFilter reimbursableFilter;
+  final ValueChanged<int?> onCategoryChanged;
+  final ValueChanged<DateTime?> onDateChanged;
+  final void Function(DateTime?, DateTime?)? onDateRangeChanged;
+  final ValueChanged<ReimbursableFilter> onReimbursableFilterChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -300,9 +291,7 @@ class ExpenseFilters extends ConsumerWidget {
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  selectedDate == null
-                      ? AppLocalizations.of(context)!.labelDate
-                      : DateFormat('MMM dd, yyyy').format(selectedDate!),
+                  _getDateRangeText(context),
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: hasDateFilter
                         ? colorScheme.onSurface
@@ -328,12 +317,12 @@ class ExpenseFilters extends ConsumerWidget {
     );
   }
 
-  String _getDateRangeText() {
+  String _getDateRangeText(BuildContext context) {
     final displayStartDate = startDate ?? selectedDate;
     final displayEndDate = endDate ?? selectedDate;
 
     if (displayStartDate == null && displayEndDate == null) {
-      return AppStrings.labelDateRange;
+      return AppLocalizations.of(context)!.labelDate;
     }
 
     if (displayStartDate != null && displayEndDate != null) {
@@ -355,6 +344,6 @@ class ExpenseFilters extends ConsumerWidget {
       return 'Until ${DateFormat('MMM dd, yyyy').format(displayEndDate)}';
     }
 
-    return AppStrings.labelDateRange;
+    return AppLocalizations.of(context)!.labelDate;
   }
 }

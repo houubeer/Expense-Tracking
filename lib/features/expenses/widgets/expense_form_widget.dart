@@ -362,93 +362,26 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusSm),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.sm,
-                          ),
-                          child: Row(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                receipt.isImage
-                                    ? Icons.image
-                                    : Icons.picture_as_pdf,
+                                Icons.upload_file,
                                 color: colorScheme.primary,
-                                size: 20,
+                                size: 32,
                               ),
-                              const SizedBox(width: AppSpacing.sm),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      receipt.fileName,
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: colorScheme.onSurface,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    if (receipt.formattedSize.isNotEmpty)
-                                      Text(
-                                        receipt.formattedSize,
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: colorScheme.onSurfaceVariant,
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                  ],
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                AppLocalizations.of(context)!.labelAttachReceipt,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: colorScheme.primary,
                                 ),
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.close,
-                                  color: colorScheme.error,
-                                  size: 18,
-                                ),
-                                onPressed: () =>
-                                    widget.onRemoveReceiptAt?.call(index),
-                                tooltip: AppStrings.labelRemoveReceipt,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
                               ),
                             ],
                           ),
-                        );
-                      }),
-                      const Divider(height: AppSpacing.md),
-                    ],
-
-                    // Add receipts button
-                    InkWell(
-                      onTap: widget.onAttachReceipt,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.sm,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              widget.receipts.isEmpty
-                                  ? Icons.upload_file
-                                  : Icons.add_photo_alternate,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Text(
-                              widget.receipts.isEmpty
-                                  ? AppStrings.labelAttachReceipts
-                                  : AppStrings.labelAddMoreReceipts,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
 

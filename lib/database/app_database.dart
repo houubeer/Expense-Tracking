@@ -74,7 +74,7 @@ class AppDatabase extends _$AppDatabase implements IDatabase {
 
   /// Provides access to receipt-related database operations.
   @override
-  ReceiptDao get receiptDao => ReceiptDao(this, _connectivityService);
+  ReceiptDao get receiptDao => ReceiptDao(this);
 
   /// The current schema version of the database.
   ///
