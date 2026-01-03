@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
@@ -23,6 +24,9 @@ import 'package:expense_tracking_desktop_app/widgets/connection_status_banner.da
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+/// Expose router through Riverpod while keeping a direct factory for non-Riverpod usage.
+final routerProvider = Provider<GoRouter>((ref) => _buildRouter());
 
 /// Check if user is authenticated and get their role for redirect
 Future<String?> _getAuthRedirect() async {
@@ -65,16 +69,13 @@ Future<String?> _getAuthRedirect() async {
 }
 
 /// Creates the app router
-GoRouter createRouter() {
+GoRouter createRouter() => _buildRouter();
+
+GoRouter _buildRouter() {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.login,
     redirect: (context, state) async {
-      final isAuthRoute = state.uri.path == AppRoutes.login ||
-          state.uri.path == AppRoutes.register ||
-          state.uri.path == AppRoutes.forgotPassword ||
-          state.uri.path.startsWith('/auth/reset-password');
-
       // Only redirect on login page - check if already authenticated
       if (state.uri.path == AppRoutes.login) {
         final redirect = await _getAuthRedirect();
