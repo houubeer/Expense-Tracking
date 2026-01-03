@@ -168,7 +168,13 @@ GoRouter createRouter() {
                             Sidebar(
                               currentPath: state.uri.path,
                               onDestinationSelected: (path) {
-                                context.go(path);
+                                // Use push for settings to show as modal overlay
+                                // so the dashboard remains visible behind it
+                                if (path == AppRoutes.settings) {
+                                  context.push(path);
+                                } else {
+                                  context.go(path);
+                                }
                               },
                             ),
                             Expanded(
@@ -278,17 +284,6 @@ GoRouter createRouter() {
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: const OwnerDashboardScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-            ),
-          ),
-          GoRoute(
-            path: AppRoutes.settings,
-            pageBuilder: (context, state) => CustomTransitionPage(
-              key: state.pageKey,
-              child: const SettingsScreen(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return FadeTransition(opacity: animation, child: child);

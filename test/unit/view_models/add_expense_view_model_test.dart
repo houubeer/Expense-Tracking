@@ -1,25 +1,38 @@
 import 'package:expense_tracking_desktop_app/features/expenses/providers/add_expense_provider.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart';
+import 'package:expense_tracking_desktop_app/features/expenses/services/budget_validation_service.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/view_models/add_expense_view_model.dart';
 import 'package:expense_tracking_desktop_app/services/error_reporting_service.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'add_expense_view_model_test.mocks.dart';
 
-@GenerateMocks([IExpenseService, ErrorReportingService])
+@GenerateMocks([
+  IExpenseService,
+  ErrorReportingService,
+  BudgetValidationService,
+  AppDatabase
+])
 void main() {
   late MockIExpenseService mockExpenseService;
   late MockErrorReportingService mockErrorReportingService;
+  late MockBudgetValidationService mockBudgetValidationService;
+  late MockAppDatabase mockDatabase;
   late AddExpenseViewModel viewModel;
 
   setUp(() {
     mockExpenseService = MockIExpenseService();
     mockErrorReportingService = MockErrorReportingService();
+    mockBudgetValidationService = MockBudgetValidationService();
+    mockDatabase = MockAppDatabase();
     viewModel = AddExpenseViewModel(
       mockExpenseService,
+      mockBudgetValidationService,
       mockErrorReportingService,
+      mockDatabase,
       null,
     );
   });

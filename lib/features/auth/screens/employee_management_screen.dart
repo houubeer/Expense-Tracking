@@ -51,8 +51,12 @@ class _EmployeeManagementScreenState
       }
 
       // Get employees for this organization
-      final employees =
+      final employeesData =
           await supabaseService.getOrganizationMembers(_organizationId!);
+
+      // Convert Map<String, dynamic> to UserProfile objects
+      final employees =
+          employeesData.map((data) => UserProfile.fromJson(data)).toList();
 
       if (!mounted) return;
       setState(() {

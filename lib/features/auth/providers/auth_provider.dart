@@ -100,11 +100,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _loadUserProfile() async {
     try {
       final supabaseService = _ref.read(supabaseServiceProvider);
-      final profileData = await supabaseService.getCurrentUserProfile();
+      final userProfile = await supabaseService.getCurrentUserProfile();
 
-      if (profileData != null) {
-        final userProfile = UserProfile.fromJson(profileData);
-
+      if (userProfile != null) {
         // Check if user is pending approval
         final isPending =
             !userProfile.isActive && userProfile.role != UserRole.owner;
