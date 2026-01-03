@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -228,7 +229,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: AppSpacing.xl),
                       // App name
                       Text(
-                        'Expense Tracker',
+                        AppLocalizations.of(context)!.appName,
                         style: AppTextStyles.heading1.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -244,7 +245,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: AppSpacing.sm),
                       // Tagline
                       Text(
-                        'Manage your expenses effortlessly',
+                        AppLocalizations.of(context)!.appTagline,
                         style: AppTextStyles.bodyLarge.copyWith(
                           color: Colors.white.withValues(alpha: 0.9),
                           shadows: [
@@ -287,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             children: [
                               // Header
                               Text(
-                                'Welcome Back',
+                                AppLocalizations.of(context)!.welcomeBack,
                                 style: AppTextStyles.heading2.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -295,7 +296,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Text(
-                                'Sign in to continue',
+                                AppLocalizations.of(context)!.signInToContinue,
                                 style: AppTextStyles.bodyMedium.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -338,18 +339,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               // Email field
                               AuthTextField(
                                 controller: _emailController,
-                                label: 'Email',
-                                hintText: 'Enter your email',
+                                label: AppLocalizations.of(context)!.labelEmail,
+                                hintText: AppLocalizations.of(context)!.hintEmail,
                                 keyboardType: TextInputType.emailAddress,
                                 prefixIcon: Icons.email_outlined,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
+                                    return AppLocalizations.of(context)!.errEnterEmail;
                                   }
                                   if (!RegExp(
                                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                                       .hasMatch(value)) {
-                                    return 'Please enter a valid email';
+                                    return AppLocalizations.of(context)!.errInvalidEmail;
                                   }
                                   return null;
                                 },
@@ -359,8 +360,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               // Password field
                               AuthTextField(
                                 controller: _passwordController,
-                                label: 'Password',
-                                hintText: 'Enter your password',
+                                label: AppLocalizations.of(context)!.labelPassword,
+                                hintText: AppLocalizations.of(context)!.hintPassword,
                                 obscureText: _obscurePassword,
                                 prefixIcon: Icons.lock_outlined,
                                 suffixIcon: IconButton(
@@ -375,7 +376,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your password';
+                                    return AppLocalizations.of(context)!.errEnterPassword;
                                   }
                                   return null;
                                 },
@@ -408,7 +409,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       ),
                                       const SizedBox(width: AppSpacing.sm),
                                       Text(
-                                        'Remember me',
+                                        AppLocalizations.of(context)!.rememberMe,
                                         style: AppTextStyles.bodySmall.copyWith(
                                           color: AppColors.textSecondary,
                                         ),
@@ -426,7 +427,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: Text(
-                                      'Forgot Password?',
+                                      AppLocalizations.of(context)!.forgotPassword,
                                       style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.w600,
@@ -439,7 +440,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                               // Login button
                               AuthButton(
-                                text: 'Sign In',
+                                text: AppLocalizations.of(context)!.btnSignIn,
                                 onPressed: _handleLogin,
                                 isLoading: _isLoading,
                               ),
@@ -450,7 +451,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Want to register your organization?',
+                                    AppLocalizations.of(context)!.msgNoAccount,
                                     style: AppTextStyles.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
@@ -466,7 +467,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: Text(
-                                      'Register as Manager',
+                                      AppLocalizations.of(context)!.btnRegisterManager,
                                       style: AppTextStyles.bodySmall.copyWith(
                                         color: AppColors.primary,
                                         fontWeight: FontWeight.w600,
@@ -496,7 +497,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     const SizedBox(width: AppSpacing.sm),
                                     Expanded(
                                       child: Text(
-                                        'Employees: Your account is created by your manager. Contact them for login credentials.',
+                                        AppLocalizations.of(context)!.msgEmployeeLoginInfo,
                                         style: AppTextStyles.bodySmall.copyWith(
                                           color: AppColors.textSecondary,
                                         ),
