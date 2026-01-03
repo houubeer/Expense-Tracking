@@ -3,15 +3,6 @@ import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import '../models/expense_model.dart';
 import 'audit_log_repository.dart';
 
-// Helper for parsing status string to ExpenseStatus
-ExpenseStatus _parseStatus(String? statusStr) {
-  if (statusStr == null) return ExpenseStatus.pending;
-  return ExpenseStatus.values.firstWhere(
-    (e) => e.name == statusStr,
-    orElse: () => ExpenseStatus.pending,
-  );
-}
-
 class ExpenseRepository {
   final SupabaseService _supabaseService;
   final AuditLogRepository _auditLogRepository;

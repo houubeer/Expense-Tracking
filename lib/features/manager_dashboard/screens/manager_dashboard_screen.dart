@@ -11,9 +11,6 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/lists/reimbursement_table.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/forms/add_employee_form.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/expense_details_dialog.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/add_comment_dialog.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/manager_dashboard_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
@@ -24,11 +21,6 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/reposito
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/expense_approval_service.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
-import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
-import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 class ManagerDashboardScreen extends StatefulWidget {
   const ManagerDashboardScreen({
@@ -118,8 +110,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 children: [
                   // Page Header
                   PageHeader(
-                    title: AppStrings.titleManagerDashboard,
-                    subtitle: AppStrings.descManagerDashboard,
+                    title: AppLocalizations.of(context)!.titleManagerDashboard,
+                    subtitle: AppLocalizations.of(context)!.descManagerDashboard,
                   ),
                   const SizedBox(height: AppSpacing.xxl),
 
@@ -361,85 +353,6 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     );
   }
 
-  void _showAddEmployeeDialog(
-    BuildContext context,
-    ManagerDashboardViewModel viewModel,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AddEmployeeForm(
-        onSubmit: (employee) async {
-          await viewModel.addEmployee(employee);
-          if (mounted) {
-            _showMessage(
-                AppLocalizations.of(context)!.msgEmployeeAdded(employee.name));
-          }
-        },
-      ),
-    );
-  }
-
-  void _showExpenseDetailsDialog(
-    BuildContext context,
-    ManagerDashboardViewModel viewModel,
-    ManagerExpense expense,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => ExpenseDetailsDialog(
-        expense: expense,
-        onApprove: () async {
-          Navigator.of(context).pop();
-          final success = await viewModel.approveExpense(expense.id);
-          if (success && mounted)
-            _showMessage(AppLocalizations.of(context)!.msgExpenseApproved);
-        },
-        onReject: () async {
-          Navigator.of(context).pop();
-          final success = await viewModel.rejectExpense(
-              expense.id, AppLocalizations.of(context)!.msgExpenseRejected);
-          if (success && mounted)
-            _showMessage(AppLocalizations.of(context)!.msgExpenseRejected);
-        },
-        onAddComment: () {
-          Navigator.of(context).pop();
-          _showAddCommentDialogByExpense(context, viewModel, expense);
-        },
-      ),
-    );
-  }
-
-  void _showAddCommentDialogById(
-    BuildContext context,
-    ManagerDashboardViewModel viewModel,
-    String expenseId,
-  ) {
-    final expense = viewModel.pendingExpenses.firstWhere(
-      (e) => e.id == expenseId,
-      orElse: () => viewModel.pendingExpenses.first,
-    );
-    _showAddCommentDialogByExpense(context, viewModel, expense);
-  }
-
-  void _showAddCommentDialogByExpense(
-    BuildContext context,
-    ManagerDashboardViewModel viewModel,
-    ManagerExpense expense,
-  ) {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AddCommentDialog(
-        expenseId: expense.id,
-        employeeName: expense.employeeName,
-        onSubmit: (comment) async {
-          await viewModel.addComment(expense.id, comment);
-          if (mounted)
-            _showMessage(AppLocalizations.of(context)!.msgCommentAdded);
-        },
-      ),
-    );
-  }
-
   void _handleEmployeeAction(
     BuildContext context,
     ManagerDashboardViewModel viewModel,
@@ -471,6 +384,24 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         );
         break;
     }
+  }
+
+  void _showAddEmployeeDialog(
+    BuildContext context,
+    ManagerDashboardViewModel viewModel,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AddEmployeeForm(
+        onSubmit: (employee) async {
+          await viewModel.addEmployee(employee);
+          if (mounted) {
+            _showMessage(
+                AppLocalizations.of(context)!.msgEmployeeAdded(employee.name));
+          }
+        },
+      ),
+    );
   }
 
   void _showConfirmDialog(

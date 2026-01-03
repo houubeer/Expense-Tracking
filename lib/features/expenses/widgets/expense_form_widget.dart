@@ -411,6 +411,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                     ),
                   ],
                 ),
+              ),
               const SizedBox(height: AppSpacing.xxl),
 
               // Action Buttons
@@ -441,10 +442,5 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
         ),
       ),
     );
-  }
-
-  String _getFileName(String path) {
-    final parts = path.split(RegExp(r'[/\\]'));
-    return parts.isNotEmpty ? parts.last : path;
   }
 }

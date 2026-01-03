@@ -153,7 +153,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
 
       _isLoading = false;
       notifyListeners();
-    } catch (e, stack) {
+    } catch (e) {
       _errorMessage = 'Failed to load dashboard data: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
@@ -298,7 +298,7 @@ class ManagerDashboardViewModel extends ChangeNotifier {
       await refreshData();
 
       notifyListeners();
-    } catch (e, stackTrace) {
+    } catch (e) {
       _errorMessage = 'Failed to add employee: ${e.toString()}';
       notifyListeners();
       rethrow; // Re-throw so the UI can catch it
@@ -350,7 +350,6 @@ class ManagerDashboardViewModel extends ChangeNotifier {
   /// Remove employee
   Future<void> removeEmployee(String employeeId) async {
     try {
-      final employee = _employees.firstWhere((emp) => emp.id == employeeId);
       await _employeeRepository.removeEmployee(employeeId);
 
       _employees.removeWhere((emp) => emp.id == employeeId);

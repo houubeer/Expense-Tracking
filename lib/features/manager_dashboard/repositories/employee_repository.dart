@@ -2,7 +2,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import '../models/employee_model.dart';
 import 'audit_log_repository.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
 
 class EmployeeRepository {
   final SupabaseService _supabaseService;
@@ -43,7 +42,7 @@ class EmployeeRepository {
           .map((json) => Employee.fromJson(json as Map<String, dynamic>))
           .toList();
       return employees;
-    } catch (e, s) {
+    } catch (e) {
       rethrow;
     }
   }
@@ -184,7 +183,7 @@ class EmployeeRepository {
         newData: employeeData,
         description: 'Added employee: ${employee.name}',
       );
-    } catch (e, stackTrace) {
+    } catch (e) {
       rethrow;
     }
   }
@@ -195,7 +194,7 @@ class EmployeeRepository {
     await _client
         .from('user_profiles')
         .update(employee.toJson())
-        .eq('id', employee.id as String)
+        .eq('id', employee.id)
         .eq('organization_id', orgId);
   }
 
