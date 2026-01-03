@@ -15,6 +15,16 @@ enum EmployeeStatus {
 
 /// Employee model representing a company employee
 class Employee {
+  final String id;
+  final String name;
+  final String role;
+  final String department;
+  final String email;
+  final String phone;
+  final DateTime hireDate;
+  final EmployeeStatus status;
+  final String? avatarUrl;
+  final String? organizationId;
 
   const Employee({
     required this.id,
@@ -26,34 +36,8 @@ class Employee {
     required this.hireDate,
     required this.status,
     this.avatarUrl,
+    this.organizationId,
   });
-
-  /// Create Employee from JSON
-  factory Employee.fromJson(Map<String, dynamic> json) {
-    return Employee(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      role: json['role'] as String,
-      department: json['department'] as String,
-      email: json['email'] as String,
-      phone: json['phone'] as String,
-      hireDate: DateTime.parse(json['hireDate'] as String),
-      status: EmployeeStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => EmployeeStatus.active,
-      ),
-      avatarUrl: json['avatarUrl'] as String?,
-    );
-  }
-  final String id;
-  final String name;
-  final String role;
-  final String department;
-  final String email;
-  final String phone;
-  final DateTime hireDate;
-  final EmployeeStatus status;
-  final String? avatarUrl;
 
   /// Get initials from employee name for avatar display
   String get initials {
@@ -64,18 +48,63 @@ class Employee {
     return name.substring(0, 1).toUpperCase();
   }
 
-  /// Convert Employee to JSON
+  /// Create Employee from JSON (robust, supports settings/department fallback)
+  factory Employee.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> settings = {};
+    if (json['settings'] != null) {
+      if (json['settings'] is Map) {
+        settings = json['settings'] as Map<String, dynamic>;
+      } else if (json['settings'] is String) {
+        // Optionally: parse stringified JSON if needed
+      }
+    }
+    final rawSettings = json['settings'];
+    if (rawSettings is Map) {
+      settings = rawSettings as Map<String, dynamic>;
+    }
+    final dept = json['department'] as String? ??
+        settings['department'] as String? ??
+        'General';
+    return Employee(
+      id: json['id'] as String,
+      name: json['full_name'] as String? ?? json['name'] as String? ?? '',
+      role: json['role'] as String,
+      department: dept,
+      email: json['email'] as String,
+      phone: json['phone'] as String? ?? '',
+      hireDate: json['hireDate'] != null || json['hire_date'] != null
+          ? DateTime.parse((json['hire_date'] ?? json['hireDate']) as String)
+          : DateTime.now(),
+      status: _parseStatus(json['status']),
+      avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String?,
+      organizationId: json['organization_id'] as String?,
+    );
+  }
+
+  /// Parse employee status from various formats
+  static EmployeeStatus _parseStatus(dynamic status) {
+    if (status == null) return EmployeeStatus.active;
+    if (status is EmployeeStatus) return status;
+    final statusStr = status.toString().toLowerCase();
+    if (statusStr.contains('suspend') || statusStr == 'inactive') {
+      return EmployeeStatus.suspended;
+    }
+    return EmployeeStatus.active;
+  }
+
+  /// Convert Employee to JSON (database format for user_profiles)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'full_name': name,
       'role': role,
-      'department': department,
+      'settings': {'department': department},
       'email': email,
       'phone': phone,
-      'hireDate': hireDate.toIso8601String(),
+      'hire_date': hireDate.toIso8601String(),
       'status': status.name,
-      'avatarUrl': avatarUrl,
+      'avatar_url': avatarUrl,
+      'organization_id': organizationId,
     };
   }
 
@@ -90,6 +119,7 @@ class Employee {
     DateTime? hireDate,
     EmployeeStatus? status,
     String? avatarUrl,
+    String? organizationId,
   }) {
     return Employee(
       id: id ?? this.id,
@@ -101,6 +131,7 @@ class Employee {
       hireDate: hireDate ?? this.hireDate,
       status: status ?? this.status,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      organizationId: organizationId ?? this.organizationId,
     );
   }
 }

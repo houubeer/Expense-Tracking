@@ -348,6 +348,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get labelAttachReceipt => 'إرفاق إيصال';
 
   @override
+  String get labelAttachReceipts => 'Attach Receipts';
+
+  @override
+  String get labelAddMoreReceipts => 'Add More Receipts';
+
+  @override
   String get btnReset => 'إعادة تعيين';
 
   @override

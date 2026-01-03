@@ -191,6 +191,8 @@
   "msgReceiptAttached": "Receipt Attached",
   "labelRemoveReceipt": "Remove Receipt",
   "labelAttachReceipt": "Attach Receipt",
+  "labelAttachReceipts": "Attach Receipts",
+  "labelAddMoreReceipts": "Add More Receipts",
   "btnReset": "Reset",
   "msgAddingExpense": "Adding...",
   "hintSelectCategory": "Select Category",

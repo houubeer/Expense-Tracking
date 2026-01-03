@@ -348,6 +348,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get labelAttachReceipt => 'Attach Receipt';
 
   @override
+  String get labelAttachReceipts => 'Attach Receipts';
+
+  @override
+  String get labelAddMoreReceipts => 'Add More Receipts';
+
+  @override
   String get btnReset => 'Reset';
 
   @override

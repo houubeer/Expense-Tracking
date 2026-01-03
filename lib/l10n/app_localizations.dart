@@ -727,6 +727,18 @@ abstract class AppLocalizations {
   /// **'Attach Receipt'**
   String get labelAttachReceipt;
 
+  /// No description provided for @labelAttachReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Receipts'**
+  String get labelAttachReceipts;
+
+  /// No description provided for @labelAddMoreReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Add More Receipts'**
+  String get labelAddMoreReceipts;
+
   /// No description provided for @btnReset.
   ///
   /// In en, this message translates to:

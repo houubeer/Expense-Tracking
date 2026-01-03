@@ -15,7 +15,6 @@ enum UserRole {
   }
 }
 
-/// User profile model
 class UserProfile {
   final String id; // Supabase UUID
   final String? organizationId;
@@ -24,6 +23,7 @@ class UserProfile {
   final String? avatarUrl;
   final UserRole role;
   final DateTime? lastSyncAt;
+  final String? syncToken;
   final Map<String, dynamic> settings;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -37,6 +37,7 @@ class UserProfile {
     this.avatarUrl,
     required this.role,
     this.lastSyncAt,
+    this.syncToken,
     this.settings = const {},
     required this.createdAt,
     required this.updatedAt,
@@ -44,6 +45,16 @@ class UserProfile {
   });
 
   factory UserProfile.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> settings = {};
+    if (json['settings'] != null) {
+      final rawSettings = json['settings'];
+      if (rawSettings is Map) {
+        settings = rawSettings as Map<String, dynamic>;
+      } else if (rawSettings is String) {
+        // Optionally: parse stringified JSON if needed
+      }
+    }
+
     return UserProfile(
       id: json['id'] as String,
       organizationId: json['organization_id'] as String?,
@@ -54,7 +65,8 @@ class UserProfile {
       lastSyncAt: json['last_sync_at'] != null
           ? DateTime.parse(json['last_sync_at'] as String)
           : null,
-      settings: json['settings'] as Map<String, dynamic>? ?? {},
+      syncToken: json['sync_token'] as String?,
+      settings: settings,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       status: json['status'] as String?,
@@ -70,6 +82,7 @@ class UserProfile {
       'avatar_url': avatarUrl,
       'role': role.value,
       'last_sync_at': lastSyncAt?.toIso8601String(),
+      'sync_token': syncToken,
       'settings': settings,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
@@ -85,6 +98,7 @@ class UserProfile {
     String? avatarUrl,
     UserRole? role,
     DateTime? lastSyncAt,
+    String? syncToken,
     Map<String, dynamic>? settings,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -98,6 +112,7 @@ class UserProfile {
       avatarUrl: avatarUrl ?? this.avatarUrl,
       role: role ?? this.role,
       lastSyncAt: lastSyncAt ?? this.lastSyncAt,
+      syncToken: syncToken ?? this.syncToken,
       settings: settings ?? this.settings,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

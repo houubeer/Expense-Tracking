@@ -5,15 +5,15 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/summary_card.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/charts/category_pie_chart.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/charts/monthly_bar_chart.dart';
-import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/lists/expense_approval_list.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/view_models/employee_expenses_view_model.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/budget_repository.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/services/budget_calculation_service.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/audit_log_repository.dart';
+import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
-
 
 /// Employee Expenses Screen
 /// View and manage employee expense submissions with analytics
@@ -35,9 +35,11 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
   void initState() {
     super.initState();
     // Initialize view model with dependencies
+    // Note: In production, these should be injected via dependency injection
+    final supabaseService = SupabaseService();
     _viewModel = EmployeeExpensesViewModel(
-      ExpenseRepository(),
-      BudgetRepository(),
+      ExpenseRepository(supabaseService, AuditLogRepository(supabaseService)),
+      BudgetRepository(supabaseService),
       BudgetCalculationService(),
     );
     // Load initial data
@@ -121,7 +123,8 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
           child: SummaryCard(
             icon: Icons.receipt_long,
             title: 'Total Expenses',
-            value: '${(stats['totalAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
+            value:
+                '${(stats['totalAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
             color: colorScheme.primary,
             subtitle: '${stats['totalCount']} expenses',
           ),
@@ -131,7 +134,8 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
           child: SummaryCard(
             icon: Icons.pending,
             title: 'Pending',
-            value: '${(stats['pendingAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
+            value:
+                '${(stats['pendingAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
             color: Colors.orange,
             subtitle: '${stats['pendingCount']} expenses',
           ),
@@ -141,7 +145,8 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
           child: SummaryCard(
             icon: Icons.check_circle,
             title: 'Approved',
-            value: '${(stats['approvedAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
+            value:
+                '${(stats['approvedAmount'] as double).toStringAsFixed(0)} ${AppStrings.currency}',
             color: Colors.green,
             subtitle: '${stats['approvedCount']} expenses',
           ),
@@ -168,9 +173,19 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
                   value: viewModel.categoryFilter,
                   hint: const Text('All Categories'),
                   items: [
-                    const DropdownMenuItem(child: Text('All Categories')),
-                    ...['Travel', 'Equipment', 'Software', 'Marketing', 'Training', 'Cloud Services', 'Entertainment', 'Office Supplies']
-                        .map((cat) => DropdownMenuItem(value: cat, child: Text(cat))),
+                    const DropdownMenuItem(
+                        value: null, child: Text('All Categories')),
+                    ...[
+                      'Travel',
+                      'Equipment',
+                      'Software',
+                      'Marketing',
+                      'Training',
+                      'Cloud Services',
+                      'Entertainment',
+                      'Office Supplies'
+                    ].map((cat) =>
+                        DropdownMenuItem(value: cat, child: Text(cat))),
                   ],
                   onChanged: viewModel.filterByCategory,
                 ),
@@ -198,12 +213,6 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
           ],
         ),
         const SizedBox(height: AppSpacing.lg),
-        ExpenseApprovalList(
-          expenses: viewModel.filteredExpenses,
-          onApprove: (id) => _showMessage('Approve expense $id'),
-          onReject: (id) => _showMessage('Reject expense $id'),
-          onComment: (id) => _showMessage('Add comment to expense $id'),
-        ),
       ],
     );
   }

@@ -145,14 +145,6 @@ class EmployeeCard extends StatelessWidget {
                           Text(AppLocalizations.of(context)!.labelViewDetails),
                     ),
                     PopupMenuItem(
-                      value: 'suspend',
-                      child: Text(
-                        employee.status == EmployeeStatus.active
-                            ? AppLocalizations.of(context)!.labelSuspend
-                            : AppLocalizations.of(context)!.labelActivate,
-                      ),
-                    ),
-                    PopupMenuItem(
                       value: 'remove',
                       child: Text(AppLocalizations.of(context)!.labelRemove),
                     ),

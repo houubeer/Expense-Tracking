@@ -18,37 +18,6 @@ enum ExpenseStatus {
 
 /// Manager expense model representing an employee expense submission
 class ManagerExpense {
-
-  const ManagerExpense({
-    required this.id,
-    required this.employeeId,
-    required this.employeeName,
-    required this.amount,
-    required this.category,
-    required this.date,
-    required this.status, this.receiptUrl,
-    this.comment,
-    this.description,
-  });
-
-  /// Create ManagerExpense from JSON
-  factory ManagerExpense.fromJson(Map<String, dynamic> json) {
-    return ManagerExpense(
-      id: json['id'] as String,
-      employeeId: json['employeeId'] as String,
-      employeeName: json['employeeName'] as String,
-      amount: (json['amount'] as num).toDouble(),
-      category: json['category'] as String,
-      date: DateTime.parse(json['date'] as String),
-      receiptUrl: json['receiptUrl'] as String?,
-      status: ExpenseStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => ExpenseStatus.pending,
-      ),
-      comment: json['comment'] as String?,
-      description: json['description'] as String?,
-    );
-  }
   final String id;
   final String employeeId;
   final String employeeName;
@@ -59,20 +28,101 @@ class ManagerExpense {
   final ExpenseStatus status;
   final String? comment;
   final String? description;
+  final String? organizationId;
+  final String? budgetId;
+  final List<String>? receiptUrls;
+  final bool? isReimbursable;
+  final DateTime? reimbursedAt;
+  final String? notes;
 
-  /// Convert ManagerExpense to JSON
+  const ManagerExpense({
+    required this.id,
+    required this.employeeId,
+    required this.employeeName,
+    required this.amount,
+    required this.category,
+    required this.date,
+    required this.status,
+    this.receiptUrl,
+    this.comment,
+    this.description,
+    this.organizationId,
+    this.budgetId,
+    this.receiptUrls,
+    this.isReimbursable,
+    this.reimbursedAt,
+    this.notes,
+  });
+
+  /// Create ManagerExpense from JSON (database format)
+  factory ManagerExpense.fromJson(Map<String, dynamic> json) {
+    // Handle receipt URLs - can be single URL or array
+    List<String>? receipts;
+    if (json['receipt_urls'] != null) {
+      if (json['receipt_urls'] is List) {
+        receipts = List<String>.from(json['receipt_urls'] as List);
+      } else {
+        receipts = [json['receipt_urls'] as String];
+      }
+    }
+
+    return ManagerExpense(
+      id: json['id']?.toString() ?? '',
+      employeeId: json['created_by']?.toString() ??
+          json['employeeId']?.toString() ??
+          '',
+      employeeName: json['employeeName'] as String? ??
+          json['employee_name'] as String? ??
+          'Unknown',
+      amount: (json['amount'] as num).toDouble(),
+      category: json['category'] as String? ??
+          json['description'] as String? ??
+          'Other',
+      date: json['date'] != null
+          ? DateTime.parse(json['date'] as String)
+          : DateTime.now(),
+      receiptUrl: receipts?.isNotEmpty == true ? receipts!.first : null,
+      receiptUrls: receipts,
+      status: _parseStatus(json['status']),
+      comment: json['comment'] as String? ?? json['notes'] as String?,
+      description: json['description'] as String?,
+      organizationId: json['organization_id'] as String?,
+      budgetId: json['budget_id']?.toString(),
+      isReimbursable: json['is_reimbursable'] as bool?,
+      reimbursedAt: json['reimbursed_at'] != null
+          ? DateTime.parse(json['reimbursed_at'] as String)
+          : null,
+      notes: json['notes'] as String?,
+    );
+  }
+
+  /// Parse expense status from various formats
+  static ExpenseStatus _parseStatus(dynamic status) {
+    if (status == null) return ExpenseStatus.pending;
+    if (status is ExpenseStatus) return status;
+    final statusStr = status.toString().toLowerCase();
+    if (statusStr.contains('approve')) return ExpenseStatus.approved;
+    if (statusStr.contains('reject')) return ExpenseStatus.rejected;
+    if (statusStr.contains('pending')) return ExpenseStatus.pending;
+    return ExpenseStatus.pending;
+  }
+
+  /// Convert ManagerExpense to JSON (database format)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'employeeId': employeeId,
-      'employeeName': employeeName,
+      'created_by': employeeId,
       'amount': amount,
-      'category': category,
-      'date': date.toIso8601String(),
-      'receiptUrl': receiptUrl,
+      'description': description ?? category,
+      'date': date.toIso8601String().split('T')[0],
+      'receipt_urls':
+          receiptUrls ?? (receiptUrl != null ? [receiptUrl!] : null),
       'status': status.name,
-      'comment': comment,
-      'description': description,
+      'notes': notes ?? comment,
+      'organization_id': organizationId,
+      'budget_id': budgetId != null ? int.tryParse(budgetId!) : null,
+      'is_reimbursable': isReimbursable,
+      'reimbursed_at': reimbursedAt?.toIso8601String(),
     };
   }
 
@@ -88,6 +138,12 @@ class ManagerExpense {
     ExpenseStatus? status,
     String? comment,
     String? description,
+    String? organizationId,
+    String? budgetId,
+    List<String>? receiptUrls,
+    bool? isReimbursable,
+    DateTime? reimbursedAt,
+    String? notes,
   }) {
     return ManagerExpense(
       id: id ?? this.id,
@@ -100,6 +156,12 @@ class ManagerExpense {
       status: status ?? this.status,
       comment: comment ?? this.comment,
       description: description ?? this.description,
+      organizationId: organizationId ?? this.organizationId,
+      budgetId: budgetId ?? this.budgetId,
+      receiptUrls: receiptUrls ?? this.receiptUrls,
+      isReimbursable: isReimbursable ?? this.isReimbursable,
+      reimbursedAt: reimbursedAt ?? this.reimbursedAt,
+      notes: notes ?? this.notes,
     );
   }
 
