@@ -30,7 +30,7 @@ class ExpenseRepository {
 
   Future<List<ManagerExpense>> _enrichWithProfiles(List<dynamic> data) async {
     final expenses = data.cast<Map<String, dynamic>>();
-    
+
     final userIds = expenses
         .map((e) => e['created_by'] as String?)
         .where((id) => id != null)
@@ -43,7 +43,7 @@ class ExpenseRepository {
           .from('user_profiles')
           .select('id, full_name, email')
           .filter('id', 'in', userIds);
-      
+
       for (final profile in profilesResponse as List) {
         final id = profile['id'] as String;
         userProfilesMap[id] = profile as Map<String, dynamic>;
@@ -83,7 +83,7 @@ class ExpenseRepository {
         .select()
         .eq('organization_id', orgId)
         .order('date', ascending: false);
-    
+
     final enriched = await _enrichWithProfiles(response as List);
     // Filter in-memory: if reimbursed_at is null, assume pending/approved/rejected bucket.
     // Since we can't distinguish, we return all active non-reimbursed items.
@@ -114,7 +114,7 @@ class ExpenseRepository {
         .order('date', ascending: false);
 
     final allExpenses = await _enrichWithProfiles(response as List);
-    
+
     // Manual mapping/filtering
     return allExpenses.where((e) {
       if (status == ExpenseStatus.approved) {
@@ -124,7 +124,7 @@ class ExpenseRepository {
         // Treat everything non-reimbursed as pending for now
         return e.reimbursedAt == null;
       } else if (status == ExpenseStatus.rejected) {
-          return (e.notes ?? '').toLowerCase().contains('reject');
+        return (e.notes ?? '').toLowerCase().contains('reject');
       }
       return false;
     }).toList();
@@ -202,10 +202,12 @@ class ExpenseRepository {
     for (final item in response as List) {
       final isReimbursed = item['reimbursed_at'] != null;
       if (isReimbursed) {
-        counts[ExpenseStatus.approved] = (counts[ExpenseStatus.approved] ?? 0) + 1;
+        counts[ExpenseStatus.approved] =
+            (counts[ExpenseStatus.approved] ?? 0) + 1;
       } else {
         // Default to pending for all non-reimbursed
-        counts[ExpenseStatus.pending] = (counts[ExpenseStatus.pending] ?? 0) + 1;
+        counts[ExpenseStatus.pending] =
+            (counts[ExpenseStatus.pending] ?? 0) + 1;
       }
     }
 
@@ -220,7 +222,7 @@ class ExpenseRepository {
         .select('description')
         .eq('organization_id', orgId);
 
-    // Using description as category proxy if category column missing/unused? 
+    // Using description as category proxy if category column missing/unused?
     // Logic from previous code preserved.
     final categories = (response as List)
         .map((item) => item['description'] as String? ?? 'Other')
@@ -285,7 +287,8 @@ class ExpenseRepository {
 
     final existingNotes = oldExpense['notes'] as String? ?? '';
     // Prevent duplicate newlines if empty
-    final newNotes = existingNotes.isEmpty ? comment : '$existingNotes\n---\n$comment';
+    final newNotes =
+        existingNotes.isEmpty ? comment : '$existingNotes\n---\n$comment';
 
     await _client
         .from('expenses')

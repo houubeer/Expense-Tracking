@@ -110,7 +110,9 @@ class EmployeeRepository {
     final departments = (response as List)
         .map((item) {
           final rawSettings = item['settings'];
-          final settings = rawSettings is Map ? rawSettings as Map<String, dynamic> : <String, dynamic>{};
+          final settings = rawSettings is Map
+              ? rawSettings as Map<String, dynamic>
+              : <String, dynamic>{};
           return settings['department'] as String? ?? 'General';
         })
         .toSet()

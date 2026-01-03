@@ -398,8 +398,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                             const SizedBox(width: AppSpacing.sm),
                             Text(
                               widget.receipts.isEmpty
-                                  ? AppLocalizations.of(context)!.labelAttachReceipts
-                                  : AppLocalizations.of(context)!.labelAddMoreReceipts,
+                                  ? AppLocalizations.of(context)!
+                                      .labelAttachReceipts
+                                  : AppLocalizations.of(context)!
+                                      .labelAddMoreReceipts,
                               style: AppTextStyles.bodyMedium.copyWith(
                                 color: colorScheme.primary,
                                 fontWeight: FontWeight.w500,
