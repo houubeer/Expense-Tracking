@@ -57,7 +57,7 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       setState(() {
-        _employees = employees;
+        _employees = employees.map((e) => UserProfile.fromJson(e)).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -164,9 +164,10 @@ class _EmployeeManagementScreenState
   Future<void> _toggleEmployeeStatus(UserProfile employee) async {
     try {
       final supabaseService = ref.read(supabaseServiceProvider);
+      final newStatus = employee.isActive ? 'inactive' : 'active';
       await supabaseService.updateEmployeeStatus(
         employee.id,
-        !employee.isActive,
+        newStatus,
       );
       await _loadEmployees();
 

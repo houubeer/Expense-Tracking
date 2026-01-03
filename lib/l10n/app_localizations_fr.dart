@@ -9,6 +9,12 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get appName => 'Expense Tracker';
+
+  @override
+  String get appTagline => 'Manage your expenses effortlessly';
+
+  @override
   String get appTitle => 'Suivi des Dépenses';
 
   @override

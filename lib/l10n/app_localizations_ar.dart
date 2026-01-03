@@ -9,6 +9,12 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get appName => 'Expense Tracker';
+
+  @override
+  String get appTagline => 'Manage your expenses effortlessly';
+
+  @override
   String get appTitle => 'متتبع النفقات';
 
   @override

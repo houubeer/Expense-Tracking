@@ -224,84 +224,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             size: 48,
                             color: AppColors.primary,
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                  ],
-
-                  // Email field
-                  AuthTextField(
-                    controller: _emailController,
-                    label: AppLocalizations.of(context)!.labelEmail,
-                    hintText: AppLocalizations.of(context)!.hintEmail,
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: Icons.email_outlined,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return AppLocalizations.of(context)!.errEnterEmail;
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                          .hasMatch(value)) {
-                        return AppLocalizations.of(context)!.errInvalidEmail;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Password field
-                  AuthTextField(
-                    controller: _passwordController,
-                    label: AppLocalizations.of(context)!.labelPassword,
-                    hintText: AppLocalizations.of(context)!.hintPassword,
-                    obscureText: _obscurePassword,
-                    prefixIcon: Icons.lock_outlined,
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: AppColors.textSecondary,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return AppLocalizations.of(context)!.errEnterPassword;
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // Login button
-                  AuthButton(
-                    text: AppLocalizations.of(context)!.btnSignIn,
-                    onPressed: _handleLogin,
-                    isLoading: _isLoading,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Register link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        AppLocalizations.of(context)!.msgNoAccount,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () => context.go('/auth/register'),
-                        child: Text(
-                          AppLocalizations.of(context)!.btnRegisterManager,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // App name
+                      Text(
+                        AppLocalizations.of(context)!.appName,
+                        style: AppTextStyles.heading1.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      // Tagline
+                      Text(
+                        AppLocalizations.of(context)!.appTagline,
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: Colors.white.withValues(alpha: 0.9),
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                            ),
+                          ],
                         ),
                       ),
                     ],

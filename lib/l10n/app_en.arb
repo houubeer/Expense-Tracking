@@ -1,4 +1,6 @@
 {
+  "appName": "Expense Tracker",
+  "appTagline": "Manage your expenses effortlessly",
   "appTitle": "Expense Tracker",
   "@appTitle": {
     "description": "The title of the application"

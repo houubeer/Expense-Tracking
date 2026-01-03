@@ -97,6 +97,18 @@ abstract class AppLocalizations {
     Locale('fr')
   ];
 
+  /// No description provided for @appName.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Tracker'**
+  String get appName;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your expenses effortlessly'**
+  String get appTagline;
+
   /// The title of the application
   ///
   /// In en, this message translates to:
