@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mockito/mockito.dart';
 import 'package:expense_tracking_desktop_app/features/home/widgets/reimbursable_summary_card.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 void main() {
   group('ReimbursableSummaryCard Widget Tests', () {
@@ -41,7 +38,8 @@ void main() {
       expect(find.byIcon(Icons.monetization_on_outlined), findsWidgets);
     });
 
-    testWidgets('Show correct expense count label', (WidgetTester tester) async {
+    testWidgets('Show correct expense count label',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

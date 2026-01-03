@@ -36,6 +36,12 @@ class ExpenseTrackerApp extends StatelessWidget {
   }
 }
 
+class _AppConsumer extends ConsumerStatefulWidget {
+  const _AppConsumer();
+
+  @override
+  ConsumerState<_AppConsumer> createState() => _AppConsumerState();
+}
 
 class _AppConsumerState extends ConsumerState<_AppConsumer> {
   late final GoRouter _router;
@@ -51,7 +57,6 @@ class _AppConsumerState extends ConsumerState<_AppConsumer> {
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
     final locale = ref.watch(localeProvider);
-    final router = ref.watch(app_router.routerProvider);
 
     return MaterialApp.router(
       routerConfig: _router,

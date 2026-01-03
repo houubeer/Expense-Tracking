@@ -293,7 +293,7 @@ class SupabaseService {
         return {'success': false, 'message': 'Not authenticated'};
       }
 
-      final currentRole = currentProfile['role'] as String?;
+      final currentRole = currentProfile.role.value;
       if (currentRole != 'manager' && currentRole != 'owner') {
         return {
           'success': false,
@@ -310,7 +310,7 @@ class SupabaseService {
 
       // Managers can only reset passwords for employees in their organization
       if (currentRole == 'manager') {
-        final currentOrgId = currentProfile['organization_id'] as String?;
+        final currentOrgId = currentProfile.organizationId;
         final employeeOrgId = employeeProfile['organization_id'] as String?;
 
         if (currentOrgId != employeeOrgId) {
@@ -609,6 +609,55 @@ class SupabaseService {
     }
   }
 
+  // ================================
+  // SETTINGS / UTILITIES PLACEHOLDERS
+  // ================================
+
+  /// Export expenses as CSV (placeholder implementation).
+  Future<String?> exportExpensesAsCsv({
+    required String dateRange,
+    required String categoryName,
+  }) async {
+    // TODO: implement actual CSV export
+    return null;
+  }
+
+  /// Export expenses as PDF (placeholder implementation).
+  Future<String?> exportExpensesAsPdf({
+    required String dateRange,
+    required String categoryName,
+    bool includeReceipts = false,
+  }) async {
+    // TODO: implement actual PDF export
+    return null;
+  }
+
+  /// Update password for the current user (placeholder).
+  Future<bool> updatePassword(String newPassword) async {
+    // TODO: implement real password update via Supabase Auth
+    return false;
+  }
+
+  /// Delete all user data for the current user (placeholder).
+  Future<bool> deleteAllUserData() async {
+    // TODO: implement deletion of user data and related records
+    return false;
+  }
+
+  /// Fetch notification settings for current user (placeholder).
+  Future<Map<String, dynamic>?> getNotificationSettingsForCurrentUser() async {
+    // TODO: load from user_profiles.settings.notifications
+    return null;
+  }
+
+  /// Update notification settings for current user (placeholder).
+  Future<bool> updateNotificationSettingsForCurrentUser(
+    Map<String, dynamic> settings,
+  ) async {
+    // TODO: persist to user_profiles.settings.notifications
+    return false;
+  }
+
   // =====================================================
   // CATEGORIES
   // =====================================================
@@ -683,7 +732,7 @@ class SupabaseService {
       String? orgId = organizationId;
       if (orgId == null && currentUser != null) {
         final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
+        orgId = profile?.organizationId;
       }
       if (orgId == null) {
         return [];
@@ -716,7 +765,7 @@ class SupabaseService {
       final profile = await getCurrentUserProfile();
       if (profile == null) throw Exception('User profile not found');
 
-      final orgId = profile['organization_id'] as String?;
+      final orgId = profile.organizationId;
       if (orgId == null) throw Exception('Organization not found');
 
       final response = await client
@@ -798,7 +847,7 @@ class SupabaseService {
       final profile = await getCurrentUserProfile();
       if (profile == null) throw Exception('User profile not found');
 
-      final orgId = profile['organization_id'] as String?;
+      final orgId = profile.organizationId;
       if (orgId == null) throw Exception('Organization not found');
 
       final response = await client
@@ -938,7 +987,7 @@ class SupabaseService {
       String? orgId = organizationId;
       if (orgId == null && currentUser != null) {
         final profile = await getCurrentUserProfile();
-        orgId = profile?['organization_id'] as String?;
+        orgId = profile?.organizationId;
       }
       if (orgId == null) {
         return [];
@@ -1191,7 +1240,7 @@ class SupabaseService {
   // =====================================================
 
   /// Get current user profile
-  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
+  Future<UserProfile?> getCurrentUserProfile() async {
     if (currentUser == null) return null;
     try {
       final response = await client
@@ -1199,7 +1248,7 @@ class SupabaseService {
           .select()
           .eq('id', currentUser!.id)
           .single();
-      return response;
+      return UserProfile.fromJson(response);
     } catch (e, stackTrace) {
       _logger.error(
         'Failed to get current user profile',
