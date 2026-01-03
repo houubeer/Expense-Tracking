@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class ExpenseSearchBar extends StatelessWidget {
-
   const ExpenseSearchBar({
-    required this.searchQuery, required this.onSearchChanged, super.key,
+    required this.searchQuery,
+    required this.onSearchChanged,
+    super.key,
   });
   final String searchQuery;
   final ValueChanged<String> onSearchChanged;
@@ -27,15 +28,21 @@ class ExpenseSearchBar extends StatelessWidget {
       child: TextField(
         onChanged: onSearchChanged,
         decoration: InputDecoration(
-          hintText: AppStrings.hintSearchExpenses,
+          hintText: AppLocalizations.of(context)!.hintSearchExpenses,
           hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-          prefixIcon: Icon(Icons.search,
-              color: colorScheme.onSurfaceVariant, semanticLabel: 'Search',),
+          prefixIcon: Icon(
+            Icons.search,
+            color: colorScheme.onSurfaceVariant,
+            semanticLabel: AppLocalizations.of(context)!.searchSemanticLabel,
+          ),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.clear,
-                      color: colorScheme.onSurfaceVariant,
-                      semanticLabel: 'Clear search',),
+                  icon: Icon(
+                    Icons.clear,
+                    color: colorScheme.onSurfaceVariant,
+                    semanticLabel:
+                        AppLocalizations.of(context)!.clearSearchSemanticLabel,
+                  ),
                   onPressed: () => onSearchChanged(''),
                 )
               : null,

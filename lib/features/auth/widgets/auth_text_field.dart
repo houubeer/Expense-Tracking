@@ -5,6 +5,16 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Reusable text field for authentication forms
 class AuthTextField extends StatelessWidget {
+
+  const AuthTextField({
+    required this.controller, required this.label, required this.hintText, super.key,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.obscureText = false,
+    this.keyboardType = TextInputType.text,
+    this.validator,
+    this.maxLines = 1,
+  });
   final TextEditingController controller;
   final String label;
   final String hintText;
@@ -14,19 +24,6 @@ class AuthTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final int maxLines;
-
-  const AuthTextField({
-    super.key,
-    required this.controller,
-    required this.label,
-    required this.hintText,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.obscureText = false,
-    this.keyboardType = TextInputType.text,
-    this.validator,
-    this.maxLines = 1,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -63,23 +60,23 @@ class AuthTextField extends StatelessWidget {
             fillColor: AppColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
+              borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary, width: 2),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.red),
+              borderSide: const BorderSide(color: AppColors.red),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.red, width: 2),
+              borderSide: const BorderSide(color: AppColors.red, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.lg,

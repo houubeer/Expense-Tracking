@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/widgets/animations/staggered_list_animation.dart';
 
 class ExpenseApprovalList extends StatelessWidget {
-
   const ExpenseApprovalList({
-    required this.expenses, super.key,
+    required this.expenses,
+    super.key,
     this.onApprove,
     this.onReject,
     this.onComment,
@@ -61,12 +61,12 @@ class ExpenseApprovalList extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
-              'No pending approvals',
+              AppLocalizations.of(context)!.titleNoPendingApprovals,
               style: AppTextStyles.heading3,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'All expenses have been processed',
+              AppLocalizations.of(context)!.msgAllExpensesProcessed,
               style: AppTextStyles.bodyMedium,
             ),
           ],
@@ -77,7 +77,6 @@ class ExpenseApprovalList extends StatelessWidget {
 }
 
 class _ExpenseApprovalItem extends StatelessWidget {
-
   const _ExpenseApprovalItem({
     required this.expense,
     this.onApprove,
@@ -154,7 +153,7 @@ class _ExpenseApprovalItem extends StatelessWidget {
           // Amount
           Expanded(
             child: Text(
-              '${expense.amount.toStringAsFixed(2)} ${AppStrings.currency}',
+              '${expense.amount.toStringAsFixed(2)} ${AppLocalizations.of(context)!.currency}',
               style: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -216,25 +215,25 @@ class _ExpenseApprovalItem extends StatelessWidget {
                 onPressed: () => onViewDetails?.call(expense),
                 icon: const Icon(Icons.visibility_outlined),
                 color: colorScheme.primary,
-                tooltip: 'View Details',
+                tooltip: AppLocalizations.of(context)!.tooltipViewDetails,
               ),
               IconButton(
                 onPressed: () => onApprove?.call(expense.id),
                 icon: const Icon(Icons.check_circle_outline),
                 color: Colors.green,
-                tooltip: 'Approve',
+                tooltip: AppLocalizations.of(context)!.tooltipApprove,
               ),
               IconButton(
                 onPressed: () => _showRejectDialog(context, expense.id),
                 icon: const Icon(Icons.cancel_outlined),
                 color: Colors.red,
-                tooltip: 'Reject',
+                tooltip: AppLocalizations.of(context)!.tooltipReject,
               ),
               IconButton(
                 onPressed: () => onComment?.call(expense.id),
                 icon: const Icon(Icons.comment_outlined),
                 color: colorScheme.primary,
-                tooltip: 'Comment',
+                tooltip: AppLocalizations.of(context)!.tooltipComment,
               ),
             ],
           ),
@@ -256,19 +255,19 @@ class _ExpenseApprovalItem extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reject Expense'),
+        title: Text(AppLocalizations.of(context)!.titleRejectExpense),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Rejection Reason',
-            hintText: 'Enter reason for rejection',
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.labelRejectionReason,
+            hintText: AppLocalizations.of(context)!.hintRejectionReason,
           ),
           maxLines: 3,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.btnCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -277,7 +276,7 @@ class _ExpenseApprovalItem extends StatelessWidget {
                 Navigator.of(context).pop();
               }
             },
-            child: const Text('Reject'),
+            child: Text(AppLocalizations.of(context)!.btnReject),
           ),
         ],
       ),

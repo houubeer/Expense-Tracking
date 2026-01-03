@@ -97,11 +97,185 @@ abstract class AppLocalizations {
     Locale('fr')
   ];
 
-  /// No description provided for @appTitle.
+  /// The title of the application
   ///
   /// In en, this message translates to:
   /// **'Expense Tracker'**
   String get appTitle;
+
+  /// No description provided for @titleSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your account'**
+  String get titleSignIn;
+
+  /// No description provided for @titleManagerDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager Dashboard'**
+  String get titleManagerDashboard;
+
+  /// No description provided for @descManagerDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor organization expenses, approve reimbursements, and manage employees.'**
+  String get descManagerDashboard;
+
+  /// No description provided for @kpiTotalEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Employees'**
+  String get kpiTotalEmployees;
+
+  /// No description provided for @kpiTotalExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Expenses (Month)'**
+  String get kpiTotalExpenses;
+
+  /// No description provided for @kpiPendingApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Approvals'**
+  String get kpiPendingApprovals;
+
+  /// No description provided for @labelEmployeeManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee Management'**
+  String get labelEmployeeManagement;
+
+  /// No description provided for @hintSearchEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Search employees...'**
+  String get hintSearchEmployees;
+
+  /// No description provided for @labelDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get labelDepartment;
+
+  /// No description provided for @filterAllDepartments.
+  ///
+  /// In en, this message translates to:
+  /// **'All Departments'**
+  String get filterAllDepartments;
+
+  /// No description provided for @labelStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get labelStatus;
+
+  /// No description provided for @filterAllStatuses.
+  ///
+  /// In en, this message translates to:
+  /// **'All Statuses'**
+  String get filterAllStatuses;
+
+  /// No description provided for @labelAddEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Employee'**
+  String get labelAddEmployee;
+
+  /// No description provided for @labelPendingExpenseApprovals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Expense Approvals'**
+  String get labelPendingExpenseApprovals;
+
+  /// No description provided for @msgExpenseApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense approved successfully'**
+  String get msgExpenseApproved;
+
+  /// No description provided for @msgExpenseRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense rejected'**
+  String get msgExpenseRejected;
+
+  /// No description provided for @labelBudgetMonitoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget Monitoring'**
+  String get labelBudgetMonitoring;
+
+  /// No description provided for @msgEmployeeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee {name} added'**
+  String msgEmployeeAdded(String name);
+
+  /// No description provided for @msgCommentAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment added successfully'**
+  String get msgCommentAdded;
+
+  /// No description provided for @msgViewDetailsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Viewing details for {name}'**
+  String msgViewDetailsFor(String name);
+
+  /// No description provided for @dialogTitleSuspendEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspend Employee'**
+  String get dialogTitleSuspendEmployee;
+
+  /// No description provided for @dialogDescSuspendEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to suspend {name}? They will no longer be able to submit expenses.'**
+  String dialogDescSuspendEmployee(String name);
+
+  /// No description provided for @msgEmployeeSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee {name} suspended'**
+  String msgEmployeeSuspended(String name);
+
+  /// No description provided for @msgEmployeeActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee {name} activated'**
+  String msgEmployeeActivated(String name);
+
+  /// No description provided for @dialogTitleRemoveEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Employee'**
+  String get dialogTitleRemoveEmployee;
+
+  /// No description provided for @dialogDescRemoveEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove {name}? This action cannot be undone.'**
+  String dialogDescRemoveEmployee(String name);
+
+  /// No description provided for @msgEmployeeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee {name} removed'**
+  String msgEmployeeRemoved(String name);
+
+  /// No description provided for @btnCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get btnCancel;
+
+  /// No description provided for @btnConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get btnConfirm;
 
   /// No description provided for @dashboard.
   ///
@@ -109,17 +283,23 @@ abstract class AppLocalizations {
   /// **'Dashboard'**
   String get dashboard;
 
-  /// No description provided for @dashboardSubtitle.
+  /// No description provided for @expenses.
   ///
   /// In en, this message translates to:
-  /// **'Overview of your financial health'**
-  String get dashboardSubtitle;
+  /// **'Expenses'**
+  String get expenses;
 
-  /// No description provided for @addExpense.
+  /// No description provided for @budgets.
   ///
   /// In en, this message translates to:
-  /// **'Add Expense'**
-  String get addExpense;
+  /// **'Budgets'**
+  String get budgets;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
 
   /// No description provided for @settings.
   ///
@@ -127,17 +307,599 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @manageAccountPreferences.
+  /// No description provided for @totalBalance.
   ///
   /// In en, this message translates to:
-  /// **'Manage your account preferences and app settings'**
-  String get manageAccountPreferences;
+  /// **'Total Balance'**
+  String get totalBalance;
+
+  /// No description provided for @monthlyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Budget'**
+  String get monthlyBudget;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get recentTransactions;
+
+  /// No description provided for @addExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Expense'**
+  String get addExpense;
+
+  /// No description provided for @editExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Expense'**
+  String get editExpense;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get filterFood;
+
+  /// No description provided for @filterTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport'**
+  String get filterTransport;
+
+  /// No description provided for @filterShopping.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping'**
+  String get filterShopping;
+
+  /// No description provided for @filterEntertainment.
+  ///
+  /// In en, this message translates to:
+  /// **'Entertainment'**
+  String get filterEntertainment;
+
+  /// No description provided for @filterHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get filterHealth;
+
+  /// No description provided for @filterOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get filterOther;
+
+  /// No description provided for @statusGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get statusGood;
+
+  /// No description provided for @statusWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get statusWarning;
+
+  /// No description provided for @statusInRisk.
+  ///
+  /// In en, this message translates to:
+  /// **'At Risk'**
+  String get statusInRisk;
+
+  /// No description provided for @labelSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get labelSpent;
+
+  /// No description provided for @labelRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get labelRemaining;
+
+  /// No description provided for @labelMonthlyBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Budget'**
+  String get labelMonthlyBudget;
+
+  /// No description provided for @titleCategoryBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Budget Status'**
+  String get titleCategoryBudget;
+
+  /// No description provided for @titleNoExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No Expenses Found'**
+  String get titleNoExpenses;
+
+  /// No description provided for @colActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get colActions;
+
+  /// No description provided for @titleDeleteTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Transaction'**
+  String get titleDeleteTransaction;
+
+  /// No description provided for @descDeleteTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this transaction? This action can be undone.'**
+  String get descDeleteTransaction;
+
+  /// No description provided for @btnDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get btnDelete;
+
+  /// No description provided for @msgTransactionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction deleted'**
+  String get msgTransactionDeleted;
+
+  /// No description provided for @errRestoreExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to restore expense: {error}'**
+  String errRestoreExpense(String error);
+
+  /// No description provided for @errDeleteExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete expense: {error}'**
+  String errDeleteExpense(String error);
+
+  /// No description provided for @labelReimbursableShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Reimbursable'**
+  String get labelReimbursableShort;
+
+  /// No description provided for @tooltipEditExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Expense'**
+  String get tooltipEditExpense;
+
+  /// No description provided for @tooltipDeleteExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Expense'**
+  String get tooltipDeleteExpense;
+
+  /// No description provided for @errPickFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to pick file: {error}'**
+  String errPickFile(String error);
+
+  /// No description provided for @navViewExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'View Expenses'**
+  String get navViewExpenses;
+
+  /// No description provided for @errAmountPositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount must be positive'**
+  String get errAmountPositive;
+
+  /// No description provided for @errDateFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Date cannot be in the future'**
+  String get errDateFuture;
+
+  /// No description provided for @errDatePast.
+  ///
+  /// In en, this message translates to:
+  /// **'Date is too far in the past'**
+  String get errDatePast;
+
+  /// No description provided for @msgExpenseUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense updated successfully'**
+  String get msgExpenseUpdated;
+
+  /// No description provided for @errUpdateExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update expense: {error}'**
+  String errUpdateExpense(String error);
+
+  /// No description provided for @titleEditExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Expense'**
+  String get titleEditExpense;
+
+  /// No description provided for @tooltipClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get tooltipClose;
+
+  /// No description provided for @btnUpdateExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Expense'**
+  String get btnUpdateExpense;
+
+  /// No description provided for @btnClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get btnClose;
+
+  /// No description provided for @msgErrorWithParam.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred: {error}'**
+  String msgErrorWithParam(String error);
+
+  /// No description provided for @btnAddExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Expense'**
+  String get btnAddExpense;
+
+  /// No description provided for @btnEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get btnEdit;
+
+  /// No description provided for @labelEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get labelEdit;
+
+  /// No description provided for @labelDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get labelDelete;
+
+  /// No description provided for @msgExpenseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense deleted'**
+  String get msgExpenseDeleted;
+
+  /// No description provided for @errAmountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an amount'**
+  String get errAmountRequired;
+
+  /// No description provided for @errInvalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid number'**
+  String get errInvalidNumber;
+
+  /// No description provided for @errCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a category'**
+  String get errCategoryRequired;
+
+  /// No description provided for @errDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a description'**
+  String get errDescriptionRequired;
+
+  /// No description provided for @labelAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get labelAmount;
+
+  /// No description provided for @labelCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get labelCategory;
+
+  /// No description provided for @labelDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get labelDate;
+
+  /// No description provided for @labelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get labelDescription;
+
+  /// No description provided for @labelReimbursable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reimbursable'**
+  String get labelReimbursable;
+
+  /// No description provided for @labelReimbursableExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Reimbursable Expense'**
+  String get labelReimbursableExpense;
+
+  /// No description provided for @labelReimbursableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Can be claimed back from company'**
+  String get labelReimbursableHint;
+
+  /// No description provided for @labelReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get labelReceipt;
+
+  /// No description provided for @msgReceiptAttached.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt Attached'**
+  String get msgReceiptAttached;
+
+  /// No description provided for @labelRemoveReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Receipt'**
+  String get labelRemoveReceipt;
+
+  /// No description provided for @labelAttachReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Receipt'**
+  String get labelAttachReceipt;
+
+  /// No description provided for @btnReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get btnReset;
+
+  /// No description provided for @msgAddingExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Adding...'**
+  String get msgAddingExpense;
+
+  /// No description provided for @hintSelectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Category'**
+  String get hintSelectCategory;
+
+  /// No description provided for @hintDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'What was this for?'**
+  String get hintDescription;
+
+  /// No description provided for @semanticSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date. Current: {date}'**
+  String semanticSelectDate(String date);
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'DZD'**
+  String get currency;
+
+  /// No description provided for @filterReimbursable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reimbursable'**
+  String get filterReimbursable;
+
+  /// No description provided for @filterNonReimbursable.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Reimbursable'**
+  String get filterNonReimbursable;
+
+  /// No description provided for @semanticFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter List'**
+  String get semanticFilter;
+
+  /// No description provided for @semanticAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get semanticAllCategories;
+
+  /// No description provided for @filterAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get filterAllCategories;
+
+  /// No description provided for @msgAccountPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is pending approval'**
+  String get msgAccountPending;
+
+  /// No description provided for @labelEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get labelEmail;
+
+  /// No description provided for @hintEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'email@example.com'**
+  String get hintEmail;
+
+  /// No description provided for @errEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get errEnterEmail;
+
+  /// No description provided for @errInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get errInvalidEmail;
+
+  /// No description provided for @labelPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get labelPassword;
+
+  /// No description provided for @hintPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get hintPassword;
+
+  /// No description provided for @errEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get errEnterPassword;
+
+  /// No description provided for @btnSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get btnSignIn;
+
+  /// No description provided for @msgNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get msgNoAccount;
+
+  /// No description provided for @btnRegisterManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Register as Manager'**
+  String get btnRegisterManager;
+
+  /// No description provided for @btnContinueOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Offline'**
+  String get btnContinueOffline;
 
   /// No description provided for @accountDetails.
   ///
   /// In en, this message translates to:
   /// **'Account Details'**
   String get accountDetails;
+
+  /// No description provided for @exportReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Reports'**
+  String get exportReports;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Restore'**
+  String get backupRestore;
+
+  /// No description provided for @manageAccountPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your account preferences'**
+  String get manageAccountPreferences;
 
   /// No description provided for @viewAndManagePersonalInfo.
   ///
@@ -149,7 +911,25 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Member since {date}'**
-  String memberSince(Object date);
+  String memberSince(String date);
+
+  /// No description provided for @errGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errGeneric;
+
+  /// No description provided for @msgCategoryUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get msgCategoryUpdated;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
 
   /// No description provided for @fullName.
   ///
@@ -169,18 +949,6 @@ abstract class AppLocalizations {
   /// **'Location'**
   String get location;
 
-  /// No description provided for @saveChanges.
-  ///
-  /// In en, this message translates to:
-  /// **'Save Changes'**
-  String get saveChanges;
-
-  /// No description provided for @exportReports.
-  ///
-  /// In en, this message translates to:
-  /// **'Export Reports'**
-  String get exportReports;
-
   /// No description provided for @downloadExpenseData.
   ///
   /// In en, this message translates to:
@@ -198,12 +966,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Date Range'**
   String get dateRange;
-
-  /// No description provided for @category.
-  ///
-  /// In en, this message translates to:
-  /// **'Category'**
-  String get category;
 
   /// No description provided for @exportFormat.
   ///
@@ -247,12 +1009,6 @@ abstract class AppLocalizations {
   /// **'Export as PDF'**
   String get exportAsPdf;
 
-  /// No description provided for @appearance.
-  ///
-  /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearance;
-
   /// No description provided for @customizeAppLook.
   ///
   /// In en, this message translates to:
@@ -283,23 +1039,17 @@ abstract class AppLocalizations {
   /// **'System'**
   String get system;
 
-  /// No description provided for @language.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get language;
-
   /// No description provided for @selectPreferredLanguage.
   ///
   /// In en, this message translates to:
   /// **'Select your preferred language'**
   String get selectPreferredLanguage;
 
-  /// No description provided for @notifications.
+  /// No description provided for @hintSearchCategories.
   ///
   /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
+  /// **'Search...'**
+  String get hintSearchCategories;
 
   /// No description provided for @manageNotifications.
   ///
@@ -433,12 +1183,6 @@ abstract class AppLocalizations {
   /// **'To'**
   String get to;
 
-  /// No description provided for @security.
-  ///
-  /// In en, this message translates to:
-  /// **'Security'**
-  String get security;
-
   /// No description provided for @manageSecurity.
   ///
   /// In en, this message translates to:
@@ -511,497 +1255,515 @@ abstract class AppLocalizations {
   /// **'Permanently delete all your expense data. This action cannot be undone.'**
   String get deleteAllDataDesc;
 
-  /// No description provided for @backupRestore.
-  ///
-  /// In en, this message translates to:
-  /// **'Backup & Restore'**
-  String get backupRestore;
-
-  /// No description provided for @account.
-  ///
-  /// In en, this message translates to:
-  /// **'Account'**
-  String get account;
-
-  /// No description provided for @totalBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Balance'**
-  String get totalBalance;
-
-  /// No description provided for @numberofCategories.
-  ///
-  /// In en, this message translates to:
-  /// **'Number of Categories'**
-  String get numberofCategories;
-
   /// No description provided for @active.
   ///
   /// In en, this message translates to:
   /// **'Active'**
   String get active;
 
-  /// No description provided for @expenses.
+  /// No description provided for @reimbursements.
   ///
   /// In en, this message translates to:
-  /// **'Expenses'**
-  String get expenses;
+  /// **'Reimbursements'**
+  String get reimbursements;
 
-  /// No description provided for @dailyAvgSpending.
+  /// No description provided for @exportExcel.
   ///
   /// In en, this message translates to:
-  /// **'Daily Avg Spending'**
-  String get dailyAvgSpending;
+  /// **'Export Excel'**
+  String get exportExcel;
 
-  /// No description provided for @currency.
+  /// No description provided for @labelEmployee.
   ///
   /// In en, this message translates to:
-  /// **'DZD'**
-  String get currency;
+  /// **'Employee'**
+  String get labelEmployee;
 
-  /// No description provided for @navViewExpenses.
+  /// No description provided for @labelApprovedAmount.
   ///
   /// In en, this message translates to:
-  /// **'View Expenses'**
-  String get navViewExpenses;
+  /// **'Approved Amount'**
+  String get labelApprovedAmount;
 
-  /// No description provided for @navBudgets.
+  /// No description provided for @labelPaymentDate.
   ///
   /// In en, this message translates to:
-  /// **'Budgets'**
-  String get navBudgets;
+  /// **'Payment Date'**
+  String get labelPaymentDate;
 
-  /// No description provided for @navManageBudgets.
+  /// No description provided for @statusPaid.
   ///
   /// In en, this message translates to:
-  /// **'Manage Budgets'**
-  String get navManageBudgets;
+  /// **'Paid'**
+  String get statusPaid;
 
-  /// No description provided for @navManagerDashboard.
+  /// No description provided for @statusUnpaid.
   ///
   /// In en, this message translates to:
-  /// **'Manager Dashboard'**
-  String get navManagerDashboard;
+  /// **'Unpaid'**
+  String get statusUnpaid;
 
-  /// No description provided for @navViewAll.
+  /// No description provided for @labelAddNewEmployee.
   ///
   /// In en, this message translates to:
-  /// **'View All'**
-  String get navViewAll;
+  /// **'Add New Employee'**
+  String get labelAddNewEmployee;
 
-  /// No description provided for @btnCancel.
+  /// No description provided for @labelFillEmployeeDetails.
   ///
   /// In en, this message translates to:
-  /// **'Cancel'**
-  String get btnCancel;
+  /// **'Fill in the employee details below'**
+  String get labelFillEmployeeDetails;
 
-  /// No description provided for @btnDelete.
+  /// No description provided for @labelRole.
   ///
   /// In en, this message translates to:
-  /// **'Delete'**
-  String get btnDelete;
+  /// **'Role'**
+  String get labelRole;
 
-  /// No description provided for @btnSave.
+  /// No description provided for @hintRole.
   ///
   /// In en, this message translates to:
-  /// **'Save'**
-  String get btnSave;
+  /// **'Software Engineer'**
+  String get hintRole;
 
-  /// No description provided for @btnAdd.
+  /// No description provided for @errEmployeeNameRequired.
   ///
   /// In en, this message translates to:
-  /// **'Add'**
-  String get btnAdd;
+  /// **'Please enter employee name'**
+  String get errEmployeeNameRequired;
 
-  /// No description provided for @btnEdit.
+  /// No description provided for @errPhoneRequired.
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
-  String get btnEdit;
+  /// **'Please enter phone number'**
+  String get errPhoneRequired;
 
-  /// No description provided for @btnClose.
+  /// No description provided for @errRoleRequired.
   ///
   /// In en, this message translates to:
-  /// **'Close'**
-  String get btnClose;
+  /// **'Please enter role'**
+  String get errRoleRequired;
 
-  /// No description provided for @btnUndo.
+  /// No description provided for @labelHireDate.
   ///
   /// In en, this message translates to:
-  /// **'Undo'**
-  String get btnUndo;
+  /// **'Hire Date'**
+  String get labelHireDate;
 
-  /// No description provided for @btnReset.
+  /// No description provided for @labelStatusSuspended.
   ///
   /// In en, this message translates to:
-  /// **'Reset'**
-  String get btnReset;
+  /// **'Suspended'**
+  String get labelStatusSuspended;
 
-  /// No description provided for @btnAddCategory.
+  /// No description provided for @deptEngineering.
   ///
   /// In en, this message translates to:
-  /// **'Add Category'**
-  String get btnAddCategory;
+  /// **'Engineering'**
+  String get deptEngineering;
 
-  /// No description provided for @titleEditExpense.
+  /// No description provided for @deptMarketing.
   ///
   /// In en, this message translates to:
-  /// **'Edit Expense'**
-  String get titleEditExpense;
+  /// **'Marketing'**
+  String get deptMarketing;
 
-  /// No description provided for @titleBudgetManagement.
+  /// No description provided for @deptSales.
   ///
   /// In en, this message translates to:
-  /// **'Budget Management'**
-  String get titleBudgetManagement;
+  /// **'Sales'**
+  String get deptSales;
 
-  /// No description provided for @titleAddCategory.
+  /// No description provided for @deptProduct.
   ///
   /// In en, this message translates to:
-  /// **'Add New Category'**
-  String get titleAddCategory;
+  /// **'Product'**
+  String get deptProduct;
 
-  /// No description provided for @titleDeleteCategory.
+  /// No description provided for @deptDesign.
   ///
   /// In en, this message translates to:
-  /// **'Delete Category'**
-  String get titleDeleteCategory;
+  /// **'Design'**
+  String get deptDesign;
 
-  /// No description provided for @titleDeleteTransaction.
+  /// No description provided for @deptHumanResources.
   ///
   /// In en, this message translates to:
-  /// **'Delete Expense'**
-  String get titleDeleteTransaction;
+  /// **'Human Resources'**
+  String get deptHumanResources;
 
-  /// No description provided for @titleBudgetOverview.
+  /// No description provided for @deptFinance.
   ///
   /// In en, this message translates to:
-  /// **'Budget Overview'**
-  String get titleBudgetOverview;
+  /// **'Finance'**
+  String get deptFinance;
 
-  /// No description provided for @titleRecentExpenses.
+  /// No description provided for @btnBackToLogin.
   ///
   /// In en, this message translates to:
-  /// **'Recent Expenses'**
-  String get titleRecentExpenses;
+  /// **'Back to Login'**
+  String get btnBackToLogin;
 
-  /// No description provided for @titleManagerDashboard.
+  /// No description provided for @titleRegisterManager.
   ///
   /// In en, this message translates to:
-  /// **'Manager Dashboard'**
-  String get titleManagerDashboard;
+  /// **'Register Organization'**
+  String get titleRegisterManager;
 
-  /// No description provided for @titleEmployeeExpenses.
+  /// No description provided for @subtitleRegisterManager.
   ///
   /// In en, this message translates to:
-  /// **'Employee Expenses'**
-  String get titleEmployeeExpenses;
+  /// **'Create a new organization account for your team'**
+  String get subtitleRegisterManager;
 
-  /// No description provided for @labelAmount.
+  /// No description provided for @labelOrganizationName.
   ///
   /// In en, this message translates to:
-  /// **'Amount'**
-  String get labelAmount;
+  /// **'Organization Name'**
+  String get labelOrganizationName;
 
-  /// No description provided for @labelDate.
+  /// No description provided for @hintOrganizationName.
   ///
   /// In en, this message translates to:
-  /// **'Date'**
-  String get labelDate;
+  /// **'Acme Corp'**
+  String get hintOrganizationName;
 
-  /// No description provided for @labelDescription.
+  /// No description provided for @errEnterOrganizationName.
   ///
   /// In en, this message translates to:
-  /// **'Description'**
-  String get labelDescription;
+  /// **'Please enter organization name'**
+  String get errEnterOrganizationName;
 
-  /// No description provided for @labelCategoryName.
+  /// No description provided for @errOrganizationNameLength.
   ///
   /// In en, this message translates to:
-  /// **'Category Name'**
-  String get labelCategoryName;
+  /// **'Name must be at least 3 characters'**
+  String get errOrganizationNameLength;
 
-  /// No description provided for @labelMonthlyBudget.
+  /// No description provided for @labelFullName.
   ///
   /// In en, this message translates to:
-  /// **'Monthly Budget'**
-  String get labelMonthlyBudget;
+  /// **'Full Name'**
+  String get labelFullName;
 
-  /// No description provided for @labelBudget.
+  /// No description provided for @hintFullName.
   ///
   /// In en, this message translates to:
-  /// **'Budget'**
-  String get labelBudget;
+  /// **'John Doe'**
+  String get hintFullName;
 
-  /// No description provided for @labelColor.
+  /// No description provided for @errEnterFullName.
   ///
   /// In en, this message translates to:
-  /// **'Color'**
-  String get labelColor;
+  /// **'Please enter your full name'**
+  String get errEnterFullName;
 
-  /// No description provided for @labelIcon.
+  /// No description provided for @hintCreatePassword.
   ///
   /// In en, this message translates to:
-  /// **'Icon'**
-  String get labelIcon;
+  /// **'Create a secure password'**
+  String get hintCreatePassword;
 
-  /// No description provided for @labelSpent.
+  /// No description provided for @errPasswordLength.
   ///
   /// In en, this message translates to:
-  /// **'Spent'**
-  String get labelSpent;
+  /// **'Password must be at least 6 characters'**
+  String get errPasswordLength;
 
-  /// No description provided for @labelRemaining.
+  /// No description provided for @labelConfirmPassword.
   ///
   /// In en, this message translates to:
-  /// **'Remaining'**
-  String get labelRemaining;
+  /// **'Confirm Password'**
+  String get labelConfirmPassword;
 
-  /// No description provided for @labelStatus.
+  /// No description provided for @hintConfirmPassword.
   ///
   /// In en, this message translates to:
-  /// **'Status'**
-  String get labelStatus;
+  /// **'Repeat your password'**
+  String get hintConfirmPassword;
 
-  /// No description provided for @statusGood.
+  /// No description provided for @errConfirmPassword.
   ///
   /// In en, this message translates to:
-  /// **'Good'**
-  String get statusGood;
+  /// **'Please confirm your password'**
+  String get errConfirmPassword;
 
-  /// No description provided for @statusWarning.
+  /// No description provided for @errPasswordsDoNotMatch.
   ///
   /// In en, this message translates to:
-  /// **'Warning'**
-  String get statusWarning;
+  /// **'Passwords do not match'**
+  String get errPasswordsDoNotMatch;
 
-  /// No description provided for @statusInRisk.
+  /// No description provided for @btnCreateOrganization.
   ///
   /// In en, this message translates to:
-  /// **'In Risk'**
-  String get statusInRisk;
+  /// **'Create Organization'**
+  String get btnCreateOrganization;
 
-  /// No description provided for @msgCategoryAdded.
+  /// No description provided for @titleRegistrationSubmitted.
   ///
   /// In en, this message translates to:
-  /// **'Category added successfully'**
-  String get msgCategoryAdded;
+  /// **'Registration Submitted'**
+  String get titleRegistrationSubmitted;
 
-  /// No description provided for @msgCategoryUpdated.
+  /// No description provided for @msgRegistrationSubmitted.
   ///
   /// In en, this message translates to:
-  /// **'Updated'**
-  String get msgCategoryUpdated;
+  /// **'Your request for {name} has been submitted and is pending approval by the administrator.'**
+  String msgRegistrationSubmitted(String name);
 
-  /// No description provided for @msgCategoryDeleted.
+  /// No description provided for @titleWhatHappensNext.
   ///
   /// In en, this message translates to:
-  /// **'Category deleted'**
-  String get msgCategoryDeleted;
+  /// **'What happens next?'**
+  String get titleWhatHappensNext;
 
-  /// No description provided for @msgExpenseAdded.
+  /// No description provided for @stepReviewRequest.
   ///
   /// In en, this message translates to:
-  /// **'Expense added successfully'**
-  String get msgExpenseAdded;
+  /// **'Administrator reviews your request'**
+  String get stepReviewRequest;
 
-  /// No description provided for @msgExpenseUpdated.
+  /// No description provided for @stepAccountActivation.
   ///
   /// In en, this message translates to:
-  /// **'Expense updated successfully'**
-  String get msgExpenseUpdated;
+  /// **'Account is activated upon approval'**
+  String get stepAccountActivation;
 
-  /// No description provided for @msgTransactionDeleted.
+  /// No description provided for @stepLogin.
   ///
   /// In en, this message translates to:
-  /// **'Expense deleted'**
-  String get msgTransactionDeleted;
+  /// **'You can then log in and start managing'**
+  String get stepLogin;
 
-  /// No description provided for @msgNoExpensesYet.
+  /// No description provided for @errUserProfileNotFound.
   ///
   /// In en, this message translates to:
-  /// **'No expenses yet'**
-  String get msgNoExpensesYet;
+  /// **'User profile not found'**
+  String get errUserProfileNotFound;
 
-  /// No description provided for @msgNoBudgetsYet.
+  /// No description provided for @errNoOrganization.
   ///
   /// In en, this message translates to:
-  /// **'No budgets set yet. Go to Budgets to create one.'**
-  String get msgNoBudgetsYet;
+  /// **'No organization associated with this account'**
+  String get errNoOrganization;
 
-  /// No description provided for @errBudgetNegative.
+  /// No description provided for @msgAddEmployeeSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Budget cannot be negative'**
-  String get errBudgetNegative;
+  /// **'Employee {name} has been added successfully'**
+  String msgAddEmployeeSuccess(String name);
 
-  /// No description provided for @hintSearchCategories.
+  /// No description provided for @errAddEmployee.
   ///
   /// In en, this message translates to:
-  /// **'Search categories...'**
-  String get hintSearchCategories;
+  /// **'Failed to add employee: {error}'**
+  String errAddEmployee(String error);
 
-  /// No description provided for @hintSearchExpenses.
+  /// No description provided for @msgRemoveEmployeeConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Search expenses...'**
-  String get hintSearchExpenses;
+  /// **'Are you sure you want to remove {name} from the team?'**
+  String msgRemoveEmployeeConfirm(String name);
 
-  /// No description provided for @hintDescription.
+  /// No description provided for @actionRemove.
   ///
   /// In en, this message translates to:
-  /// **'What was this expense for?'**
-  String get hintDescription;
+  /// **'Remove'**
+  String get actionRemove;
 
-  /// No description provided for @descManageBudgets.
+  /// No description provided for @msgRemoveEmployeeSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Manage your categories and budget limits'**
-  String get descManageBudgets;
+  /// **'Employee {name} has been removed successfully'**
+  String msgRemoveEmployeeSuccess(String name);
 
-  /// No description provided for @descManagerDashboard.
+  /// No description provided for @errRemoveEmployee.
   ///
   /// In en, this message translates to:
-  /// **'Monitor employees, approve expenses, and control budgets'**
-  String get descManagerDashboard;
+  /// **'Failed to remove employee: {error}'**
+  String errRemoveEmployee(String error);
 
-  /// No description provided for @descEmployeeExpenses.
+  /// No description provided for @statusDeactivated.
   ///
   /// In en, this message translates to:
-  /// **'View and manage employee expense submissions'**
-  String get descEmployeeExpenses;
+  /// **'Deactivated'**
+  String get statusDeactivated;
 
-  /// No description provided for @descDeleteCategory.
+  /// No description provided for @statusActivated.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete \"{name}\"? This action cannot be undone.'**
-  String descDeleteCategory(Object name);
+  /// **'Activated'**
+  String get statusActivated;
 
-  /// No description provided for @descDeleteTransaction.
+  /// No description provided for @msgEmployeeStatusChanged.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete this expense? This action cannot be undone.'**
-  String get descDeleteTransaction;
+  /// **'Employee {name} status changed to {status}'**
+  String msgEmployeeStatusChanged(String name, String status);
 
-  /// No description provided for @descNoCategoriesFound.
+  /// No description provided for @errUpdateStatus.
   ///
   /// In en, this message translates to:
-  /// **'No categories found.'**
-  String get descNoCategoriesFound;
+  /// **'Failed to update status: {error}'**
+  String errUpdateStatus(String error);
 
-  /// No description provided for @descNoMatchingCategories.
+  /// No description provided for @titleTeamManagement.
   ///
   /// In en, this message translates to:
-  /// **'No categories match your filters'**
-  String get descNoMatchingCategories;
+  /// **'Team Management'**
+  String get titleTeamManagement;
 
-  /// No description provided for @filterAll.
+  /// No description provided for @actionRefresh.
   ///
   /// In en, this message translates to:
-  /// **'All'**
-  String get filterAll;
+  /// **'Refresh'**
+  String get actionRefresh;
 
-  /// No description provided for @filterSortByName.
+  /// No description provided for @titleErrorLoadingEmployees.
   ///
   /// In en, this message translates to:
-  /// **'Name'**
-  String get filterSortByName;
+  /// **'Error Loading Employees'**
+  String get titleErrorLoadingEmployees;
 
-  /// No description provided for @filterSortByBudget.
+  /// No description provided for @actionRetry.
   ///
   /// In en, this message translates to:
-  /// **'Budget'**
-  String get filterSortByBudget;
+  /// **'Retry'**
+  String get actionRetry;
 
-  /// No description provided for @filterSortBySpent.
+  /// No description provided for @titleNoEmployees.
   ///
   /// In en, this message translates to:
-  /// **'Spent'**
-  String get filterSortBySpent;
+  /// **'No Employees Yet'**
+  String get titleNoEmployees;
 
-  /// No description provided for @filterSortByPercentage.
+  /// No description provided for @msgNoEmployees.
   ///
   /// In en, this message translates to:
-  /// **'Percentage'**
-  String get filterSortByPercentage;
+  /// **'You haven\'t added any employees to your team yet.'**
+  String get msgNoEmployees;
 
-  /// No description provided for @filterReimbursable.
+  /// No description provided for @btnAddFirstEmployee.
   ///
   /// In en, this message translates to:
-  /// **'Reimbursable'**
-  String get filterReimbursable;
+  /// **'Add Your First Employee'**
+  String get btnAddFirstEmployee;
 
-  /// No description provided for @filterNonReimbursable.
+  /// No description provided for @titleOrganizationManagement.
   ///
   /// In en, this message translates to:
-  /// **'Non-Reimbursable'**
-  String get filterNonReimbursable;
+  /// **'Organization Management'**
+  String get titleOrganizationManagement;
 
-  /// No description provided for @labelReimbursable.
+  /// No description provided for @tabPending.
   ///
   /// In en, this message translates to:
-  /// **'Reimbursable'**
-  String get labelReimbursable;
+  /// **'Pending'**
+  String get tabPending;
 
-  /// No description provided for @labelReimbursableExpense.
+  /// No description provided for @tabApproved.
   ///
   /// In en, this message translates to:
-  /// **'Mark as Reimbursable'**
-  String get labelReimbursableExpense;
+  /// **'Approved'**
+  String get tabApproved;
 
-  /// No description provided for @labelReimbursableHint.
+  /// No description provided for @tabRejected.
   ///
   /// In en, this message translates to:
-  /// **'Check if this expense should be reimbursed by the company'**
-  String get labelReimbursableHint;
+  /// **'Rejected'**
+  String get tabRejected;
 
-  /// No description provided for @titleReimbursableSummary.
+  /// No description provided for @msgOrgApproved.
   ///
   /// In en, this message translates to:
-  /// **'Reimbursable Expenses'**
-  String get titleReimbursableSummary;
+  /// **'Organization {name} has been approved'**
+  String msgOrgApproved(String name);
 
-  /// No description provided for @labelTotalReimbursable.
+  /// No description provided for @errApproveOrg.
   ///
   /// In en, this message translates to:
-  /// **'Total Reimbursable'**
-  String get labelTotalReimbursable;
+  /// **'Failed to approve organization: {error}'**
+  String errApproveOrg(String error);
 
-  /// No description provided for @labelPendingReimbursement.
+  /// No description provided for @msgOrgRejected.
   ///
   /// In en, this message translates to:
-  /// **'Pending Reimbursement'**
-  String get labelPendingReimbursement;
+  /// **'Organization {name} has been rejected'**
+  String msgOrgRejected(String name);
 
-  /// No description provided for @labelReimbursableOwed.
+  /// No description provided for @errRejectOrg.
   ///
   /// In en, this message translates to:
-  /// **'Amount Owed'**
-  String get labelReimbursableOwed;
+  /// **'Failed to reject organization: {error}'**
+  String errRejectOrg(String error);
 
-  /// No description provided for @msgNoReimbursableExpenses.
+  /// No description provided for @dialogTitleRejectOrg.
   ///
   /// In en, this message translates to:
-  /// **'No reimbursable expenses'**
-  String get msgNoReimbursableExpenses;
+  /// **'Reject {name}?'**
+  String dialogTitleRejectOrg(String name);
 
-  /// No description provided for @labelReceipt.
+  /// No description provided for @labelRejectReason.
   ///
   /// In en, this message translates to:
-  /// **'Receipt'**
-  String get labelReceipt;
+  /// **'Please provide a reason for rejection:'**
+  String get labelRejectReason;
 
-  /// No description provided for @labelAttachReceipt.
+  /// No description provided for @hintRejectReason.
   ///
   /// In en, this message translates to:
-  /// **'Attach Receipt'**
-  String get labelAttachReceipt;
+  /// **'Reason for rejection...'**
+  String get hintRejectReason;
 
-  /// No description provided for @labelRemoveReceipt.
+  /// No description provided for @actionReject.
   ///
   /// In en, this message translates to:
-  /// **'Remove Receipt'**
-  String get labelRemoveReceipt;
+  /// **'Reject'**
+  String get actionReject;
+
+  /// No description provided for @errLoadOrgs.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading organizations'**
+  String get errLoadOrgs;
+
+  /// No description provided for @msgNoOrgs.
+  ///
+  /// In en, this message translates to:
+  /// **'No organizations found'**
+  String get msgNoOrgs;
+
+  /// No description provided for @titleExpenseDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Details'**
+  String get titleExpenseDetails;
+
+  /// No description provided for @btnApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get btnApprove;
+
+  /// No description provided for @btnReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get btnReject;
+
+  /// No description provided for @btnAddComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Comment'**
+  String get btnAddComment;
+
+  /// No description provided for @labelComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get labelComments;
 
   /// No description provided for @labelViewReceipt.
   ///
@@ -1009,125 +1771,197 @@ abstract class AppLocalizations {
   /// **'View Receipt'**
   String get labelViewReceipt;
 
-  /// No description provided for @hintAttachReceipt.
+  /// No description provided for @titleAddComment.
   ///
   /// In en, this message translates to:
-  /// **'Attach an image or PDF as proof'**
-  String get hintAttachReceipt;
+  /// **'Add Comment'**
+  String get titleAddComment;
 
-  /// No description provided for @msgReceiptAttached.
+  /// No description provided for @labelComment.
   ///
   /// In en, this message translates to:
-  /// **'Receipt attached successfully'**
-  String get msgReceiptAttached;
+  /// **'Comment'**
+  String get labelComment;
 
-  /// No description provided for @msgReceiptRemoved.
+  /// No description provided for @hintComment.
   ///
   /// In en, this message translates to:
-  /// **'Receipt removed'**
-  String get msgReceiptRemoved;
+  /// **'Enter your comment here...'**
+  String get hintComment;
 
-  /// No description provided for @errReceiptNotFound.
+  /// No description provided for @errCommentRequired.
   ///
   /// In en, this message translates to:
-  /// **'Receipt file not found'**
-  String get errReceiptNotFound;
+  /// **'Please enter a comment'**
+  String get errCommentRequired;
 
-  /// No description provided for @errReceiptInvalidFormat.
+  /// No description provided for @errCommentLength.
   ///
   /// In en, this message translates to:
-  /// **'Invalid file format. Please use JPG, PNG, or PDF'**
-  String get errReceiptInvalidFormat;
+  /// **'Comment must be at least 3 characters'**
+  String get errCommentLength;
 
-  /// No description provided for @labelBackup.
+  /// No description provided for @btnSubmit.
   ///
   /// In en, this message translates to:
-  /// **'Backup'**
-  String get labelBackup;
+  /// **'Submit'**
+  String get btnSubmit;
 
-  /// No description provided for @labelRestore.
+  /// No description provided for @labelTotal.
   ///
   /// In en, this message translates to:
-  /// **'Restore'**
-  String get labelRestore;
+  /// **'Total'**
+  String get labelTotal;
 
-  /// No description provided for @titleBackupData.
+  /// No description provided for @titleNoPendingApprovals.
   ///
   /// In en, this message translates to:
-  /// **'Backup Data'**
-  String get titleBackupData;
+  /// **'No pending approvals'**
+  String get titleNoPendingApprovals;
 
-  /// No description provided for @titleRestoreData.
+  /// No description provided for @msgAllExpensesProcessed.
   ///
   /// In en, this message translates to:
-  /// **'Restore Data'**
-  String get titleRestoreData;
+  /// **'All expenses have been processed'**
+  String get msgAllExpensesProcessed;
 
-  /// No description provided for @btnBackupNow.
+  /// No description provided for @tooltipViewDetails.
   ///
   /// In en, this message translates to:
-  /// **'Backup Now'**
-  String get btnBackupNow;
+  /// **'View Details'**
+  String get tooltipViewDetails;
 
-  /// No description provided for @btnRestoreNow.
+  /// No description provided for @tooltipApprove.
   ///
   /// In en, this message translates to:
-  /// **'Restore Now'**
-  String get btnRestoreNow;
+  /// **'Approve'**
+  String get tooltipApprove;
 
-  /// No description provided for @msgBackupSuccess.
+  /// No description provided for @tooltipReject.
   ///
   /// In en, this message translates to:
-  /// **'Backup created successfully'**
-  String get msgBackupSuccess;
+  /// **'Reject'**
+  String get tooltipReject;
 
-  /// No description provided for @msgRestoreSuccess.
+  /// No description provided for @tooltipComment.
   ///
   /// In en, this message translates to:
-  /// **'Data restored successfully'**
-  String get msgRestoreSuccess;
+  /// **'Comment'**
+  String get tooltipComment;
 
-  /// No description provided for @msgBackupFailed.
+  /// No description provided for @titleRejectExpense.
   ///
   /// In en, this message translates to:
-  /// **'Backup failed'**
-  String get msgBackupFailed;
+  /// **'Reject Expense'**
+  String get titleRejectExpense;
 
-  /// No description provided for @msgRestoreFailed.
+  /// No description provided for @labelRejectionReason.
   ///
   /// In en, this message translates to:
-  /// **'Restore failed'**
-  String get msgRestoreFailed;
+  /// **'Rejection Reason'**
+  String get labelRejectionReason;
 
-  /// No description provided for @descBackup.
+  /// No description provided for @hintRejectionReason.
   ///
   /// In en, this message translates to:
-  /// **'Create a backup file of all your expenses and categories'**
-  String get descBackup;
+  /// **'Enter reason for rejection'**
+  String get hintRejectionReason;
 
-  /// No description provided for @descRestore.
+  /// No description provided for @labelViewDetails.
   ///
   /// In en, this message translates to:
-  /// **'Restore your data from a previous backup file'**
-  String get descRestore;
+  /// **'View Details'**
+  String get labelViewDetails;
 
-  /// No description provided for @descRestoreWarning.
+  /// No description provided for @labelSuspend.
   ///
   /// In en, this message translates to:
-  /// **'Warning: This will replace all current data with the backup data'**
-  String get descRestoreWarning;
+  /// **'Suspend'**
+  String get labelSuspend;
 
-  /// No description provided for @labelChooseBackupLocation.
+  /// No description provided for @labelActivate.
   ///
   /// In en, this message translates to:
-  /// **'Choose backup location'**
-  String get labelChooseBackupLocation;
+  /// **'Activate'**
+  String get labelActivate;
 
-  /// No description provided for @labelSelectBackupFile.
+  /// No description provided for @labelRemove.
   ///
   /// In en, this message translates to:
-  /// **'Select backup file'**
-  String get labelSelectBackupFile;
+  /// **'Remove'**
+  String get labelRemove;
+
+  /// No description provided for @labelBy.
+  ///
+  /// In en, this message translates to:
+  /// **'by'**
+  String get labelBy;
+
+  /// No description provided for @labelStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get labelStatusActive;
+
+  /// No description provided for @msgExportExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting to Excel...'**
+  String get msgExportExcel;
+
+  /// No description provided for @msgExportPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting to PDF...'**
+  String get msgExportPdf;
+
+  /// No description provided for @labelBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget'**
+  String get labelBudget;
+
+  /// No description provided for @labelDescCreateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new account for a team member'**
+  String get labelDescCreateAccount;
+
+  /// No description provided for @labelTemporaryPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary Password'**
+  String get labelTemporaryPassword;
+
+  /// No description provided for @hintTemporaryPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a temporary password'**
+  String get hintTemporaryPassword;
+
+  /// No description provided for @msgPasswordChangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The employee can change this password after first login.'**
+  String get msgPasswordChangeHint;
+
+  /// No description provided for @labelDeactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get labelDeactivate;
+
+  /// No description provided for @statusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get statusInactive;
+
+  /// No description provided for @labelUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get labelUnknown;
 
   /// No description provided for @ownerDashboard.
   ///
@@ -1138,7 +1972,7 @@ abstract class AppLocalizations {
   /// No description provided for @subtitleOwnerDashboard.
   ///
   /// In en, this message translates to:
-  /// **'Platform-wide overview and management'**
+  /// **'Manage organizations, approve managers, and monitor platform activity'**
   String get subtitleOwnerDashboard;
 
   /// No description provided for @kpiTotalCompanies.
@@ -1153,28 +1987,10 @@ abstract class AppLocalizations {
   /// **'Total Managers'**
   String get kpiTotalManagers;
 
-  /// No description provided for @kpiTotalEmployees.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Employees'**
-  String get kpiTotalEmployees;
-
-  /// No description provided for @kpiTotalExpenses.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Expenses'**
-  String get kpiTotalExpenses;
-
-  /// No description provided for @kpiPendingApprovals.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending Approvals'**
-  String get kpiPendingApprovals;
-
   /// No description provided for @kpiPendingApprovalsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Managers awaiting approval'**
+  /// **'Managers waiting for approval'**
   String get kpiPendingApprovalsSubtitle;
 
   /// No description provided for @kpiMonthlyGrowth.
@@ -1186,7 +2002,7 @@ abstract class AppLocalizations {
   /// No description provided for @kpiMonthlyGrowthSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Platform expense growth'**
+  /// **'Platform-wide growth'**
   String get kpiMonthlyGrowthSubtitle;
 
   /// No description provided for @headerPendingManagerRequests.
@@ -1210,7 +2026,7 @@ abstract class AppLocalizations {
   /// No description provided for @msgNoRecentActivity.
   ///
   /// In en, this message translates to:
-  /// **'No recent activity'**
+  /// **'No recent activity found'**
   String get msgNoRecentActivity;
 
   /// No description provided for @msgManagerApproved.
@@ -1228,19 +2044,31 @@ abstract class AppLocalizations {
   /// No description provided for @msgManagerSuspended.
   ///
   /// In en, this message translates to:
-  /// **'Manager suspended'**
+  /// **'Manager account suspended'**
   String get msgManagerSuspended;
+
+  /// No description provided for @dialogTitleConfirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get dialogTitleConfirmDelete;
+
+  /// No description provided for @dialogDescDeleteManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this manager? This action cannot be undone.'**
+  String get dialogDescDeleteManager;
 
   /// No description provided for @msgManagerDeleted.
   ///
   /// In en, this message translates to:
-  /// **'Manager deleted'**
+  /// **'Manager account deleted'**
   String get msgManagerDeleted;
 
   /// No description provided for @msgManagerProfileComingSoon.
   ///
   /// In en, this message translates to:
-  /// **'Manager profile view - Coming soon'**
+  /// **'Manager profile view is coming soon'**
   String get msgManagerProfileComingSoon;
 
   /// No description provided for @dialogTitleRejectManager.
@@ -1252,7 +2080,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogLabelReasonRejection.
   ///
   /// In en, this message translates to:
-  /// **'Reason for rejection'**
+  /// **'Reason for Rejection'**
   String get dialogLabelReasonRejection;
 
   /// No description provided for @dialogHintEnterReason.
@@ -1276,7 +2104,7 @@ abstract class AppLocalizations {
   /// No description provided for @dialogLabelReasonSuspension.
   ///
   /// In en, this message translates to:
-  /// **'Reason for suspension'**
+  /// **'Reason for Suspension'**
   String get dialogLabelReasonSuspension;
 
   /// No description provided for @dialogActionSuspend.
@@ -1285,161 +2113,47 @@ abstract class AppLocalizations {
   /// **'Suspend'**
   String get dialogActionSuspend;
 
-  /// No description provided for @dialogTitleConfirmDelete.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Delete'**
-  String get dialogTitleConfirmDelete;
-
-  /// No description provided for @dialogDescDeleteManager.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete this manager? This action cannot be undone.'**
-  String get dialogDescDeleteManager;
-
-  /// No description provided for @labelEmployeeManagement.
-  ///
-  /// In en, this message translates to:
-  /// **'Employee Management'**
-  String get labelEmployeeManagement;
-
-  /// No description provided for @hintSearchEmployees.
-  ///
-  /// In en, this message translates to:
-  /// **'Search employees...'**
-  String get hintSearchEmployees;
-
-  /// No description provided for @labelDepartment.
-  ///
-  /// In en, this message translates to:
-  /// **'Department'**
-  String get labelDepartment;
-
-  /// No description provided for @filterAllDepartments.
-  ///
-  /// In en, this message translates to:
-  /// **'All Departments'**
-  String get filterAllDepartments;
-
-  /// No description provided for @filterAllStatuses.
-  ///
-  /// In en, this message translates to:
-  /// **'All Statuses'**
-  String get filterAllStatuses;
-
-  /// No description provided for @labelStatusSuspended.
-  ///
-  /// In en, this message translates to:
-  /// **'Suspended'**
-  String get labelStatusSuspended;
-
-  /// No description provided for @labelAddEmployee.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Employee'**
-  String get labelAddEmployee;
-
-  /// No description provided for @labelPendingExpenseApprovals.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending Expense Approvals'**
-  String get labelPendingExpenseApprovals;
-
-  /// No description provided for @msgExpenseApproved.
-  ///
-  /// In en, this message translates to:
-  /// **'Expense approved'**
-  String get msgExpenseApproved;
-
-  /// No description provided for @msgExpenseRejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Expense rejected'**
-  String get msgExpenseRejected;
-
-  /// No description provided for @labelBudgetMonitoring.
-  ///
-  /// In en, this message translates to:
-  /// **'Budget Monitoring'**
-  String get labelBudgetMonitoring;
-
-  /// No description provided for @msgEmployeeAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'Employee {name} added successfully'**
-  String msgEmployeeAdded(Object name);
-
-  /// No description provided for @msgCommentAdded.
-  ///
-  /// In en, this message translates to:
-  /// **'Comment added successfully'**
-  String get msgCommentAdded;
-
-  /// No description provided for @msgViewDetailsFor.
-  ///
-  /// In en, this message translates to:
-  /// **'View details for {name}'**
-  String msgViewDetailsFor(Object name);
-
-  /// No description provided for @dialogTitleSuspendEmployee.
-  ///
-  /// In en, this message translates to:
-  /// **'Suspend Employee'**
-  String get dialogTitleSuspendEmployee;
-
-  /// No description provided for @dialogDescSuspendEmployee.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to suspend {name}?'**
-  String dialogDescSuspendEmployee(Object name);
-
-  /// No description provided for @msgEmployeeSuspended.
-  ///
-  /// In en, this message translates to:
-  /// **'{name} suspended'**
-  String msgEmployeeSuspended(Object name);
-
-  /// No description provided for @msgEmployeeActivated.
-  ///
-  /// In en, this message translates to:
-  /// **'{name} activated'**
-  String msgEmployeeActivated(Object name);
-
-  /// No description provided for @dialogTitleRemoveEmployee.
+  /// No description provided for @titleRemoveEmployee.
   ///
   /// In en, this message translates to:
   /// **'Remove Employee'**
-  String get dialogTitleRemoveEmployee;
+  String get titleRemoveEmployee;
 
-  /// No description provided for @dialogDescRemoveEmployee.
+  /// No description provided for @msgExpenseAdded.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to remove {name}? This action cannot be undone.'**
-  String dialogDescRemoveEmployee(Object name);
+  /// **'Expense added successfully'**
+  String get msgExpenseAdded;
 
-  /// No description provided for @msgEmployeeRemoved.
+  /// No description provided for @navBudgets.
   ///
   /// In en, this message translates to:
-  /// **'{name} removed'**
-  String msgEmployeeRemoved(Object name);
+  /// **'Budgets'**
+  String get navBudgets;
 
-  /// No description provided for @btnConfirm.
+  /// No description provided for @navManagerDashboard.
   ///
   /// In en, this message translates to:
-  /// **'Confirm'**
-  String get btnConfirm;
+  /// **'Manager Dashboard'**
+  String get navManagerDashboard;
 
-  /// No description provided for @msgAddCategoryFailed.
+  /// No description provided for @titleViewExpenses.
   ///
   /// In en, this message translates to:
-  /// **'Failed to add category: {error}'**
-  String msgAddCategoryFailed(Object error);
+  /// **'View Expenses'**
+  String get titleViewExpenses;
 
-  /// No description provided for @msgDeleteCategoryFailed.
+  /// No description provided for @subtitleViewExpenses.
   ///
   /// In en, this message translates to:
-  /// **'Failed to delete category: {error}'**
-  String msgDeleteCategoryFailed(Object error);
+  /// **'Browse and manage your expenses'**
+  String get subtitleViewExpenses;
+
+  /// No description provided for @hintSearchExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Search expenses...'**
+  String get hintSearchExpenses;
 
   /// No description provided for @searchSemanticLabel.
   ///
@@ -1453,17 +2167,47 @@ abstract class AppLocalizations {
   /// **'Clear search'**
   String get clearSearchSemanticLabel;
 
-  /// No description provided for @clearSearchTooltip.
+  /// No description provided for @dashboardSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Clear search'**
-  String get clearSearchTooltip;
+  /// **'Track your spending and manage your finances'**
+  String get dashboardSubtitle;
 
-  /// Prefix for sorting dropdown. Example: 'Sort: Name'
+  /// No description provided for @numberofCategories.
   ///
   /// In en, this message translates to:
-  /// **'Sort: {sort}'**
-  String sortLabel(Object sort);
+  /// **'Categories'**
+  String get numberofCategories;
+
+  /// No description provided for @dailyAvgSpending.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Average'**
+  String get dailyAvgSpending;
+
+  /// No description provided for @msgCategoryAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Category added successfully'**
+  String get msgCategoryAdded;
+
+  /// No description provided for @msgAddCategoryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add category: {error}'**
+  String msgAddCategoryFailed(String error);
+
+  /// No description provided for @msgCategoryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Category deleted successfully'**
+  String get msgCategoryDeleted;
+
+  /// No description provided for @msgDeleteCategoryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete category: {error}'**
+  String msgDeleteCategoryFailed(String error);
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

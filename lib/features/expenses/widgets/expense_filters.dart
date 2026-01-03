@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
-import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +16,15 @@ enum ReimbursableFilter {
 }
 
 class ExpenseFilters extends ConsumerWidget {
+  const ExpenseFilters({
+    required this.selectedCategoryId,
+    required this.selectedDate,
+    required this.onCategoryChanged,
+    required this.onDateChanged,
+    required this.onReimbursableFilterChanged,
+    super.key,
+    this.reimbursableFilter = ReimbursableFilter.all,
+  });
   final int? selectedCategoryId;
   final DateTime? selectedDate; // Deprecated: kept for backward compatibility
   final DateTime? startDate; // New: date range support
@@ -53,7 +62,7 @@ class ExpenseFilters extends ConsumerWidget {
             stream: categoryRepository.watchAllCategories(),
             builder: (context, snapshot) {
               final categories = snapshot.data ?? [];
-              return _buildCategoryDropdown(categories, colorScheme);
+              return _buildCategoryDropdown(context, categories, colorScheme);
             },
           ),
         ),
@@ -61,7 +70,7 @@ class ExpenseFilters extends ConsumerWidget {
         // Reimbursable Filter
         Expanded(
           flex: 2,
-          child: _buildReimbursableFilter(colorScheme),
+          child: _buildReimbursableFilter(context, colorScheme),
         ),
         const SizedBox(width: AppSpacing.lg),
         // Date Filter
@@ -73,7 +82,8 @@ class ExpenseFilters extends ConsumerWidget {
     );
   }
 
-  Widget _buildReimbursableFilter(ColorScheme colorScheme) {
+  Widget _buildReimbursableFilter(
+      BuildContext context, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -98,11 +108,13 @@ class ExpenseFilters extends ConsumerWidget {
               value: ReimbursableFilter.all,
               child: Row(
                 children: [
-                  Icon(Icons.monetization_on_outlined,
-                      color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconSm),
+                  Icon(
+                    Icons.monetization_on_outlined,
+                    color: colorScheme.onSurfaceVariant,
+                    size: AppSpacing.iconSm,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text(AppStrings.filterAll),
+                  Text(AppLocalizations.of(context)!.filterAll),
                 ],
               ),
             ),
@@ -110,10 +122,13 @@ class ExpenseFilters extends ConsumerWidget {
               value: ReimbursableFilter.reimbursable,
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_outline,
-                      color: colorScheme.primary, size: AppSpacing.iconSm),
+                  Icon(
+                    Icons.check_circle_outline,
+                    color: colorScheme.primary,
+                    size: AppSpacing.iconSm,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text(AppStrings.filterReimbursable),
+                  Text(AppLocalizations.of(context)!.filterReimbursable),
                 ],
               ),
             ),
@@ -121,11 +136,13 @@ class ExpenseFilters extends ConsumerWidget {
               value: ReimbursableFilter.nonReimbursable,
               child: Row(
                 children: [
-                  Icon(Icons.cancel_outlined,
-                      color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconSm),
+                  Icon(
+                    Icons.cancel_outlined,
+                    color: colorScheme.onSurfaceVariant,
+                    size: AppSpacing.iconSm,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text(AppStrings.filterNonReimbursable),
+                  Text(AppLocalizations.of(context)!.filterNonReimbursable),
                 ],
               ),
             ),
@@ -141,7 +158,10 @@ class ExpenseFilters extends ConsumerWidget {
   }
 
   Widget _buildCategoryDropdown(
-      List<Category> categories, ColorScheme colorScheme) {
+    BuildContext context,
+    List<Category> categories,
+    ColorScheme colorScheme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -162,12 +182,15 @@ class ExpenseFilters extends ConsumerWidget {
           value: selectedCategoryId,
           hint: Row(
             children: [
-              Icon(Icons.filter_list,
-                  color: colorScheme.onSurfaceVariant,
-                  size: AppSpacing.iconSm,
-                  semanticLabel: 'Filter'),
+              Icon(
+                Icons.filter_list,
+                color: colorScheme.onSurfaceVariant,
+                size: AppSpacing.iconSm,
+                semanticLabel: AppLocalizations.of(context)!.semanticFilter,
+              ),
               const SizedBox(width: AppSpacing.sm),
-              Text(AppStrings.labelCategory, style: AppTextStyles.bodyMedium),
+              Text(AppLocalizations.of(context)!.labelCategory,
+                  style: AppTextStyles.bodyMedium),
             ],
           ),
           isExpanded: true,
@@ -176,12 +199,15 @@ class ExpenseFilters extends ConsumerWidget {
               value: null,
               child: Row(
                 children: [
-                  Icon(Icons.category_outlined,
-                      color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconSm,
-                      semanticLabel: 'All categories'),
+                  Icon(
+                    Icons.category_outlined,
+                    color: colorScheme.onSurfaceVariant,
+                    size: AppSpacing.iconSm,
+                    semanticLabel:
+                        AppLocalizations.of(context)!.semanticAllCategories,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
-                  const Text('All Categories'),
+                  Text(AppLocalizations.of(context)!.filterAllCategories),
                 ],
               ),
             ),
@@ -266,12 +292,17 @@ class ExpenseFilters extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
           child: Row(
             children: [
-              Icon(Icons.date_range,
-                  color: colorScheme.onSurfaceVariant, size: AppSpacing.iconSm),
+              Icon(
+                Icons.calendar_today,
+                color: colorScheme.onSurfaceVariant,
+                size: AppSpacing.iconSm,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
-                  _getDateRangeText(),
+                  selectedDate == null
+                      ? AppLocalizations.of(context)!.labelDate
+                      : DateFormat('MMM dd, yyyy').format(selectedDate!),
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: hasDateFilter
                         ? colorScheme.onSurface
@@ -283,16 +314,12 @@ class ExpenseFilters extends ConsumerWidget {
               ),
               if (hasDateFilter)
                 GestureDetector(
-                  onTap: () {
-                    if (onDateRangeChanged != null) {
-                      onDateRangeChanged!(null, null);
-                    } else {
-                      onDateChanged(null);
-                    }
-                  },
-                  child: Icon(Icons.close,
-                      color: colorScheme.onSurfaceVariant,
-                      size: AppSpacing.iconXs),
+                  onTap: () => onDateChanged(null),
+                  child: Icon(
+                    Icons.close,
+                    color: colorScheme.onSurfaceVariant,
+                    size: AppSpacing.iconXs,
+                  ),
                 ),
             ],
           ),

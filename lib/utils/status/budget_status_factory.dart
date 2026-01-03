@@ -16,7 +16,7 @@ class BudgetStatusFactory {
   static IBudgetStatusStrategy getStrategy(double percentage) {
     return _strategies.firstWhere(
       (strategy) => strategy.matches(percentage),
-      orElse: () => GoodStatusStrategy(), // Default fallback
+      orElse: GoodStatusStrategy.new, // Default fallback
     );
   }
 

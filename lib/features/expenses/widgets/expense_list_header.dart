@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
@@ -17,12 +18,12 @@ class ExpenseListHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'View Expenses',
+              AppLocalizations.of(context)!.titleViewExpenses,
               style: AppTextStyles.heading1,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'View and manage your expense history',
+              AppLocalizations.of(context)!.subtitleViewExpenses,
               style: AppTextStyles.bodyMedium,
             ),
           ],
@@ -30,7 +31,7 @@ class ExpenseListHeader extends StatelessWidget {
         PrimaryButton(
           onPressed: () => context.go(AppRoutes.addExpense),
           icon: Icons.add,
-          child: const Text('Add Expense'),
+          child: Text(AppLocalizations.of(context)!.btnAddExpense),
         ),
       ],
     );

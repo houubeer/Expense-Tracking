@@ -9,48 +9,458 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
-  String get appTitle => 'Gestionnaire de Dépenses';
+  String get appTitle => 'Suivi des Dépenses';
 
   @override
-  String get dashboard => 'Tableau de bord';
+  String get titleSignIn => 'Connectez-vous à votre compte';
 
   @override
-  String get dashboardSubtitle => 'Aperçu de votre santé financière';
+  String get titleManagerDashboard => 'Tableau de Bord Gestionnaire';
 
   @override
-  String get addExpense => 'Ajouter une dépense';
+  String get descManagerDashboard => 'Surveillez les dépenses de l\'organisation, approuvez les remboursements et gérez les employés.';
+
+  @override
+  String get kpiTotalEmployees => 'Total Employés';
+
+  @override
+  String get kpiTotalExpenses => 'Total Dépenses (Mois)';
+
+  @override
+  String get kpiPendingApprovals => 'Approbations en attente';
+
+  @override
+  String get labelEmployeeManagement => 'Gestion des Employés';
+
+  @override
+  String get hintSearchEmployees => 'Rechercher des employés...';
+
+  @override
+  String get labelDepartment => 'Département';
+
+  @override
+  String get filterAllDepartments => 'Tous les départements';
+
+  @override
+  String get labelStatus => 'Statut';
+
+  @override
+  String get filterAllStatuses => 'Tous les statuts';
+
+  @override
+  String get labelAddEmployee => 'Ajouter un employé';
+
+  @override
+  String get labelPendingExpenseApprovals => 'Approbations de dépenses en attente';
+
+  @override
+  String get msgExpenseApproved => 'Dépense approuvée avec succès';
+
+  @override
+  String get msgExpenseRejected => 'Dépense rejetée';
+
+  @override
+  String get labelBudgetMonitoring => 'Suivi du Budget';
+
+  @override
+  String msgEmployeeAdded(String name) {
+    return 'Employé $name ajouté';
+  }
+
+  @override
+  String get msgCommentAdded => 'Commentaire ajouté avec succès';
+
+  @override
+  String msgViewDetailsFor(String name) {
+    return 'Affichage des détails pour $name';
+  }
+
+  @override
+  String get dialogTitleSuspendEmployee => 'Suspendre l\'employé';
+
+  @override
+  String dialogDescSuspendEmployee(String name) {
+    return 'Êtes-vous sûr de vouloir suspendre $name ? Il ne pourra plus soumettre de dépenses.';
+  }
+
+  @override
+  String msgEmployeeSuspended(String name) {
+    return 'Employé $name suspendu';
+  }
+
+  @override
+  String msgEmployeeActivated(String name) {
+    return 'Employé $name activé';
+  }
+
+  @override
+  String get dialogTitleRemoveEmployee => 'Supprimer l\'employé';
+
+  @override
+  String dialogDescRemoveEmployee(String name) {
+    return 'Êtes-vous sûr de vouloir supprimer $name ? Cette action est irréversible.';
+  }
+
+  @override
+  String msgEmployeeRemoved(String name) {
+    return 'Employé $name supprimé';
+  }
+
+  @override
+  String get btnCancel => 'Annuler';
+
+  @override
+  String get btnConfirm => 'Confirmer';
+
+  @override
+  String get dashboard => 'Tableau de Bord';
+
+  @override
+  String get expenses => 'Dépenses';
+
+  @override
+  String get budgets => 'Budgets';
+
+  @override
+  String get reports => 'Rapports';
 
   @override
   String get settings => 'Paramètres';
 
   @override
-  String get manageAccountPreferences => 'Gérez vos préférences de compte et les paramètres de l\'application';
+  String get totalBalance => 'Solde Total';
+
+  @override
+  String get monthlyBudget => 'Budget Mensuel';
+
+  @override
+  String get recentTransactions => 'Transactions Récentes';
+
+  @override
+  String get addExpense => 'Ajouter une dépense';
+
+  @override
+  String get editExpense => 'Modifier la dépense';
+
+  @override
+  String get category => 'Catégorie';
+
+  @override
+  String get amount => 'Montant';
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get save => 'Enregistrer';
+
+  @override
+  String get delete => 'Supprimer';
+
+  @override
+  String get filterAll => 'Tout';
+
+  @override
+  String get filterFood => 'Alimentation';
+
+  @override
+  String get filterTransport => 'Transport';
+
+  @override
+  String get filterShopping => 'Shopping';
+
+  @override
+  String get filterEntertainment => 'Divertissement';
+
+  @override
+  String get filterHealth => 'Santé';
+
+  @override
+  String get filterOther => 'Autre';
+
+  @override
+  String get statusGood => 'Bon';
+
+  @override
+  String get statusWarning => 'Avertissement';
+
+  @override
+  String get statusInRisk => 'En Risque';
+
+  @override
+  String get labelSpent => 'Dépensé';
+
+  @override
+  String get labelRemaining => 'Restant';
+
+  @override
+  String get labelMonthlyBudget => 'Budget Mensuel';
+
+  @override
+  String get titleCategoryBudget => 'Statut du Budget par Catégorie';
+
+  @override
+  String get titleNoExpenses => 'Aucune Dépense Trouvée';
+
+  @override
+  String get colActions => 'Actions';
+
+  @override
+  String get titleDeleteTransaction => 'Supprimer la Transaction';
+
+  @override
+  String get descDeleteTransaction => 'Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action peut être annulée.';
+
+  @override
+  String get btnDelete => 'Supprimer';
+
+  @override
+  String get msgTransactionDeleted => 'Transaction supprimée';
+
+  @override
+  String errRestoreExpense(String error) {
+    return 'Échec de la restauration de la dépense : $error';
+  }
+
+  @override
+  String errDeleteExpense(String error) {
+    return 'Échec de la suppression de la dépense : $error';
+  }
+
+  @override
+  String get labelReimbursableShort => 'Remboursable';
+
+  @override
+  String get tooltipEditExpense => 'Modifier la Dépense';
+
+  @override
+  String get tooltipDeleteExpense => 'Supprimer la Dépense';
+
+  @override
+  String errPickFile(String error) {
+    return 'Échec de la sélection du fichier : $error';
+  }
+
+  @override
+  String get navViewExpenses => 'Voir les Dépenses';
+
+  @override
+  String get errAmountPositive => 'Le montant doit être positif';
+
+  @override
+  String get errDateFuture => 'La date ne peut pas être dans le futur';
+
+  @override
+  String get errDatePast => 'La date est trop ancienne';
+
+  @override
+  String get msgExpenseUpdated => 'Dépense mise à jour avec succès';
+
+  @override
+  String errUpdateExpense(String error) {
+    return 'Échec de la mise à jour de la dépense : $error';
+  }
+
+  @override
+  String get titleEditExpense => 'Modifier la Dépense';
+
+  @override
+  String get tooltipClose => 'Fermer';
+
+  @override
+  String get btnUpdateExpense => 'Mettre à jour la Dépense';
+
+  @override
+  String get btnClose => 'Fermer';
+
+  @override
+  String msgErrorWithParam(String error) {
+    return 'Une erreur est survenue : $error';
+  }
+
+  @override
+  String get btnAddExpense => 'Ajouter une Dépense';
+
+  @override
+  String get btnEdit => 'Modifier';
+
+  @override
+  String get labelEdit => 'Modifier';
+
+  @override
+  String get labelDelete => 'Supprimer';
+
+  @override
+  String get msgExpenseDeleted => 'Dépense supprimée';
+
+  @override
+  String get errAmountRequired => 'Veuillez entrer un montant';
+
+  @override
+  String get errInvalidNumber => 'Veuillez entrer un nombre valide';
+
+  @override
+  String get errCategoryRequired => 'Veuillez sélectionner une catégorie';
+
+  @override
+  String get errDescriptionRequired => 'Veuillez entrer une description';
+
+  @override
+  String get labelAmount => 'Montant';
+
+  @override
+  String get labelCategory => 'Catégorie';
+
+  @override
+  String get labelDate => 'Date';
+
+  @override
+  String get labelDescription => 'Description';
+
+  @override
+  String get labelReimbursable => 'Remboursable';
+
+  @override
+  String get labelReimbursableExpense => 'Dépense remboursable';
+
+  @override
+  String get labelReimbursableHint => 'Peut être récupéré auprès de l\'entreprise';
+
+  @override
+  String get labelReceipt => 'Reçu';
+
+  @override
+  String get msgReceiptAttached => 'Reçu joint';
+
+  @override
+  String get labelRemoveReceipt => 'Supprimer le reçu';
+
+  @override
+  String get labelAttachReceipt => 'Joindre un reçu';
+
+  @override
+  String get btnReset => 'Réinitialiser';
+
+  @override
+  String get msgAddingExpense => 'Ajout en cours...';
+
+  @override
+  String get hintSelectCategory => 'Sélectionner Catégorie';
+
+  @override
+  String get hintDescription => 'C\'était pour quoi ?';
+
+  @override
+  String semanticSelectDate(String date) {
+    return 'Sélectionnez la date. Actuelle : $date';
+  }
+
+  @override
+  String get currency => 'DZD';
+
+  @override
+  String get filterReimbursable => 'Remboursable';
+
+  @override
+  String get filterNonReimbursable => 'Non-Remboursable';
+
+  @override
+  String get semanticFilter => 'Filtrer la liste';
+
+  @override
+  String get semanticAllCategories => 'Toutes les catégories';
+
+  @override
+  String get filterAllCategories => 'Toutes les catégories';
+
+  @override
+  String get msgAccountPending => 'Votre compte est en attente d\'approbation';
+
+  @override
+  String get labelEmail => 'Email';
+
+  @override
+  String get hintEmail => 'email@exemple.com';
+
+  @override
+  String get errEnterEmail => 'Veuillez entrer votre email';
+
+  @override
+  String get errInvalidEmail => 'Veuillez entrer un email valide';
+
+  @override
+  String get labelPassword => 'Mot de passe';
+
+  @override
+  String get hintPassword => 'Entrez votre mot de passe';
+
+  @override
+  String get errEnterPassword => 'Veuillez entrer votre mot de passe';
+
+  @override
+  String get btnSignIn => 'Se connecter';
+
+  @override
+  String get msgNoAccount => 'Vous n\'avez pas de compte ?';
+
+  @override
+  String get btnRegisterManager => 'S\'inscrire comme Gestionnaire';
+
+  @override
+  String get btnContinueOffline => 'Continuer hors ligne';
 
   @override
   String get accountDetails => 'Détails du compte';
 
   @override
-  String get viewAndManagePersonalInfo => 'Voir et gérer vos informations personnelles';
+  String get exportReports => 'Exporter les rapports';
 
   @override
-  String memberSince(Object date) {
+  String get appearance => 'Apparence';
+
+  @override
+  String get language => 'Langue';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get security => 'Sécurité';
+
+  @override
+  String get backupRestore => 'Sauvegarde et Restauration';
+
+  @override
+  String get manageAccountPreferences => 'Gérer vos préférences de compte';
+
+  @override
+  String get viewAndManagePersonalInfo => 'Consultez et gérez vos informations personnelles';
+
+  @override
+  String memberSince(String date) {
     return 'Membre depuis $date';
   }
 
   @override
-  String get fullName => 'Nom complet';
+  String get errGeneric => 'Une erreur est survenue';
 
   @override
-  String get emailAddress => 'Adresse e-mail';
-
-  @override
-  String get location => 'Emplacement';
+  String get msgCategoryUpdated => 'Profil mis à jour';
 
   @override
   String get saveChanges => 'Enregistrer les modifications';
 
   @override
-  String get exportReports => 'Exporter les rapports';
+  String get fullName => 'Nom complet';
+
+  @override
+  String get emailAddress => 'Adresse email';
+
+  @override
+  String get location => 'Localisation';
 
   @override
   String get downloadExpenseData => 'Téléchargez vos données de dépenses au format CSV ou PDF';
@@ -60,9 +470,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dateRange => 'Plage de dates';
-
-  @override
-  String get category => 'Catégorie';
 
   @override
   String get exportFormat => 'Format d\'exportation';
@@ -86,13 +493,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get exportAsPdf => 'Exporter en PDF';
 
   @override
-  String get appearance => 'Apparence';
-
-  @override
   String get customizeAppLook => 'Personnalisez l\'apparence de l\'application sur votre appareil';
 
   @override
-  String get themeMode => 'Mode Thème';
+  String get themeMode => 'Mode thème';
 
   @override
   String get light => 'Clair';
@@ -104,13 +508,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get system => 'Système';
 
   @override
-  String get language => 'Langue';
-
-  @override
   String get selectPreferredLanguage => 'Sélectionnez votre langue préférée';
 
   @override
-  String get notifications => 'Notifications';
+  String get hintSearchCategories => 'Rechercher...';
 
   @override
   String get manageNotifications => 'Gérez la façon dont vous recevez les notifications';
@@ -125,52 +526,52 @@ class AppLocalizationsFr extends AppLocalizations {
   String get receivePush => 'Recevoir des notifications sur votre appareil';
 
   @override
-  String get emailNotifications => 'Notifications par e-mail';
+  String get emailNotifications => 'Notifications par email';
 
   @override
-  String get receiveEmail => 'Recevoir des mises à jour par e-mail';
+  String get receiveEmail => 'Recevoir des mises à jour par email';
 
   @override
-  String get notificationTypes => 'Types de notification';
+  String get notificationTypes => 'Types de notifications';
 
   @override
   String get newExpenseAdded => 'Nouvelle dépense ajoutée';
 
   @override
-  String get notifyNewExpense => 'Recevez une notification lorsqu\'une nouvelle dépense est enregistrée';
+  String get notifyNewExpense => 'Être notifié lorsqu\'une nouvelle dépense est enregistrée';
 
   @override
   String get budgetUpdates => 'Mises à jour du budget';
 
   @override
-  String get notifyBudgetUpdates => 'Recevez des notifications sur les changements de statut du budget';
+  String get notifyBudgetUpdates => 'Être notifié des changements d\'état du budget';
 
   @override
   String get budgetLimitWarnings => 'Avertissements de limite de budget';
 
   @override
-  String get notifyBudgetLimit => 'Alerte lors de l\'approche ou du dépassement des limites de budget';
+  String get notifyBudgetLimit => 'Alerte en cas d\'approche ou de dépassement des limites budgétaires';
 
   @override
   String get weeklySummary => 'Résumé hebdomadaire';
 
   @override
-  String get notifyWeeklySummary => 'Recevez des rapports hebdomadaires sur les dépenses';
+  String get notifyWeeklySummary => 'Recevoir des rapports hebdomadaires de synthèse des dépenses';
 
   @override
   String get monthlyReports => 'Rapports mensuels';
 
   @override
-  String get notifyMonthlyReports => 'Obtenez des rapports financiers mensuels détaillés';
+  String get notifyMonthlyReports => 'Obtenir des rapports financiers mensuels détaillés';
 
   @override
-  String get quietHours => 'Heures silencieuses';
+  String get quietHours => 'Heures de silence';
 
   @override
-  String get enableQuietHours => 'Activer les heures silencieuses';
+  String get enableQuietHours => 'Activer les heures de silence';
 
   @override
-  String get muteNotifications => 'Couper les notifications pendant les heures spécifiées';
+  String get muteNotifications => 'Désactiver les notifications pendant les heures spécifiées';
 
   @override
   String get from => 'De';
@@ -179,10 +580,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get to => 'À';
 
   @override
-  String get security => 'Sécurité';
-
-  @override
-  String get manageSecurity => 'Gérez la sécurité et la confidentialité de votre compte';
+  String get manageSecurity => 'Gérez vos paramètres de sécurité et de confidentialité';
 
   @override
   String get password => 'Mot de passe';
@@ -200,10 +598,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authenticatorApp => 'Application d\'authentification';
 
   @override
-  String get useAuthenticatorApp => 'Utilisez une application d\'authentification pour plus de sécurité';
+  String get useAuthenticatorApp => 'Utiliser une application d\'authentification pour plus de sécurité';
 
   @override
-  String get setUp2fa => 'Configurer 2FA';
+  String get setUp2fa => 'Configurer la 2FA';
 
   @override
   String get activeSessions => 'Sessions actives';
@@ -215,504 +613,512 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteAllData => 'Supprimer toutes les données';
 
   @override
-  String get deleteAllDataDesc => 'Supprimez définitivement toutes vos données de dépenses. Cette action est irréversible.';
-
-  @override
-  String get backupRestore => 'Sauvegarde & Restauration';
-
-  @override
-  String get account => 'Compte';
-
-  @override
-  String get totalBalance => 'Solde Total';
-
-  @override
-  String get numberofCategories => 'Nombre de Catégories';
+  String get deleteAllDataDesc => 'Supprimer définitivement toutes vos données de dépenses. Cette action est irréversible.';
 
   @override
   String get active => 'Actif';
 
   @override
-  String get expenses => 'Dépenses';
+  String get reimbursements => 'Remboursements';
 
   @override
-  String get dailyAvgSpending => 'Dépense Moyenne Quotidienne';
+  String get exportExcel => 'Exporter Excel';
 
   @override
-  String get currency => 'DZD';
+  String get labelEmployee => 'Employé';
 
   @override
-  String get navViewExpenses => 'Voir les dépenses';
+  String get labelApprovedAmount => 'Montant approuvé';
 
   @override
-  String get navBudgets => 'Budgets';
+  String get labelPaymentDate => 'Date de paiement';
 
   @override
-  String get navManageBudgets => 'Gérer les budgets';
+  String get statusPaid => 'Payé';
 
   @override
-  String get navManagerDashboard => 'Tableau de bord du gestionnaire';
+  String get statusUnpaid => 'Non payé';
 
   @override
-  String get navViewAll => 'Voir tout';
+  String get labelAddNewEmployee => 'Ajouter un nouvel employé';
 
   @override
-  String get btnCancel => 'Annuler';
+  String get labelFillEmployeeDetails => 'Remplissez les détails de l\'employé ci-dessous';
 
   @override
-  String get btnDelete => 'Supprimer';
+  String get labelRole => 'Rôle';
 
   @override
-  String get btnSave => 'Enregistrer';
+  String get hintRole => 'Ingénieur logiciel';
 
   @override
-  String get btnAdd => 'Ajouter';
+  String get errEmployeeNameRequired => 'Veuillez entrer le nom de l\'employé';
 
   @override
-  String get btnEdit => 'Modifier';
+  String get errPhoneRequired => 'Veuillez entrer le numéro de téléphone';
 
   @override
-  String get btnClose => 'Fermer';
+  String get errRoleRequired => 'Veuillez entrer le rôle';
 
   @override
-  String get btnUndo => 'Annuler';
+  String get labelHireDate => 'Date d\'embauche';
 
   @override
-  String get btnReset => 'Réinitialiser';
+  String get labelStatusSuspended => 'Suspendu';
 
   @override
-  String get btnAddCategory => 'Ajouter une catégorie';
+  String get deptEngineering => 'Ingénierie';
 
   @override
-  String get titleEditExpense => 'Modifier la dépense';
+  String get deptMarketing => 'Marketing';
 
   @override
-  String get titleBudgetManagement => 'Gestion des budgets';
+  String get deptSales => 'Ventes';
 
   @override
-  String get titleAddCategory => 'Ajouter une nouvelle catégorie';
+  String get deptProduct => 'Produit';
 
   @override
-  String get titleDeleteCategory => 'Supprimer la catégorie';
+  String get deptDesign => 'Design';
 
   @override
-  String get titleDeleteTransaction => 'Supprimer la dépense';
+  String get deptHumanResources => 'Ressources humaines';
 
   @override
-  String get titleBudgetOverview => 'Aperçu des budgets';
+  String get deptFinance => 'Finance';
 
   @override
-  String get titleRecentExpenses => 'Dépenses récentes';
+  String get btnBackToLogin => 'Retour à la connexion';
 
   @override
-  String get titleManagerDashboard => 'Tableau de bord du gestionnaire';
+  String get titleRegisterManager => 'Enregistrer l\'organisation';
 
   @override
-  String get titleEmployeeExpenses => 'Dépenses des employés';
+  String get subtitleRegisterManager => 'Créez un nouveau compte d\'organisation pour votre équipe';
 
   @override
-  String get labelAmount => 'Montant';
+  String get labelOrganizationName => 'Nom de l\'organisation';
 
   @override
-  String get labelDate => 'Date';
+  String get hintOrganizationName => 'Acme Corp';
 
   @override
-  String get labelDescription => 'Description';
+  String get errEnterOrganizationName => 'Veuillez entrer le nom de l\'organisation';
 
   @override
-  String get labelCategoryName => 'Nom de la catégorie';
+  String get errOrganizationNameLength => 'Le nom doit comporter au moins 3 caractères';
 
   @override
-  String get labelMonthlyBudget => 'Budget mensuel';
+  String get labelFullName => 'Nom complet';
 
   @override
-  String get labelBudget => 'Budget';
+  String get hintFullName => 'Jean Dupont';
 
   @override
-  String get labelColor => 'Couleur';
+  String get errEnterFullName => 'Veuillez entrer votre nom complet';
 
   @override
-  String get labelIcon => 'Icône';
+  String get hintCreatePassword => 'Créez un mot de passe sécurisé';
 
   @override
-  String get labelSpent => 'Dépensé';
+  String get errPasswordLength => 'Le mot de passe doit comporter au moins 6 caractères';
 
   @override
-  String get labelRemaining => 'Restant';
+  String get labelConfirmPassword => 'Confirmer le mot de passe';
 
   @override
-  String get labelStatus => 'Statut';
+  String get hintConfirmPassword => 'Répétez votre mot de passe';
 
   @override
-  String get statusGood => 'Bon';
+  String get errConfirmPassword => 'Veuillez confirmer votre mot de passe';
 
   @override
-  String get statusWarning => 'Avertissement';
+  String get errPasswordsDoNotMatch => 'Les mots de passe ne correspondent pas';
 
   @override
-  String get statusInRisk => 'À risque';
+  String get btnCreateOrganization => 'Créer l\'organisation';
 
   @override
-  String get msgCategoryAdded => 'Catégorie ajoutée avec succès';
+  String get titleRegistrationSubmitted => 'Inscription soumise';
 
   @override
-  String get msgCategoryUpdated => 'Mise à jour';
-
-  @override
-  String get msgCategoryDeleted => 'Catégorie supprimée';
-
-  @override
-  String get msgExpenseAdded => 'Dépense ajoutée avec succès';
-
-  @override
-  String get msgExpenseUpdated => 'Dépense mise à jour avec succès';
-
-  @override
-  String get msgTransactionDeleted => 'Dépense supprimée';
-
-  @override
-  String get msgNoExpensesYet => 'Pas de dépenses pour le moment';
-
-  @override
-  String get msgNoBudgetsYet => 'Aucun budget défini. Allez à Budgets pour en créer un.';
-
-  @override
-  String get errBudgetNegative => 'Le budget ne peut pas être négatif';
-
-  @override
-  String get hintSearchCategories => 'Rechercher des catégories...';
-
-  @override
-  String get hintSearchExpenses => 'Rechercher des dépenses...';
-
-  @override
-  String get hintDescription => 'À quoi servait cette dépense ?';
-
-  @override
-  String get descManageBudgets => 'Gérez vos catégories et limites de budget';
-
-  @override
-  String get descManagerDashboard => 'Surveillez les employés, approuvez les dépenses et contrôlez les budgets';
-
-  @override
-  String get descEmployeeExpenses => 'Voir et gérer les soumissions de dépenses des employés';
-
-  @override
-  String descDeleteCategory(Object name) {
-    return 'Êtes-vous sûr de vouloir supprimer \\\"$name\\\" ? Cette action ne peut pas être annulée.';
+  String msgRegistrationSubmitted(String name) {
+    return 'Votre demande pour $name a été soumise et est en attente d\'approbation par l\'administrateur.';
   }
 
   @override
-  String get descDeleteTransaction => 'Êtes-vous sûr de vouloir supprimer cette dépense ? Cette action ne peut pas être annulée.';
+  String get titleWhatHappensNext => 'Que se passe-t-il ensuite ?';
 
   @override
-  String get descNoCategoriesFound => 'Aucune catégorie trouvée.';
+  String get stepReviewRequest => 'L\'administrateur examine votre demande';
 
   @override
-  String get descNoMatchingCategories => 'Aucune catégorie ne correspond à vos filtres';
+  String get stepAccountActivation => 'Le compte est activé après approbation';
 
   @override
-  String get filterAll => 'Tous';
+  String get stepLogin => 'Vous pourrez ensuite vous connecter et commencer la gestion';
 
   @override
-  String get filterSortByName => 'Nom';
+  String get errUserProfileNotFound => 'Profil utilisateur non trouvé';
 
   @override
-  String get filterSortByBudget => 'Budget';
+  String get errNoOrganization => 'Aucune organisation associée à ce compte';
 
   @override
-  String get filterSortBySpent => 'Dépensé';
+  String msgAddEmployeeSuccess(String name) {
+    return 'L\'employé $name a été ajouté avec succès';
+  }
 
   @override
-  String get filterSortByPercentage => 'Pourcentage';
+  String errAddEmployee(String error) {
+    return 'Échec de l\'ajout de l\'employé : $error';
+  }
 
   @override
-  String get filterReimbursable => 'Remboursable';
+  String msgRemoveEmployeeConfirm(String name) {
+    return 'Êtes-vous sûr de vouloir retirer $name de l\'équipe ?';
+  }
 
   @override
-  String get filterNonReimbursable => 'Non remboursable';
+  String get actionRemove => 'Supprimer';
 
   @override
-  String get labelReimbursable => 'Remboursable';
+  String msgRemoveEmployeeSuccess(String name) {
+    return 'L\'employé $name a été retiré avec succès';
+  }
 
   @override
-  String get labelReimbursableExpense => 'Marquer comme remboursable';
+  String errRemoveEmployee(String error) {
+    return 'Échec du retrait de l\'employé : $error';
+  }
 
   @override
-  String get labelReimbursableHint => 'Cochez si cette dépense doit être remboursée par l\'entreprise';
+  String get statusDeactivated => 'Désactivé';
 
   @override
-  String get titleReimbursableSummary => 'Dépenses remboursables';
+  String get statusActivated => 'Activé';
 
   @override
-  String get labelTotalReimbursable => 'Total remboursable';
+  String msgEmployeeStatusChanged(String name, String status) {
+    return 'Le statut de l\'employé $name a été changé en $status';
+  }
 
   @override
-  String get labelPendingReimbursement => 'En attente de remboursement';
+  String errUpdateStatus(String error) {
+    return 'Échec de la mise à jour du statut : $error';
+  }
 
   @override
-  String get labelReimbursableOwed => 'Montant dû';
+  String get titleTeamManagement => 'Gestion de l\'équipe';
 
   @override
-  String get msgNoReimbursableExpenses => 'Aucune dépense remboursable';
+  String get actionRefresh => 'Actualiser';
 
   @override
-  String get labelReceipt => 'Reçu';
+  String get titleErrorLoadingEmployees => 'Erreur lors du chargement des employés';
 
   @override
-  String get labelAttachReceipt => 'Joindre un reçu';
+  String get actionRetry => 'Réessayer';
 
   @override
-  String get labelRemoveReceipt => 'Supprimer le reçu';
+  String get titleNoEmployees => 'Pas encore d\'employés';
+
+  @override
+  String get msgNoEmployees => 'Vous n\'avez pas encore ajouté d\'employés à votre équipe.';
+
+  @override
+  String get btnAddFirstEmployee => 'Ajouter votre premier employé';
+
+  @override
+  String get titleOrganizationManagement => 'Gestion des organisations';
+
+  @override
+  String get tabPending => 'En attente';
+
+  @override
+  String get tabApproved => 'Approuvé';
+
+  @override
+  String get tabRejected => 'Rejeté';
+
+  @override
+  String msgOrgApproved(String name) {
+    return 'L\'organisation $name a été approuvée';
+  }
+
+  @override
+  String errApproveOrg(String error) {
+    return 'Échec de l\'approbation de l\'organisation : $error';
+  }
+
+  @override
+  String msgOrgRejected(String name) {
+    return 'L\'organisation $name a été rejetée';
+  }
+
+  @override
+  String errRejectOrg(String error) {
+    return 'Échec du rejet de l\'organisation : $error';
+  }
+
+  @override
+  String dialogTitleRejectOrg(String name) {
+    return 'Rejeter $name ?';
+  }
+
+  @override
+  String get labelRejectReason => 'Veuillez fournir une raison pour le rejet :';
+
+  @override
+  String get hintRejectReason => 'Raison du rejet...';
+
+  @override
+  String get actionReject => 'Rejeter';
+
+  @override
+  String get errLoadOrgs => 'Erreur lors du chargement des organisations';
+
+  @override
+  String get msgNoOrgs => 'Aucune organisation trouvée';
+
+  @override
+  String get titleExpenseDetails => 'Détails de la dépense';
+
+  @override
+  String get btnApprove => 'Approuver';
+
+  @override
+  String get btnReject => 'Rejeter';
+
+  @override
+  String get btnAddComment => 'Ajouter un commentaire';
+
+  @override
+  String get labelComments => 'Commentaires';
 
   @override
   String get labelViewReceipt => 'Voir le reçu';
 
   @override
-  String get hintAttachReceipt => 'Joindre une image ou un PDF comme preuve';
+  String get titleAddComment => 'Ajouter un commentaire';
 
   @override
-  String get msgReceiptAttached => 'Reçu joint avec succès';
+  String get labelComment => 'Commentaire';
 
   @override
-  String get msgReceiptRemoved => 'Reçu supprimé';
+  String get hintComment => 'Entrez votre commentaire ici...';
 
   @override
-  String get errReceiptNotFound => 'Fichier de reçu non trouvé';
+  String get errCommentRequired => 'Veuillez entrer un commentaire';
 
   @override
-  String get errReceiptInvalidFormat => 'Format de fichier invalide. Veuillez utiliser JPG, PNG ou PDF';
+  String get errCommentLength => 'Le commentaire doit comporter au moins 3 caractères';
 
   @override
-  String get labelBackup => 'Sauvegarde';
+  String get btnSubmit => 'Soumettre';
 
   @override
-  String get labelRestore => 'Restaurer';
+  String get labelTotal => 'Total';
 
   @override
-  String get titleBackupData => 'Sauvegarder les données';
+  String get titleNoPendingApprovals => 'Aucune approbation en attente';
 
   @override
-  String get titleRestoreData => 'Restaurer les données';
+  String get msgAllExpensesProcessed => 'Toutes les dépenses ont été traitées';
 
   @override
-  String get btnBackupNow => 'Sauvegarder maintenant';
+  String get tooltipViewDetails => 'Voir les détails';
 
   @override
-  String get btnRestoreNow => 'Restaurer maintenant';
+  String get tooltipApprove => 'Approuver';
 
   @override
-  String get msgBackupSuccess => 'Sauvegarde créée avec succès';
+  String get tooltipReject => 'Rejeter';
 
   @override
-  String get msgRestoreSuccess => 'Données restaurées avec succès';
+  String get tooltipComment => 'Commenter';
 
   @override
-  String get msgBackupFailed => 'La sauvegarde a échoué';
+  String get titleRejectExpense => 'Rejeter la dépense';
 
   @override
-  String get msgRestoreFailed => 'La restauration a échoué';
+  String get labelRejectionReason => 'Raison du rejet';
 
   @override
-  String get descBackup => 'Créer un fichier de sauvegarde de toutes vos dépenses et catégories';
+  String get hintRejectionReason => 'Entrez la raison du rejet';
 
   @override
-  String get descRestore => 'Restaurez vos données à partir d\'un fichier de sauvegarde précédent';
+  String get labelViewDetails => 'Voir les détails';
 
   @override
-  String get descRestoreWarning => 'Avertissement: Cela remplacera toutes les données actuelles par les données de sauvegarde';
+  String get labelSuspend => 'Suspendre';
 
   @override
-  String get labelChooseBackupLocation => 'Choisir l\'emplacement de sauvegarde';
+  String get labelActivate => 'Activer';
 
   @override
-  String get labelSelectBackupFile => 'Sélectionner le fichier de sauvegarde';
+  String get labelRemove => 'Supprimer';
 
   @override
-  String get ownerDashboard => 'Tableau de bord du propriétaire';
+  String get labelBy => 'par';
 
   @override
-  String get subtitleOwnerDashboard => 'Platform-wide overview and management';
+  String get labelStatusActive => 'Actif';
 
   @override
-  String get kpiTotalCompanies => 'Total Companies';
+  String get msgExportExcel => 'Exportation vers Excel...';
 
   @override
-  String get kpiTotalManagers => 'Total Managers';
+  String get msgExportPdf => 'Exportation vers PDF...';
 
   @override
-  String get kpiTotalEmployees => 'Total Employees';
+  String get labelBudget => 'Budget';
 
   @override
-  String get kpiTotalExpenses => 'Total Expenses';
+  String get labelDescCreateAccount => 'Créer un nouveau compte pour un membre de l\'équipe';
 
   @override
-  String get kpiPendingApprovals => 'Pending Approvals';
+  String get labelTemporaryPassword => 'Mot de passe temporaire';
 
   @override
-  String get kpiPendingApprovalsSubtitle => 'Managers awaiting approval';
+  String get hintTemporaryPassword => 'Créer un mot de passe temporaire';
 
   @override
-  String get kpiMonthlyGrowth => 'Monthly Growth';
+  String get msgPasswordChangeHint => 'L\'employé pourra changer ce mot de passe après sa première connexion.';
 
   @override
-  String get kpiMonthlyGrowthSubtitle => 'Platform expense growth';
+  String get labelDeactivate => 'Désactiver';
 
   @override
-  String get headerPendingManagerRequests => 'Pending Manager Requests';
+  String get statusInactive => 'Inactif';
 
   @override
-  String get headerActiveManagers => 'Active Managers';
+  String get labelUnknown => 'Inconnu';
 
   @override
-  String get headerRecentActivity => 'Recent Activity';
+  String get ownerDashboard => 'Tableau de Bord Propriétaire';
 
   @override
-  String get msgNoRecentActivity => 'No recent activity';
+  String get subtitleOwnerDashboard => 'Gérez les organisations, approuvez les gestionnaires et surveillez l\'activité de la plateforme';
 
   @override
-  String get msgManagerApproved => 'Manager approved successfully';
+  String get kpiTotalCompanies => 'Total des Entreprises';
 
   @override
-  String get msgManagerRejected => 'Manager rejected';
+  String get kpiTotalManagers => 'Total des Gestionnaires';
 
   @override
-  String get msgManagerSuspended => 'Manager suspended';
+  String get kpiPendingApprovalsSubtitle => 'Gestionnaires en attente d\'approbation';
 
   @override
-  String get msgManagerDeleted => 'Manager deleted';
+  String get kpiMonthlyGrowth => 'Croissance Mensuelle';
 
   @override
-  String get msgManagerProfileComingSoon => 'Manager profile view - Coming soon';
+  String get kpiMonthlyGrowthSubtitle => 'Croissance à l\'échelle de la plateforme';
 
   @override
-  String get dialogTitleRejectManager => 'Reject Manager';
+  String get headerPendingManagerRequests => 'Demandes de Gestionnaires en Attente';
 
   @override
-  String get dialogLabelReasonRejection => 'Reason for rejection';
+  String get headerActiveManagers => 'Gestionnaires Actifs';
 
   @override
-  String get dialogHintEnterReason => 'Enter reason...';
+  String get headerRecentActivity => 'Activité Récente';
 
   @override
-  String get dialogActionReject => 'Reject';
+  String get msgNoRecentActivity => 'Aucune activité récente trouvée';
 
   @override
-  String get dialogTitleSuspendManager => 'Suspend Manager';
+  String get msgManagerApproved => 'Gestionnaire approuvé avec succès';
 
   @override
-  String get dialogLabelReasonSuspension => 'Reason for suspension';
+  String get msgManagerRejected => 'Gestionnaire rejeté';
 
   @override
-  String get dialogActionSuspend => 'Suspend';
+  String get msgManagerSuspended => 'Compte du gestionnaire suspendu';
 
   @override
-  String get dialogTitleConfirmDelete => 'Confirm Delete';
+  String get dialogTitleConfirmDelete => 'Confirmer la Suppression';
 
   @override
-  String get dialogDescDeleteManager => 'Are you sure you want to delete this manager? This action cannot be undone.';
+  String get dialogDescDeleteManager => 'Êtes-vous sûr de vouloir supprimer ce gestionnaire ? Cette action est irréversible.';
 
   @override
-  String get labelEmployeeManagement => 'Employee Management';
+  String get msgManagerDeleted => 'Compte du gestionnaire supprimé';
 
   @override
-  String get hintSearchEmployees => 'Search employees...';
+  String get msgManagerProfileComingSoon => 'La vue du profil du gestionnaire sera bientôt disponible';
 
   @override
-  String get labelDepartment => 'Department';
+  String get dialogTitleRejectManager => 'Rejeter le Gestionnaire';
 
   @override
-  String get filterAllDepartments => 'All Departments';
+  String get dialogLabelReasonRejection => 'Raison du Rejet';
 
   @override
-  String get filterAllStatuses => 'All Statuses';
+  String get dialogHintEnterReason => 'Entrez la raison...';
 
   @override
-  String get labelStatusSuspended => 'Suspended';
+  String get dialogActionReject => 'Rejeter';
 
   @override
-  String get labelAddEmployee => 'Add Employee';
+  String get dialogTitleSuspendManager => 'Suspendre le Gestionnaire';
 
   @override
-  String get labelPendingExpenseApprovals => 'Pending Expense Approvals';
+  String get dialogLabelReasonSuspension => 'Raison de la Suspension';
 
   @override
-  String get msgExpenseApproved => 'Expense approved';
+  String get dialogActionSuspend => 'Suspendre';
 
   @override
-  String get msgExpenseRejected => 'Expense rejected';
+  String get titleRemoveEmployee => 'Supprimer l\'employé';
 
   @override
-  String get labelBudgetMonitoring => 'Budget Monitoring';
+  String get msgExpenseAdded => 'Dépense ajoutée avec succès';
 
   @override
-  String msgEmployeeAdded(Object name) {
-    return 'Employee $name added successfully';
+  String get navBudgets => 'Budgets';
+
+  @override
+  String get navManagerDashboard => 'Tableau de Bord Gestionnaire';
+
+  @override
+  String get titleViewExpenses => 'Voir les Dépenses';
+
+  @override
+  String get subtitleViewExpenses => 'Parcourez et gérez vos dépenses';
+
+  @override
+  String get hintSearchExpenses => 'Rechercher des dépenses...';
+
+  @override
+  String get searchSemanticLabel => 'Rechercher';
+
+  @override
+  String get clearSearchSemanticLabel => 'Effacer la recherche';
+
+  @override
+  String get dashboardSubtitle => 'Suivez vos dépenses et gérez vos finances';
+
+  @override
+  String get numberofCategories => 'Catégories';
+
+  @override
+  String get dailyAvgSpending => 'Moyenne Quotidienne';
+
+  @override
+  String get msgCategoryAdded => 'Catégorie ajoutée avec succès';
+
+  @override
+  String msgAddCategoryFailed(String error) {
+    return 'Échec de l\'ajout de la catégorie : $error';
   }
 
   @override
-  String get msgCommentAdded => 'Comment added successfully';
+  String get msgCategoryDeleted => 'Catégorie supprimée avec succès';
 
   @override
-  String msgViewDetailsFor(Object name) {
-    return 'View details for $name';
-  }
-
-  @override
-  String get dialogTitleSuspendEmployee => 'Suspend Employee';
-
-  @override
-  String dialogDescSuspendEmployee(Object name) {
-    return 'Are you sure you want to suspend $name?';
-  }
-
-  @override
-  String msgEmployeeSuspended(Object name) {
-    return '$name suspended';
-  }
-
-  @override
-  String msgEmployeeActivated(Object name) {
-    return '$name activated';
-  }
-
-  @override
-  String get dialogTitleRemoveEmployee => 'Remove Employee';
-
-  @override
-  String dialogDescRemoveEmployee(Object name) {
-    return 'Are you sure you want to remove $name? This action cannot be undone.';
-  }
-
-  @override
-  String msgEmployeeRemoved(Object name) {
-    return '$name removed';
-  }
-
-  @override
-  String get btnConfirm => 'Confirm';
-
-  @override
-  String msgAddCategoryFailed(Object error) {
-    return 'Failed to add category: $error';
-  }
-
-  @override
-  String msgDeleteCategoryFailed(Object error) {
-    return 'Failed to delete category: $error';
-  }
-
-  @override
-  String get searchSemanticLabel => 'Search';
-
-  @override
-  String get clearSearchSemanticLabel => 'Clear search';
-
-  @override
-  String get clearSearchTooltip => 'Clear search';
-
-  @override
-  String sortLabel(Object sort) {
-    return 'Sort: $sort';
+  String msgDeleteCategoryFailed(String error) {
+    return 'Échec de la suppression de la catégorie : $error';
   }
 }
