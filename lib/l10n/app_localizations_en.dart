@@ -24,7 +24,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleManagerDashboard => 'Manager Dashboard';
 
   @override
-  String get descManagerDashboard => 'Monitor organization expenses, approve reimbursements, and manage employees.';
+  String get descManagerDashboard =>
+      'Monitor organization expenses, approve reimbursements, and manage employees.';
 
   @override
   String get kpiTotalEmployees => 'Total Employees';
@@ -218,7 +219,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleDeleteTransaction => 'Delete Transaction';
 
   @override
-  String get descDeleteTransaction => 'Are you sure you want to delete this transaction? This action can be undone.';
+  String get descDeleteTransaction =>
+      'Are you sure you want to delete this transaction? This action can be undone.';
 
   @override
   String get btnDelete => 'Delete';
@@ -449,7 +451,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageAccountPreferences => 'Manage your account preferences';
 
   @override
-  String get viewAndManagePersonalInfo => 'View and manage your personal information';
+  String get viewAndManagePersonalInfo =>
+      'View and manage your personal information';
 
   @override
   String memberSince(String date) {
@@ -475,7 +478,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get location => 'Location';
 
   @override
-  String get downloadExpenseData => 'Download your expense data in CSV or PDF format';
+  String get downloadExpenseData =>
+      'Download your expense data in CSV or PDF format';
 
   @override
   String get filterOptions => 'Filter Options';
@@ -490,7 +494,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get csvExport => 'CSV Export';
 
   @override
-  String get csvExportDesc => 'Download data in spreadsheet format (Excel, Google Sheets)';
+  String get csvExportDesc =>
+      'Download data in spreadsheet format (Excel, Google Sheets)';
 
   @override
   String get exportAsCsv => 'Export as CSV';
@@ -499,7 +504,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfExport => 'PDF Export';
 
   @override
-  String get pdfExportDesc => 'Download formatted report for printing or sharing';
+  String get pdfExportDesc =>
+      'Download formatted report for printing or sharing';
 
   @override
   String get exportAsPdf => 'Export as PDF';
@@ -562,7 +568,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get budgetLimitWarnings => 'Budget Limit Warnings';
 
   @override
-  String get notifyBudgetLimit => 'Alert when approaching or exceeding budget limits';
+  String get notifyBudgetLimit =>
+      'Alert when approaching or exceeding budget limits';
 
   @override
   String get weeklySummary => 'Weekly Summary';
@@ -592,7 +599,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get to => 'To';
 
   @override
-  String get manageSecurity => 'Manage your account security and privacy settings';
+  String get manageSecurity =>
+      'Manage your account security and privacy settings';
 
   @override
   String get password => 'Password';
@@ -610,7 +618,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authenticatorApp => 'Authenticator App';
 
   @override
-  String get useAuthenticatorApp => 'Use an authenticator app for additional security';
+  String get useAuthenticatorApp =>
+      'Use an authenticator app for additional security';
 
   @override
   String get setUp2fa => 'Set Up 2FA';
@@ -625,7 +634,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAllData => 'Delete All Data';
 
   @override
-  String get deleteAllDataDesc => 'Permanently delete all your expense data. This action cannot be undone.';
+  String get deleteAllDataDesc =>
+      'Permanently delete all your expense data. This action cannot be undone.';
 
   @override
   String get active => 'Active';
@@ -706,7 +716,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleRegisterManager => 'Register Organization';
 
   @override
-  String get subtitleRegisterManager => 'Create a new organization account for your team';
+  String get subtitleRegisterManager =>
+      'Create a new organization account for your team';
 
   @override
   String get labelOrganizationName => 'Organization Name';
@@ -774,7 +785,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errUserProfileNotFound => 'User profile not found';
 
   @override
-  String get errNoOrganization => 'No organization associated with this account';
+  String get errNoOrganization =>
+      'No organization associated with this account';
 
   @override
   String msgAddEmployeeSuccess(String name) {
@@ -836,7 +848,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get titleNoEmployees => 'No Employees Yet';
 
   @override
-  String get msgNoEmployees => 'You haven\'t added any employees to your team yet.';
+  String get msgNoEmployees =>
+      'You haven\'t added any employees to your team yet.';
 
   @override
   String get btnAddFirstEmployee => 'Add Your First Employee';
@@ -996,7 +1009,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintTemporaryPassword => 'Create a temporary password';
 
   @override
-  String get msgPasswordChangeHint => 'The employee can change this password after first login.';
+  String get msgPasswordChangeHint =>
+      'The employee can change this password after first login.';
 
   @override
   String get labelDeactivate => 'Deactivate';
@@ -1011,7 +1025,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ownerDashboard => 'Owner Dashboard';
 
   @override
-  String get subtitleOwnerDashboard => 'Manage organizations, approve managers, and monitor platform activity';
+  String get subtitleOwnerDashboard =>
+      'Manage organizations, approve managers, and monitor platform activity';
 
   @override
   String get kpiTotalCompanies => 'Total Companies';
@@ -1053,13 +1068,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dialogTitleConfirmDelete => 'Confirm Delete';
 
   @override
-  String get dialogDescDeleteManager => 'Are you sure you want to delete this manager? This action cannot be undone.';
+  String get dialogDescDeleteManager =>
+      'Are you sure you want to delete this manager? This action cannot be undone.';
 
   @override
   String get msgManagerDeleted => 'Manager account deleted';
 
   @override
-  String get msgManagerProfileComingSoon => 'Manager profile view is coming soon';
+  String get msgManagerProfileComingSoon =>
+      'Manager profile view is coming soon';
 
   @override
   String get dialogTitleRejectManager => 'Reject Manager';
@@ -1110,7 +1127,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearSearchSemanticLabel => 'Clear search';
 
   @override
-  String get dashboardSubtitle => 'Track your spending and manage your finances';
+  String get dashboardSubtitle =>
+      'Track your spending and manage your finances';
 
   @override
   String get numberofCategories => 'Categories';

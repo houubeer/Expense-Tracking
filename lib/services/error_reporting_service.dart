@@ -15,7 +15,6 @@ enum ErrorSeverity {
 
 /// Represents a reported error with full context
 class ErrorReport {
-
   ErrorReport({
     required this.id,
     required this.timestamp,
@@ -58,7 +57,8 @@ class ErrorReport {
     buffer.writeln('====== ERROR REPORT ======');
     buffer.writeln('ID: $id');
     buffer.writeln(
-        'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp)}',);
+      'Timestamp: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp)}',
+    );
     buffer.writeln('Severity: ${severity.name.toUpperCase()}');
     buffer.writeln('Message: $message');
     if (error != null) buffer.writeln('Error: $error');
@@ -76,7 +76,6 @@ class ErrorReport {
 
 /// Service for tracking and reporting errors throughout the application
 class ErrorReportingService extends ChangeNotifier {
-
   ErrorReportingService(this._logger);
   final LoggerService _logger;
   final List<ErrorReport> _errorHistory = [];
@@ -337,7 +336,8 @@ class ErrorReportingService extends ChangeNotifier {
       final buffer = StringBuffer();
       buffer.writeln('========== ERROR HISTORY EXPORT ==========');
       buffer.writeln(
-          'Export Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',);
+        'Export Date: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now())}',
+      );
       buffer.writeln('Total Errors: ${_errorHistory.length}');
       buffer.writeln('\nStatistics:');
       buffer.writeln(getErrorStatistics().toString());

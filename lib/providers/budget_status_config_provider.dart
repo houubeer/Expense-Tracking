@@ -6,8 +6,6 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Configuration for budget status strategies
 class BudgetStatusConfig {
-  final List<IBudgetStatusStrategy> strategies;
-
   const BudgetStatusConfig({required this.strategies});
 
   /// Default configuration with standard thresholds
@@ -18,20 +16,16 @@ class BudgetStatusConfig {
           statusText: AppStrings.statusInRisk,
           statusColor: const Color(0xFFEF4444), // Red
           statusIcon: Icons.error,
-          minThreshold: 0.8,
         ),
         ConfigurableBudgetStatusStrategy.warning(
           statusText: AppStrings.statusWarning,
           statusColor: const Color(0xFFF59E0B), // Orange
           statusIcon: Icons.warning,
-          minThreshold: 0.5,
-          maxThreshold: 0.8,
         ),
         ConfigurableBudgetStatusStrategy.good(
           statusText: AppStrings.statusGood,
           statusColor: const Color(0xFF10B981), // Green
           statusIcon: Icons.check_circle,
-          maxThreshold: 0.5,
         ),
       ],
     );
@@ -90,6 +84,7 @@ class BudgetStatusConfig {
       ],
     );
   }
+  final List<IBudgetStatusStrategy> strategies;
 
   /// Get strategy matching the given percentage
   IBudgetStatusStrategy getStrategy(double percentage) {

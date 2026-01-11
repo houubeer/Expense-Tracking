@@ -13,7 +13,6 @@ import 'package:sqlite3/sqlite3.dart';
 /// - Restoring database from backup files
 /// - Validating backup file integrity
 class BackupService implements IBackupService {
-
   BackupService({LoggerService? logger})
       : _logger = logger ?? LoggerService.instance;
   final LoggerService _logger;
@@ -62,11 +61,16 @@ class BackupService implements IBackupService {
       _logger.info('BackupService: Backup created successfully');
       return true;
     } catch (e, stackTrace) {
-      _logger.error('BackupService: Failed to create backup',
-          error: e, stackTrace: stackTrace,);
+      _logger.error(
+        'BackupService: Failed to create backup',
+        error: e,
+        stackTrace: stackTrace,
+      );
       if (e is BackupException) rethrow;
-      throw BackupException('Failed to create backup: ${e.toString()}',
-          originalError: e,);
+      throw BackupException(
+        'Failed to create backup: ${e.toString()}',
+        originalError: e,
+      );
     }
   }
 
@@ -95,7 +99,8 @@ class BackupService implements IBackupService {
             '$dbPath.safety.${DateTime.now().millisecondsSinceEpoch}';
         await dbFile.copy(safetyBackupPath);
         _logger.info(
-            'BackupService: Created safety backup at $safetyBackupPath',);
+          'BackupService: Created safety backup at $safetyBackupPath',
+        );
       }
 
       // Replace the database file with the backup
@@ -104,11 +109,16 @@ class BackupService implements IBackupService {
       _logger.info('BackupService: Backup restored successfully');
       return true;
     } catch (e, stackTrace) {
-      _logger.error('BackupService: Failed to restore backup',
-          error: e, stackTrace: stackTrace,);
+      _logger.error(
+        'BackupService: Failed to restore backup',
+        error: e,
+        stackTrace: stackTrace,
+      );
       if (e is RestoreException) rethrow;
-      throw RestoreException('Failed to restore backup: ${e.toString()}',
-          originalError: e,);
+      throw RestoreException(
+        'Failed to restore backup: ${e.toString()}',
+        originalError: e,
+      );
     }
   }
 
@@ -141,7 +151,8 @@ class BackupService implements IBackupService {
         );
         if (tables.length < 2) {
           _logger.warning(
-              'BackupService: Backup missing required tables',);
+            'BackupService: Backup missing required tables',
+          );
           return false;
         }
 

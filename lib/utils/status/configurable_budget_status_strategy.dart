@@ -4,12 +4,6 @@ import 'package:expense_tracking_desktop_app/utils/status/i_budget_status_strate
 /// Configurable budget status strategy with customizable thresholds
 /// Allows fine-tuning of status calculation without creating new classes
 class ConfigurableBudgetStatusStrategy implements IBudgetStatusStrategy {
-  final String _statusText;
-  final Color _statusColor;
-  final IconData _statusIcon;
-  final double _minThreshold;
-  final double _maxThreshold;
-
   const ConfigurableBudgetStatusStrategy({
     required String statusText,
     required Color statusColor,
@@ -21,20 +15,6 @@ class ConfigurableBudgetStatusStrategy implements IBudgetStatusStrategy {
         _statusIcon = statusIcon,
         _minThreshold = minThreshold,
         _maxThreshold = maxThreshold ?? double.infinity;
-
-  @override
-  String get statusText => _statusText;
-
-  @override
-  Color get statusColor => _statusColor;
-
-  @override
-  IconData get statusIcon => _statusIcon;
-
-  @override
-  bool matches(double percentage) {
-    return percentage >= _minThreshold && percentage < _maxThreshold;
-  }
 
   /// Create a Good status strategy with custom threshold
   factory ConfigurableBudgetStatusStrategy.good({
@@ -83,6 +63,25 @@ class ConfigurableBudgetStatusStrategy implements IBudgetStatusStrategy {
       minThreshold: minThreshold,
       maxThreshold: double.infinity,
     );
+  }
+  final String _statusText;
+  final Color _statusColor;
+  final IconData _statusIcon;
+  final double _minThreshold;
+  final double _maxThreshold;
+
+  @override
+  String get statusText => _statusText;
+
+  @override
+  Color get statusColor => _statusColor;
+
+  @override
+  IconData get statusIcon => _statusIcon;
+
+  @override
+  bool matches(double percentage) {
+    return percentage >= _minThreshold && percentage < _maxThreshold;
   }
 
   /// Copy with new parameters

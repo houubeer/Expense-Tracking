@@ -72,16 +72,20 @@ class ConnectivityService extends ChangeNotifier {
             _reconnectionAttempts = 0;
           } else {
             // Try again with increased backoff
-            updateState(ConnectionState.disconnected,
-                error: 'Reconnection attempt $_reconnectionAttempts failed',);
+            updateState(
+              ConnectionState.disconnected,
+              error: 'Reconnection attempt $_reconnectionAttempts failed',
+            );
             if (_reconnectionAttempts < 10) {
               // Limit to 10 attempts
               await attemptReconnection();
             }
           }
         } catch (e) {
-          updateState(ConnectionState.disconnected,
-              error: 'Reconnection error: $e',);
+          updateState(
+            ConnectionState.disconnected,
+            error: 'Reconnection error: $e',
+          );
           if (_reconnectionAttempts < 10) {
             await attemptReconnection();
           }

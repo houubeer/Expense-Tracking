@@ -6,9 +6,8 @@ import 'package:expense_tracking_desktop_app/providers/budget_status_config_prov
 /// SATISFIES Open/Closed Principle: New status types can be added by creating new strategies
 /// SATISFIES Dependency Injection: Can use custom configuration
 class BudgetStatusCalculator {
-  final BudgetStatusConfig? _config;
-
   const BudgetStatusCalculator({BudgetStatusConfig? config}) : _config = config;
+  final BudgetStatusConfig? _config;
 
   /// Calculate the percentage of budget used
   static double calculatePercentage(double spent, double budget) {

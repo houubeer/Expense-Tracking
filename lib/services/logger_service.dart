@@ -8,7 +8,6 @@ import 'package:expense_tracking_desktop_app/config/environment.dart';
 /// Provides structured logging with different levels and log persistence
 /// Automatically sanitizes sensitive data in production
 class LoggerService {
-
   LoggerService._();
   static LoggerService? _instance;
   late Logger _logger;
@@ -117,8 +116,10 @@ class LoggerService {
 
     // Replace amount values
     sanitized = sanitized.replaceAllMapped(
-      RegExp(r'(amount|budget|spent|balance|price|cost)\s*[=:]\s*[\d.,]+',
-          caseSensitive: false,),
+      RegExp(
+        r'(amount|budget|spent|balance|price|cost)\s*[=:]\s*[\d.,]+',
+        caseSensitive: false,
+      ),
       (match) => '${match.group(1)}=[REDACTED]',
     );
 
@@ -177,7 +178,7 @@ class LoggerService {
 
   /// Close logger and cleanup resources
   Future<void> close() async {
-    _logger.close();
+    await _logger.close();
     _isInitialized = false;
   }
 
@@ -220,7 +221,6 @@ class LoggerService {
 
 /// Custom file output for logger
 class FileOutput extends LogOutput {
-
   FileOutput({required this.file});
   final File file;
 
@@ -228,9 +228,7 @@ class FileOutput extends LogOutput {
   void output(OutputEvent event) {
     try {
       final buffer = StringBuffer();
-      for (final line in event.lines) {
-        buffer.writeln(line);
-      }
+      event.lines.forEach(buffer.writeln);
       file.writeAsStringSync(
         buffer.toString(),
         mode: FileMode.append,
@@ -245,7 +243,6 @@ class FileOutput extends LogOutput {
 
 /// Multiple outputs wrapper
 class MultiOutput extends LogOutput {
-
   MultiOutput(this.outputs);
   final List<LogOutput> outputs;
 

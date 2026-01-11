@@ -24,7 +24,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get titleManagerDashboard => 'لوحة تحكم المدير';
 
   @override
-  String get descManagerDashboard => 'مراقبة نفقات المنظمة، والموافقة على التعويضات، وإدارة الموظفين.';
+  String get descManagerDashboard =>
+      'مراقبة نفقات المنظمة، والموافقة على التعويضات، وإدارة الموظفين.';
 
   @override
   String get kpiTotalEmployees => 'إجمالي الموظفين';
@@ -218,7 +219,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get titleDeleteTransaction => 'حذف المعاملة';
 
   @override
-  String get descDeleteTransaction => 'هل أنت متأكد أنك تريد حذف هذه المعاملة؟ يمكن التراجع عن هذا الإجراء.';
+  String get descDeleteTransaction =>
+      'هل أنت متأكد أنك تريد حذف هذه المعاملة؟ يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get btnDelete => 'حذف';
@@ -475,7 +477,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get location => 'الموقع';
 
   @override
-  String get downloadExpenseData => 'قم بتنزيل بيانات النفقات الخاصة بك بتنسيق CSV أو PDF';
+  String get downloadExpenseData =>
+      'قم بتنزيل بيانات النفقات الخاصة بك بتنسيق CSV أو PDF';
 
   @override
   String get filterOptions => 'خيارات التصفية';
@@ -490,7 +493,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get csvExport => 'تصدير CSV';
 
   @override
-  String get csvExportDesc => 'تنزيل البيانات بتنسيق جدول بيانات (Excel، Google Sheets)';
+  String get csvExportDesc =>
+      'تنزيل البيانات بتنسيق جدول بيانات (Excel، Google Sheets)';
 
   @override
   String get exportAsCsv => 'تصدير كـ CSV';
@@ -562,7 +566,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get budgetLimitWarnings => 'تحذيرات حدود الميزانية';
 
   @override
-  String get notifyBudgetLimit => 'تنبيه عند الاقتراب من حدود الميزانية أو تجاوزها';
+  String get notifyBudgetLimit =>
+      'تنبيه عند الاقتراب من حدود الميزانية أو تجاوزها';
 
   @override
   String get weeklySummary => 'ملخص أسبوعي';
@@ -625,7 +630,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteAllData => 'حذف جميع البيانات';
 
   @override
-  String get deleteAllDataDesc => 'حذف جميع بيانات النفقات الخاصة بك نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
+  String get deleteAllDataDesc =>
+      'حذف جميع بيانات النفقات الخاصة بك نهائيًا. لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String get active => 'نشط';
@@ -996,7 +1002,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hintTemporaryPassword => 'إنشاء كلمة مرور مؤقتة';
 
   @override
-  String get msgPasswordChangeHint => 'يمكن للموظف تغيير كلمة المرور هذه بعد تسجيل الدخول الأول.';
+  String get msgPasswordChangeHint =>
+      'يمكن للموظف تغيير كلمة المرور هذه بعد تسجيل الدخول الأول.';
 
   @override
   String get labelDeactivate => 'تعطيل';
@@ -1011,7 +1018,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ownerDashboard => 'لوحة تحكم المالك';
 
   @override
-  String get subtitleOwnerDashboard => 'إدارة الشركات، الموافقة على المدراء، ومراقبة نشاط المنصة';
+  String get subtitleOwnerDashboard =>
+      'إدارة الشركات، الموافقة على المدراء، ومراقبة نشاط المنصة';
 
   @override
   String get kpiTotalCompanies => 'إجمالي الشركات';
@@ -1053,7 +1061,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dialogTitleConfirmDelete => 'تأكيد الحذف';
 
   @override
-  String get dialogDescDeleteManager => 'هل أنت متأكد أنك تريد حذف هذا المدير؟ هذا الإجراء غير قابل للتراجع.';
+  String get dialogDescDeleteManager =>
+      'هل أنت متأكد أنك تريد حذف هذا المدير؟ هذا الإجراء غير قابل للتراجع.';
 
   @override
   String get msgManagerDeleted => 'تم حذف حساب المدير';
