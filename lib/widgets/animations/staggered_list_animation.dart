@@ -3,22 +3,21 @@ import 'package:flutter/material.dart';
 /// Widget that animates its child with a staggered fade and slide effect
 /// Useful for animating list items sequentially
 class StaggeredListAnimation extends StatelessWidget {
+  const StaggeredListAnimation({
+    required this.index,
+    required this.child,
+    super.key,
+    this.delay = const Duration(milliseconds: 50),
+    this.duration = const Duration(milliseconds: 350),
+    this.curve = Curves.easeOutCubic,
+    this.slideOffset = const Offset(0, 0.1),
+  });
   final int index;
   final Widget child;
   final Duration delay;
   final Duration duration;
   final Curve curve;
   final Offset slideOffset;
-
-  const StaggeredListAnimation({
-    super.key,
-    required this.index,
-    required this.child,
-    this.delay = const Duration(milliseconds: 50),
-    this.duration = const Duration(milliseconds: 350),
-    this.curve = Curves.easeOutCubic,
-    this.slideOffset = const Offset(0, 0.1),
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,18 +63,17 @@ class StaggeredListAnimation extends StatelessWidget {
 
 /// Simpler version using AnimatedOpacity for better performance
 class FadeInListItem extends StatefulWidget {
+  const FadeInListItem({
+    required this.index,
+    required this.child,
+    super.key,
+    this.delay = const Duration(milliseconds: 50),
+    this.duration = const Duration(milliseconds: 300),
+  });
   final int index;
   final Widget child;
   final Duration delay;
   final Duration duration;
-
-  const FadeInListItem({
-    super.key,
-    required this.index,
-    required this.child,
-    this.delay = const Duration(milliseconds: 50),
-    this.duration = const Duration(milliseconds: 300),
-  });
 
   @override
   State<FadeInListItem> createState() => _FadeInListItemState();

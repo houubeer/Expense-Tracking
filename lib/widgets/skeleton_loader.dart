@@ -3,16 +3,15 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// Shimmer effect for skeleton loading states
 class SkeletonLoader extends StatefulWidget {
-  final Widget child;
-  final bool enabled;
-  final Duration period;
-
   const SkeletonLoader({
-    super.key,
     required this.child,
+    super.key,
     this.enabled = true,
     this.period = const Duration(milliseconds: 1500),
   });
+  final Widget child;
+  final bool enabled;
+  final Duration period;
 
   @override
   State<SkeletonLoader> createState() => _SkeletonLoaderState();
@@ -67,8 +66,6 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
         return ShaderMask(
           shaderCallback: (bounds) {
             return LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
               stops: const [0.0, 0.5, 1.0],
               colors: [
                 isDark
@@ -94,9 +91,8 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
 }
 
 class GradientTranslation extends GradientTransform {
-  final double offset;
-
   const GradientTranslation(this.offset);
+  final double offset;
 
   @override
   Matrix4? transform(Rect bounds, {TextDirection? textDirection}) {
@@ -106,16 +102,15 @@ class GradientTranslation extends GradientTransform {
 
 /// Skeleton box with shimmer effect
 class SkeletonBox extends StatelessWidget {
-  final double? width;
-  final double? height;
-  final BorderRadius? borderRadius;
-
   const SkeletonBox({
     super.key,
     this.width,
     this.height,
     this.borderRadius,
   });
+  final double? width;
+  final double? height;
+  final BorderRadius? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -134,16 +129,15 @@ class SkeletonBox extends StatelessWidget {
 
 /// Skeleton line with shimmer (for text placeholders)
 class SkeletonLine extends StatelessWidget {
-  final double? width;
-  final double height;
-  final BorderRadius? borderRadius;
-
   const SkeletonLine({
     super.key,
     this.width,
     this.height = 12,
     this.borderRadius,
   });
+  final double? width;
+  final double height;
+  final BorderRadius? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -157,12 +151,11 @@ class SkeletonLine extends StatelessWidget {
 
 /// Skeleton circle (for avatars/icons)
 class SkeletonCircle extends StatelessWidget {
-  final double size;
-
   const SkeletonCircle({
     super.key,
     this.size = 40,
   });
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +191,7 @@ class SkeletonExpenseItem extends StatelessWidget {
                 children: [
                   SkeletonLine(width: 120, height: 16),
                   SizedBox(height: AppSpacing.xs),
-                  SkeletonLine(width: 80, height: 12),
+                  SkeletonLine(width: 80),
                 ],
               ),
             ),
@@ -207,7 +200,7 @@ class SkeletonExpenseItem extends StatelessWidget {
               children: [
                 SkeletonLine(width: 80, height: 16),
                 SizedBox(height: AppSpacing.xs),
-                SkeletonLine(width: 60, height: 12),
+                SkeletonLine(width: 60),
               ],
             ),
           ],
@@ -231,7 +224,7 @@ class SkeletonBudgetItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                SkeletonCircle(size: 40),
+                SkeletonCircle(),
                 SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
@@ -239,7 +232,7 @@ class SkeletonBudgetItem extends StatelessWidget {
                     children: [
                       SkeletonLine(width: 100, height: 16),
                       SizedBox(height: AppSpacing.xs),
-                      SkeletonLine(width: 150, height: 12),
+                      SkeletonLine(width: 150),
                     ],
                   ),
                 ),
@@ -251,8 +244,8 @@ class SkeletonBudgetItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SkeletonLine(width: 80, height: 12),
-                SkeletonLine(width: 60, height: 12),
+                SkeletonLine(width: 80),
+                SkeletonLine(width: 60),
               ],
             ),
           ],
@@ -264,16 +257,15 @@ class SkeletonBudgetItem extends StatelessWidget {
 
 /// Skeleton list with multiple items
 class SkeletonList extends StatelessWidget {
-  final Widget itemBuilder;
-  final int itemCount;
-  final EdgeInsetsGeometry? padding;
-
   const SkeletonList({
-    super.key,
     required this.itemBuilder,
+    super.key,
     this.itemCount = 5,
     this.padding,
   });
+  final Widget itemBuilder;
+  final int itemCount;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {

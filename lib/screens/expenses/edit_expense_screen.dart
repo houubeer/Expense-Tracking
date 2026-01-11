@@ -69,7 +69,7 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
         amount: amount,
         description: description,
         date: _selectedDate,
-        categoryId: _selectedCategoryId!,
+        categoryId: _selectedCategoryId,
       );
 
       await _repository.updateExpense(updatedExpense);
@@ -110,8 +110,10 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Edit Expense',
-            style: TextStyle(color: AppColors.textPrimary)),
+        title: const Text(
+          'Edit Expense',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
       ),
       body: Center(
         child: ExpenseFormWidget(
