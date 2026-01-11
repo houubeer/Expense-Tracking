@@ -42,11 +42,14 @@ class NotificationsNotifier extends AsyncNotifier<Map<String, dynamic>> {
     if (inSettings == null) return defaultShape;
 
     final channels = Map<String, dynamic>.from(
-        (inSettings['channels'] as Map?)?.cast<String, dynamic>() ?? {});
+      (inSettings['channels'] as Map?)?.cast<String, dynamic>() ?? {},
+    );
     final types = Map<String, dynamic>.from(
-        (inSettings['types'] as Map?)?.cast<String, dynamic>() ?? {});
+      (inSettings['types'] as Map?)?.cast<String, dynamic>() ?? {},
+    );
     final quiet = Map<String, dynamic>.from(
-        (inSettings['quietHours'] as Map?)?.cast<String, dynamic>() ?? {});
+      (inSettings['quietHours'] as Map?)?.cast<String, dynamic>() ?? {},
+    );
 
     return {
       'channels': {
@@ -54,11 +57,16 @@ class NotificationsNotifier extends AsyncNotifier<Map<String, dynamic>> {
         'email': channels['email'] ?? defaultShape['channels']!['email'],
       },
       'types': {
-        'newExpenseAdded': types['newExpenseAdded'] ?? defaultShape['types']!['newExpenseAdded'],
-        'budgetUpdates': types['budgetUpdates'] ?? defaultShape['types']!['budgetUpdates'],
-        'budgetLimitWarnings': types['budgetLimitWarnings'] ?? defaultShape['types']!['budgetLimitWarnings'],
-        'weeklySummary': types['weeklySummary'] ?? defaultShape['types']!['weeklySummary'],
-        'monthlyReports': types['monthlyReports'] ?? defaultShape['types']!['monthlyReports'],
+        'newExpenseAdded': types['newExpenseAdded'] ??
+            defaultShape['types']!['newExpenseAdded'],
+        'budgetUpdates':
+            types['budgetUpdates'] ?? defaultShape['types']!['budgetUpdates'],
+        'budgetLimitWarnings': types['budgetLimitWarnings'] ??
+            defaultShape['types']!['budgetLimitWarnings'],
+        'weeklySummary':
+            types['weeklySummary'] ?? defaultShape['types']!['weeklySummary'],
+        'monthlyReports':
+            types['monthlyReports'] ?? defaultShape['types']!['monthlyReports'],
       },
       'quietHours': {
         'enabled': quiet['enabled'] ?? defaultShape['quietHours']!['enabled'],
@@ -89,7 +97,11 @@ class NotificationsNotifier extends AsyncNotifier<Map<String, dynamic>> {
   }
 
   /// Update quiet hours settings
-  Future<void> setQuietHours({required bool enabled, String? from, String? to}) async {
+  Future<void> setQuietHours({
+    required bool enabled,
+    String? from,
+    String? to,
+  }) async {
     final current = state.value ?? _withDefaults(null);
     final updated = Map<String, dynamic>.from(current);
     final quiet = Map<String, dynamic>.from(updated['quietHours'] as Map);
@@ -109,6 +121,9 @@ class NotificationsNotifier extends AsyncNotifier<Map<String, dynamic>> {
   }
 }
 
-final notificationsProvider = AsyncNotifierProvider<NotificationsNotifier, Map<String, dynamic>>(() {
-  return NotificationsNotifier();
-},);
+final notificationsProvider =
+    AsyncNotifierProvider<NotificationsNotifier, Map<String, dynamic>>(
+  () {
+    return NotificationsNotifier();
+  },
+);

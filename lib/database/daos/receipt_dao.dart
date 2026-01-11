@@ -10,7 +10,7 @@ part 'receipt_dao.g.dart';
 /// Follows the DAO pattern to encapsulate all database operations for receipts.
 @DriftAccessor(tables: [Receipts])
 class ReceiptDao extends DatabaseAccessor<AppDatabase> with _$ReceiptDaoMixin {
-  ReceiptDao(AppDatabase db) : super(db);
+  ReceiptDao(super.db);
 
   /// Watch all receipts for a specific expense
   ///
@@ -53,7 +53,9 @@ class ReceiptDao extends DatabaseAccessor<AppDatabase> with _$ReceiptDaoMixin {
   /// Insert multiple receipts
   ///
   /// Returns list of inserted receipt IDs
-  Future<List<int>> insertMultipleReceipts(List<ReceiptsCompanion> receiptList) async {
+  Future<List<int>> insertMultipleReceipts(
+    List<ReceiptsCompanion> receiptList,
+  ) async {
     final ids = <int>[];
     for (final receipt in receiptList) {
       final id = await into(receipts).insert(receipt);
@@ -101,8 +103,7 @@ class ReceiptDao extends DatabaseAccessor<AppDatabase> with _$ReceiptDaoMixin {
   /// Note: Database has CASCADE DELETE, so this is called automatically
   /// when parent expense is deleted. Kept for explicit operations.
   Future<int> deleteReceiptsForExpense(int expenseId) async {
-    return (delete(receipts)..where((r) => r.expenseId.equals(expenseId)))
-        .go();
+    return (delete(receipts)..where((r) => r.expenseId.equals(expenseId))).go();
   }
 
   /// Get count of receipts for an expense

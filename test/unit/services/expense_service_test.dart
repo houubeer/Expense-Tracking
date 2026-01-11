@@ -41,13 +41,13 @@ void main() {
     when(mockDatabase.transaction<dynamic>(any)).thenAnswer((invocation) async {
       final action =
           invocation.positionalArguments[0] as Future<dynamic> Function();
-      return await action();
+      return action();
     });
   });
 
   group('ExpenseService', () {
     test('createExpense inserts expense and updates category budget', () async {
-      final expense = ExpensesCompanion(
+      const expense = ExpensesCompanion(
         amount: Value(100.0),
         description: Value('Test Expense'),
         categoryId: Value(1),

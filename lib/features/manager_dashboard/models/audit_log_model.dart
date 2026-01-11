@@ -1,4 +1,3 @@
-
 /// Audit action enumeration for tracking manager actions
 enum AuditAction {
   approved,
@@ -22,19 +21,6 @@ enum AuditAction {
 
 /// Audit log model for tracking manager actions and changes
 class AuditLog {
-  final String id;
-  final String organizationId;
-  final String userId;
-  final String userEmail;
-  final String userName;
-  final String action; // string for DB compatibility
-  final String tableName;
-  final int? recordId;
-  final Map<String, dynamic>? oldData;
-  final Map<String, dynamic>? newData;
-  final String? description;
-  final DateTime createdAt;
-
   const AuditLog({
     required this.id,
     required this.organizationId,
@@ -43,13 +29,12 @@ class AuditLog {
     required this.userName,
     required this.action,
     required this.tableName,
+    required this.createdAt,
     this.recordId,
     this.oldData,
     this.newData,
     this.description,
-    required this.createdAt,
   });
-
 
   /// Create AuditLog from JSON (database format)
   factory AuditLog.fromJson(Map<String, dynamic> json) {
@@ -68,6 +53,18 @@ class AuditLog {
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
+  final String id;
+  final String organizationId;
+  final String userId;
+  final String userEmail;
+  final String userName;
+  final String action; // string for DB compatibility
+  final String tableName;
+  final int? recordId;
+  final Map<String, dynamic>? oldData;
+  final Map<String, dynamic>? newData;
+  final String? description;
+  final DateTime createdAt;
 
   /// Convert AuditLog to JSON (database format)
   Map<String, dynamic> toJson() {

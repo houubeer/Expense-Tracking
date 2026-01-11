@@ -6,7 +6,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/sub
 /// ViewModel for Company Management
 /// Manages company list, search, filtering, and CRUD operations
 class CompanyManagementViewModel extends ChangeNotifier {
-
   CompanyManagementViewModel({
     required CompanyRepository companyRepository,
     required SubscriptionRepository subscriptionRepository,
@@ -136,13 +135,13 @@ class CompanyManagementViewModel extends ChangeNotifier {
   Future<void> deleteCompany(String companyId) async {
     try {
       await _companyRepository.delete(companyId);
-      
+
       // Also delete associated subscription
       final subscription = _subscriptionRepository.getByCompanyId(companyId);
       if (subscription != null) {
         await _subscriptionRepository.delete(subscription.id);
       }
-      
+
       await loadCompanies();
     } catch (e) {
       _error = e.toString();

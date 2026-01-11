@@ -21,7 +21,6 @@ enum ManagerStatus {
 
 /// Manager model representing a company manager in the platform
 class Manager {
-
   const Manager({
     required this.id,
     required this.name,
@@ -30,7 +29,8 @@ class Manager {
     required this.companyName,
     required this.phone,
     required this.requestDate,
-    required this.status, this.approvalDate,
+    required this.status,
+    this.approvalDate,
   });
 
   /// Create Manager from JSON

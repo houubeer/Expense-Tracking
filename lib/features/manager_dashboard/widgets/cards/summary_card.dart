@@ -3,9 +3,12 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 class SummaryCard extends StatelessWidget {
-
   const SummaryCard({
-    required this.icon, required this.title, required this.value, required this.color, super.key,
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.color,
+    super.key,
     this.subtitle,
   });
   final IconData icon;
@@ -43,12 +46,11 @@ class SummaryCard extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -63,13 +65,13 @@ class SummaryCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: color,
-                  size: 28,
+                  size: 24,
                 ),
               ),
               const Spacer(),
             ],
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const Spacer(),
           Text(
             title,
             style: AppTextStyles.caption.copyWith(
@@ -92,13 +94,13 @@ class SummaryCard extends StatelessWidget {
             ),
           ),
           if (subtitle != null) ...[
-            const SizedBox(height: AppSpacing.sm),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               subtitle!,
-              style: AppTextStyles.bodySmall.copyWith(
+              style: AppTextStyles.caption.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
-              maxLines: 2,
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ],

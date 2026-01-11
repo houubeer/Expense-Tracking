@@ -6,13 +6,6 @@ import 'package:expense_tracking_desktop_app/features/auth/models/organization.d
 
 /// Auth state class to hold authentication info
 class AuthState {
-  final bool isAuthenticated;
-  final bool isLoading;
-  final bool isPendingApproval;
-  final UserProfile? userProfile;
-  final Organization? organization;
-  final String? errorMessage;
-
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
@@ -21,6 +14,12 @@ class AuthState {
     this.organization,
     this.errorMessage,
   });
+  final bool isAuthenticated;
+  final bool isLoading;
+  final bool isPendingApproval;
+  final UserProfile? userProfile;
+  final Organization? organization;
+  final String? errorMessage;
 
   AuthState copyWith({
     bool? isAuthenticated,
@@ -63,11 +62,10 @@ class AuthState {
 
 /// Auth notifier for managing authentication state
 class AuthNotifier extends StateNotifier<AuthState> {
-  final Ref _ref;
-
   AuthNotifier(this._ref) : super(const AuthState()) {
     _initializeAuth();
   }
+  final Ref _ref;
 
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
@@ -156,7 +154,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       throw Exception('No internet connection. You must be online to sign in.');
     }
 
-    state = state.copyWith(isLoading: true, errorMessage: null);
+    state = state.copyWith(isLoading: true);
     try {
       final supabaseService = _ref.read(supabaseServiceProvider);
       final result =
@@ -221,10 +219,11 @@ final isOwnerProvider = Provider<bool>((ref) {
   return authState.userProfile?.role == UserRole.owner;
 });
 
-/// Provider to check if user is manager
+/// Provider to check if user is manager (or owner, who has all manager permissions)
 final isManagerProvider = Provider<bool>((ref) {
   final authState = ref.watch(authNotifierProvider);
-  return authState.userProfile?.role == UserRole.manager;
+  final role = authState.userProfile?.role;
+  return role == UserRole.manager || role == UserRole.owner;
 });
 
 /// Provider to check if user is employee

@@ -89,7 +89,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         children: [
           // Left side - Background image
           Expanded(
-            flex: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -127,7 +126,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             ),
                           ],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.lock_reset_rounded,
                           size: 48,
                           color: AppColors.primary,
@@ -175,7 +174,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ),
           // Right side - Form in Card
           Expanded(
-            flex: 1,
             child: Container(
               color: AppColors.surfaceAlt,
               child: Center(
@@ -233,16 +231,18 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                               Container(
                                 padding: const EdgeInsets.all(AppSpacing.md),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.1),
+                                  color:
+                                      AppColors.primary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: AppColors.primary.withOpacity(0.3),
+                                    color: AppColors.primary
+                                        .withValues(alpha: 0.3),
                                   ),
                                 ),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.info_outline,
                                       color: AppColors.primary,
                                       size: 18,
@@ -266,15 +266,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(AppSpacing.md),
                                   decoration: BoxDecoration(
-                                    color: AppColors.red.withOpacity(0.1),
+                                    color: AppColors.red.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppColors.red.withOpacity(0.3),
+                                      color:
+                                          AppColors.red.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.error_outline,
                                         color: AppColors.red,
                                         size: 20,
@@ -307,8 +308,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                                     return 'Please enter your email';
                                   }
                                   if (!RegExp(
-                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                      .hasMatch(value)) {
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -352,10 +353,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: AppColors.green.withOpacity(0.1),
+                    color: AppColors.green.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.mark_email_read_outlined,
                     size: 72,
                     color: AppColors.green,
@@ -405,7 +406,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.info_outline,
                             color: AppColors.textSecondary,
                             size: 18,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 /// Budget category model for UI representation
 class BudgetCategory {
-
   BudgetCategory({
     required this.name,
     required this.spent,

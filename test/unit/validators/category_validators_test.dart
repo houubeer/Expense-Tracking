@@ -7,8 +7,10 @@ void main() {
       test('should return null for valid category names', () {
         expect(CategoryValidators.validateCategoryName('Food'), isNull);
         expect(CategoryValidators.validateCategoryName('Transport'), isNull);
-        expect(CategoryValidators.validateCategoryName('Entertainment & Fun'),
-            isNull);
+        expect(
+          CategoryValidators.validateCategoryName('Entertainment & Fun'),
+          isNull,
+        );
       });
 
       test('should return error for null or empty', () {
@@ -28,17 +30,25 @@ void main() {
 
       test('should return error for invalid characters', () {
         expect(
-            CategoryValidators.validateCategoryName('Food<script>'), isNotNull);
+          CategoryValidators.validateCategoryName('Food<script>'),
+          isNotNull,
+        );
         expect(CategoryValidators.validateCategoryName('Rent;'), isNotNull);
       });
 
       test('should return error for SQL keywords', () {
         expect(
-            CategoryValidators.validateCategoryName('DROP TABLE'), isNotNull);
+          CategoryValidators.validateCategoryName('DROP TABLE'),
+          isNotNull,
+        );
         expect(
-            CategoryValidators.validateCategoryName('delete from'), isNotNull);
+          CategoryValidators.validateCategoryName('delete from'),
+          isNotNull,
+        );
         expect(
-            CategoryValidators.validateCategoryName('INSERT INTO'), isNotNull);
+          CategoryValidators.validateCategoryName('INSERT INTO'),
+          isNotNull,
+        );
       });
     });
 

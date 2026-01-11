@@ -14,24 +14,15 @@ enum SubmissionStatus {
 
 /// Add Expense State - holds form state and submission status
 class AddExpenseState {
-  final SubmissionStatus status;
-  final String? errorMessage;
-  final String? successMessage;
-  final TextEditingController amountController;
-  final TextEditingController descriptionController;
-  final DateTime selectedDate;
-  final int? selectedCategoryId;
-  final bool isReimbursable;
-  final String? receiptPath; // Keep for backward compatibility
-  final List<ReceiptAttachment> receipts; // New: multiple receipts support
+  // New: multiple receipts support
 
   AddExpenseState({
     required this.status,
-    this.errorMessage,
-    this.successMessage,
     required this.amountController,
     required this.descriptionController,
     required this.selectedDate,
+    this.errorMessage,
+    this.successMessage,
     this.selectedCategoryId,
     this.isReimbursable = false,
     this.receiptPath,
@@ -45,11 +36,19 @@ class AddExpenseState {
       descriptionController: TextEditingController(),
       selectedDate: DateTime.now(),
       selectedCategoryId: preSelectedCategoryId,
-      isReimbursable: false,
-      receiptPath: null,
       receipts: [],
     );
   }
+  final SubmissionStatus status;
+  final String? errorMessage;
+  final String? successMessage;
+  final TextEditingController amountController;
+  final TextEditingController descriptionController;
+  final DateTime selectedDate;
+  final int? selectedCategoryId;
+  final bool isReimbursable;
+  final String? receiptPath; // Keep for backward compatibility
+  final List<ReceiptAttachment> receipts;
 
   AddExpenseState copyWith({
     SubmissionStatus? status,

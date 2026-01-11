@@ -6,9 +6,9 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 /// Header widget for Budget Setting Screen
 /// Separated for better modularity and reusability
 class BudgetScreenHeader extends StatelessWidget {
-
   const BudgetScreenHeader({
-    required this.onAddPressed, super.key,
+    required this.onAddPressed,
+    super.key,
   });
   final VoidCallback onAddPressed;
 

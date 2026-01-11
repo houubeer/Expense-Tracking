@@ -38,17 +38,18 @@ class _EmployeeManagementScreenState
     });
 
     try {
+      final loc = AppLocalizations.of(context)!;
       final supabaseService = ref.read(supabaseServiceProvider);
 
       // Get current user's organization
       final profile = await supabaseService.getCurrentUserProfile();
       if (profile == null) {
-        throw Exception(AppLocalizations.of(context)!.errUserProfileNotFound);
+        throw Exception(loc.errUserProfileNotFound);
       }
 
       _organizationId = profile.organizationId;
       if (_organizationId == null) {
-        throw Exception(AppLocalizations.of(context)!.errNoOrganization);
+        throw Exception(loc.errNoOrganization);
       }
 
       // Get employees for this organization
@@ -57,7 +58,7 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       setState(() {
-        _employees = employees.map((e) => UserProfile.fromJson(e)).toList();
+        _employees = employees.map(UserProfile.fromJson).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -72,13 +73,15 @@ class _EmployeeManagementScreenState
   Future<void> _addEmployee() async {
     if (_organizationId == null) return;
 
+    final loc = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => const AddEmployeeDialog(),
     );
 
     if (result == null) return;
-
     try {
       final supabaseService = ref.read(supabaseServiceProvider);
       await supabaseService.addEmployee(
@@ -91,19 +94,19 @@ class _EmployeeManagementScreenState
       await _loadEmployees();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .msgAddEmployeeSuccess(result['fullName']!)),
+          content: Text(
+            loc.msgAddEmployeeSuccess(result['fullName']!),
+          ),
           backgroundColor: AppColors.green,
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
-          content:
-              Text(AppLocalizations.of(context)!.errAddEmployee(e.toString())),
+          content: Text(loc.errAddEmployee(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );
@@ -111,6 +114,9 @@ class _EmployeeManagementScreenState
   }
 
   Future<void> _removeEmployee(UserProfile employee) async {
+    final loc = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -127,8 +133,10 @@ class _EmployeeManagementScreenState
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: Text(AppLocalizations.of(context)!.actionRemove,
-                style: const TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.actionRemove,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -142,19 +150,21 @@ class _EmployeeManagementScreenState
       await _loadEmployees();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!
-              .msgRemoveEmployeeSuccess(employee.fullName ?? employee.email)),
+          content: Text(
+            loc.msgRemoveEmployeeSuccess(employee.fullName ?? employee.email),
+          ),
           backgroundColor: AppColors.orange,
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
-              AppLocalizations.of(context)!.errRemoveEmployee(e.toString())),
+            loc.errRemoveEmployee(e.toString()),
+          ),
           backgroundColor: AppColors.red,
         ),
       );
@@ -162,6 +172,8 @@ class _EmployeeManagementScreenState
   }
 
   Future<void> _toggleEmployeeStatus(UserProfile employee) async {
+    final loc = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final supabaseService = ref.read(supabaseServiceProvider);
       final newStatus = employee.isActive ? 'inactive' : 'active';
@@ -173,21 +185,26 @@ class _EmployeeManagementScreenState
 
       if (!mounted) return;
       final status = employee.isActive
-          ? AppLocalizations.of(context)!.statusDeactivated
-          : AppLocalizations.of(context)!.statusActivated;
-      ScaffoldMessenger.of(context).showSnackBar(
+          ? loc.statusDeactivated
+          : loc.statusActivated;
+      messenger.showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.msgEmployeeStatusChanged(
-              employee.fullName ?? employee.email, status)),
+          content: Text(
+            loc.msgEmployeeStatusChanged(
+              employee.fullName ?? employee.email,
+              status,
+            ),
+          ),
           backgroundColor: AppColors.green,
         ),
       );
     } catch (e) {
       if (!mounted) return;
+      final loc = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content:
-              Text(AppLocalizations.of(context)!.errUpdateStatus(e.toString())),
+              Text(loc.errUpdateStatus(e.toString())),
           backgroundColor: AppColors.red,
         ),
       );

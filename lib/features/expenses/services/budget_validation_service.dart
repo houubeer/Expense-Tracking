@@ -6,9 +6,8 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 /// Validates expenses against category budgets before submission.
 /// This is a CRITICAL business rule - prevents budget overruns.
 class BudgetValidationService {
-  final ICategoryRepository _categoryRepository;
-
   BudgetValidationService(this._categoryRepository);
+  final ICategoryRepository _categoryRepository;
 
   /// Validate if an expense can be added within budget constraints
   ///
@@ -34,8 +33,14 @@ class BudgetValidationService {
     if (amount > remainingBudget) {
       // Format error message with actual values
       return AppStrings.errBudgetExceededDetails
-          .replaceAll('{amount}', '${amount.toStringAsFixed(2)} ${AppStrings.currency}')
-          .replaceAll('{remaining}', '${remainingBudget.toStringAsFixed(2)} ${AppStrings.currency}');
+          .replaceAll(
+            '{amount}',
+            '${amount.toStringAsFixed(2)} ${AppStrings.currency}',
+          )
+          .replaceAll(
+            '{remaining}',
+            '${remainingBudget.toStringAsFixed(2)} ${AppStrings.currency}',
+          );
     }
 
     // Validation passed

@@ -38,19 +38,23 @@ void main() {
     });
 
     test('getAllCategories returns all categories', () async {
-      await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
-      await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Transport'),
-        iconCodePoint: Value('456'),
-        color: Value(0xFFFFFFFF),
-        budget: Value(500.0),
-      ));
+      await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Transport'),
+          iconCodePoint: Value('456'),
+          color: Value(0xFFFFFFFF),
+          budget: Value(500.0),
+        ),
+      );
 
       final categories = await dao.getAllCategories();
 
@@ -59,12 +63,14 @@ void main() {
     });
 
     test('getCategoryById returns correct category', () async {
-      final id = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      final id = await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
       final category = await dao.getCategoryById(id);
 
@@ -80,12 +86,14 @@ void main() {
     });
 
     test('updateCategory modifies category', () async {
-      final id = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      final id = await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
       final original = await dao.getCategoryById(id);
       final updated = original!.copyWith(
@@ -102,12 +110,14 @@ void main() {
     });
 
     test('deleteCategory removes category', () async {
-      final id = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      final id = await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
       await dao.deleteCategory(id);
 
@@ -116,12 +126,14 @@ void main() {
     });
 
     test('updateCategorySpent updates spent amount', () async {
-      final id = await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      final id = await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
       await dao.updateCategorySpent(id, 250.0, 1);
 
@@ -135,12 +147,14 @@ void main() {
       final stream = dao.watchAllCategories();
 
       // Insert category
-      await dao.insertCategory(const CategoriesCompanion(
-        name: Value('Food'),
-        iconCodePoint: Value('123'),
-        color: Value(0xFF000000),
-        budget: Value(1000.0),
-      ));
+      await dao.insertCategory(
+        const CategoriesCompanion(
+          name: Value('Food'),
+          iconCodePoint: Value('123'),
+          color: Value(0xFF000000),
+          budget: Value(1000.0),
+        ),
+      );
 
       await expectLater(
         stream,

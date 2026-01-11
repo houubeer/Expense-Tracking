@@ -34,7 +34,10 @@ class BackupRestoreContent extends ConsumerWidget {
       if (next.lastBackupPath != null &&
           next.lastBackupPath != prev?.lastBackupPath &&
           prev?.isBackingUp == true) {
-        _showSuccessSnackBar(context, 'Backup saved to: ${_getFileName(next.lastBackupPath!)}');
+        _showSuccessSnackBar(
+          context,
+          'Backup saved to: ${_getFileName(next.lastBackupPath!)}',
+        );
       }
     });
 
@@ -87,7 +90,8 @@ class BackupRestoreContent extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: RestoreCard(
-                      onRestorePressed: () => _handleRestore(context, viewModel),
+                      onRestorePressed: () =>
+                          _handleRestore(context, viewModel),
                       isLoading: state.isRestoring,
                       progress: state.isRestoring ? state.progress : null,
                     ),
@@ -123,7 +127,10 @@ class BackupRestoreContent extends ConsumerWidget {
     await viewModel.createBackup();
   }
 
-  Future<void> _handleRestore(BuildContext context, BackupRestoreViewModel viewModel) async {
+  Future<void> _handleRestore(
+    BuildContext context,
+    BackupRestoreViewModel viewModel,
+  ) async {
     // Let user select backup file first
     final result = await FilePicker.platform.pickFiles(
       dialogTitle: AppStrings.labelSelectBackupFile,
@@ -148,14 +155,18 @@ class BackupRestoreContent extends ConsumerWidget {
 
     // Show confirmation dialog with backup details
     if (context.mounted) {
-      final confirmed = await _showRestoreConfirmationDialog(context, backupInfo);
+      final confirmed =
+          await _showRestoreConfirmationDialog(context, backupInfo);
       if (confirmed == true) {
         await viewModel.restoreBackup(filePath);
       }
     }
   }
 
-  Future<bool?> _showRestoreConfirmationDialog(BuildContext context, BackupInfo? backupInfo) {
+  Future<bool?> _showRestoreConfirmationDialog(
+    BuildContext context,
+    BackupInfo? backupInfo,
+  ) {
     return showDialog<bool>(
       context: context,
       builder: (context) => RestoreConfirmationDialog(

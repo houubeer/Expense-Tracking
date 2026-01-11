@@ -36,7 +36,8 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('shows loading indicator when isLoading is true', (tester) async {
+    testWidgets('shows loading indicator when isLoading is true',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -53,7 +54,8 @@ void main() {
       expect(find.text('Click Me'), findsNothing);
     });
 
-    testWidgets('does not call onPressed when isLoading is true', (tester) async {
+    testWidgets('does not call onPressed when isLoading is true',
+        (tester) async {
       var tapped = false;
       await tester.pumpWidget(
         MaterialApp(

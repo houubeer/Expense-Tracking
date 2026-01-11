@@ -11,14 +11,13 @@ import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Screen shown when a user's account is pending approval
 class PendingApprovalScreen extends ConsumerWidget {
-  final String? organizationName;
-  final String? userEmail;
-
   const PendingApprovalScreen({
     super.key,
     this.organizationName,
     this.userEmail,
   });
+  final String? organizationName;
+  final String? userEmail;
 
   Future<void> _handleBackToLogin(WidgetRef ref, BuildContext context) async {
     try {
@@ -45,7 +44,6 @@ class PendingApprovalScreen extends ConsumerWidget {
         children: [
           // Left side - Background image
           Expanded(
-            flex: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -83,7 +81,7 @@ class PendingApprovalScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.hourglass_top_rounded,
                           size: 48,
                           color: AppColors.orange,
@@ -131,7 +129,6 @@ class PendingApprovalScreen extends ConsumerWidget {
           ),
           // Right side - Content in Card
           Expanded(
-            flex: 1,
             child: Container(
               color: AppColors.surfaceAlt,
               child: Center(
@@ -226,7 +223,7 @@ class PendingApprovalScreen extends ConsumerWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.info_outline,
                                         color: AppColors.primary,
                                         size: 20,

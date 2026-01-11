@@ -77,6 +77,9 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
         fullName: _fullNameController.text.trim(),
       );
 
+      // Sign out immediately after signup - user needs to login after approval
+      await supabaseService.signOut();
+
       if (!mounted) return;
       setState(() {
         _registrationComplete = true;
@@ -102,7 +105,6 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
         children: [
           // Left side - Background image
           Expanded(
-            flex: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -140,7 +142,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                             ),
                           ],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.business_rounded,
                           size: 48,
                           color: AppColors.primary,
@@ -188,7 +190,6 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
           ),
           // Right side - Form in Card
           Expanded(
-            flex: 1,
             child: Container(
               color: AppColors.surfaceAlt,
               child: Center(
@@ -247,15 +248,20 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(AppSpacing.md),
                                   decoration: BoxDecoration(
-                                    color: AppColors.red.withOpacity(0.1),
+                                    color: AppColors.red.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                        color: AppColors.red.withOpacity(0.3)),
+                                      color:
+                                          AppColors.red.withValues(alpha: 0.3),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.error_outline,
-                                          color: AppColors.red, size: 20),
+                                      const Icon(
+                                        Icons.error_outline,
+                                        color: AppColors.red,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: AppSpacing.sm),
                                       Expanded(
                                         child: Text(
@@ -315,8 +321,8 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                     return 'Please enter your email';
                                   }
                                   if (!RegExp(
-                                          r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
-                                      .hasMatch(value)) {
+                                    r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
+                                  ).hasMatch(value)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -338,8 +344,9 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                         : Icons.visibility_off_outlined,
                                     color: AppColors.textSecondary,
                                   ),
-                                  onPressed: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
                                 ),
                                 validator: PasswordValidator.validate,
                               ),
@@ -365,9 +372,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                         : Icons.visibility_off_outlined,
                                     color: AppColors.textSecondary,
                                   ),
-                                  onPressed: () => setState(() =>
-                                      _obscureConfirmPassword =
-                                          !_obscureConfirmPassword),
+                                  onPressed: () => setState(
+                                    () => _obscureConfirmPassword =
+                                        !_obscureConfirmPassword,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -408,7 +416,6 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
         children: [
           // Left side - Background image
           Expanded(
-            flex: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -444,7 +451,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                             ),
                           ],
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.check_circle_outline,
                           size: 48,
                           color: AppColors.green,
@@ -490,7 +497,6 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
           ),
           // Right side - Success content
           Expanded(
-            flex: 1,
             child: Container(
               color: AppColors.surfaceAlt,
               child: Center(
@@ -512,10 +518,10 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                             Container(
                               padding: const EdgeInsets.all(AppSpacing.xl),
                               decoration: BoxDecoration(
-                                color: AppColors.green.withOpacity(0.1),
+                                color: AppColors.green.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.check_circle_outline,
                                 size: 56,
                                 color: AppColors.green,
@@ -549,8 +555,11 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.info_outline,
-                                          color: AppColors.primary, size: 20),
+                                      const Icon(
+                                        Icons.info_outline,
+                                        color: AppColors.primary,
+                                        size: 20,
+                                      ),
                                       const SizedBox(width: AppSpacing.sm),
                                       Expanded(
                                         child: Text(
@@ -566,11 +575,17 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
                                   ),
                                   const SizedBox(height: AppSpacing.md),
                                   _buildNextStep(
-                                      '1', 'Owner will review your request'),
+                                    '1',
+                                    'Owner will review your request',
+                                  ),
                                   _buildNextStep(
-                                      '2', 'Once approved, account activates'),
+                                    '2',
+                                    'Once approved, account activates',
+                                  ),
                                   _buildNextStep(
-                                      '3', 'Login and manage your team'),
+                                    '3',
+                                    'Login and manage your team',
+                                  ),
                                 ],
                               ),
                             ),
@@ -603,7 +618,7 @@ class _ManagerSignupScreenState extends ConsumerState<ManagerSignupScreen> {
             width: 24,
             height: 24,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(

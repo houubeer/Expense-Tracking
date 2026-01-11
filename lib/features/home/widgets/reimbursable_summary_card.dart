@@ -9,11 +9,13 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 /// Shows the total amount owed to employees and the count of reimbursable
 /// expenses. This widget uses the existing card styling patterns from the app.
 class ReimbursableSummaryCard extends StatelessWidget {
-
   const ReimbursableSummaryCard({
-    required this.totalAmount, required this.expenseCount, super.key,
+    required this.totalAmount,
+    required this.expenseCount,
+    super.key,
     this.onTap,
   });
+
   /// The total amount of reimbursable expenses.
   final double totalAmount;
 
@@ -46,7 +48,9 @@ class ReimbursableSummaryCard extends StatelessWidget {
               color: colorScheme.tertiary.withValues(alpha: 0.3),
               blurRadius: AppConfig.shadowBlurRadiusMd,
               offset: const Offset(
-                  AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
+                AppConfig.shadowOffsetX,
+                AppConfig.shadowOffsetY,
+              ),
             ),
           ],
         ),

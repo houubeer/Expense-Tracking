@@ -118,7 +118,9 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
         if (mounted) {
           Navigator.pop(context);
           SuccessSnackbar.show(
-              context, AppLocalizations.of(context)!.msgExpenseUpdated);
+            context,
+            AppLocalizations.of(context)!.msgExpenseUpdated,
+          );
         }
       } catch (e) {
         if (mounted) {
@@ -126,7 +128,8 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  AppLocalizations.of(context)!.errUpdateExpense(e.toString())),
+                AppLocalizations.of(context)!.errUpdateExpense(e.toString()),
+              ),
               backgroundColor: colorScheme.error,
             ),
           );

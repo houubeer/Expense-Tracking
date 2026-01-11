@@ -11,14 +11,13 @@ import 'package:expense_tracking_desktop_app/features/auth/utils/password_valida
 
 /// Screen for resetting password using a token from email
 class ResetPasswordScreen extends ConsumerStatefulWidget {
-  final String? token;
-  final String? email;
-
   const ResetPasswordScreen({
     super.key,
     this.token,
     this.email,
   });
+  final String? token;
+  final String? email;
 
   @override
   ConsumerState<ResetPasswordScreen> createState() =>
@@ -129,7 +128,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   const SizedBox(height: AppSpacing.xl),
 
                   // Header icon
-                  Icon(
+                  const Icon(
                     Icons.lock_outline,
                     size: 64,
                     color: AppColors.primary,
@@ -173,15 +172,15 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.red.withOpacity(0.1),
+                        color: AppColors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.red.withOpacity(0.3),
+                          color: AppColors.red.withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.error_outline,
                             color: AppColors.red,
                             size: 20,
@@ -242,8 +241,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                             : Icons.visibility_off_outlined,
                         color: AppColors.textSecondary,
                       ),
-                      onPressed: () => setState(() =>
-                          _obscureConfirmPassword = !_obscureConfirmPassword),
+                      onPressed: () => setState(
+                        () =>
+                            _obscureConfirmPassword = !_obscureConfirmPassword,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -287,10 +288,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: AppColors.green.withOpacity(0.1),
+                    color: AppColors.green.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.check_circle_outline,
                     size: 72,
                     color: AppColors.green,

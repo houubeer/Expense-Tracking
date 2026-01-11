@@ -1,13 +1,12 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
-import '../models/employee_model.dart';
-import 'audit_log_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/employee_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/audit_log_repository.dart';
 
 class EmployeeRepository {
+  EmployeeRepository(this._supabaseService, this._auditLogRepository);
   final SupabaseService _supabaseService;
   final AuditLogRepository _auditLogRepository;
-
-  EmployeeRepository(this._supabaseService, this._auditLogRepository);
 
   SupabaseClient get _client => _supabaseService.client;
   User? get _currentUser => _supabaseService.currentUser;
@@ -147,6 +146,18 @@ class EmployeeRepository {
     try {
       final orgId = await _getCurrentOrgId();
 
+      // Check if employee already exists to avoid duplicates/errors on retry
+      final existing = await _client
+          .from('user_profiles')
+          .select('id')
+          .eq('email', employee.email)
+          .eq('organization_id', orgId)
+          .maybeSingle();
+
+      if (existing != null) {
+        throw Exception('Employee with this email already exists.');
+      }
+
       final employeeData = {
         'email': employee.email,
         'full_name': employee.name,
@@ -172,16 +183,17 @@ class EmployeeRepository {
       final userId = result['user_id'] as String;
 
       await _client.from('user_profiles').update({
-        'settings': {'department': employee.department},
-        'phone': employee.phone,
-        'hire_date': employee.hireDate.toIso8601String(),
+        'settings': {
+          'department': employee.department,
+          'phone': employee.phone,
+          'hire_date': employee.hireDate.toIso8601String(),
+        },
       }).eq('id', userId);
 
       await _auditLogRepository.createAuditLog(
         organizationId: orgId,
         action: 'ADD_EMPLOYEE',
         tableName: 'user_profiles',
-        recordId: null,
         newData: employeeData,
         description: 'Added employee: ${employee.name}',
       );
@@ -222,7 +234,6 @@ class EmployeeRepository {
       organizationId: orgId,
       action: 'SUSPEND_EMPLOYEE',
       tableName: 'user_profiles',
-      recordId: null,
       oldData: {
         'status': oldEmployee['status'],
       },
@@ -253,7 +264,6 @@ class EmployeeRepository {
       organizationId: orgId,
       action: 'ACTIVATE_EMPLOYEE',
       tableName: 'user_profiles',
-      recordId: null,
       oldData: {
         'status': oldEmployee['status'],
       },
@@ -282,7 +292,6 @@ class EmployeeRepository {
       organizationId: orgId,
       action: 'REMOVE_EMPLOYEE',
       tableName: 'user_profiles',
-      recordId: null,
       oldData: oldEmployee,
       description: 'Removed employee: ${oldEmployee['full_name']}',
     );

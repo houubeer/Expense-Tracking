@@ -5,13 +5,12 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Password validation requirements
 class PasswordRequirement {
-  final String description;
-  final bool Function(String) validator;
-
   const PasswordRequirement({
     required this.description,
     required this.validator,
   });
+  final String description;
+  final bool Function(String) validator;
 }
 
 /// Password validator utility
@@ -87,7 +86,7 @@ class PasswordValidator {
   static double getStrength(String password) {
     if (password.isEmpty) return 0.0;
 
-    int metRequirements =
+    final int metRequirements =
         requirements.where((req) => req.validator(password)).length;
     return metRequirements / requirements.length;
   }
@@ -113,12 +112,11 @@ class PasswordValidator {
 
 /// Widget to display password requirements
 class PasswordRequirementsWidget extends StatelessWidget {
-  final String password;
-
   const PasswordRequirementsWidget({
-    super.key,
     required this.password,
+    super.key,
   });
+  final String password;
 
   @override
   Widget build(BuildContext context) {

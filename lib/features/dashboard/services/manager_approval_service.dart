@@ -5,7 +5,6 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/a
 /// Service for handling manager approval workflows
 /// Contains business logic for approving, rejecting, suspending, and activating managers
 class ManagerApprovalService {
-
   ManagerApprovalService(this._managerRepository);
   final ManagerRepository _managerRepository;
   final List<AuditLog> _auditLogs = [];
@@ -57,7 +56,8 @@ class ManagerApprovalService {
     _createAuditLog(
       action: 'REJECT_MANAGER',
       managerName: 'Owner',
-      details: 'Rejected manager ${manager.name} for ${manager.companyName}. Reason: $reason',
+      details:
+          'Rejected manager ${manager.name} for ${manager.companyName}. Reason: $reason',
     );
   }
 
@@ -82,7 +82,8 @@ class ManagerApprovalService {
     _createAuditLog(
       action: 'SUSPEND_MANAGER',
       managerName: 'Owner',
-      details: 'Suspended manager ${manager.name} from ${manager.companyName}. Reason: $reason',
+      details:
+          'Suspended manager ${manager.name} from ${manager.companyName}. Reason: $reason',
     );
   }
 

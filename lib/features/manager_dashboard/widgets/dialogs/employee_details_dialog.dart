@@ -4,12 +4,11 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 class EmployeeDetailsDialog extends StatelessWidget {
-  final Employee employee;
-
   const EmployeeDetailsDialog({
-    super.key,
     required this.employee,
+    super.key,
   });
+  final Employee employee;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +30,7 @@ class EmployeeDetailsDialog extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor:
-                      colorScheme.primary.withValues(alpha: 0.15),
+                  backgroundColor: colorScheme.primary.withValues(alpha: 0.15),
                   child: Text(
                     employee.initials,
                     style: AppTextStyles.heading3.copyWith(
@@ -72,9 +70,7 @@ class EmployeeDetailsDialog extends StatelessWidget {
             _infoRow('Department', employee.department),
             _infoRow(
               'Status',
-              employee.status == EmployeeStatus.active
-                  ? 'Active'
-                  : 'Suspended',
+              employee.status == EmployeeStatus.active ? 'Active' : 'Suspended',
             ),
             _infoRow(
               'Hire Date',

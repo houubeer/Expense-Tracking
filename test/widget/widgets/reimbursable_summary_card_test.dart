@@ -7,7 +7,7 @@ void main() {
     testWidgets('Display reimbursable summary with amount and count',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 2500.50,
@@ -25,7 +25,7 @@ void main() {
     testWidgets('Display monetary icon for reimbursable expenses',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 1000.0,
@@ -41,7 +41,7 @@ void main() {
     testWidgets('Show correct expense count label',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 500.0,
@@ -57,7 +57,7 @@ void main() {
     testWidgets('Formatted currency display with 2 decimals',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 1234.56,
@@ -72,7 +72,7 @@ void main() {
 
     testWidgets('Zero decimal formatting', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 100.0,
@@ -108,7 +108,7 @@ void main() {
 
     testWidgets('Gradient background renders', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 500.0,
@@ -123,7 +123,7 @@ void main() {
 
     testWidgets('Large amount displays correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 999999.99,
@@ -138,7 +138,7 @@ void main() {
 
     testWidgets('Large count displays correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: ReimbursableSummaryCard(
               totalAmount: 10000.0,

@@ -23,24 +23,27 @@ class Reimbursement {
 /// Reimbursement table widget for tracking payments
 /// Displays approved expenses awaiting payment
 class ReimbursementTable extends StatelessWidget {
-  final List<ManagerExpense> expenses;
-
   const ReimbursementTable({
-    super.key,
     required this.expenses,
+    super.key,
   });
+  final List<ManagerExpense> expenses;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     // Convert ManagerExpense to local Reimbursement model
-    final reimbursements = expenses.map((e) => Reimbursement(
-      employeeName: e.employeeName,
-      amount: e.amount,
-      isPaid: e.reimbursedAt != null,
-      paymentDate: e.reimbursedAt,
-    )).toList();
+    final reimbursements = expenses
+        .map(
+          (e) => Reimbursement(
+            employeeName: e.employeeName,
+            amount: e.amount,
+            isPaid: e.reimbursedAt != null,
+            paymentDate: e.reimbursedAt,
+          ),
+        )
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +79,6 @@ class ReimbursementTable extends StatelessWidget {
                       minWidth: constraints.maxWidth,
                     ),
                     child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
                       child: DataTable(
                         headingRowColor: WidgetStateProperty.all(
                           colorScheme.surfaceContainerHighest,

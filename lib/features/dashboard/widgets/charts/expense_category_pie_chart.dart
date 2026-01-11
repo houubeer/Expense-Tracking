@@ -4,9 +4,9 @@ import 'package:fl_chart/fl_chart.dart';
 
 /// Pie chart widget for expense category breakdown
 class ExpenseCategoryPieChart extends StatelessWidget {
-
   const ExpenseCategoryPieChart({
-    required this.categoryData, super.key,
+    required this.categoryData,
+    super.key,
   });
   final Map<String, double> categoryData;
 
@@ -63,7 +63,12 @@ class ExpenseCategoryPieChart extends StatelessWidget {
                 // Legend
                 Expanded(
                   child: _buildLegend(
-                      categoryData, total, colors, textTheme, colorScheme,),
+                    categoryData,
+                    total,
+                    colors,
+                    textTheme,
+                    colorScheme,
+                  ),
                 ),
               ],
             ),

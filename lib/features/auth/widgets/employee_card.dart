@@ -109,9 +109,11 @@ class EmployeeCard extends StatelessWidget {
                                 : AppColors.green,
                           ),
                           const SizedBox(width: AppSpacing.sm),
-                          Text(employee.isActive
-                              ? AppLocalizations.of(context)!.labelDeactivate
-                              : AppLocalizations.of(context)!.labelActivate),
+                          Text(
+                            employee.isActive
+                                ? AppLocalizations.of(context)!.labelDeactivate
+                                : AppLocalizations.of(context)!.labelActivate,
+                          ),
                         ],
                       ),
                     ),

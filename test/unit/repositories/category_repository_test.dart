@@ -25,7 +25,7 @@ void main() {
 
   group('CategoryRepository', () {
     test('insertCategory delegates to CategoryDao', () async {
-      final category = const CategoriesCompanion(
+      const category = CategoriesCompanion(
         name: Value('Food'),
         iconCodePoint: Value('123'),
         color: Value(0xFF000000),

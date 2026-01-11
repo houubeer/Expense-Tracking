@@ -4,9 +4,9 @@ import 'package:fl_chart/fl_chart.dart';
 
 /// Line chart widget for platform growth over time
 class PlatformGrowthLineChart extends StatelessWidget {
-
   const PlatformGrowthLineChart({
-    required this.monthlyData, super.key,
+    required this.monthlyData,
+    super.key,
   });
   final Map<String, double> monthlyData;
 
@@ -48,7 +48,8 @@ class PlatformGrowthLineChart extends StatelessWidget {
                 LineChartData(
                   gridData: FlGridData(
                     drawVerticalLine: false,
-                    horizontalInterval: _calculateInterval(monthlyData.values.toList()),
+                    horizontalInterval:
+                        _calculateInterval(monthlyData.values.toList()),
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
                         color: colorScheme.outlineVariant,
@@ -80,7 +81,8 @@ class PlatformGrowthLineChart extends StatelessWidget {
                           final months = monthlyData.keys.toList();
                           if (index >= 0 && index < months.length) {
                             return Padding(
-                              padding: const EdgeInsets.only(top: AppSpacing.sm),
+                              padding:
+                                  const EdgeInsets.only(top: AppSpacing.sm),
                               child: Text(
                                 months[index],
                                 style: textTheme.bodySmall?.copyWith(
@@ -93,12 +95,8 @@ class PlatformGrowthLineChart extends StatelessWidget {
                         },
                       ),
                     ),
-                    rightTitles: const AxisTitles(
-                      
-                    ),
-                    topTitles: const AxisTitles(
-                      
-                    ),
+                    rightTitles: const AxisTitles(),
+                    topTitles: const AxisTitles(),
                   ),
                   borderData: FlBorderData(show: false),
                   lineBarsData: [

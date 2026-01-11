@@ -4,7 +4,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/sub
 /// Service for calculating subscription and revenue metrics
 /// Provides insights into subscription status and revenue generation
 class SubscriptionMetricsService {
-
   SubscriptionMetricsService(this._subscriptionRepository);
   final SubscriptionRepository _subscriptionRepository;
 
@@ -47,7 +46,7 @@ class SubscriptionMetricsService {
     final active = getActiveSubscriptionsCount();
     final expired = getExpiredSubscriptionsCount();
     final total = active + expired;
-    
+
     if (total == 0) return 100.0;
     return (active / total) * 100;
   }
@@ -55,8 +54,8 @@ class SubscriptionMetricsService {
   /// Get revenue by plan
   Map<SubscriptionPlan, double> getRevenueByPlan() {
     final distribution = getPlanDistribution();
-    return distribution.map((plan, count) => 
-      MapEntry(plan, plan.monthlyPrice * count),
+    return distribution.map(
+      (plan, count) => MapEntry(plan, plan.monthlyPrice * count),
     );
   }
 
@@ -65,14 +64,14 @@ class SubscriptionMetricsService {
     final distribution = getPlanDistribution();
     var mostPopular = SubscriptionPlan.free;
     var maxCount = 0;
-    
+
     distribution.forEach((plan, count) {
       if (count > maxCount) {
         maxCount = count;
         mostPopular = plan;
       }
     });
-    
+
     return mostPopular;
   }
 
@@ -93,7 +92,7 @@ class SubscriptionMetricsService {
   List<Subscription> getSubscriptionsNeedingRenewal() {
     final now = DateTime.now();
     final thirtyDaysFromNow = now.add(const Duration(days: 30));
-    
+
     return _subscriptionRepository
         .getActive()
         .where((s) => s.endDate.isBefore(thirtyDaysFromNow))
@@ -103,7 +102,6 @@ class SubscriptionMetricsService {
 
 /// Data class for subscription metrics
 class SubscriptionMetrics {
-
   const SubscriptionMetrics({
     required this.monthlyRevenue,
     required this.annualRevenue,

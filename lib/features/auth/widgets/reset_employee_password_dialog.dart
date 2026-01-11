@@ -10,16 +10,15 @@ import 'package:expense_tracking_desktop_app/features/auth/utils/password_valida
 
 /// Dialog for managers to reset employee passwords
 class ResetEmployeePasswordDialog extends ConsumerStatefulWidget {
-  final String employeeId;
-  final String employeeName;
-  final String employeeEmail;
-
   const ResetEmployeePasswordDialog({
-    super.key,
     required this.employeeId,
     required this.employeeName,
     required this.employeeEmail,
+    super.key,
   });
+  final String employeeId;
+  final String employeeName;
+  final String employeeEmail;
 
   /// Shows the dialog and returns true if password was reset successfully
   static Future<bool?> show(
@@ -113,7 +112,7 @@ class _ResetEmployeePasswordDialogState
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.check_circle, color: AppColors.green),
+            const Icon(Icons.check_circle, color: AppColors.green),
             const SizedBox(width: AppSpacing.sm),
             Text('Password reset successfully for ${widget.employeeName}'),
           ],
@@ -145,10 +144,10 @@ class _ResetEmployeePasswordDialogState
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.orange.withOpacity(0.1),
+                      color: AppColors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.lock_reset,
                       color: AppColors.orange,
                       size: 24,
@@ -178,7 +177,7 @@ class _ResetEmployeePasswordDialogState
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.close,
                       color: AppColors.textSecondary,
                     ),
@@ -197,7 +196,7 @@ class _ResetEmployeePasswordDialogState
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.email_outlined,
                       color: AppColors.textSecondary,
                       size: 18,
@@ -219,13 +218,18 @@ class _ResetEmployeePasswordDialogState
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.red.withOpacity(0.1),
+                    color: AppColors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.red.withOpacity(0.3)),
+                    border:
+                        Border.all(color: AppColors.red.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: AppColors.red, size: 20),
+                      const Icon(
+                        Icons.error_outline,
+                        color: AppColors.red,
+                        size: 20,
+                      ),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
@@ -285,7 +289,8 @@ class _ResetEmployeePasswordDialogState
                     color: AppColors.textSecondary,
                   ),
                   onPressed: () => setState(
-                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -303,14 +308,15 @@ class _ResetEmployeePasswordDialogState
               Container(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: AppColors.orange.withOpacity(0.1),
+                  color: AppColors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.orange.withOpacity(0.3)),
+                  border: Border.all(
+                      color: AppColors.orange.withValues(alpha: 0.3),),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.warning_amber_outlined,
                       color: AppColors.orange,
                       size: 20,

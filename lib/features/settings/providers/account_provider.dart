@@ -43,7 +43,7 @@ class AccountNotifier extends AsyncNotifier<UserProfile?> {
     final current = state.value;
     if (current == null) return false;
 
-  final newSettings = Map<String, dynamic>.from(current.settings);
+    final newSettings = Map<String, dynamic>.from(current.settings);
     newSettings['location'] = location;
 
     final updated = current.copyWith(
@@ -57,6 +57,7 @@ class AccountNotifier extends AsyncNotifier<UserProfile?> {
   }
 }
 
-final accountProvider = AsyncNotifierProvider<AccountNotifier, UserProfile?>(() {
+final accountProvider =
+    AsyncNotifierProvider<AccountNotifier, UserProfile?>(() {
   return AccountNotifier();
 });

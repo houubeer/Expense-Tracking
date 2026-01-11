@@ -8,6 +8,8 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/employee_card.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/cards/budget_usage_card.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/dialogs/employee_details_dialog.dart';
+import 'package:go_router/go_router.dart';
+import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/lists/reimbursement_table.dart';
 import 'package:expense_tracking_desktop_app/features/manager_dashboard/widgets/forms/add_employee_form.dart';
@@ -34,14 +36,48 @@ class ManagerDashboardScreen extends StatefulWidget {
 }
 
 class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
-  late final ManagerDashboardViewModel _viewModel;
+  ManagerDashboardViewModel? _viewModel;
   final TextEditingController _searchController = TextEditingController();
+  bool _isCheckingAccess = true;
+  bool _hasAccess = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize view model with dependencies
-    // Note: In production, these should be injected via dependency injection
+    _checkAccess();
+  }
+
+  Future<void> _checkAccess() async {
+    try {
+      final supabase = SupabaseService();
+      final user = supabase.currentUser;
+
+      if (user != null) {
+        final profile = await supabase.getUserProfile(user.id);
+        if (profile != null && profile.role.value == 'manager') {
+          _initViewModel();
+          if (mounted) {
+            setState(() {
+              _hasAccess = true;
+              _isCheckingAccess = false;
+            });
+          }
+          return;
+        }
+      }
+    } catch (e) {
+      debugPrint('Error checking access: $e');
+    }
+
+    if (mounted) {
+      setState(() {
+        _hasAccess = false;
+        _isCheckingAccess = false;
+      });
+    }
+  }
+
+  void _initViewModel() {
     final supabaseService = SupabaseService();
     final auditLogRepo = AuditLogRepository(supabaseService);
     _viewModel = ManagerDashboardViewModel(
@@ -55,18 +91,50 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       BudgetCalculationService(),
     );
     // Load initial data
-    _viewModel.loadDashboardData();
+    _viewModel!.loadDashboardData();
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _viewModel.dispose();
+    _viewModel?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isCheckingAccess) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (!_hasAccess) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_outline, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text(
+                'Access Denied',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text('You do not have permission to view this dashboard.\nOnly managers can access this area.', textAlign: TextAlign.center),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () => context.go(AppRoutes.home),
+                icon: const Icon(Icons.home),
+                label: const Text('Go to Home'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ChangeNotifierProvider.value(
       value: _viewModel,
       child: DashboardLayout(
@@ -81,8 +149,11 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error loading dashboard',
@@ -150,7 +221,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: AppSpacing.lg,
       mainAxisSpacing: AppSpacing.lg,
-      childAspectRatio: 1.9, // Reduced from 3.0 to make cards taller
+      childAspectRatio: 1.5, // Reduced to give more height for card content
       children: [
         SummaryCard(
           icon: Icons.people,
@@ -204,73 +275,73 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Title row
+          Text('Employee Management', style: AppTextStyles.heading2),
+          const SizedBox(height: AppSpacing.md),
+          // Controls row - using Wrap for responsive layout
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.md,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text('Employee Management', style: AppTextStyles.heading2),
-              Row(
-                children: [
-                  // Search
-                  SizedBox(
-                    width: 250,
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search employees...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusSm),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.lg,
-                          vertical: AppSpacing.md,
-                        ),
-                      ),
-                      onChanged: viewModel.setSearchQuery,
+              // Search
+              SizedBox(
+                width: 250,
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search employees...',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.md,
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  // Department filter
-                  DropdownButton<String?>(
-                    value: viewModel.departmentFilter,
-                    hint: const Text('Department'),
-                    items: [
-                      const DropdownMenuItem(
-                          value: null, child: Text('All Departments')),
-                      ...[
-                        'Engineering',
-                        'Marketing',
-                        'Sales',
-                        'Product',
-                        'Design',
-                        'Human Resources',
-                        'Finance'
-                      ].map((dept) =>
-                          DropdownMenuItem(value: dept, child: Text(dept))),
-                    ],
-                    onChanged: viewModel.setDepartmentFilter,
+                  onChanged: viewModel.setSearchQuery,
+                ),
+              ),
+              // Department filter
+              DropdownButton<String?>(
+                value: viewModel.departmentFilter,
+                hint: const Text('Department'),
+                items: [
+                  const DropdownMenuItem(
+                    child: Text('All Departments'),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  // Status filter
-                  DropdownButton<EmployeeStatus?>(
-                    value: viewModel.statusFilter,
-                    hint: const Text('Status'),
-                    items: const [
-                      DropdownMenuItem(
-                          value: null, child: Text('All Statuses')),
-                      DropdownMenuItem(
-                          value: EmployeeStatus.active, child: Text('Active')),
-                    ],
-                    onChanged: viewModel.setStatusFilter,
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  FilledButton.icon(
-                    onPressed: () => _showAddEmployeeDialog(context, viewModel),
-                    icon: const Icon(Icons.add, size: AppSpacing.iconXs),
-                    label: const Text('Add Employee'),
+                  ...[
+                    'Engineering',
+                    'Marketing',
+                    'Sales',
+                    'Product',
+                    'Design',
+                    'Human Resources',
+                    'Finance',
+                  ].map(
+                    (dept) => DropdownMenuItem(value: dept, child: Text(dept)),
                   ),
                 ],
+                onChanged: viewModel.setDepartmentFilter,
+              ),
+              // Status filter
+              DropdownButton<EmployeeStatus?>(
+                value: viewModel.statusFilter,
+                hint: const Text('Status'),
+                items: const [
+                  DropdownMenuItem(child: Text('All Statuses')),
+                  DropdownMenuItem(
+                    value: EmployeeStatus.active,
+                    child: Text('Active'),
+                  ),
+                ],
+                onChanged: viewModel.setStatusFilter,
+              ),
+              FilledButton.icon(
+                onPressed: () => _showAddEmployeeDialog(context, viewModel),
+                icon: const Icon(Icons.add, size: AppSpacing.iconXs),
+                label: const Text('Add Employee'),
               ),
             ],
           ),
@@ -278,8 +349,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
           // Show either a grid or a placeholder if empty
           viewModel.filteredEmployees.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 50),
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
                   child: Center(
                     child: Text(
                       'No employees found.',
@@ -322,8 +393,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           Text('Budget Monitoring', style: AppTextStyles.heading2),
           const SizedBox(height: AppSpacing.lg),
           viewModel.budgets.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 50),
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 50),
                   child: Center(
                     child: Text(
                       'No budgets available.',
@@ -349,12 +420,6 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     );
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   void _handleEmployeeAction(
     BuildContext context,
     ManagerDashboardViewModel viewModel,
@@ -377,11 +442,12 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           AppLocalizations.of(context)!.dialogTitleRemoveEmployee,
           AppLocalizations.of(context)!.dialogDescRemoveEmployee(employee.name),
           () async {
+            final messenger = ScaffoldMessenger.of(context);
+            final loc = AppLocalizations.of(context)!;
             await viewModel.removeEmployee(employee.id);
-            if (mounted) {
-              _showMessage(AppLocalizations.of(context)!
-                  .msgEmployeeRemoved(employee.name));
-            }
+            messenger.showSnackBar(
+              SnackBar(content: Text(loc.msgEmployeeRemoved(employee.name))),
+            );
           },
         );
         break;
@@ -396,11 +462,12 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       context: context,
       builder: (context) => AddEmployeeForm(
         onSubmit: (employee) async {
+          final messenger = ScaffoldMessenger.of(context);
+          final loc = AppLocalizations.of(context)!;
           await viewModel.addEmployee(employee);
-          if (mounted) {
-            _showMessage(
-                AppLocalizations.of(context)!.msgEmployeeAdded(employee.name));
-          }
+          messenger.showSnackBar(
+            SnackBar(content: Text(loc.msgEmployeeAdded(employee.name))),
+          );
         },
       ),
     );

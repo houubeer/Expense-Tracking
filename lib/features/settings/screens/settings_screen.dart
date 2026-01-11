@@ -12,6 +12,7 @@ import 'package:expense_tracking_desktop_app/features/settings/providers/account
 import 'package:expense_tracking_desktop_app/features/settings/providers/notifications_provider.dart';
 import 'package:expense_tracking_desktop_app/features/settings/widgets/backup_restore_content.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
+import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -26,31 +27,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
   List<Map<String, dynamic>> _getMenuItems(BuildContext context) => [
         {
           'icon': Icons.person_outline_rounded,
-          'label': AppLocalizations.of(context)!.accountDetails
+          'label': AppLocalizations.of(context)!.accountDetails,
         },
         {
           'icon': Icons.description_outlined,
-          'label': AppLocalizations.of(context)!.exportReports
+          'label': AppLocalizations.of(context)!.exportReports,
         },
         {
           'icon': Icons.palette_outlined,
-          'label': AppLocalizations.of(context)!.appearance
+          'label': AppLocalizations.of(context)!.appearance,
         },
         {
           'icon': Icons.language_outlined,
-          'label': AppLocalizations.of(context)!.language
+          'label': AppLocalizations.of(context)!.language,
         },
         {
           'icon': Icons.notifications_none_rounded,
-          'label': AppLocalizations.of(context)!.notifications
+          'label': AppLocalizations.of(context)!.notifications,
         },
         {
           'icon': Icons.security_outlined,
-          'label': AppLocalizations.of(context)!.security
+          'label': AppLocalizations.of(context)!.security,
         },
         {
           'icon': Icons.backup_outlined,
-          'label': AppLocalizations.of(context)!.backupRestore
+          'label': AppLocalizations.of(context)!.backupRestore,
         },
       ];
 
@@ -149,8 +150,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   // Try popping the root navigator first (dialog/modal pushed
                                   // to the root). If nothing to pop, fall back to navigating
                                   // home to ensure we don't throw "nothing to pop".
-                                  final rootNav = Navigator.of(context,
-                                      rootNavigator: true);
+                                  final rootNav = Navigator.of(
+                                    context,
+                                    rootNavigator: true,
+                                  );
                                   if (rootNav.canPop()) {
                                     rootNav.pop();
                                   } else {
@@ -329,12 +332,38 @@ class _AccountSettingsContentState
   final _fullNameController = TextEditingController();
   final _locationController = TextEditingController();
   bool _isSaving = false;
+  String? _lastSyncedProfileId;
+  DateTime? _lastSyncedUpdatedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    // Refresh account data when the widget is first displayed
+    Future.microtask(() {
+      ref.read(accountProvider.notifier).refresh();
+    });
+  }
 
   @override
   void dispose() {
     _fullNameController.dispose();
     _locationController.dispose();
     super.dispose();
+  }
+
+  void _syncControllersWithProfile(UserProfile profile) {
+    final location = profile.settings['location'] as String? ?? '';
+
+    // Check if we need to update controllers (new profile or profile updated)
+    final needsSync = _lastSyncedProfileId != profile.id ||
+        _lastSyncedUpdatedAt != profile.updatedAt;
+
+    if (needsSync) {
+      _fullNameController.text = profile.fullName ?? '';
+      _locationController.text = location;
+      _lastSyncedProfileId = profile.id;
+      _lastSyncedUpdatedAt = profile.updatedAt;
+    }
   }
 
   @override
@@ -351,18 +380,11 @@ class _AccountSettingsContentState
         final created = profile?.createdAt;
         final memberSince = created != null
             ? '${created.month}/${created.day}/${created.year}'
-            : '';
-        final location =
-            (profile?.settings ?? {})['location'] as String? ?? '';
+            : '';
 
-        // Initialize controllers if empty
+        // Sync controllers with profile data when profile changes
         if (profile != null) {
-          if (_fullNameController.text.isEmpty) {
-            _fullNameController.text = profile.fullName ?? '';
-          }
-          if (_locationController.text.isEmpty) {
-            _locationController.text = location == '' ? '' : location;
-          }
+          _syncControllersWithProfile(profile);
         }
 
         return SingleChildScrollView(
@@ -442,16 +464,23 @@ class _AccountSettingsContentState
               const SizedBox(height: AppSpacing.xl),
 
               // Editable Fields
-              _buildEditableField(context,
-                  AppLocalizations.of(context)!.fullName, _fullNameController),
+              _buildEditableField(
+                context,
+                AppLocalizations.of(context)!.fullName,
+                _fullNameController,
+              ),
               const SizedBox(height: AppSpacing.lg),
               _buildReadOnlyField(
-                  context,
-                  AppLocalizations.of(context)!.emailAddress,
-                  profile?.email ?? '\u0014'),
+                context,
+                AppLocalizations.of(context)!.emailAddress,
+                profile?.email ?? '\u0014',
+              ),
               const SizedBox(height: AppSpacing.lg),
-              _buildEditableField(context,
-                  AppLocalizations.of(context)!.location, _locationController),
+              _buildEditableField(
+                context,
+                AppLocalizations.of(context)!.location,
+                _locationController,
+              ),
               const SizedBox(height: AppSpacing.lg),
               Row(
                 children: [
@@ -461,24 +490,30 @@ class _AccountSettingsContentState
                         : () async {
                             setState(() => _isSaving = true);
                             final notifier = ref.read(accountProvider.notifier);
+                            final messenger = ScaffoldMessenger.of(context);
+                            final loc = AppLocalizations.of(context)!;
                             final okName = await notifier.updateFullName(
-                                _fullNameController.text.trim());
+                              _fullNameController.text.trim(),
+                            );
                             final okLoc = await notifier.updateLocation(
-                                _locationController.text.trim());
+                              _locationController.text.trim(),
+                            );
                             setState(() => _isSaving = false);
-                            if (!mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               SnackBar(
-                                  content: Text((okName || okLoc)
-                                      ? AppLocalizations.of(context)!
-                                          .msgCategoryUpdated
-                                      : AppLocalizations.of(context)!
-                                          .errGeneric)),
+                                content: Text(
+                                  (okName || okLoc)
+                                      ? loc.msgCategoryUpdated
+                                      : loc.errGeneric,
+                                ),
+                              ),
                             );
                           },
-                    child: Text(_isSaving
-                        ? '...'
-                        : AppLocalizations.of(context)!.saveChanges),
+                    child: Text(
+                      _isSaving
+                          ? '...'
+                          : AppLocalizations.of(context)!.saveChanges,
+                    ),
                   ),
                 ],
               ),
@@ -554,21 +589,28 @@ class _AccountSettingsContentState
       ),
       child: Row(
         children: [
-          Icon(_getIconForLabel(label),
-              size: 20, color: colorScheme.onSurfaceVariant),
+          Icon(
+            _getIconForLabel(label),
+            size: 20,
+            color: colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: AppTextStyles.bodySmall
-                        .copyWith(color: colorScheme.onSurfaceVariant)),
+                Text(
+                  label,
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: colorScheme.onSurfaceVariant),
+                ),
                 const SizedBox(height: AppSpacing.xs),
                 TextField(
                   controller: controller,
                   decoration: const InputDecoration(
-                      border: InputBorder.none, isDense: true),
+                    border: InputBorder.none,
+                    isDense: true,
+                  ),
                 ),
               ],
             ),
@@ -704,8 +746,11 @@ class _ExportReportsContentState extends State<_ExportReportsContent> {
           const SizedBox(height: AppSpacing.lg),
 
           // Category Dropdown
-          _buildDropdownLabel(context, AppLocalizations.of(context)!.category,
-              Icons.filter_alt_outlined),
+          _buildDropdownLabel(
+            context,
+            AppLocalizations.of(context)!.category,
+            Icons.filter_alt_outlined,
+          ),
           const SizedBox(height: AppSpacing.xs),
           _buildDropdown(
             context,
@@ -1270,18 +1315,24 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(AppLocalizations.of(context)!.notifications,
-                  style: AppTextStyles.heading3),
+              Text(
+                AppLocalizations.of(context)!.notifications,
+                style: AppTextStyles.heading3,
+              ),
               const SizedBox(height: AppSpacing.xs),
-              Text(AppLocalizations.of(context)!.manageNotifications,
-                  style: AppTextStyles.bodySmall
-                      .copyWith(color: colorScheme.onSurfaceVariant)),
+              Text(
+                AppLocalizations.of(context)!.manageNotifications,
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: colorScheme.onSurfaceVariant),
+              ),
               const SizedBox(height: AppSpacing.xl),
 
               // Notification Channels
-              Text(AppLocalizations.of(context)!.notificationChannels,
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                AppLocalizations.of(context)!.notificationChannels,
+                style: AppTextStyles.bodyLarge
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: AppSpacing.md),
               _buildToggleTile(
                 context,
@@ -1308,9 +1359,11 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
               const SizedBox(height: AppSpacing.xl),
 
               // Notification Types
-              Text(AppLocalizations.of(context)!.notificationTypes,
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                AppLocalizations.of(context)!.notificationTypes,
+                style: AppTextStyles.bodyLarge
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: AppSpacing.md),
               _buildToggleTile(
                 context,
@@ -1371,9 +1424,11 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
               const SizedBox(height: AppSpacing.xl),
 
               // Quiet Hours
-              Text(AppLocalizations.of(context)!.quietHours,
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                AppLocalizations.of(context)!.quietHours,
+                style: AppTextStyles.bodyLarge
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: AppSpacing.md),
               _buildQuietHoursCard(context, settings),
 
@@ -1382,13 +1437,18 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                 children: [
                   FilledButton(
                     onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
                       final ok =
                           await ref.read(notificationsProvider.notifier).save();
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(ok
-                              ? 'Notification settings saved'
-                              : 'Failed to save settings')));
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            ok
+                                ? 'Notification settings saved'
+                                : 'Failed to save settings',
+                          ),
+                        ),
+                      );
                     },
                     child: Text(AppLocalizations.of(context)!.saveChanges),
                   ),
@@ -1456,16 +1516,20 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
   }
 
   Widget _buildQuietHoursCard(
-      BuildContext context, Map<String, dynamic> settings) {
+    BuildContext context,
+    Map<String, dynamic> settings,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
     final quiet = (settings['quietHours'] as Map<String, dynamic>?) ?? {};
     final enabled = quiet['enabled'] as bool? ?? false;
 
     // Keep controllers updated when settings change
-    if (_fromTimeController.text.isEmpty)
+    if (_fromTimeController.text.isEmpty) {
       _fromTimeController.text = (quiet['from'] as String?) ?? '22:00';
-    if (_toTimeController.text.isEmpty)
+    }
+    if (_toTimeController.text.isEmpty) {
       _toTimeController.text = (quiet['to'] as String?) ?? '08:00';
+    }
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -1481,24 +1545,28 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(AppLocalizations.of(context)!.enableQuietHours,
-                        style: AppTextStyles.bodyLarge
-                            .copyWith(fontWeight: FontWeight.w500)),
+                    Text(
+                      AppLocalizations.of(context)!.enableQuietHours,
+                      style: AppTextStyles.bodyLarge
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
                     const SizedBox(height: 2),
-                    Text(AppLocalizations.of(context)!.muteNotifications,
-                        style: AppTextStyles.bodySmall
-                            .copyWith(color: colorScheme.onSurfaceVariant)),
+                    Text(
+                      AppLocalizations.of(context)!.muteNotifications,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: colorScheme.onSurfaceVariant),
+                    ),
                   ],
                 ),
               ),
               Switch(
                 value: enabled,
-                onChanged: (val) => ref
-                    .read(notificationsProvider.notifier)
-                    .setQuietHours(
-                        enabled: val,
-                        from: _fromTimeController.text,
-                        to: _toTimeController.text),
+                onChanged: (val) =>
+                    ref.read(notificationsProvider.notifier).setQuietHours(
+                          enabled: val,
+                          from: _fromTimeController.text,
+                          to: _toTimeController.text,
+                        ),
                 activeThumbColor: const Color(0xFF3B82F6),
               ),
             ],
@@ -1513,18 +1581,21 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppLocalizations.of(context)!.from,
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: colorScheme.onSurfaceVariant)),
+                      Text(
+                        AppLocalizations.of(context)!.from,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
                       const SizedBox(height: AppSpacing.xs),
                       TextField(
                         controller: _fromTimeController,
                         onChanged: (v) => ref
                             .read(notificationsProvider.notifier)
                             .setQuietHours(
-                                enabled: true,
-                                from: v,
-                                to: _toTimeController.text),
+                              enabled: true,
+                              from: v,
+                              to: _toTimeController.text,
+                            ),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: colorScheme.surface,
@@ -1535,8 +1606,9 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                                 BorderSide(color: colorScheme.outlineVariant),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm),
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
                         ),
                       ),
                     ],
@@ -1547,18 +1619,21 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(AppLocalizations.of(context)!.to,
-                          style: AppTextStyles.bodySmall
-                              .copyWith(color: colorScheme.onSurfaceVariant)),
+                      Text(
+                        AppLocalizations.of(context)!.to,
+                        style: AppTextStyles.bodySmall
+                            .copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
                       const SizedBox(height: AppSpacing.xs),
                       TextField(
                         controller: _toTimeController,
                         onChanged: (v) => ref
                             .read(notificationsProvider.notifier)
                             .setQuietHours(
-                                enabled: true,
-                                from: _fromTimeController.text,
-                                to: v),
+                              enabled: true,
+                              from: _fromTimeController.text,
+                              to: v,
+                            ),
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: colorScheme.surface,
@@ -1569,8 +1644,9 @@ class _NotificationsContentState extends ConsumerState<_NotificationsContent> {
                                 BorderSide(color: colorScheme.outlineVariant),
                           ),
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm),
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
                         ),
                       ),
                     ],
@@ -1793,8 +1869,9 @@ class _SecurityContent extends StatelessWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
             onPressed: () {
               if (formKey.currentState?.validate() ?? false) {
@@ -1817,8 +1894,9 @@ class _SecurityContent extends StatelessWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('No authenticated user found'),
-            backgroundColor: Colors.red),
+          content: Text('No authenticated user found'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -1834,8 +1912,9 @@ class _SecurityContent extends StatelessWidget {
         if (!context.mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Current password is incorrect'),
-              backgroundColor: Colors.red),
+            content: Text('Current password is incorrect'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
@@ -1843,8 +1922,9 @@ class _SecurityContent extends StatelessWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Failed to verify current password'),
-            backgroundColor: Colors.red),
+          content: Text('Failed to verify current password'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -1864,16 +1944,20 @@ class _SecurityContent extends StatelessWidget {
   void _handleToggle2FA(BuildContext context, bool value) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text(
-              'Two-Factor Authentication setup is not available in this build')),
+        content: Text(
+          'Two-Factor Authentication setup is not available in this build',
+        ),
+      ),
     );
   }
 
   Future<void> _handleSignOutOtherSessions(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-          content: Text(
-              'Signing out other sessions is not supported from the client.')),
+        content: Text(
+          'Signing out other sessions is not supported from the client.',
+        ),
+      ),
     );
   }
 
@@ -1883,14 +1967,17 @@ class _SecurityContent extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Delete all data'),
         content: const Text(
-            'This will permanently delete your expense data. Are you sure?'),
+          'This will permanently delete your expense data. Are you sure?',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Delete')),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
@@ -1901,9 +1988,12 @@ class _SecurityContent extends StatelessWidget {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text(success
+        content: Text(
+          success
               ? 'All your expense data was deleted'
-              : 'Failed to delete data')),
+              : 'Failed to delete data',
+        ),
+      ),
     );
   }
 

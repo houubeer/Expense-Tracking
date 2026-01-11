@@ -7,12 +7,16 @@ import 'package:expense_tracking_desktop_app/widgets/buttons.dart';
 
 /// Dialog for adding a new budget category
 class AddCategoryDialog extends StatefulWidget {
-
   const AddCategoryDialog({
-    required this.onAdd, super.key,
+    required this.onAdd,
+    super.key,
   });
   final void Function(
-      String name, double budget, int color, String iconCodePoint,) onAdd;
+    String name,
+    double budget,
+    int color,
+    String iconCodePoint,
+  ) onAdd;
 
   @override
   State<AddCategoryDialog> createState() => _AddCategoryDialogState();
@@ -182,8 +186,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                             : [],
                       ),
                       child: isSelected
-                          ? const Icon(Icons.check,
-                              color: Colors.white, size: AppSpacing.iconMd,)
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: AppSpacing.iconMd,
+                            )
                           : null,
                     ),
                   );

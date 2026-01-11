@@ -81,13 +81,17 @@ class ExpenseTable extends ConsumerWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(AppLocalizations.of(context)!.labelDate,
-                style: AppTextStyles.label),
+            child: Text(
+              AppLocalizations.of(context)!.labelDate,
+              style: AppTextStyles.label,
+            ),
           ),
           Expanded(
             flex: 2,
-            child: Text(AppLocalizations.of(context)!.labelCategory,
-                style: AppTextStyles.label),
+            child: Text(
+              AppLocalizations.of(context)!.labelCategory,
+              style: AppTextStyles.label,
+            ),
           ),
           Expanded(
             flex: 3,
@@ -98,8 +102,10 @@ class ExpenseTable extends ConsumerWidget {
           ),
           Expanded(
             flex: 2,
-            child: Text(AppLocalizations.of(context)!.labelAmount,
-                style: AppTextStyles.label),
+            child: Text(
+              AppLocalizations.of(context)!.labelAmount,
+              style: AppTextStyles.label,
+            ),
           ),
           SizedBox(
             width: 100,
@@ -208,8 +214,10 @@ class ExpenseTable extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(AppLocalizations.of(context)!
-                          .errDeleteExpense(e.toString())),
+                      content: Text(
+                        AppLocalizations.of(context)!
+                            .errDeleteExpense(e.toString()),
+                      ),
                       backgroundColor: colorScheme.error,
                     ),
                   );

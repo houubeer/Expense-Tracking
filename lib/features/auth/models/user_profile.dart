@@ -4,7 +4,6 @@ enum UserRole {
   manager('manager'),
   employee('employee');
 
-  final String value;
   const UserRole(this.value);
 
   factory UserRole.fromString(String value) {
@@ -13,34 +12,25 @@ enum UserRole {
       orElse: () => UserRole.employee,
     );
   }
+
+  final String value;
 }
 
 class UserProfile {
-  final String id; // Supabase UUID
-  final String? organizationId;
-  final String email;
-  final String? fullName;
-  final String? avatarUrl;
-  final UserRole role;
-  final DateTime? lastSyncAt;
-  final String? syncToken;
-  final Map<String, dynamic> settings;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String? status; // 'active', 'pending', 'inactive', etc.
+  // 'active', 'pending', 'inactive', etc.
 
   UserProfile({
     required this.id,
-    this.organizationId,
     required this.email,
+    required this.role,
+    required this.createdAt,
+    required this.updatedAt,
+    this.organizationId,
     this.fullName,
     this.avatarUrl,
-    required this.role,
     this.lastSyncAt,
     this.syncToken,
     this.settings = const {},
-    required this.createdAt,
-    required this.updatedAt,
     this.status,
   });
 
@@ -72,6 +62,18 @@ class UserProfile {
       status: json['status'] as String?,
     );
   }
+  final String id; // Supabase UUID
+  final String? organizationId;
+  final String email;
+  final String? fullName;
+  final String? avatarUrl;
+  final UserRole role;
+  final DateTime? lastSyncAt;
+  final String? syncToken;
+  final Map<String, dynamic> settings;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? status;
 
   Map<String, dynamic> toJson() {
     return {

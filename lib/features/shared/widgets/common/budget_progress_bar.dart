@@ -6,22 +6,21 @@ import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart
 /// A configurable budget progress bar widget showing spending vs budget
 /// Uses composition and dependency injection for flexibility
 class BudgetProgressBar extends StatelessWidget {
-  final Category category;
-  final BudgetStatusCalculator? statusCalculator;
-  final double? height;
-  final BorderRadius? borderRadius;
-  final Color? backgroundColor;
-  final bool showPercentage;
-
   const BudgetProgressBar({
-    super.key,
     required this.category,
+    super.key,
     this.statusCalculator,
     this.height,
     this.borderRadius,
     this.backgroundColor,
     this.showPercentage = false,
   });
+  final Category category;
+  final BudgetStatusCalculator? statusCalculator;
+  final double? height;
+  final BorderRadius? borderRadius;
+  final Color? backgroundColor;
+  final bool showPercentage;
 
   Color _getProgressColor(ColorScheme colorScheme) {
     final percentage =

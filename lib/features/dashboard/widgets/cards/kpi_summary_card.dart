@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
-
 class KpiSummaryCard extends StatelessWidget {
-
   const KpiSummaryCard({
-    required this.icon, required this.title, required this.value, required this.color, super.key,
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.color,
+    super.key,
     this.subtitle,
     this.onTap,
   });

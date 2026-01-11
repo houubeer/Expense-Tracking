@@ -82,7 +82,8 @@ class AppStrings {
       'Insufficient budget remaining for this category';
   static const String errBudgetExceededDetails =
       'This expense ({amount}) exceeds your remaining budget ({remaining})';
-  static const String errInvalidDateRange = 'Start date must be before end date';
+  static const String errInvalidDateRange =
+      'Start date must be before end date';
 
   // Hints
   static const String hintSearchCategories = 'Search categories...';

@@ -117,6 +117,9 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       context: context,
       builder: (context) => AddCategoryDialog(
         onAdd: (name, budget, color, iconCodePoint) async {
+          final messenger = ScaffoldMessenger.of(context);
+          final loc = AppLocalizations.of(context)!;
+          final colorScheme = Theme.of(context).colorScheme;
           try {
             await _viewModel.addCategory(
               name: name,
@@ -124,12 +127,21 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
               color: color,
               iconCodePoint: iconCodePoint,
             );
-            _showSuccessMessage(AppLocalizations.of(context)!.msgCategoryAdded);
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(loc.msgCategoryAdded),
+                backgroundColor: colorScheme.tertiary,
+              ),
+            );
           } catch (e) {
-            if (mounted) {
-              _showErrorMessage(AppLocalizations.of(context)!
-                  .msgAddCategoryFailed(e.toString()));
-            }
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  loc.msgAddCategoryFailed(e.toString()),
+                ),
+                backgroundColor: colorScheme.error,
+              ),
+            );
           }
         },
       ),
@@ -154,34 +166,29 @@ class _BudgetSettingScreenState extends ConsumerState<BudgetSettingScreen> {
       builder: (context) => DeleteCategoryDialog(
         category: category,
         onConfirm: () async {
+          final messenger = ScaffoldMessenger.of(context);
+          final loc = AppLocalizations.of(context)!;
+          final colorScheme = Theme.of(context).colorScheme;
           try {
             await _viewModel.deleteCategory(category.id);
-            _showSuccessMessage(
-                AppLocalizations.of(context)!.msgCategoryDeleted);
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(loc.msgCategoryDeleted),
+                backgroundColor: colorScheme.tertiary,
+              ),
+            );
           } catch (e) {
-            if (mounted) {
-              _showErrorMessage(AppLocalizations.of(context)!
-                  .msgDeleteCategoryFailed(e.toString()));
-            }
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(
+                  loc.msgDeleteCategoryFailed(e.toString()),
+                ),
+                backgroundColor: colorScheme.error,
+              ),
+            );
           }
         },
       ),
-    );
-  }
-
-  void _showSuccessMessage(String message) {
-    if (!mounted) return;
-    final colorScheme = Theme.of(context).colorScheme;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: colorScheme.tertiary),
-    );
-  }
-
-  void _showErrorMessage(String message) {
-    if (!mounted) return;
-    final colorScheme = Theme.of(context).colorScheme;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: colorScheme.error),
     );
   }
 

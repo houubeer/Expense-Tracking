@@ -18,23 +18,6 @@ enum ExpenseStatus {
 
 /// Manager expense model representing an employee expense submission
 class ManagerExpense {
-  final String id;
-  final String employeeId;
-  final String employeeName;
-  final double amount;
-  final String category;
-  final DateTime date;
-  final String? receiptUrl;
-  final ExpenseStatus status;
-  final String? comment;
-  final String? description;
-  final String? organizationId;
-  final String? budgetId;
-  final List<String>? receiptUrls;
-  final bool? isReimbursable;
-  final DateTime? reimbursedAt;
-  final String? notes;
-
   const ManagerExpense({
     required this.id,
     required this.employeeId,
@@ -95,6 +78,22 @@ class ManagerExpense {
       notes: json['notes'] as String?,
     );
   }
+  final String id;
+  final String employeeId;
+  final String employeeName;
+  final double amount;
+  final String category;
+  final DateTime date;
+  final String? receiptUrl;
+  final ExpenseStatus status;
+  final String? comment;
+  final String? description;
+  final String? organizationId;
+  final String? budgetId;
+  final List<String>? receiptUrls;
+  final bool? isReimbursable;
+  final DateTime? reimbursedAt;
+  final String? notes;
 
   /// Parse expense status from various formats
   static ExpenseStatus _parseStatus(dynamic status) {

@@ -52,12 +52,16 @@ void main() {
     group('validateDescription', () {
       test('should return null for valid descriptions', () {
         expect(ExpenseValidators.validateDescription('Groceries'), isNull);
-        expect(ExpenseValidators.validateDescription('Dinner at restaurant'),
-            isNull);
         expect(
-            ExpenseValidators.validateDescription(
-                'A valid description with 50 chars'),
-            isNull);
+          ExpenseValidators.validateDescription('Dinner at restaurant'),
+          isNull,
+        );
+        expect(
+          ExpenseValidators.validateDescription(
+            'A valid description with 50 chars',
+          ),
+          isNull,
+        );
       });
 
       test('should return error for null or empty', () {
@@ -78,17 +82,25 @@ void main() {
 
       test('should return error for invalid characters', () {
         expect(
-            ExpenseValidators.validateDescription('Test<script>'), isNotNull);
+          ExpenseValidators.validateDescription('Test<script>'),
+          isNotNull,
+        );
         expect(ExpenseValidators.validateDescription('Test>alert'), isNotNull);
       });
 
       test('should accept descriptions with special characters', () {
         expect(
-            ExpenseValidators.validateDescription('Coffee & Donuts'), isNull);
-        expect(ExpenseValidators.validateDescription('Bill for John\'s party'),
-            isNull);
-        expect(ExpenseValidators.validateDescription('Payment - electricity'),
-            isNull);
+          ExpenseValidators.validateDescription('Coffee & Donuts'),
+          isNull,
+        );
+        expect(
+          ExpenseValidators.validateDescription('Bill for John\'s party'),
+          isNull,
+        );
+        expect(
+          ExpenseValidators.validateDescription('Payment - electricity'),
+          isNull,
+        );
       });
     });
 

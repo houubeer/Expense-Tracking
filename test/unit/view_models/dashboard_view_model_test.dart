@@ -276,7 +276,7 @@ void main() {
           budgetData: [],
         );
 
-        expect(state.balanceColor.value, equals(const Color(0xFF6366F1).value));
+        expect(state.balanceColor, equals(const Color(0xFF6366F1)));
       });
 
       test('balance color is red for negative balance', () {
@@ -290,7 +290,7 @@ void main() {
           budgetData: [],
         );
 
-        expect(state.balanceColor.value, equals(const Color(0xFFEF4444).value));
+        expect(state.balanceColor, equals(const Color(0xFFEF4444)));
       });
     });
   });

@@ -10,9 +10,9 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/common/sect
 import 'package:fl_chart/fl_chart.dart';
 
 class BudgetOverviewCard extends StatelessWidget {
-
   const BudgetOverviewCard({
-    required this.budgetData, super.key,
+    required this.budgetData,
+    super.key,
     this.itemsToShow = 5, // Default to 5, but can be changed
   });
   final List<CategoryBudgetView> budgetData;
@@ -177,7 +177,6 @@ class BudgetOverviewCard extends StatelessWidget {
 }
 
 class _BudgetLegendItem extends StatelessWidget {
-
   const _BudgetLegendItem({required this.budgetView});
   final CategoryBudgetView budgetView;
 
@@ -199,7 +198,9 @@ class _BudgetLegendItem extends StatelessWidget {
                 color: color.withAlpha(77),
                 blurRadius: AppConfig.shadowBlurRadiusSm,
                 offset: const Offset(
-                    AppConfig.shadowOffsetX, AppConfig.shadowOffsetY,),
+                  AppConfig.shadowOffsetX,
+                  AppConfig.shadowOffsetY,
+                ),
               ),
             ],
           ),
@@ -255,7 +256,6 @@ class _BudgetLegendItem extends StatelessWidget {
 }
 
 class _OthersLegendItem extends StatelessWidget {
-
   const _OthersLegendItem({
     required this.otherBudgets,
     required this.othersSpent,

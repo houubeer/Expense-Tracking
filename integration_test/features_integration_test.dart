@@ -102,7 +102,8 @@ void main() {
 
           // At least one of these should be present
           expect(
-            backupText.evaluate().isNotEmpty || restoreText.evaluate().isNotEmpty,
+            backupText.evaluate().isNotEmpty ||
+                restoreText.evaluate().isNotEmpty,
             isTrue,
             reason: 'Backup or Restore UI should be visible',
           );
@@ -186,11 +187,14 @@ void main() {
       'app handles navigation correctly',
       (WidgetTester tester) async {
         app.main();
-        
+
         // Should not throw exceptions
-        expect(() {
-          tester.pumpAndSettle();
-        }, returnsNormally);
+        expect(
+          () {
+            tester.pumpAndSettle();
+          },
+          returnsNormally,
+        );
       },
     );
 

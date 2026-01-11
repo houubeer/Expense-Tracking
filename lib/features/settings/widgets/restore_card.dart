@@ -6,9 +6,9 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Card widget for restore data functionality
 class RestoreCard extends StatelessWidget {
-
   const RestoreCard({
-    required this.onRestorePressed, super.key,
+    required this.onRestorePressed,
+    super.key,
     this.isLoading = false,
     this.progress,
   });

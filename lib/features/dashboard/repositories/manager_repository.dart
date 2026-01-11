@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/manager_m
 
 /// Repository for managing manager data with in-memory mocked storage
 class ManagerRepository {
-
   ManagerRepository() {
     _initializeMockData();
   }
@@ -169,9 +168,11 @@ class ManagerRepository {
     if (query.isEmpty) return getAll();
     final lowerQuery = query.toLowerCase();
     return _managers
-        .where((m) =>
-            m.name.toLowerCase().contains(lowerQuery) ||
-            m.email.toLowerCase().contains(lowerQuery),)
+        .where(
+          (m) =>
+              m.name.toLowerCase().contains(lowerQuery) ||
+              m.email.toLowerCase().contains(lowerQuery),
+        )
         .toList();
   }
 

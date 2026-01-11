@@ -7,9 +7,9 @@ import 'package:intl/intl.dart';
 
 /// Card widget for displaying organization information
 class OrganizationCard extends StatelessWidget {
-
   const OrganizationCard({
-    required this.organization, super.key,
+    required this.organization,
+    super.key,
     this.showActions = false,
     this.showReason = false,
     this.onApprove,
@@ -138,7 +138,7 @@ class OrganizationCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-  color: _getStatusColor().withAlpha((0.1 * 255).round()),
+        color: _getStatusColor().withAlpha((0.1 * 255).round()),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Text(

@@ -7,8 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('HomeScreen renders dashboard when data is loaded', (tester) async {
-    final state = DashboardState(
+  testWidgets('HomeScreen renders dashboard when data is loaded',
+      (tester) async {
+    const state = DashboardState(
       activeCategories: 5,
       totalBudget: 1000,
       totalExpenses: 500,

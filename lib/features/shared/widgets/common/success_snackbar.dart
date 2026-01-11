@@ -5,10 +5,10 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 class SuccessSnackbar extends SnackBar {
   SuccessSnackbar({
-    super.key,
     required String message,
     required Color backgroundColor,
     required Color iconColor,
+    super.key,
     VoidCallback? onUndo,
   }) : super(
           content: Row(
@@ -37,8 +37,11 @@ class SuccessSnackbar extends SnackBar {
               : null,
         );
 
-  static void show(BuildContext context, String message,
-      {VoidCallback? onUndo}) {
+  static void show(
+    BuildContext context,
+    String message, {
+    VoidCallback? onUndo,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
     ScaffoldMessenger.of(context).showSnackBar(
       SuccessSnackbar(

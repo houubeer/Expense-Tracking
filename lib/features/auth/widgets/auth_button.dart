@@ -5,9 +5,10 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Reusable button for authentication forms
 class AuthButton extends StatelessWidget {
-
   const AuthButton({
-    required this.text, required this.onPressed, super.key,
+    required this.text,
+    required this.onPressed,
+    super.key,
     this.isLoading = false,
     this.isOutlined = false,
     this.icon,
@@ -47,18 +48,16 @@ class AuthButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: Ink(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             colors: [
               AppColors.primary,
               AppColors.primaryDark,
             ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryDark.withOpacity(0.08),
+              color: AppColors.primaryDark.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

@@ -1,7 +1,6 @@
 /// Repository for aggregating platform-wide expense data
 /// This provides analytics across all companies
 class PlatformExpenseRepository {
-
   PlatformExpenseRepository() {
     _initializeMockData();
   }
@@ -132,7 +131,8 @@ class PlatformExpenseRepository {
 
     final lastMonthExpenses = _expenses
         .where(
-            (e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth),)
+          (e) => e.date.isAfter(lastMonth) && e.date.isBefore(currentMonth),
+        )
         .fold(0.0, (sum, e) => sum + e.amount);
 
     if (lastMonthExpenses == 0) return 0.0;
@@ -192,7 +192,6 @@ class PlatformExpenseRepository {
 
 /// Simple expense model for platform analytics
 class Expense {
-
   const Expense({
     required this.id,
     required this.companyId,

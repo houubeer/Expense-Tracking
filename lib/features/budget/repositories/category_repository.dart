@@ -7,7 +7,6 @@ import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 /// Repository for managing category operations
 /// Abstracts database access from UI layer and validates business rules
 class CategoryRepository implements ICategoryRepository {
-
   CategoryRepository(AppDatabase database)
       : _categoryDao = database.categoryDao;
   final CategoryDao _categoryDao;
@@ -87,7 +86,8 @@ class CategoryRepository implements ICategoryRepository {
     // Validate icon
     if (category.iconCodePoint.present) {
       final iconError = CategoryValidators.validateIconCodePoint(
-          category.iconCodePoint.value,);
+        category.iconCodePoint.value,
+      );
       if (iconError != null) {
         throw ValidationException(iconError);
       }
@@ -132,10 +132,16 @@ class CategoryRepository implements ICategoryRepository {
   /// Update category budget
   @override
   Future<void> updateCategoryBudget(
-      int categoryId, double budget, int currentVersion,) async {
+    int categoryId,
+    double budget,
+    int currentVersion,
+  ) async {
     try {
       await _categoryDao.updateCategoryBudget(
-          categoryId, budget, currentVersion,);
+        categoryId,
+        budget,
+        currentVersion,
+      );
     } catch (e) {
       throw Exception('Failed to update category budget: $e');
     }
@@ -144,7 +150,10 @@ class CategoryRepository implements ICategoryRepository {
   /// Update category spent amount
   @override
   Future<void> updateCategorySpent(
-      int categoryId, double spent, int currentVersion,) async {
+    int categoryId,
+    double spent,
+    int currentVersion,
+  ) async {
     try {
       await _categoryDao.updateCategorySpent(categoryId, spent, currentVersion);
     } catch (e) {

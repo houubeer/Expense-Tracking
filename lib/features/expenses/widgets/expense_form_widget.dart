@@ -84,8 +84,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount Field
-              Text(AppLocalizations.of(context)!.labelAmount,
-                  style: AppTextStyles.label),
+              Text(
+                AppLocalizations.of(context)!.labelAmount,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.amountController,
@@ -126,8 +128,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Category Dropdown
-              Text(AppLocalizations.of(context)!.labelCategory,
-                  style: AppTextStyles.label),
+              Text(
+                AppLocalizations.of(context)!.labelCategory,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: AppSpacing.sm),
               StreamBuilder<List<Category>>(
                 stream:
@@ -193,13 +197,16 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: 24),
 
               // Date Picker
-              Text(AppLocalizations.of(context)!.labelDate,
-                  style: AppTextStyles.label),
+              Text(
+                AppLocalizations.of(context)!.labelDate,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Semantics(
                 button: true,
                 label: AppLocalizations.of(context)!.semanticSelectDate(
-                    DateFormat('MMM dd, yyyy').format(widget.selectedDate)),
+                  DateFormat('MMM dd, yyyy').format(widget.selectedDate),
+                ),
                 child: InkWell(
                   onTap: () => _selectDate(context),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -233,8 +240,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Description Field
-              Text(AppLocalizations.of(context)!.labelDescription,
-                  style: AppTextStyles.label),
+              Text(
+                AppLocalizations.of(context)!.labelDescription,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: AppSpacing.sm),
               TextFormField(
                 controller: widget.descriptionController,
@@ -303,8 +312,10 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
               const SizedBox(height: AppSpacing.xl),
 
               // Receipt Attachment Section
-              Text(AppLocalizations.of(context)!.labelReceipt,
-                  style: AppTextStyles.label),
+              Text(
+                AppLocalizations.of(context)!.labelReceipt,
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),
@@ -313,8 +324,8 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                   border: Border.all(
                     color: widget.receipts.isNotEmpty
-                        ? colorScheme.primary.withOpacity(0.5)
-                        : colorScheme.outlineVariant,
+                      ? colorScheme.primary.withValues(alpha: 0.5)
+                      : colorScheme.outlineVariant,
                   ),
                 ),
                 child: Column(
@@ -374,7 +385,7 @@ class _ExpenseFormWidgetState extends ConsumerState<ExpenseFormWidget> {
                           ],
                         ),
                       );
-                    }).toList(),
+                    }),
                     if (widget.receipts.isNotEmpty)
                       const Divider(height: AppSpacing.md),
 

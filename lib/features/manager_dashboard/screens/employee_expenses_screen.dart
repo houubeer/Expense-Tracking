@@ -18,9 +18,9 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 /// Employee Expenses Screen
 /// View and manage employee expense submissions with analytics
 class EmployeeExpensesScreen extends StatefulWidget {
-
   const EmployeeExpensesScreen({
-    required this.onNavigate, super.key,
+    required this.onNavigate,
+    super.key,
   });
   final void Function(String) onNavigate;
 
@@ -174,7 +174,8 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
                   hint: const Text('All Categories'),
                   items: [
                     const DropdownMenuItem(
-                        value: null, child: Text('All Categories')),
+                      child: Text('All Categories'),
+                    ),
                     ...[
                       'Travel',
                       'Equipment',
@@ -183,9 +184,10 @@ class _EmployeeExpensesScreenState extends State<EmployeeExpensesScreen> {
                       'Training',
                       'Cloud Services',
                       'Entertainment',
-                      'Office Supplies'
-                    ].map((cat) =>
-                        DropdownMenuItem(value: cat, child: Text(cat))),
+                      'Office Supplies',
+                    ].map(
+                      (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                    ),
                   ],
                   onChanged: viewModel.filterByCategory,
                 ),

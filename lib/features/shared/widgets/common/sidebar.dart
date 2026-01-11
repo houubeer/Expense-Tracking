@@ -4,58 +4,57 @@ import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 import 'package:expense_tracking_desktop_app/constants/durations.dart';
 import 'package:expense_tracking_desktop_app/constants/strings.dart';
+import 'package:expense_tracking_desktop_app/features/auth/providers/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class Sidebar extends StatelessWidget {
+class Sidebar extends ConsumerWidget {
+  const Sidebar({
+    required this.currentPath,
+    required this.onDestinationSelected,
+    super.key,
+  });
   final String currentPath;
   final void Function(String) onDestinationSelected;
 
-  const Sidebar({
-    super.key,
-    required this.currentPath,
-    required this.onDestinationSelected,
-  });
-
-  static const List<Map<String, dynamic>> _items = [
-    {
-      "icon": Icons.dashboard_rounded,
-      "label": AppStrings.navDashboard,
-      "path": AppRoutes.home
-    },
-    {
-      "icon": Icons.add_circle_outline_rounded,
-      "label": AppStrings.navAddExpense,
-      "path": AppRoutes.addExpense
-    },
-    {
-      "icon": Icons.receipt_long_rounded,
-      "label": AppStrings.navViewExpenses,
-      "path": AppRoutes.viewExpenses
-    },
-    {
-      "icon": Icons.pie_chart_outline_rounded,
-      "label": AppStrings.navBudgets,
-      "path": AppRoutes.budgets
-    },
-    {
-      "icon": Icons.supervisor_account_rounded,
-      "label": AppStrings.navManagerDashboard,
-      "path": AppRoutes.managerDashboard
-    },
-    {
-      "icon": Icons.admin_panel_settings_rounded,
-      "label": "Owner Dashboard",
-      "path": AppRoutes.ownerDashboard
-    },
-    {
-      "icon": Icons.settings_rounded,
-      "label": AppStrings.navSettings,
-      "path": AppRoutes.settings
-    },
-  ];
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final isManager = ref.watch(isManagerProvider);
+
+    final List<Map<String, dynamic>> items = [
+      {
+        'icon': Icons.dashboard_rounded,
+        'label': AppStrings.navDashboard,
+        'path': AppRoutes.home,
+      },
+      {
+        'icon': Icons.add_circle_outline_rounded,
+        'label': AppStrings.navAddExpense,
+        'path': AppRoutes.addExpense,
+      },
+      {
+        'icon': Icons.receipt_long_rounded,
+        'label': AppStrings.navViewExpenses,
+        'path': AppRoutes.viewExpenses,
+      },
+      {
+        'icon': Icons.pie_chart_outline_rounded,
+        'label': AppStrings.navBudgets,
+        'path': AppRoutes.budgets,
+      },
+      if (isManager)
+        {
+          'icon': Icons.supervisor_account_rounded,
+          'label': AppStrings.navManagerDashboard,
+          'path': AppRoutes.managerDashboard,
+        },
+      {
+        'icon': Icons.settings_rounded,
+        'label': AppStrings.navSettings,
+        'path': AppRoutes.settings,
+      },
+    ];
 
     return Container(
       width: 280,
@@ -74,8 +73,12 @@ class Sidebar extends StatelessWidget {
         children: [
           // Header
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.xxl, AppSpacing.xxxl,
-                AppSpacing.xxl, AppSpacing.xxxl),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.xxl,
+              AppSpacing.xxxl,
+              AppSpacing.xxl,
+              AppSpacing.xxxl,
+            ),
             child: Row(
               children: [
                 // Logo Image
@@ -105,7 +108,7 @@ class Sidebar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Raseedi",
+                        'Raseedi',
                         style: AppTextStyles.heading3.copyWith(
                           color: colorScheme.onPrimary,
                           fontSize: 19,
@@ -115,7 +118,7 @@ class Sidebar extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xs),
                       Text(
-                        "Pro",
+                        'Pro',
                         style: AppTextStyles.bodySmall.copyWith(
                           color: colorScheme.secondaryContainer,
                           fontSize: 11,
@@ -134,39 +137,52 @@ class Sidebar extends StatelessWidget {
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              itemCount: _items.length,
+              itemCount: items.length,
               separatorBuilder: (context, index) =>
                   const SizedBox(height: AppSpacing.xs),
               itemBuilder: (context, i) {
-                final itemPath = _items[i]["path"] as String;
-                // Match routes - only exact matches or when this is a parent
-                // AND no other more specific item exists
+                final itemPath = items[i]['path'] as String;
                 bool isSelected = false;
 
                 if (currentPath == itemPath) {
-                  // Exact match - always select
                   isSelected = true;
                 } else if (itemPath != '/' &&
-                    currentPath.startsWith(itemPath + '/')) {
-                  // This item is a parent of current route
-                  // Check if any other item has a more specific match
-                  final hasMoreSpecificMatch = _items.any((item) {
-                    final otherPath = item["path"] as String;
+                    currentPath.startsWith('$itemPath/')) {
+                  final hasMoreSpecificMatch = items.any((item) {
+                    final otherPath = item['path'] as String;
                     return otherPath != itemPath &&
                         otherPath.length > itemPath.length &&
                         currentPath.startsWith(otherPath);
                   });
-
-                  // Only select if no more specific match exists
                   isSelected = !hasMoreSpecificMatch;
                 }
 
                 return _SidebarTile(
-                  icon: _items[i]["icon"] as IconData,
-                  label: _items[i]["label"] as String,
+                  icon: items[i]['icon'] as IconData,
+                  label: items[i]['label'] as String,
                   isSelected: isSelected,
                   onTap: () => onDestinationSelected(itemPath),
                 );
+              },
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.lg,
+            ),
+            child: _SidebarTile(
+              icon: Icons.logout_rounded,
+              label: 'Log out',
+              isSelected: false,
+              onTap: () async {
+                await ref.read(authNotifierProvider.notifier).signOut();
+                if (context.mounted) {
+                  context.go(AppRoutes.login);
+                }
               },
             ),
           ),
@@ -177,17 +193,16 @@ class Sidebar extends StatelessWidget {
 }
 
 class _SidebarTile extends StatefulWidget {
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
   const _SidebarTile({
     required this.icon,
     required this.label,
     required this.isSelected,
     required this.onTap,
   });
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
 
   @override
   State<_SidebarTile> createState() => _SidebarTileState();
@@ -215,7 +230,9 @@ class _SidebarTileState extends State<_SidebarTile> {
           child: AnimatedContainer(
             duration: AppDurations.fast,
             padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+              vertical: AppSpacing.md,
+              horizontal: AppSpacing.lg,
+            ),
             margin: isSelected
                 ? const EdgeInsets.only(right: AppSpacing.lg)
                 : EdgeInsets.zero,
