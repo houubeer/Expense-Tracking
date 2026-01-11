@@ -18,7 +18,8 @@ void main() async {
   final logger = LoggerService.instance;
   await logger.initialize();
   logger.info(
-      'Application starting in ${EnvironmentConfig.environmentName} environment...');
+    'Application starting in ${EnvironmentConfig.environmentName} environment...',
+  );
 
   // Initialize Supabase
   try {
@@ -26,8 +27,11 @@ void main() async {
     await SupabaseService().initialize();
     logger.info('Supabase initialized successfully');
   } catch (e, stackTrace) {
-    logger.error('Failed to initialize Supabase',
-        error: e, stackTrace: stackTrace);
+    logger.error(
+      'Failed to initialize Supabase',
+      error: e,
+      stackTrace: stackTrace,
+    );
     rethrow;
   }
 
@@ -63,8 +67,11 @@ void main() async {
     logger.info('Database connection established successfully');
     connectivityService.markSuccessfulOperation();
   } catch (e, stackTrace) {
-    logger.fatal('FATAL: Failed to initialize database',
-        error: e, stackTrace: stackTrace);
+    logger.fatal(
+      'FATAL: Failed to initialize database',
+      error: e,
+      stackTrace: stackTrace,
+    );
     await errorReporting.reportError(
       'Fatal database initialization error',
       error: e,
@@ -113,9 +120,11 @@ void main() async {
   }
 
   logger.info('Launching application UI...');
-  runApp(ExpenseTrackerApp(
-    database: database,
-    connectivityService: connectivityService,
-    errorReportingService: errorReporting,
-  ));
+  runApp(
+    ExpenseTrackerApp(
+      database: database,
+      connectivityService: connectivityService,
+      errorReportingService: errorReporting,
+    ),
+  );
 }

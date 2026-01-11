@@ -53,6 +53,7 @@ dependencies:
   # PDF generation for exports
   pdf: ^3.9.0
 
+  equatable: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

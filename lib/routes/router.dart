@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:expense_tracking_desktop_app/features/home/screens/home_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/add_expense_screen.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/screens/expenses_list_screen.dart';
@@ -34,6 +35,20 @@ Future<String?> _getAuthRedirect() async {
     final supabase = Supabase.instance.client;
     final user = supabase.auth.currentUser;
     if (user == null) return null;
+
+    // Check if session should persist (remember me was checked)
+    try {
+      final box = await Hive.openBox<dynamic>('auth_preferences');
+      final sessionPersistent = box.get('session_persistent') as bool? ?? false;
+      if (!sessionPersistent) {
+        // User didn't check "remember me" - sign them out
+        await supabase.auth.signOut();
+        await box.delete('session_persistent');
+        return null;
+      }
+    } catch (_) {
+      // If we can't check, allow the session
+    }
 
     // Fetch user profile to determine role
     final profile = await supabase
@@ -243,6 +258,27 @@ GoRouter _buildRouter() {
           ),
           GoRoute(
             path: AppRoutes.managerDashboard,
+            redirect: (context, state) async {
+              // Protect manager routes - only allow managers
+              try {
+                final supabase = Supabase.instance.client;
+                final user = supabase.auth.currentUser;
+                if (user == null) return AppRoutes.login;
+
+                final profile = await supabase
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (profile == null || profile['role'] != 'manager') {
+                  return AppRoutes.home;
+                }
+              } catch (e) {
+                return AppRoutes.home;
+              }
+              return null;
+            },
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
               child: ManagerDashboardScreen(
