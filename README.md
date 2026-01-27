@@ -1,745 +1,324 @@
-# Expense Tracker for Small Business
+# Expense Tracker
 
-A comprehensive desktop expense tracking application built with Flutter, designed specifically for small businesses to manage their finances efficiently. This application leverages Drift with SQLite for robust local data persistence and offline-first functionality.
+A desktop expense tracking app for small businesses. Built with Flutter and Supabase.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart)](https://dart.dev)
-[![Drift](https://img.shields.io/badge/Drift-Latest-orange)](https://drift.simonbinder.eu/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Flutter](https://img.shields.io/badge/Flutter-3.0+-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.0+-0175C2?logo=dart&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Backend-3FCF8E?logo=supabase&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-## 📋 Table of Contents
+---
 
-- [Overview](#overview)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Project Structure](#project-structure)
-- [Database Schema](#database-schema)
-- [Usage](#usage)
-- [Building for Production](#building-for-production)
-- [Contributing](#contributing)
-- [Team](#team)
-- [License](#license)
-- [Support](#support)
+## What's This?
 
-## Overview
+We built this app to help small businesses track expenses without the headache. It works offline, syncs when you're connected, and runs on Windows, macOS, and Linux.
 
-Expense Tracker is a desktop application tailored for small businesses seeking a reliable, offline-capable solution for managing expenses, invoices, and financial records. Built with Flutter's cross-platform capabilities, it runs seamlessly on Windows, macOS, and Linux.
+**Why we made it:**
 
-### Key Highlights
-
-- **Local Data Storage**: All data stored locally using Drift + SQLite
-- **Cross-Platform**: Single codebase for Windows, macOS, and Linux
-- **Small Business Focused**: Features designed specifically for SMB financial management
-- **Fast & Responsive**: Native desktop performance with Flutter
-- **Data Privacy**: Complete control over your financial data - no cloud storage required
+- Most expense trackers are either too simple or way too complex
+- Small businesses need something in between
+- We wanted offline-first with optional cloud sync
 
 ## Features
 
-### ✅ Implemented Features (v1.0)
+**What's working now:**
 
-- **📊 Expense Management**
+- ✅ Add, edit, delete expenses with categories
+- ✅ Role-based access (Owner → Manager → Employee)
+- ✅ Organization management with approval workflow
+- ✅ Dashboard with spending charts
+- ✅ Budget tracking per category
+- ✅ Export to CSV and PDF
+- ✅ Receipt attachments (Supabase Storage)
+- ✅ Real-time sync across devices
+- ✅ Offline mode (keeps working without internet)
+- ✅ Dark mode support
 
-  - Add, edit, and delete expenses with detailed categorization
-  - Date-based expense tracking
-  - Amount and description fields
-  - Category assignment
+**On the roadmap:**
 
-- **🏷️ Category Management**
+- 🔜 Multi-currency support
+- 🔜 Recurring expenses
+- 🔜 OCR receipt scanning
+- 🔜 Advanced analytics
 
-  - Create and manage custom expense categories
-  - Budget allocation per category
-  - Color-coded categories with custom icons
-  - Real-time budget tracking and spent amounts
-  - Optimistic locking for concurrent updates
+## Tech Stack
 
-- **🔍 Search & Filtering**
+| What           | Why                                |
+| -------------- | ---------------------------------- |
+| Flutter        | Cross-platform desktop UI          |
+| Supabase       | Auth, database, storage, real-time |
+| Drift + SQLite | Local offline storage              |
+| Riverpod       | State management                   |
+| fl_chart       | Charts and graphs                  |
+| go_router      | Navigation                         |
 
-  - Filter expenses by category
-  - Search expenses by description
-  - Date range filtering
-  - Sort by date, amount, or category
+## Getting Started
 
-- **📅 Dashboard**
+### Prerequisites
 
-  - Real-time financial overview
-  - Visual charts with fl_chart
-  - Category spending breakdown
-  - Budget vs actual spending comparison
-  - Total expenses and budget summary
+- Flutter SDK 3.0+
+- Dart SDK 3.0+
+- Git
 
-- **🏗️ Robust Architecture**
-  - Clean layered architecture (UI → ViewModel → Service → Repository → DAO)
-  - Riverpod state management
-  - Type-safe database operations with Drift
-  - Comprehensive error handling and logging
-  - Transaction safety for data integrity
+**Platform-specific:**
 
-### 🚧 Planned Features (Future Releases)
+| Windows                           | macOS     | Linux                 |
+| --------------------------------- | --------- | --------------------- |
+| Visual Studio 2022 with C++ tools | Xcode 14+ | GTK 3.0, clang, CMake |
 
-- **📎 Attachments & Receipts**
-
-  - Attach receipt images to expenses
-  - Document management system
-  - OCR for automatic receipt scanning
-
-- **💱 Multi-Currency**
-
-  - Multiple currency support
-  - Exchange rate tracking
-  - Currency conversion
-
-- **🔄 Recurring Expenses**
-
-  - Scheduled recurring transactions
-  - Automatic expense creation
-  - Subscription tracking
-
-- **📈 Advanced Reports**
-
-  - Export reports to PDF/Excel
-  - Profit & loss statements
-  - Tax reports
-  - Custom report builder
-
-- **☁️ Cloud Sync**
-
-  - Optional cloud backup
-  - Multi-device synchronization
-  - Data export/import
-
-- **📊 Analytics**
-  - Spending trends and predictions
-  - Budget recommendations
-  - Anomaly detection
-
-## Technology Stack
-
-| Technology       | Purpose                       | Status         |
-| ---------------- | ----------------------------- | -------------- |
-| **Flutter**      | Cross-platform UI framework   | ✅ Implemented |
-| **Dart**         | Programming language          | ✅ Implemented |
-| **Drift**        | Type-safe Dart ORM for SQLite | ✅ Implemented |
-| **SQLite**       | Local database engine         | ✅ Implemented |
-| **Riverpod**     | State management              | ✅ Implemented |
-| **fl_chart**     | Data visualization            | ✅ Implemented |
-| **go_router**    | Navigation                    | ✅ Implemented |
-| **google_fonts** | Typography                    | ✅ Implemented |
-| **logger**       | Logging system                | ✅ Implemented |
-
-## Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Flutter SDK**: 3.0 or higher
-- **Dart SDK**: 3.0 or higher
-- **Git**: For version control
-- **IDE**: VS Code or Android Studio with Flutter plugins
-
-### Platform-Specific Requirements
-
-#### Windows
-
-- Visual Studio 2022 with C++ desktop development tools
-
-#### macOS
-
-- Xcode 14 or higher
-- CocoaPods
-
-#### Linux
-
-- GTK 3.0 development libraries
-- clang
-- CMake
-- ninja-build
-
-## Installation
-
-### 1. Clone the Repository
+### Setup
 
 ```bash
+# Clone it
 git clone https://github.com/houubeer/Expense-Tracking
 cd expense-tracker
-```
 
-### 2. Install Dependencies
-
-```bash
+# Install dependencies
 flutter pub get
-```
 
-### 3. Generate Drift Database Code
-
-```bash
+# Generate database code
 dart run build_runner build
-```
 
-For continuous code generation during development:
-
-```bash
-dart run build_runner watch
-```
-
-### 4. Run the Application
-
-```bash
-# For development
+# Run it
 flutter run -d windows  # or macos, linux
+```
 
-# With hot reload enabled
-flutter run -d windows --hot
+### Environment Setup
+
+Copy `.env.example` to `.env` and add your Supabase credentials:
+
+```
+SUPABASE_URL=your_project_url
+SUPABASE_ANON_KEY=your_anon_key
 ```
 
 ## Project Structure
 
 ```
-expense-tracker/
-├── lib/
-│   ├── core/
-│   │   ├── constants/
-│   │   ├── theme/
-│   │   └── utils/
-│   ├── data/
-│   │   ├── database/
-│   │   │   ├── database.dart          # Drift database configuration
-│   │   │   ├── tables/                # Table definitions
-│   │   │   └── daos/                  # Data Access Objects
+lib/
+├── app.dart                    # App entry widget
+├── main.dart                   # Entry point
+├── main_dev.dart               # Dev environment
+├── main_staging.dart           # Staging environment
+├── main_production.dart        # Production environment
+│
+├── config/
+│   ├── environment.dart        # Environment configuration
+│   └── supabase_config.dart    # Supabase setup
+│
+├── constants/
+│   ├── app_config.dart
+│   ├── app_routes.dart
+│   ├── category_options.dart
+│   ├── colors.dart
+│   ├── durations.dart
+│   ├── spacing.dart
+│   ├── strings.dart
+│   └── text_styles.dart
+│
+├── core/
+│   ├── exceptions.dart
+│   ├── errors/
+│   └── validators/
+│
+├── database/
+│   ├── app_database.dart       # Drift database
+│   ├── app_database.g.dart     # Generated code
+│   ├── connection/
+│   ├── daos/                   # Data Access Objects
+│   ├── tables/
+│   └── i_database.dart
+│
+├── features/
+│   ├── auth/
 │   │   ├── models/
-│   │   └── repositories/
-│   ├── features/
-│   │   ├── dashboard/
-│   │   ├── expenses/
-│   │   ├── income/
-│   │   ├── reports/
-│   │   └── settings/
-│   ├── shared/
-│   │   ├── widgets/
-│   │   └── services/
-│   └── main.dart
-├── assets/
-│   ├── images/
-│   └── fonts/
-├── test/
-├── windows/
-├── macos/
-├── linux/
-├── pubspec.yaml
-└── README.md
+│   │   ├── providers/
+│   │   ├── screens/
+│   │   ├── utils/
+│   │   └── widgets/
+│   │
+│   ├── budget/
+│   │
+│   ├── dashboard/
+│   │   ├── models/
+│   │   ├── repositories/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   │
+│   ├── expenses/
+│   │   ├── models/
+│   │   ├── providers/
+│   │   ├── repositories/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   │
+│   ├── home/
+│   │
+│   ├── manager_dashboard/
+│   │   ├── models/
+│   │   ├── repositories/
+│   │   ├── screens/
+│   │   ├── services/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   │
+│   ├── settings/
+│   │   ├── providers/
+│   │   ├── screens/
+│   │   ├── view_models/
+│   │   └── widgets/
+│   │
+│   └── shared/
+│
+├── l10n/                       # Localization
+│
+├── providers/
+│   ├── app_providers.dart
+│   └── budget_status_config_provider.dart
+│
+├── routes/
+│   └── router.dart
+│
+├── screens/
+│   └── expenses/
+│
+├── services/
+│   ├── backup_service.dart
+│   ├── connectivity_service.dart
+│   ├── error_reporting_service.dart
+│   ├── i_backup_service.dart
+│   ├── logger_service.dart
+│   ├── supabase_service.dart
+│   └── sync_service.dart
+│
+├── theme/
+│   └── app_theme.dart
+│
+├── utils/
+│   ├── budget_status_calculator.dart
+│   ├── formatters/
+│   ├── icon_utils.dart
+│   ├── sorting/
+│   └── status/
+│
+└── widgets/
+    ├── animations/
+    ├── buttons.dart
+    ├── connection_status_banner.dart
+    ├── empty_states.dart
+    └── skeleton_loader.dart
+
+test/
+├── unit/                       # Unit tests
+└── widget/                     # Widget tests
+
+integration_test/               # E2E tests
 ```
 
-## Database Schema
+## Architecture
 
-The application uses Drift for type-safe database operations. The database consists of two primary tables with foreign key relationships.
-
-### Schema Version: 5
-
-#### Categories Table
-
-Stores budget categories with spending tracking and optimistic locking support.
-
-| Column          | Type     | Constraints                 | Description                          |
-| --------------- | -------- | --------------------------- | ------------------------------------ |
-| `id`            | INTEGER  | PRIMARY KEY, AUTO INCREMENT | Unique category identifier           |
-| `name`          | TEXT     | NOT NULL, LENGTH(1-100)     | Category name                        |
-| `color`         | INTEGER  | NOT NULL                    | Color value for UI display           |
-| `iconCodePoint` | TEXT     | NOT NULL                    | Icon code point for category display |
-| `budget`        | REAL     | DEFAULT 0.0                 | Allocated budget amount              |
-| `spent`         | REAL     | DEFAULT 0.0                 | Total amount spent in category       |
-| `version`       | INTEGER  | DEFAULT 0                   | Version for optimistic locking       |
-| `createdAt`     | DATETIME | DEFAULT CURRENT_TIMESTAMP   | Category creation timestamp          |
-
-**Indices:**
-
-- Primary key on `id`
-
-#### Expenses Table
-
-Stores individual expense records linked to categories.
-
-| Column | Type | Constraints | Description |
-|--------------|----------|------------------------------------------|------------------------------------||
-| `id` | INTEGER | PRIMARY KEY, AUTO INCREMENT | Unique expense identifier |
-| `amount` | REAL | NOT NULL | Expense amount |
-| `date` | DATETIME | NOT NULL | Date of expense |
-| `description`| TEXT | NOT NULL | Expense description |
-| `categoryId` | INTEGER | FOREIGN KEY → categories(id) ON DELETE CASCADE | Reference to category |
-| `createdAt` | DATETIME | DEFAULT CURRENT_TIMESTAMP | Expense creation timestamp |
-
-**Indices:**
-
-- Primary key on `id`
-- Index on `date` for date-range queries
-- Index on `categoryId` for category filtering
-
-**Foreign Keys:**
-
-- `categoryId` references `categories(id)` with CASCADE delete
-
-### Relationships
+We use a layered architecture:
 
 ```
-Categories (1) ──────< (N) Expenses
-    │                      │
-    │                      └─ categoryId (FK)
-    └─ id (PK)
+┌──────────────────────────────────────┐
+│  UI (Screens, Widgets)               │
+├──────────────────────────────────────┤
+│  ViewModels (State, Validation)      │
+├──────────────────────────────────────┤
+│  Services (Business Logic)           │
+├──────────────────────────────────────┤
+│  Repositories (Data Abstraction)     │
+├──────────────────────────────────────┤
+│  DAOs (Database Operations)          │
+├──────────────────────────────────────┤
+│  Database (Drift/SQLite + Supabase)  │
+└──────────────────────────────────────┘
 ```
 
-### Migration History
+Data flows down through user actions, back up through streams and callbacks.
 
-- **v1**: Initial schema with categories table
-- **v2**: Added expenses table
-- **v3**: Added color and icon fields to categories
-- **v4**: Added version column for optimistic locking
-- **v5**: Added createdAt timestamp to expenses
+## User Roles
 
-### Type-Safe Queries
-
-Drift generates type-safe Dart classes for all tables:
-
-```dart
-// Category entity
-class Category {
-  final int id;
-  final String name;
-  final int color;
-  final String iconCodePoint;
-  final double budget;
-  final double spent;
-  final int version;
-  final DateTime createdAt;
-}
-
-// Expense entity
-class Expense {
-  final int id;
-  final double amount;
-  final DateTime date;
-  final String description;
-  final int categoryId;
-  final DateTime createdAt;
-}
-```
-
-## Usage
-
-### Adding an Expense
-
-1. Navigate to the **Expenses** screen from the sidebar
-2. Click the **"Add Expense"** button
-3. Fill in the expense details:
-   - Amount (required)
-   - Description (required)
-   - Category (select from dropdown)
-   - Date (defaults to today)
-4. Click **"Add Expense"** to save
-
-### Managing Categories
-
-1. Navigate to **Budget** from the sidebar
-2. View existing categories with their budgets and spent amounts
-3. **Add new category**:
-   - Click **"Add Category"**
-   - Enter category name
-   - Set budget amount
-   - Choose icon and color
-   - Click **"Save"**
-4. **Edit category**:
-   - Click the edit icon on any category
-   - Modify budget, name, or icon
-   - Click **"Update"**
-5. **Delete category**:
-   - Click the delete icon
-   - Confirm deletion (note: associated expenses will also be deleted)
-
-### Viewing Dashboard
-
-1. Navigate to **Home** from the sidebar
-2. View summary statistics:
-   - Total budget across all categories
-   - Total spent amount
-   - Remaining budget
-3. Analyze visual charts:
-   - Category spending breakdown (pie chart)
-   - Budget vs actual comparison
-   - Recent transactions list
-
-### Filtering Expenses
-
-1. On the **Expenses** screen
-2. Use the category dropdown to filter by specific category
-3. Use the search field to find expenses by description
-4. Sort expenses by clicking column headers (date, amount, category)
-
-## Building for Production
-
-### Windows
-
-```bash
-flutter build windows --release
-```
-
-Output: `build/windows/runner/Release/`
-
-### macOS
-
-```bash
-flutter build macos --release
-```
-
-Output: `build/macos/Build/Products/Release/`
-
-### Linux
-
-```bash
-flutter build linux --release
-```
-
-Output: `build/linux/x64/release/bundle/`
-
-## Contributing
-
-We welcome contributions from the community! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
-3. **Commit your changes**: `git commit -m 'Add amazing feature'`
-4. **Push to the branch**: `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
-
-### Code Standards
-
-- Follow [Effective Dart](https://dart.dev/guides/language/effective-dart) guidelines
-- Write unit tests for new features
-- Ensure code passes `flutter analyze`
-- Format code with `dart format`
-
-### Commit Message Convention
-
-```
-type(scope): subject
-
-body
-
-footer
-```
-
-Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
-## Team
-
-This project is developed and maintained by a dedicated team of developers:
-
-| Name                               | GitHub Profile                                       |
-| ---------------------------------- | ---------------------------------------------------- |
-| **Beradai Houssameddine Diaelhak** | [@houubeer](https://github.com/houubeer)             |
-| **Cilia Mouhoun**                  | [@cilia-mouhoun](https://github.com/cilia-mouhoun)   |
-| **Mohamed Islam Sahli**            | [@Mohamedislam19](https://github.com/Mohamedislam19) |
-| **Aya Brahimi**                    | [@Aya-Brahimi](https://github.com/Aya-Brahimi)       |
-| **Enzo Chaabnia**                  | [@ENZOdz23](https://github.com/ENZOdz23)             |
+| Role         | What they can do                              |
+| ------------ | --------------------------------------------- |
+| **Owner**    | Approve/reject organizations, manage all data |
+| **Manager**  | Manage their org, add employees, view reports |
+| **Employee** | Submit expenses, view own data                |
 
 ## Running Tests
 
-This project includes comprehensive unit tests and integration tests to ensure code quality and reliability.
-
-### Unit Tests
-
-Run all unit tests with:
-
 ```bash
+# Unit tests
 flutter test
-```
 
-Run tests with coverage:
-
-```bash
+# With coverage
 flutter test --coverage
-```
 
-View coverage report:
-
-```bash
-# Install lcov if not already installed
-# On macOS: brew install lcov
-# On Ubuntu: sudo apt-get install lcov
-# On Windows: Use WSL or install via Chocolatey
-
-# Generate HTML report
-genhtml coverage/lcov.info -o coverage/html
-
-# Open in browser
-# Windows: start coverage/html/index.html
-# macOS: open coverage/html/index.html
-# Linux: xdg-open coverage/html/index.html
-```
-
-### Integration Tests
-
-Run integration tests:
-
-```bash
+# Integration tests
 flutter test integration_test
 ```
 
-### Test Organization
+## Building for Production
 
-Tests are organized as follows:
+```bash
+# Windows
+flutter build windows --release
 
-- `test/unit/` - Unit tests for individual components, services, repositories, and DAOs
-- `integration_test/` - End-to-end integration tests for complete user flows
+# macOS
+flutter build macos --release
 
-## Architecture Overview
-
-This application follows a **layered architecture** pattern to ensure clean separation of concerns, testability, and maintainability.
-
-### Layered Architecture
-
-```
-┌─────────────────────────────────────────────────┐
-│              UI Layer (Screens)                  │
-│  - ExpenseTable, AddExpenseScreen, etc.         │
-│  - Renders UI and handles user interactions     │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│          ViewModel Layer                         │
-│  - AddExpenseViewModel, etc.                    │
-│  - Manages UI state and validation logic        │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│          Service Layer                           │
-│  - ExpenseService, LoggerService, etc.          │
-│  - Business logic, transactions, error handling │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│         Repository Layer                         │
-│  - ExpenseRepository, CategoryRepository        │
-│  - Abstracts data access, maps domain objects   │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│            DAO Layer                             │
-│  - ExpenseDao, CategoryDao                      │
-│  - Direct database operations via Drift         │
-└────────────────┬────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────┐
-│          Database Layer                          │
-│  - AppDatabase (Drift + SQLite)                 │
-│  - Schema, migrations, health checks            │
-└─────────────────────────────────────────────────┘
+# Linux
+flutter build linux --release
 ```
 
-### Key Principles
+## Contributing
 
-- **Single Responsibility**: Each layer has a well-defined purpose
-- **Dependency Inversion**: Upper layers depend on abstractions (interfaces), not concrete implementations
-- **Interface Segregation**: Small, focused interfaces (e.g., `ICategoryReader`, `ICategoryBudgetManager`)
-- **Transaction Safety**: All multi-step operations wrapped in database transactions
-- **Error Handling**: Comprehensive logging and custom exceptions (`DatabaseException`, `ValidationException`)
+1. Fork it
+2. Create your branch (`git checkout -b feature/cool-thing`)
+3. Commit (`git commit -m 'Add cool thing'`)
+4. Push (`git push origin feature/cool-thing`)
+5. Open a PR
 
-### Data Flow
+Please follow [Effective Dart](https://dart.dev/guides/language/effective-dart) and run `flutter analyze` before submitting.
 
-**Creating an Expense (Top to Bottom):**
+## Team
 
-1. **UI Layer**: User fills form → `AddExpenseScreen`
-2. **ViewModel**: Validates input → `AddExpenseViewModel`
-3. **Service**: Orchestrates transaction → `ExpenseService.createExpense()`
-4. **Repository**: Maps domain objects → `ExpenseRepository.insertExpense()`
-5. **DAO**: Executes SQL → `ExpenseDao.insertExpense()`
-6. **Database**: Persists data → SQLite
-
-**Displaying Expenses (Bottom to Top):**
-
-1. **Database**: Data changes trigger stream updates
-2. **DAO**: Watches table → `ExpenseDao.watchExpensesWithCategory()`
-3. **Repository**: Maps to domain objects → Stream transformation
-4. **Service**: Consumed by UI (or additional business logic)
-5. **ViewModel**: Manages state for UI
-6. **UI Layer**: Reactive rebuild → `ExpenseTable` displays data
-
-### Cross-Cutting Concerns
-
-- **Logging**: `LoggerService` used throughout all layers for debugging and monitoring
-- **Error Reporting**: `ErrorReportingService` captures and logs exceptions with context
-- **Connectivity**: `ConnectivityService` monitors network status (future cloud sync)
-
-For detailed implementation, see:
-
-- [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md) - Logging system details
-- [lib/STRUCTURE.md](lib/STRUCTURE.md) - Project structure overview
+| Name                           | GitHub                                               |
+| ------------------------------ | ---------------------------------------------------- |
+| Beradai Houssameddine Diaelhak | [@houubeer](https://github.com/houubeer)             |
+| Cilia Mouhoun                  | [@cilia-mouhoun](https://github.com/cilia-mouhoun)   |
+| Mohamed Islam Sahli            | [@Mohamedislam19](https://github.com/Mohamedislam19) |
+| Aya Brahimi                    | [@Aya-Brahimi](https://github.com/Aya-Brahimi)       |
+| Enzo Chaabnia                  | [@ENZOdz23](https://github.com/ENZOdz23)             |
 
 ## Troubleshooting
 
-### Common Issues and Solutions
-
-#### Build Errors
-
-**Problem**: `drift` code generation fails
+**Drift code generation fails?**
 
 ```bash
-Error: Could not find table definition
+flutter clean
+dart run build_runner clean
+dart run build_runner build --delete-conflicting-outputs
 ```
 
-**Solution**:
-
-1. Ensure all dependencies are installed:
-   ```bash
-   flutter pub get
-   ```
-2. Clean build cache:
-   ```bash
-   flutter clean
-   dart run build_runner clean
-   ```
-3. Regenerate drift files:
-   ```bash
-   dart run build_runner build --delete-conflicting-outputs
-   ```
-
----
-
-**Problem**: Windows build fails with "Visual Studio not found"
-
-**Solution**:
+**Windows build fails?**
 
 - Install Visual Studio 2022 with "Desktop development with C++" workload
-- Run `flutter doctor` to verify installation
-- Restart your terminal/IDE after installation
+- Run `flutter doctor` to check
 
----
+**Database issues?**
 
-#### Database Issues
-
-**Problem**: Database locked or corrupted
-
-**Solution**:
-
-1. Check database health:
-   ```dart
-   final isHealthy = await database.healthCheck();
-   if (!isHealthy) {
-     await database.attemptRecovery();
-   }
-   ```
-2. If recovery fails, delete database file (will recreate on next launch):
-   - Windows: `%APPDATA%/expense_tracker/database.sqlite`
-   - macOS: `~/Library/Application Support/expense_tracker/database.sqlite`
-   - Linux: `~/.local/share/expense_tracker/database.sqlite`
-
----
-
-**Problem**: Migration errors after schema changes
-
-**Solution**:
-
-- Increment `schemaVersion` in `AppDatabase`
-- Add migration logic in `onUpgrade` callback
-- Test migration with both upgrade and fresh install scenarios
-
----
-
-#### Runtime Errors
-
-**Problem**: "Concurrent modification" errors on category updates
-
-**Solution**:
-
-This indicates optimistic locking conflict. The app automatically retries, but you can:
-
-- Refresh the data before updating
-- Check logs for details: `LoggerService` captures all conflicts
-
----
-
-**Problem**: App crashes on startup
-
-**Solution**:
-
-1. Check logs in:
-   - Windows: `%TEMP%/expense_tracker/logs/`
-   - macOS/Linux: `/tmp/expense_tracker/logs/`
-2. Common causes:
-   - Corrupted database (see Database Issues above)
-   - Missing dependencies (run `flutter pub get`)
-   - Platform-specific issues (run `flutter doctor`)
-
----
-
-#### Performance Issues
-
-**Problem**: Slow queries or UI lag
-
-**Solution**:
-
-1. Run database optimization:
-   ```dart
-   await database.customStatement('VACUUM');
-   await database.customStatement('ANALYZE');
-   ```
-2. Check if indices are present:
-   - Expenses table should have indices on `date` and `categoryId`
-3. Limit query results using pagination or date ranges
-
----
-
-#### Testing Issues
-
-**Problem**: Tests fail with database errors
-
-**Solution**:
-
-- Use in-memory database for tests:
-  ```dart
-  final database = AppDatabase.forTesting(
-    NativeDatabase.memory(),
-  );
-  ```
-- Ensure test database is properly closed after each test
-- Check that test data doesn't violate foreign key constraints
-
----
-
-### Getting Help
-
-If you encounter issues not covered here:
-
-1. **Check Documentation**:
-
-   - [Architecture Overview](#architecture-overview)
-   - [LOGGING_IMPLEMENTATION.md](docs/LOGGING_IMPLEMENTATION.md)
-   - [Database Schema](#database-schema)
-
-2. **Review Logs**:
-
-   - Enable debug logging: `LoggerService.instance.setLevel(LogLevel.debug)`
-   - Check error reports: `ErrorReportingService` captures stack traces
-
-3. **Search Issues**:
-
-   - Check [GitHub Issues](https://github.com/houubeer/Expense-Tracking/issues)
-   - Search for similar problems in Flutter/Drift communities
-
-4. **Create an Issue**:
-   - Provide Flutter/Dart versions (`flutter doctor -v`)
-   - Include error logs and stack traces
-   - Describe steps to reproduce
+- Delete the database file and restart (it'll recreate on launch)
+- Windows: `%APPDATA%/expense_tracker/database.sqlite`
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Flutter team for the amazing framework
-- Simon Binder for the Drift library
-- The open-source community for invaluable resources
+MIT - see [LICENSE](LICENSE)
 
 ---
 
-**Made with ❤️ by G12-team 1**
-
-_Empowering small businesses with efficient financial management_
+Built by G12-Team 1
