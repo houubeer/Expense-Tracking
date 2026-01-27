@@ -13,20 +13,22 @@ import 'package:expense_tracking_desktop_app/core/errors/error_mapper.dart';
 import 'dart:io';
 
 class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
-  final IExpenseService _expenseService;
-  final BudgetValidationService _budgetValidation;
-  final ErrorReportingService _errorReporting;
-  final AppDatabase _database; // Added: for receipt management
-  final _logger = LoggerService.instance;
-
   AddExpenseViewModel(
     this._expenseService,
     this._budgetValidation,
     this._errorReporting,
     this._database,
     int? preSelectedCategoryId,
-  ) : super(AddExpenseState.initial(
-            preSelectedCategoryId: preSelectedCategoryId));
+  ) : super(
+          AddExpenseState.initial(
+            preSelectedCategoryId: preSelectedCategoryId,
+          ),
+        );
+  final IExpenseService _expenseService;
+  final BudgetValidationService _budgetValidation;
+  final ErrorReportingService _errorReporting;
+  final AppDatabase _database; // Added: for receipt management
+  final _logger = LoggerService.instance;
 
   @override
   void dispose() {
@@ -68,10 +70,12 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
   /// Add multiple receipts from file paths
   void addReceipts(List<String> filePaths) {
-    final newReceipts = filePaths.map((path) => ReceiptAttachment.fromFilePath(path)).toList();
+    final newReceipts = filePaths.map(ReceiptAttachment.fromFilePath).toList();
     final updatedReceipts = [...state.receipts, ...newReceipts];
     state = state.copyWith(receipts: updatedReceipts);
-    _logger.info('AddExpenseViewModel: Added ${newReceipts.length} receipts (total: ${updatedReceipts.length})');
+    _logger.info(
+      'AddExpenseViewModel: Added ${newReceipts.length} receipts (total: ${updatedReceipts.length})',
+    );
   }
 
   /// Add a single receipt from file path
@@ -167,7 +171,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         status: SubmissionStatus.error,
         errorMessage: budgetError,
       );
-      _logger.warning('AddExpenseViewModel: Budget validation failed - $budgetError');
+      _logger.warning(
+        'AddExpenseViewModel: Budget validation failed - $budgetError',
+      );
       return;
     }
 
@@ -187,22 +193,26 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       );
 
       _logger.info('AddExpenseViewModel: Creating expense');
-      
+
       // CRITICAL: Use transaction to ensure atomicity
       final expenseId = await _database.transaction(() async {
         // Create expense
         final id = await _expenseService.createExpense(expense);
-        
+
         // Save receipts if any
         if (state.receipts.isNotEmpty) {
-          _logger.info('AddExpenseViewModel: Saving ${state.receipts.length} receipts');
+          _logger.info(
+            'AddExpenseViewModel: Saving ${state.receipts.length} receipts',
+          );
           await _saveReceipts(id);
         }
-        
+
         return id;
       });
-      
-      _logger.info('AddExpenseViewModel: Expense created successfully with ID $expenseId');
+
+      _logger.info(
+        'AddExpenseViewModel: Expense created successfully with ID $expenseId',
+      );
 
       // Set success status
       state = state.copyWith(
@@ -210,8 +220,11 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         successMessage: AppStrings.msgExpenseAdded,
       );
     } catch (e, stackTrace) {
-      _logger.error('AddExpenseViewModel: Failed to create expense',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'AddExpenseViewModel: Failed to create expense',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       // Only report if it's an unexpected error
       if (ErrorMapper.shouldReportError(e)) {
@@ -285,14 +298,16 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
     final amount = double.parse(state.amountController.text);
 
     // CRITICAL: Validate budget if amount or category changed
-    if (amount != oldExpense.amount || state.selectedCategoryId != oldExpense.categoryId) {
+    if (amount != oldExpense.amount ||
+        state.selectedCategoryId != oldExpense.categoryId) {
       // Calculate the delta (new amount - old amount for same category)
-      final amountDelta = state.selectedCategoryId == oldExpense.categoryId 
+      final amountDelta = state.selectedCategoryId == oldExpense.categoryId
           ? amount - oldExpense.amount
           : amount; // Full amount if category changed
-      
+
       if (amountDelta > 0) {
-        final budgetError = await _budgetValidation.validateExpenseAgainstBudget(
+        final budgetError =
+            await _budgetValidation.validateExpenseAgainstBudget(
           amountDelta,
           state.selectedCategoryId!,
         );
@@ -301,7 +316,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
             status: SubmissionStatus.error,
             errorMessage: budgetError,
           );
-          _logger.warning('AddExpenseViewModel: Budget validation failed on update - $budgetError');
+          _logger.warning(
+            'AddExpenseViewModel: Budget validation failed on update - $budgetError',
+          );
           return;
         }
       }
@@ -313,7 +330,7 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       final newExpense = oldExpense.copyWith(
         amount: amount,
         description: state.descriptionController.text.trim(),
-        categoryId: state.selectedCategoryId!,
+        categoryId: state.selectedCategoryId,
         date: state.selectedDate,
         isReimbursable: state.isReimbursable,
         receiptPath: drift.Value(state.receiptPath),
@@ -325,7 +342,9 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
       // Note: Receipt updates on edit not yet implemented
       // Receipts remain unchanged when editing expense
       if (state.receipts.isNotEmpty) {
-        _logger.info('AddExpenseViewModel: Receipt editing not yet implemented - receipts preserved');
+        _logger.info(
+          'AddExpenseViewModel: Receipt editing not yet implemented - receipts preserved',
+        );
       }
 
       state = state.copyWith(
@@ -333,8 +352,11 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
         successMessage: 'Expense updated successfully',
       );
     } catch (e, stackTrace) {
-      _logger.error('AddExpenseViewModel: Failed to update expense',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'AddExpenseViewModel: Failed to update expense',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       // Only report if it's an unexpected error
       if (ErrorMapper.shouldReportError(e)) {
@@ -389,11 +411,16 @@ class AddExpenseViewModel extends StateNotifier<AddExpenseState> {
 
       if (receiptsToSave.isNotEmpty) {
         await _database.receiptDao.insertMultipleReceipts(receiptsToSave);
-        _logger.info('AddExpenseViewModel: Saved ${receiptsToSave.length} receipts to database');
+        _logger.info(
+          'AddExpenseViewModel: Saved ${receiptsToSave.length} receipts to database',
+        );
       }
     } catch (e, stackTrace) {
-      _logger.error('AddExpenseViewModel: Failed to save receipts',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'AddExpenseViewModel: Failed to save receipts',
+        error: e,
+        stackTrace: stackTrace,
+      );
       // Don't fail expense creation if receipts fail to save
     }
   }

@@ -5,9 +5,11 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// Reusable text field for authentication forms
 class AuthTextField extends StatelessWidget {
-
   const AuthTextField({
-    required this.controller, required this.label, required this.hintText, super.key,
+    required this.controller,
+    required this.label,
+    required this.hintText,
+    super.key,
     this.prefixIcon,
     this.suffixIcon,
     this.obscureText = false,

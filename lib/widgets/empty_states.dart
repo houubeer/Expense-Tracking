@@ -3,20 +3,19 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// Reusable empty state widget with illustration and message
 class EmptyStateWidget extends StatelessWidget {
+  const EmptyStateWidget({
+    required this.icon,
+    required this.title,
+    required this.message,
+    super.key,
+    this.action,
+    this.iconSize = 120,
+  });
   final IconData icon;
   final String title;
   final String message;
   final Widget? action;
   final double iconSize;
-
-  const EmptyStateWidget({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.message,
-    this.action,
-    this.iconSize = 120,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,6 @@ class EmptyStateWidget extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.xxxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Animated icon with subtle pulse
             TweenAnimationBuilder<double>(
@@ -83,12 +81,11 @@ class EmptyStateWidget extends StatelessWidget {
 
 /// Empty expenses list state
 class EmptyExpensesState extends StatelessWidget {
-  final VoidCallback? onAddExpense;
-
   const EmptyExpensesState({
     super.key,
     this.onAddExpense,
   });
+  final VoidCallback? onAddExpense;
 
   @override
   Widget build(BuildContext context) {
@@ -109,12 +106,11 @@ class EmptyExpensesState extends StatelessWidget {
 
 /// Empty budgets list state
 class EmptyBudgetsState extends StatelessWidget {
-  final VoidCallback? onAddBudget;
-
   const EmptyBudgetsState({
     super.key,
     this.onAddBudget,
   });
+  final VoidCallback? onAddBudget;
 
   @override
   Widget build(BuildContext context) {
@@ -135,14 +131,13 @@ class EmptyBudgetsState extends StatelessWidget {
 
 /// Empty search results state
 class EmptySearchState extends StatelessWidget {
-  final String searchQuery;
-  final VoidCallback? onClear;
-
   const EmptySearchState({
-    super.key,
     required this.searchQuery,
+    super.key,
     this.onClear,
   });
+  final String searchQuery;
+  final VoidCallback? onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -163,12 +158,11 @@ class EmptySearchState extends StatelessWidget {
 
 /// Empty filtered results state
 class EmptyFilteredState extends StatelessWidget {
-  final VoidCallback? onClearFilters;
-
   const EmptyFilteredState({
     super.key,
     this.onClearFilters,
   });
+  final VoidCallback? onClearFilters;
 
   @override
   Widget build(BuildContext context) {

@@ -43,7 +43,6 @@ abstract class IBackupService {
 
 /// Information about a backup file.
 class BackupInfo {
-
   const BackupInfo({
     required this.path,
     required this.fileName,
@@ -51,6 +50,7 @@ class BackupInfo {
     required this.createdAt,
     required this.isValid,
   });
+
   /// The file path of the backup.
   final String path;
 
@@ -78,7 +78,6 @@ class BackupInfo {
 
 /// Exception thrown when backup operations fail.
 class BackupException implements Exception {
-
   BackupException(this.message, {this.originalError});
   final String message;
   final dynamic originalError;
@@ -89,7 +88,6 @@ class BackupException implements Exception {
 
 /// Exception thrown when restore operations fail.
 class RestoreException implements Exception {
-
   RestoreException(this.message, {this.originalError});
   final String message;
   final dynamic originalError;

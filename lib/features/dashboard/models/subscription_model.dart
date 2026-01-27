@@ -52,7 +52,6 @@ enum SubscriptionStatus {
 
 /// Subscription model representing a company subscription
 class Subscription {
-
   const Subscription({
     required this.id,
     required this.companyId,
@@ -124,5 +123,6 @@ class Subscription {
   }
 
   /// Check if subscription is currently active
-  bool get isActive => status == SubscriptionStatus.active && DateTime.now().isBefore(endDate);
+  bool get isActive =>
+      status == SubscriptionStatus.active && DateTime.now().isBefore(endDate);
 }

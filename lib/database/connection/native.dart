@@ -47,11 +47,13 @@ LazyDatabase connect() {
       } catch (e) {
         if (attempt == maxRetries - 1) {
           throw Exception(
-              'Failed to connect to database after $maxRetries attempts: $e');
+            'Failed to connect to database after $maxRetries attempts: $e',
+          );
         }
         // ignore: avoid_print
         print(
-            'Database connection attempt ${attempt + 1} failed: $e. Retrying...');
+          'Database connection attempt ${attempt + 1} failed: $e. Retrying...',
+        );
         await Future<void>.delayed(retryDelay);
       }
     }

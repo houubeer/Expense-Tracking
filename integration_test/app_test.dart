@@ -40,7 +40,9 @@ void main() {
       // Fill form
       await tester.enterText(find.byType(TextFormField).at(0), '500'); // Amount
       await tester.enterText(
-          find.byType(TextFormField).at(1), 'Test Delete'); // Description
+        find.byType(TextFormField).at(1),
+        'Test Delete',
+      ); // Description
 
       // Select Category (Dropdown)
       await tester.tap(find.byType(DropdownButtonFormField));
@@ -95,7 +97,9 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).at(0), '100'); // Amount
       await tester.enterText(
-          find.byType(TextFormField).at(1), 'Original'); // Description
+        find.byType(TextFormField).at(1),
+        'Original',
+      ); // Description
 
       await tester.tap(find.byType(DropdownButtonFormField));
       await tester.pumpAndSettle();
@@ -117,9 +121,13 @@ void main() {
 
     // 5. Update fields
     await tester.enterText(
-        find.byType(TextFormField).at(0), '200'); // New Amount
+      find.byType(TextFormField).at(0),
+      '200',
+    ); // New Amount
     await tester.enterText(
-        find.byType(TextFormField).at(1), 'Updated'); // New Description
+      find.byType(TextFormField).at(1),
+      'Updated',
+    ); // New Description
 
     // 6. Save
     await tester.tap(find.text('Update Expense'));

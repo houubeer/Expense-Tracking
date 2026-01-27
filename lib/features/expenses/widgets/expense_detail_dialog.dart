@@ -81,9 +81,11 @@ class ExpenseDetailDialog extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.close,
-                          semanticLabel:
-                              AppLocalizations.of(context)!.tooltipClose),
+                      icon: Icon(
+                        Icons.close,
+                        semanticLabel:
+                            AppLocalizations.of(context)!.tooltipClose,
+                      ),
                       onPressed: () => Navigator.of(context).pop(),
                       color: colorScheme.onSurfaceVariant,
                       tooltip: AppLocalizations.of(context)!.tooltipClose,
@@ -201,8 +203,10 @@ class ExpenseDetailDialog extends StatelessWidget {
                   width: double.infinity,
                   child: PrimaryButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: Text(AppLocalizations.of(context)!.btnClose,
-                        style: AppTextStyles.button),
+                    child: Text(
+                      AppLocalizations.of(context)!.btnClose,
+                      style: AppTextStyles.button,
+                    ),
                   ),
                 ),
               ],

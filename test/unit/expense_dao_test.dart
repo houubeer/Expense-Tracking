@@ -24,7 +24,8 @@ void main() {
       description: const Value('Test Expense'),
       date: Value(DateTime.now()),
       categoryId: const Value(
-          1), // Assuming category 1 exists or FK is disabled for test
+        1,
+      ), // Assuming category 1 exists or FK is disabled for test
     );
 
     // We might need to insert a category first if FK is enforced

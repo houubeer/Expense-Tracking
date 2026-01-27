@@ -12,11 +12,13 @@ import 'package:expense_tracking_desktop_app/features/shared/widgets/snackbars/s
 import 'package:expense_tracking_desktop_app/features/expenses/widgets/expense_form_widget.dart';
 
 class ExpensesListScreen extends StatefulWidget {
+  const ExpensesListScreen({
+    required this.database,
+    this.onNavigate,
+    super.key,
+  });
   final AppDatabase database;
   final void Function(int, {int? categoryId})? onNavigate;
-
-  const ExpensesListScreen(
-      {required this.database, this.onNavigate, super.key});
 
   @override
   State<ExpensesListScreen> createState() => _ExpensesListScreenState();
@@ -68,12 +70,14 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                     }
                   },
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text("Add Expense"),
+                  label: const Text('Add Expense'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -145,23 +149,30 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                             value: _selectedCategoryFilter,
                             hint: const Row(
                               children: [
-                                Icon(Icons.filter_list,
-                                    color: AppColors.textSecondary, size: 20),
+                                Icon(
+                                  Icons.filter_list,
+                                  color: AppColors.textSecondary,
+                                  size: 20,
+                                ),
                                 SizedBox(width: 8),
-                                Text('Category',
-                                    style: TextStyle(
-                                        color: AppColors.textSecondary)),
+                                Text(
+                                  'Category',
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                               ],
                             ),
                             isExpanded: true,
                             items: [
                               const DropdownMenuItem<int?>(
-                                value: null,
                                 child: Row(
                                   children: [
-                                    Icon(Icons.clear,
-                                        color: AppColors.textSecondary,
-                                        size: 20),
+                                    Icon(
+                                      Icons.clear,
+                                      color: AppColors.textSecondary,
+                                      size: 20,
+                                    ),
                                     SizedBox(width: 8),
                                     Text('All Categories'),
                                   ],
@@ -230,8 +241,11 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_today,
-                                color: AppColors.textSecondary, size: 20),
+                            const Icon(
+                              Icons.calendar_today,
+                              color: AppColors.textSecondary,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -250,8 +264,11 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                               GestureDetector(
                                 onTap: () =>
                                     setState(() => _selectedDateFilter = null),
-                                child: const Icon(Icons.close,
-                                    color: AppColors.textSecondary, size: 18),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: AppColors.textSecondary,
+                                  size: 18,
+                                ),
                               ),
                           ],
                         ),
@@ -272,21 +289,29 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
               child: Row(
                 children: [
                   Expanded(
-                      flex: 2, child: Text('Date', style: AppTextStyles.label)),
+                    flex: 2,
+                    child: Text('Date', style: AppTextStyles.label),
+                  ),
                   Expanded(
-                      flex: 2,
-                      child: Text('Category', style: AppTextStyles.label)),
+                    flex: 2,
+                    child: Text('Category', style: AppTextStyles.label),
+                  ),
                   Expanded(
-                      flex: 3,
-                      child: Text('Description', style: AppTextStyles.label)),
+                    flex: 3,
+                    child: Text('Description', style: AppTextStyles.label),
+                  ),
                   Expanded(
-                      flex: 2,
-                      child: Text('Amount', style: AppTextStyles.label)),
+                    flex: 2,
+                    child: Text('Amount', style: AppTextStyles.label),
+                  ),
                   SizedBox(
-                      width: 100,
-                      child: Text('Actions',
-                          style: AppTextStyles.label,
-                          textAlign: TextAlign.end)),
+                    width: 100,
+                    child: Text(
+                      'Actions',
+                      style: AppTextStyles.label,
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -332,10 +357,12 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.receipt_long_outlined,
-                              size: 64,
-                              color: AppColors.textSecondary
-                                  .withValues(alpha: 0.5)),
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 64,
+                            color:
+                                AppColors.textSecondary.withValues(alpha: 0.5),
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No expenses found',
@@ -446,16 +473,22 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.edit_outlined,
-                        size: 20, color: AppColors.primary),
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
                     onPressed: () => _showEditExpenseDialog(item),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
                   const SizedBox(width: 16),
                   IconButton(
-                    icon: const Icon(Icons.delete_outline,
-                        size: 20, color: AppColors.red),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 20,
+                      color: AppColors.red,
+                    ),
                     onPressed: () => _confirmDelete(item),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
@@ -505,12 +538,15 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
         backgroundColor: AppColors.surface,
         title: Text('Delete Expense', style: AppTextStyles.heading3),
         content: const Text(
-            'Are you sure you want to delete this expense? This action cannot be undone.'),
+          'Are you sure you want to delete this expense? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           FilledButton(
             onPressed: () async {
@@ -577,13 +613,12 @@ class _ExpensesListScreenState extends State<ExpensesListScreen> {
 }
 
 class _EditExpenseDialog extends StatefulWidget {
-  final AppDatabase database;
-  final service.ExpenseWithCategory expenseWithCategory;
-
   const _EditExpenseDialog({
     required this.database,
     required this.expenseWithCategory,
   });
+  final AppDatabase database;
+  final service.ExpenseWithCategory expenseWithCategory;
 
   @override
   State<_EditExpenseDialog> createState() => _EditExpenseDialogState();
@@ -635,7 +670,7 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
         amount: amount,
         description: description,
         date: _selectedDate,
-        categoryId: _selectedCategoryId!,
+        categoryId: _selectedCategoryId,
       );
 
       await _repository.updateExpense(updatedExpense);
@@ -710,7 +745,9 @@ class _EditExpenseDialogState extends State<_EditExpenseDialog> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

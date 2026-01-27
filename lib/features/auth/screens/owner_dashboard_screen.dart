@@ -161,8 +161,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.red),
-            child: Text(AppLocalizations.of(context)!.actionReject,
-                style: const TextStyle(color: Colors.white)),
+            child: Text(
+              AppLocalizations.of(context)!.actionReject,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -213,11 +215,13 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen>
               ),
             ),
             Tab(
-                text:
-                    '${AppLocalizations.of(context)!.tabApproved} (${_approvedOrgs.length})'),
+              text:
+                  '${AppLocalizations.of(context)!.tabApproved} (${_approvedOrgs.length})',
+            ),
             Tab(
-                text:
-                    '${AppLocalizations.of(context)!.tabRejected} (${_rejectedOrgs.length})'),
+              text:
+                  '${AppLocalizations.of(context)!.tabRejected} (${_rejectedOrgs.length})',
+            ),
           ],
         ),
         actions: [

@@ -24,7 +24,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get titleManagerDashboard => 'Tableau de Bord Gestionnaire';
 
   @override
-  String get descManagerDashboard => 'Surveillez les dépenses de l\'organisation, approuvez les remboursements et gérez les employés.';
+  String get descManagerDashboard =>
+      'Surveillez les dépenses de l\'organisation, approuvez les remboursements et gérez les employés.';
 
   @override
   String get kpiTotalEmployees => 'Total Employés';
@@ -57,7 +58,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelAddEmployee => 'Ajouter un employé';
 
   @override
-  String get labelPendingExpenseApprovals => 'Approbations de dépenses en attente';
+  String get labelPendingExpenseApprovals =>
+      'Approbations de dépenses en attente';
 
   @override
   String get msgExpenseApproved => 'Dépense approuvée avec succès';
@@ -218,7 +220,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get titleDeleteTransaction => 'Supprimer la Transaction';
 
   @override
-  String get descDeleteTransaction => 'Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action peut être annulée.';
+  String get descDeleteTransaction =>
+      'Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action peut être annulée.';
 
   @override
   String get btnDelete => 'Supprimer';
@@ -333,7 +336,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelReimbursableExpense => 'Dépense remboursable';
 
   @override
-  String get labelReimbursableHint => 'Peut être récupéré auprès de l\'entreprise';
+  String get labelReimbursableHint =>
+      'Peut être récupéré auprès de l\'entreprise';
 
   @override
   String get labelReceipt => 'Reçu';
@@ -449,7 +453,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageAccountPreferences => 'Gérer vos préférences de compte';
 
   @override
-  String get viewAndManagePersonalInfo => 'Consultez et gérez vos informations personnelles';
+  String get viewAndManagePersonalInfo =>
+      'Consultez et gérez vos informations personnelles';
 
   @override
   String memberSince(String date) {
@@ -475,7 +480,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get location => 'Localisation';
 
   @override
-  String get downloadExpenseData => 'Téléchargez vos données de dépenses au format CSV ou PDF';
+  String get downloadExpenseData =>
+      'Téléchargez vos données de dépenses au format CSV ou PDF';
 
   @override
   String get filterOptions => 'Options de filtrage';
@@ -490,7 +496,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get csvExport => 'Export CSV';
 
   @override
-  String get csvExportDesc => 'Télécharger les données au format tableur (Excel, Google Sheets)';
+  String get csvExportDesc =>
+      'Télécharger les données au format tableur (Excel, Google Sheets)';
 
   @override
   String get exportAsCsv => 'Exporter en CSV';
@@ -499,13 +506,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfExport => 'Export PDF';
 
   @override
-  String get pdfExportDesc => 'Télécharger un rapport formaté pour impression ou partage';
+  String get pdfExportDesc =>
+      'Télécharger un rapport formaté pour impression ou partage';
 
   @override
   String get exportAsPdf => 'Exporter en PDF';
 
   @override
-  String get customizeAppLook => 'Personnalisez l\'apparence de l\'application sur votre appareil';
+  String get customizeAppLook =>
+      'Personnalisez l\'apparence de l\'application sur votre appareil';
 
   @override
   String get themeMode => 'Mode thème';
@@ -526,7 +535,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hintSearchCategories => 'Rechercher...';
 
   @override
-  String get manageNotifications => 'Gérez la façon dont vous recevez les notifications';
+  String get manageNotifications =>
+      'Gérez la façon dont vous recevez les notifications';
 
   @override
   String get notificationChannels => 'Canaux de notification';
@@ -550,31 +560,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newExpenseAdded => 'Nouvelle dépense ajoutée';
 
   @override
-  String get notifyNewExpense => 'Être notifié lorsqu\'une nouvelle dépense est enregistrée';
+  String get notifyNewExpense =>
+      'Être notifié lorsqu\'une nouvelle dépense est enregistrée';
 
   @override
   String get budgetUpdates => 'Mises à jour du budget';
 
   @override
-  String get notifyBudgetUpdates => 'Être notifié des changements d\'état du budget';
+  String get notifyBudgetUpdates =>
+      'Être notifié des changements d\'état du budget';
 
   @override
   String get budgetLimitWarnings => 'Avertissements de limite de budget';
 
   @override
-  String get notifyBudgetLimit => 'Alerte en cas d\'approche ou de dépassement des limites budgétaires';
+  String get notifyBudgetLimit =>
+      'Alerte en cas d\'approche ou de dépassement des limites budgétaires';
 
   @override
   String get weeklySummary => 'Résumé hebdomadaire';
 
   @override
-  String get notifyWeeklySummary => 'Recevoir des rapports hebdomadaires de synthèse des dépenses';
+  String get notifyWeeklySummary =>
+      'Recevoir des rapports hebdomadaires de synthèse des dépenses';
 
   @override
   String get monthlyReports => 'Rapports mensuels';
 
   @override
-  String get notifyMonthlyReports => 'Obtenir des rapports financiers mensuels détaillés';
+  String get notifyMonthlyReports =>
+      'Obtenir des rapports financiers mensuels détaillés';
 
   @override
   String get quietHours => 'Heures de silence';
@@ -583,7 +598,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get enableQuietHours => 'Activer les heures de silence';
 
   @override
-  String get muteNotifications => 'Désactiver les notifications pendant les heures spécifiées';
+  String get muteNotifications =>
+      'Désactiver les notifications pendant les heures spécifiées';
 
   @override
   String get from => 'De';
@@ -592,7 +608,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get to => 'À';
 
   @override
-  String get manageSecurity => 'Gérez vos paramètres de sécurité et de confidentialité';
+  String get manageSecurity =>
+      'Gérez vos paramètres de sécurité et de confidentialité';
 
   @override
   String get password => 'Mot de passe';
@@ -610,7 +627,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get authenticatorApp => 'Application d\'authentification';
 
   @override
-  String get useAuthenticatorApp => 'Utiliser une application d\'authentification pour plus de sécurité';
+  String get useAuthenticatorApp =>
+      'Utiliser une application d\'authentification pour plus de sécurité';
 
   @override
   String get setUp2fa => 'Configurer la 2FA';
@@ -625,7 +643,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteAllData => 'Supprimer toutes les données';
 
   @override
-  String get deleteAllDataDesc => 'Supprimer définitivement toutes vos données de dépenses. Cette action est irréversible.';
+  String get deleteAllDataDesc =>
+      'Supprimer définitivement toutes vos données de dépenses. Cette action est irréversible.';
 
   @override
   String get active => 'Actif';
@@ -655,7 +674,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelAddNewEmployee => 'Ajouter un nouvel employé';
 
   @override
-  String get labelFillEmployeeDetails => 'Remplissez les détails de l\'employé ci-dessous';
+  String get labelFillEmployeeDetails =>
+      'Remplissez les détails de l\'employé ci-dessous';
 
   @override
   String get labelRole => 'Rôle';
@@ -706,7 +726,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get titleRegisterManager => 'Enregistrer l\'organisation';
 
   @override
-  String get subtitleRegisterManager => 'Créez un nouveau compte d\'organisation pour votre équipe';
+  String get subtitleRegisterManager =>
+      'Créez un nouveau compte d\'organisation pour votre équipe';
 
   @override
   String get labelOrganizationName => 'Nom de l\'organisation';
@@ -715,10 +736,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hintOrganizationName => 'Acme Corp';
 
   @override
-  String get errEnterOrganizationName => 'Veuillez entrer le nom de l\'organisation';
+  String get errEnterOrganizationName =>
+      'Veuillez entrer le nom de l\'organisation';
 
   @override
-  String get errOrganizationNameLength => 'Le nom doit comporter au moins 3 caractères';
+  String get errOrganizationNameLength =>
+      'Le nom doit comporter au moins 3 caractères';
 
   @override
   String get labelFullName => 'Nom complet';
@@ -733,7 +756,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hintCreatePassword => 'Créez un mot de passe sécurisé';
 
   @override
-  String get errPasswordLength => 'Le mot de passe doit comporter au moins 6 caractères';
+  String get errPasswordLength =>
+      'Le mot de passe doit comporter au moins 6 caractères';
 
   @override
   String get labelConfirmPassword => 'Confirmer le mot de passe';
@@ -768,7 +792,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stepAccountActivation => 'Le compte est activé après approbation';
 
   @override
-  String get stepLogin => 'Vous pourrez ensuite vous connecter et commencer la gestion';
+  String get stepLogin =>
+      'Vous pourrez ensuite vous connecter et commencer la gestion';
 
   @override
   String get errUserProfileNotFound => 'Profil utilisateur non trouvé';
@@ -827,7 +852,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get actionRefresh => 'Actualiser';
 
   @override
-  String get titleErrorLoadingEmployees => 'Erreur lors du chargement des employés';
+  String get titleErrorLoadingEmployees =>
+      'Erreur lors du chargement des employés';
 
   @override
   String get actionRetry => 'Réessayer';
@@ -836,7 +862,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get titleNoEmployees => 'Pas encore d\'employés';
 
   @override
-  String get msgNoEmployees => 'Vous n\'avez pas encore ajouté d\'employés à votre équipe.';
+  String get msgNoEmployees =>
+      'Vous n\'avez pas encore ajouté d\'employés à votre équipe.';
 
   @override
   String get btnAddFirstEmployee => 'Ajouter votre premier employé';
@@ -924,7 +951,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errCommentRequired => 'Veuillez entrer un commentaire';
 
   @override
-  String get errCommentLength => 'Le commentaire doit comporter au moins 3 caractères';
+  String get errCommentLength =>
+      'Le commentaire doit comporter au moins 3 caractères';
 
   @override
   String get btnSubmit => 'Soumettre';
@@ -987,7 +1015,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelBudget => 'Budget';
 
   @override
-  String get labelDescCreateAccount => 'Créer un nouveau compte pour un membre de l\'équipe';
+  String get labelDescCreateAccount =>
+      'Créer un nouveau compte pour un membre de l\'équipe';
 
   @override
   String get labelTemporaryPassword => 'Mot de passe temporaire';
@@ -996,7 +1025,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get hintTemporaryPassword => 'Créer un mot de passe temporaire';
 
   @override
-  String get msgPasswordChangeHint => 'L\'employé pourra changer ce mot de passe après sa première connexion.';
+  String get msgPasswordChangeHint =>
+      'L\'employé pourra changer ce mot de passe après sa première connexion.';
 
   @override
   String get labelDeactivate => 'Désactiver';
@@ -1011,7 +1041,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ownerDashboard => 'Tableau de Bord Propriétaire';
 
   @override
-  String get subtitleOwnerDashboard => 'Gérez les organisations, approuvez les gestionnaires et surveillez l\'activité de la plateforme';
+  String get subtitleOwnerDashboard =>
+      'Gérez les organisations, approuvez les gestionnaires et surveillez l\'activité de la plateforme';
 
   @override
   String get kpiTotalCompanies => 'Total des Entreprises';
@@ -1020,16 +1051,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get kpiTotalManagers => 'Total des Gestionnaires';
 
   @override
-  String get kpiPendingApprovalsSubtitle => 'Gestionnaires en attente d\'approbation';
+  String get kpiPendingApprovalsSubtitle =>
+      'Gestionnaires en attente d\'approbation';
 
   @override
   String get kpiMonthlyGrowth => 'Croissance Mensuelle';
 
   @override
-  String get kpiMonthlyGrowthSubtitle => 'Croissance à l\'échelle de la plateforme';
+  String get kpiMonthlyGrowthSubtitle =>
+      'Croissance à l\'échelle de la plateforme';
 
   @override
-  String get headerPendingManagerRequests => 'Demandes de Gestionnaires en Attente';
+  String get headerPendingManagerRequests =>
+      'Demandes de Gestionnaires en Attente';
 
   @override
   String get headerActiveManagers => 'Gestionnaires Actifs';
@@ -1053,13 +1087,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dialogTitleConfirmDelete => 'Confirmer la Suppression';
 
   @override
-  String get dialogDescDeleteManager => 'Êtes-vous sûr de vouloir supprimer ce gestionnaire ? Cette action est irréversible.';
+  String get dialogDescDeleteManager =>
+      'Êtes-vous sûr de vouloir supprimer ce gestionnaire ? Cette action est irréversible.';
 
   @override
   String get msgManagerDeleted => 'Compte du gestionnaire supprimé';
 
   @override
-  String get msgManagerProfileComingSoon => 'La vue du profil du gestionnaire sera bientôt disponible';
+  String get msgManagerProfileComingSoon =>
+      'La vue du profil du gestionnaire sera bientôt disponible';
 
   @override
   String get dialogTitleRejectManager => 'Rejeter le Gestionnaire';

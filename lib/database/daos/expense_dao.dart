@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import '../app_database.dart';
-import '../tables/expenses_table.dart';
-import '../tables/categories_table.dart';
+import 'package:expense_tracking_desktop_app/database/app_database.dart';
+import 'package:expense_tracking_desktop_app/database/tables/expenses_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/categories_table.dart';
 import 'package:expense_tracking_desktop_app/services/connectivity_service.dart';
 import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 
@@ -18,10 +18,9 @@ part 'expense_dao.g.dart';
 /// and [LoggerService] for detailed logging.
 @DriftAccessor(tables: [Expenses, Categories])
 class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
+  ExpenseDao(super.db, [this._connectivityService]);
   final ConnectivityService? _connectivityService;
   final _logger = LoggerService.instance;
-
-  ExpenseDao(super.db, [this._connectivityService]);
 
   /// Watches all expenses ordered by date (descending).
   ///
@@ -29,7 +28,7 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   Stream<List<Expense>> watchAllExpenses() {
     return (select(expenses)
           ..orderBy([
-            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
           ]))
         .watch();
   }
@@ -54,8 +53,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 
     // Apply filters
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      query.where(expenses.description.like('%$searchQuery%') |
-          categories.name.like('%$searchQuery%'));
+      query.where(
+        expenses.description.like('%$searchQuery%') |
+            categories.name.like('%$searchQuery%'),
+      );
     }
 
     if (categoryId != null) {
@@ -66,8 +67,10 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       // Filter by day
       final start = DateTime(date.year, date.month, date.day);
       final end = start.add(const Duration(days: 1));
-      query.where(expenses.date.isBiggerOrEqualValue(start) &
-          expenses.date.isSmallerThanValue(end));
+      query.where(
+        expenses.date.isBiggerOrEqualValue(start) &
+            expenses.date.isSmallerThanValue(end),
+      );
     }
 
     if (isReimbursable != null) {
@@ -75,7 +78,14 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
     }
 
     // Order by date descending
-    query.orderBy([OrderingTerm(expression: expenses.date, mode: OrderingMode.desc)]);
+    query.orderBy(
+      [
+        OrderingTerm(
+          expression: expenses.date,
+          mode: OrderingMode.desc,
+        ),
+      ],
+    );
 
     return query.watch().map((rows) {
       return rows.map((row) {
@@ -99,8 +109,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: getAllExpenses failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: getAllExpenses failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -119,8 +132,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return id;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: insertExpense failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: insertExpense failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -137,8 +153,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: updateExpense failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: updateExpense failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -151,12 +170,16 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
   /// Returns the number of rows affected (should be 1).
   Future<int> deleteExpense(int id) async {
     try {
-      final result = await (delete(expenses)..where((e) => e.id.equals(id))).go();
+      final result =
+          await (delete(expenses)..where((e) => e.id.equals(id))).go();
       _connectivityService?.markSuccessfulOperation();
       return result;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: deleteExpense failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: deleteExpense failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -236,8 +259,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return row.read(expenses.amount.sum()) ?? 0.0;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: getReimbursableTotal failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: getReimbursableTotal failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -263,8 +289,11 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
       _connectivityService?.markSuccessfulOperation();
       return row.read(expenses.id.count()) ?? 0;
     } catch (e, stackTrace) {
-      _logger.error('ExpenseDao: getReimbursableCount failed',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'ExpenseDao: getReimbursableCount failed',
+        error: e,
+        stackTrace: stackTrace,
+      );
       _connectivityService?.handleConnectionFailure(e.toString());
       rethrow;
     }
@@ -272,8 +301,7 @@ class ExpenseDao extends DatabaseAccessor<AppDatabase> with _$ExpenseDaoMixin {
 }
 
 class ExpenseWithCategory {
+  ExpenseWithCategory({required this.expense, required this.category});
   final Expense expense;
   final Category category;
-
-  ExpenseWithCategory({required this.expense, required this.category});
 }

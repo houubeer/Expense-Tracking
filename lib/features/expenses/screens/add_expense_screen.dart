@@ -8,12 +8,11 @@ import 'package:expense_tracking_desktop_app/features/expenses/providers/add_exp
 import 'package:expense_tracking_desktop_app/constants/app_routes.dart';
 
 class AddExpenseScreen extends ConsumerStatefulWidget {
-  final int? preSelectedCategoryId;
-
   const AddExpenseScreen({
     this.preSelectedCategoryId,
     super.key,
   });
+  final int? preSelectedCategoryId;
 
   @override
   ConsumerState<AddExpenseScreen> createState() => _AddExpenseScreenState();
@@ -38,8 +37,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
         if (filePaths.isNotEmpty) {
           ref
-              .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
-                  .notifier)
+              .read(
+                addExpenseViewModelProvider(widget.preSelectedCategoryId)
+                    .notifier,
+              )
               .addReceipts(filePaths);
         }
       }
@@ -75,8 +76,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           );
           // Reset form after successful submission
           ref
-              .read(addExpenseViewModelProvider(widget.preSelectedCategoryId)
-                  .notifier)
+              .read(
+                addExpenseViewModelProvider(widget.preSelectedCategoryId)
+                    .notifier,
+              )
               .resetForm(preSelectedCategoryId: widget.preSelectedCategoryId);
         } else if (next.isError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +95,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     final state =
         ref.watch(addExpenseViewModelProvider(widget.preSelectedCategoryId));
     final viewModel = ref.read(
-        addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier);
+      addExpenseViewModelProvider(widget.preSelectedCategoryId).notifier,
+    );
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerLowest,
@@ -129,7 +133,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                   }
                 },
           onReset: () => viewModel.resetForm(
-              preSelectedCategoryId: widget.preSelectedCategoryId),
+            preSelectedCategoryId: widget.preSelectedCategoryId,
+          ),
           isSubmitting: state.isSubmitting,
         ),
       ),

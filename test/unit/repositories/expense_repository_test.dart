@@ -27,10 +27,10 @@ void main() {
   group('ExpenseRepository', () {
     test('insertExpense delegates to ExpenseDao', () async {
       final expense = ExpensesCompanion(
-        amount: Value(100.0),
-        description: Value('Test Expense'),
+        amount: const Value(100.0),
+        description: const Value('Test Expense'),
         date: Value(DateTime.now()),
-        categoryId: Value(1),
+        categoryId: const Value(1),
       );
 
       when(mockExpenseDao.insertExpense(expense)).thenAnswer((_) async => 1);
@@ -111,11 +111,13 @@ void main() {
       // Use expectLater to avoid multiple listeners
       await expectLater(
         stream,
-        emits(predicate<List<dynamic>>((list) {
-          return list.length == 1 &&
-              list.first.expense.id == expense.id &&
-              list.first.category.id == category.id;
-        })),
+        emits(
+          predicate<List<dynamic>>((list) {
+            return list.length == 1 &&
+                list.first.expense.id == expense.id &&
+                list.first.category.id == category.id;
+          }),
+        ),
       );
     });
   });

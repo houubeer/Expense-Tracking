@@ -17,8 +17,8 @@ void main() {
       );
     }
 
-    testWidgets('renders with total amount and expense count', 
-      (WidgetTester tester) async {
+    testWidgets('renders with total amount and expense count',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -32,8 +32,8 @@ void main() {
       expect(find.byType(ReimbursableSummaryCard), findsOneWidget);
     });
 
-    testWidgets('displays total amount in correct format', 
-      (WidgetTester tester) async {
+    testWidgets('displays total amount in correct format',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -47,8 +47,7 @@ void main() {
       expect(find.byType(Text), findsWidgets);
     });
 
-    testWidgets('displays expense count', 
-      (WidgetTester tester) async {
+    testWidgets('displays expense count', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -62,8 +61,7 @@ void main() {
       expect(find.byType(Text), findsWidgets);
     });
 
-    testWidgets('shows icon', 
-      (WidgetTester tester) async {
+    testWidgets('shows icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -77,8 +75,8 @@ void main() {
       expect(find.byType(Icon), findsWidgets);
     });
 
-    testWidgets('can be tapped when onTap is provided', 
-      (WidgetTester tester) async {
+    testWidgets('can be tapped when onTap is provided',
+        (WidgetTester tester) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -95,18 +93,16 @@ void main() {
 
       // Tap the card
       await tester.tap(find.byType(GestureDetector));
-      
+
       expect(tapped, isTrue);
     });
 
-    testWidgets('renders without onTap callback', 
-      (WidgetTester tester) async {
+    testWidgets('renders without onTap callback', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
             totalAmount: 500.0,
             expenseCount: 5,
-            onTap: null,
           ),
         ),
       );
@@ -114,8 +110,7 @@ void main() {
       expect(find.byType(ReimbursableSummaryCard), findsOneWidget);
     });
 
-    testWidgets('handles zero amount', 
-      (WidgetTester tester) async {
+    testWidgets('handles zero amount', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -128,8 +123,7 @@ void main() {
       expect(find.byType(ReimbursableSummaryCard), findsOneWidget);
     });
 
-    testWidgets('handles large amounts', 
-      (WidgetTester tester) async {
+    testWidgets('handles large amounts', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -142,8 +136,8 @@ void main() {
       expect(find.byType(ReimbursableSummaryCard), findsOneWidget);
     });
 
-    testWidgets('has proper styling with gradient', 
-      (WidgetTester tester) async {
+    testWidgets('has proper styling with gradient',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           const ReimbursableSummaryCard(
@@ -158,10 +152,9 @@ void main() {
       expect(containerFinder, findsWidgets);
     });
 
-    testWidgets('maintains consistent layout', 
-      (WidgetTester tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(1200, 800);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+    testWidgets('maintains consistent layout', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      addTearDown(tester.view.resetPhysicalSize);
 
       await tester.pumpWidget(
         createTestWidget(

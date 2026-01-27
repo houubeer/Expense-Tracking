@@ -17,18 +17,18 @@ enum ReimbursableFilter {
 
 class ExpenseFilters extends ConsumerWidget {
   const ExpenseFilters({
-    super.key,
     required this.selectedCategoryId,
+    required this.onCategoryChanged,
+    required this.onDateChanged,
+    required this.onReimbursableFilterChanged,
+    super.key,
     this.selectedDate,
     this.startDate,
     this.endDate,
     this.reimbursableFilter = ReimbursableFilter.all,
-    required this.onCategoryChanged,
-    required this.onDateChanged,
     this.onDateRangeChanged,
-    required this.onReimbursableFilterChanged,
   });
-  
+
   final int? selectedCategoryId;
   final DateTime? selectedDate;
   final DateTime? startDate;
@@ -74,7 +74,9 @@ class ExpenseFilters extends ConsumerWidget {
   }
 
   Widget _buildReimbursableFilter(
-      BuildContext context, ColorScheme colorScheme) {
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       decoration: BoxDecoration(
@@ -180,14 +182,15 @@ class ExpenseFilters extends ConsumerWidget {
                 semanticLabel: AppLocalizations.of(context)!.semanticFilter,
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text(AppLocalizations.of(context)!.labelCategory,
-                  style: AppTextStyles.bodyMedium),
+              Text(
+                AppLocalizations.of(context)!.labelCategory,
+                style: AppTextStyles.bodyMedium,
+              ),
             ],
           ),
           isExpanded: true,
           items: [
             DropdownMenuItem<int?>(
-              value: null,
               child: Row(
                 children: [
                   Icon(

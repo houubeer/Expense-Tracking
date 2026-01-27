@@ -6,7 +6,6 @@ import 'package:expense_tracking_desktop_app/features/home/providers/dashboard_p
 import 'package:rxdart/rxdart.dart';
 
 class DashboardViewModel extends ChangeNotifier {
-
   DashboardViewModel(this._budgetReader, this._expenseService);
   final IDashboardBudgetReader _budgetReader;
   final IExpenseService _expenseService;
@@ -18,12 +17,17 @@ class DashboardViewModel extends ChangeNotifier {
     // can produce an initial DashboardState immediately instead of
     // waiting for all streams to emit (which can cause the UI to show
     // an indefinite loading state if one source is delayed).
-    final budgets$ = _budgetReader.watchActiveCategoryBudgets().startWith(<CategoryBudgetView>[]);
+    final budgets$ = _budgetReader
+        .watchActiveCategoryBudgets()
+        .startWith(<CategoryBudgetView>[]);
     final totalBudget$ = _budgetReader.watchTotalBudget().startWith(0.0);
     final totalExpenses$ = _budgetReader.watchTotalSpent().startWith(0.0);
-    final expenses$ = _expenseService.watchExpensesWithCategory().startWith(<ExpenseWithCategory>[]);
+    final expenses$ = _expenseService
+        .watchExpensesWithCategory()
+        .startWith(<ExpenseWithCategory>[]);
 
-    return Rx.combineLatest4<List<CategoryBudgetView>, double, double, List<ExpenseWithCategory>, DashboardState>(
+    return Rx.combineLatest4<List<CategoryBudgetView>, double, double,
+        List<ExpenseWithCategory>, DashboardState>(
       budgets$,
       totalBudget$,
       totalExpenses$,
@@ -35,9 +39,8 @@ class DashboardViewModel extends ChangeNotifier {
         List<ExpenseWithCategory> expenses,
       ) {
         // Calculate reimbursable totals from expenses
-        final reimbursableExpenses = expenses
-            .where((e) => e.expense.isReimbursable)
-            .toList();
+        final reimbursableExpenses =
+            expenses.where((e) => e.expense.isReimbursable).toList();
         final reimbursableTotal = reimbursableExpenses.fold<double>(
           0.0,
           (sum, e) => sum + e.expense.amount,

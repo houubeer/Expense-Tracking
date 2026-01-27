@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/subscript
 
 /// Repository for managing subscription data with in-memory mocked storage
 class SubscriptionRepository {
-
   SubscriptionRepository() {
     _initializeMockData();
   }

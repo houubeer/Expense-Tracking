@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'expenses_table.dart';
+import 'package:expense_tracking_desktop_app/database/tables/expenses_table.dart';
 
 /// Receipts table - supports multiple receipts per expense (0:N relationship)
 /// Allows users to attach multiple receipt images/PDFs to a single expense
@@ -8,8 +8,11 @@ class Receipts extends Table {
   IntColumn get id => integer().autoIncrement()();
 
   /// Foreign key to expenses table
-  IntColumn get expenseId => integer().references(Expenses, #id,
-      onDelete: KeyAction.cascade)();
+  IntColumn get expenseId => integer().references(
+        Expenses,
+        #id,
+        onDelete: KeyAction.cascade,
+      )();
 
   /// Local file path (for offline support)
   TextColumn get localPath => text().nullable()();
@@ -27,8 +30,7 @@ class Receipts extends Table {
   IntColumn get fileSize => integer().nullable()();
 
   /// Upload status: 'local', 'uploading', 'uploaded', 'failed'
-  TextColumn get uploadStatus =>
-      text().withDefault(const Constant('local'))();
+  TextColumn get uploadStatus => text().withDefault(const Constant('local'))();
 
   /// Timestamp when receipt was added
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

@@ -26,7 +26,6 @@ enum SyncStatus {
 /// - Last-write-wins conflict resolution
 /// - Automatic retry with exponential backoff
 class SyncService {
-
   SyncService({
     required AppDatabase database,
     required SupabaseService supabaseService,
@@ -70,21 +69,24 @@ class SyncService {
 
     // Start listening to connectivity changes
     _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
-          _handleConnectivityChange,
-        );
+      (results) async {
+        await _handleConnectivityChange(results);
+      },
+    );
 
     // If online and authenticated, start sync
     if (_isOnline && _supabaseService.isAuthenticated) {
       await _performFullSync();
       _startPeriodicSync();
-      _setupRealtimeSubscriptions();
+      await _setupRealtimeSubscriptions();
     }
 
     _logger.info('SyncService: Initialized. Online: $_isOnline');
   }
 
   /// Handle connectivity changes
-  void _handleConnectivityChange(List<ConnectivityResult> results) {
+  Future<void> _handleConnectivityChange(
+      List<ConnectivityResult> results,) async {
     final wasOnline = _isOnline;
     _isOnline = !results.contains(ConnectivityResult.none);
 
@@ -94,9 +96,9 @@ class SyncService {
       // Coming back online
       _updateStatus(SyncStatus.idle);
       if (_supabaseService.isAuthenticated) {
-        _performFullSync();
+        await _performFullSync();
         _startPeriodicSync();
-        _setupRealtimeSubscriptions();
+        await _setupRealtimeSubscriptions();
       }
     } else if (!_isOnline && wasOnline) {
       // Going offline
@@ -134,7 +136,7 @@ class SyncService {
 
     // If online, try to sync immediately
     if (_isOnline && _supabaseService.isAuthenticated) {
-      _processPendingQueue();
+      await _processPendingQueue();
     }
   }
 
@@ -158,7 +160,7 @@ class SyncService {
 
     // If online, try to sync immediately
     if (_isOnline && _supabaseService.isAuthenticated) {
-      _processPendingQueue();
+      await _processPendingQueue();
     }
   }
 
@@ -181,8 +183,11 @@ class SyncService {
       _updateStatus(SyncStatus.idle);
       _logger.info('SyncService: Full sync completed');
     } catch (e, stack) {
-      _logger.error('SyncService: Full sync failed',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Full sync failed',
+        error: e,
+        stackTrace: stack,
+      );
       _updateStatus(SyncStatus.error);
     }
   }
@@ -226,7 +231,8 @@ class SyncService {
         return;
       }
 
-      final serverCategories = await _supabaseService.getCategories(profile.organizationId!);
+      final serverCategories =
+          await _supabaseService.getCategories(profile.organizationId);
 
       for (final serverCat in serverCategories) {
         // Check if we have this category locally by server ID
@@ -252,8 +258,11 @@ class SyncService {
         }
       }
     } catch (e, stack) {
-      _logger.error('SyncService: Pull categories failed',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Pull categories failed',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -268,7 +277,8 @@ class SyncService {
         return;
       }
 
-      final serverExpenses = await _supabaseService.getExpenses(profile.organizationId!);
+      final serverExpenses =
+          await _supabaseService.getExpenses(profile.organizationId);
 
       for (final serverExp in serverExpenses) {
         // Check if we have this expense locally by server ID
@@ -294,8 +304,11 @@ class SyncService {
         }
       }
     } catch (e, stack) {
-      _logger.error('SyncService: Pull expenses failed',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Pull expenses failed',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -307,7 +320,8 @@ class SyncService {
     try {
       final pendingItems = await _syncQueueDao.getPendingItems();
       _logger.debug(
-          'SyncService: Processing ${pendingItems.length} pending items',);
+        'SyncService: Processing ${pendingItems.length} pending items',
+      );
 
       for (final item in pendingItems) {
         try {
@@ -315,7 +329,8 @@ class SyncService {
           await _syncQueueDao.markSynced(item.id);
         } catch (e) {
           _logger.warning(
-              'SyncService: Failed to process queue item ${item.id}: $e',);
+            'SyncService: Failed to process queue item ${item.id}: $e',
+          );
           await _syncQueueDao.markFailed(item.id, e.toString());
         }
       }
@@ -335,8 +350,11 @@ class SyncService {
       // Cleanup old synced items
       await _syncQueueDao.cleanupSyncedItems();
     } catch (e, stack) {
-      _logger.error('SyncService: Queue processing failed',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Queue processing failed',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -467,37 +485,41 @@ class SyncService {
     final colorInt = colorValue is int
         ? colorValue
         : int.tryParse(colorValue.toString()) ?? 0xFF000000;
-    await _database
-        .into(_database.categories)
-        .insert(CategoriesCompanion.insert(
-          name: data['name'] as String,
-          iconCodePoint: data['icon'] as String,
-          color: colorInt,
-          serverId: Value(int.tryParse(data['id'].toString())),
-          organizationId: Value(data['organization_id'] as String?),
-          userId: Value(data['user_id'] as String?),
-          isSynced: const Value(true),
-          syncedAt: Value(DateTime.now()),
-          version: Value(data['version'] as int? ?? 1),
-        ),);
+    await _database.into(_database.categories).insert(
+          CategoriesCompanion.insert(
+            name: data['name'] as String,
+            iconCodePoint: data['icon'] as String,
+            color: colorInt,
+            serverId: Value(int.tryParse(data['id'].toString())),
+            organizationId: Value(data['organization_id'] as String?),
+            userId: Value(data['user_id'] as String?),
+            isSynced: const Value(true),
+            syncedAt: Value(DateTime.now()),
+            version: Value(data['version'] as int? ?? 1),
+          ),
+        );
   }
 
   Future<void> _updateCategoryFromServer(
-      int localId, Map<String, dynamic> data,) async {
+    int localId,
+    Map<String, dynamic> data,
+  ) async {
     final colorValue = data['color'];
     final colorInt = colorValue is int
         ? colorValue
         : int.tryParse(colorValue.toString()) ?? 0xFF000000;
     await (_database.update(_database.categories)
           ..where((c) => c.id.equals(localId)))
-        .write(CategoriesCompanion(
-      name: Value(data['name'] as String),
-      iconCodePoint: Value(data['icon'] as String),
-      color: Value(colorInt),
-      isSynced: const Value(true),
-      syncedAt: Value(DateTime.now()),
-      version: Value(data['version'] as int? ?? 1),
-    ),);
+        .write(
+      CategoriesCompanion(
+        name: Value(data['name'] as String),
+        iconCodePoint: Value(data['icon'] as String),
+        color: Value(colorInt),
+        isSynced: const Value(true),
+        syncedAt: Value(DateTime.now()),
+        version: Value(data['version'] as int? ?? 1),
+      ),
+    );
   }
 
   Future<void> _insertExpenseFromServer(Map<String, dynamic> data) async {
@@ -506,27 +528,32 @@ class SyncService {
     final category = await _findLocalCategoryByServerId(categoryServerId);
     if (category == null) {
       _logger.warning(
-          'SyncService: Category not found for expense: $categoryServerId',);
+        'SyncService: Category not found for expense: $categoryServerId',
+      );
       return;
     }
 
-    await _database.into(_database.expenses).insert(ExpensesCompanion.insert(
-          categoryId: category.id,
-          amount: (data['amount'] as num).toDouble(),
-          description: data['description'] as String? ?? '',
-          date: DateTime.parse(data['expense_date'] as String),
-          serverId: Value(int.tryParse(data['id'].toString())),
-          organizationId: Value(data['organization_id'] as String?),
-          userId: Value(data['user_id'] as String?),
-          receiptUrl: Value(data['receipt_url'] as String?),
-          isSynced: const Value(true),
-          syncedAt: Value(DateTime.now()),
-          version: Value(data['version'] as int? ?? 1),
-        ),);
+    await _database.into(_database.expenses).insert(
+          ExpensesCompanion.insert(
+            categoryId: category.id,
+            amount: (data['amount'] as num).toDouble(),
+            description: data['description'] as String? ?? '',
+            date: DateTime.parse(data['expense_date'] as String),
+            serverId: Value(int.tryParse(data['id'].toString())),
+            organizationId: Value(data['organization_id'] as String?),
+            userId: Value(data['user_id'] as String?),
+            receiptUrl: Value(data['receipt_url'] as String?),
+            isSynced: const Value(true),
+            syncedAt: Value(DateTime.now()),
+            version: Value(data['version'] as int? ?? 1),
+          ),
+        );
   }
 
   Future<void> _updateExpenseFromServer(
-      int localId, Map<String, dynamic> data,) async {
+    int localId,
+    Map<String, dynamic> data,
+  ) async {
     // Find local category by server ID
     int? categoryId;
     final categoryServerId = data['category_id'] as String?;
@@ -537,37 +564,46 @@ class SyncService {
 
     await (_database.update(_database.expenses)
           ..where((e) => e.id.equals(localId)))
-        .write(ExpensesCompanion(
-      categoryId: categoryId != null ? Value(categoryId) : const Value.absent(),
-      amount: Value((data['amount'] as num).toDouble()),
-      description: Value(data['description'] as String? ?? ''),
-      date: Value(DateTime.parse(data['expense_date'] as String)),
-      receiptUrl: Value(data['receipt_url'] as String?),
-      isSynced: const Value(true),
-      syncedAt: Value(DateTime.now()),
-      version: Value(data['version'] as int? ?? 1),
-    ),);
+        .write(
+      ExpensesCompanion(
+        categoryId:
+            categoryId != null ? Value(categoryId) : const Value.absent(),
+        amount: Value((data['amount'] as num).toDouble()),
+        description: Value(data['description'] as String? ?? ''),
+        date: Value(DateTime.parse(data['expense_date'] as String)),
+        receiptUrl: Value(data['receipt_url'] as String?),
+        isSynced: const Value(true),
+        syncedAt: Value(DateTime.now()),
+        version: Value(data['version'] as int? ?? 1),
+      ),
+    );
   }
 
   Future<void> _updateLocalCategoryServerId(
-      int localId, String serverId,) async {
+    int localId,
+    String serverId,
+  ) async {
     await (_database.update(_database.categories)
           ..where((c) => c.id.equals(localId)))
-        .write(CategoriesCompanion(
-      serverId: Value(int.tryParse(serverId)),
-      isSynced: const Value(true),
-      syncedAt: Value(DateTime.now()),
-    ),);
+        .write(
+      CategoriesCompanion(
+        serverId: Value(int.tryParse(serverId)),
+        isSynced: const Value(true),
+        syncedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   Future<void> _updateLocalExpenseServerId(int localId, String serverId) async {
     await (_database.update(_database.expenses)
           ..where((e) => e.id.equals(localId)))
-        .write(ExpensesCompanion(
-      serverId: Value(int.tryParse(serverId)),
-      isSynced: const Value(true),
-      syncedAt: Value(DateTime.now()),
-    ),);
+        .write(
+      ExpensesCompanion(
+        serverId: Value(int.tryParse(serverId)),
+        isSynced: const Value(true),
+        syncedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   // ==================== Periodic Sync ====================
@@ -599,7 +635,8 @@ class SyncService {
       final orgId = profile?.organizationId;
       if (orgId == null) {
         _logger.warning(
-            'SyncService: No organization ID found for real-time subscriptions',);
+          'SyncService: No organization ID found for real-time subscriptions',
+        );
         return;
       }
 
@@ -621,8 +658,11 @@ class SyncService {
 
       _logger.info('SyncService: Real-time subscriptions set up');
     } catch (e, stack) {
-      _logger.error('SyncService: Failed to set up real-time subscriptions',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Failed to set up real-time subscriptions',
+        error: e,
+        stackTrace: stack,
+      );
     }
   }
 
@@ -678,10 +718,14 @@ class SyncService {
             .go();
       }
       _logger.debug(
-          'SyncService: Deleted local record for $table with server ID $serverId',);
+        'SyncService: Deleted local record for $table with server ID $serverId',
+      );
     } catch (e, stack) {
-      _logger.error('SyncService: Failed to delete local record',
-          error: e, stackTrace: stack,);
+      _logger.error(
+        'SyncService: Failed to delete local record',
+        error: e,
+        stackTrace: stack,
+      );
     }
   }
 

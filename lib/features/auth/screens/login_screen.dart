@@ -10,6 +10,7 @@ import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_text_field.dart';
 import 'package:expense_tracking_desktop_app/features/auth/widgets/auth_button.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
+import 'package:expense_tracking_desktop_app/features/auth/providers/auth_provider.dart';
 
 /// Login screen for user authentication
 class LoginScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _rememberMe = true;
+  bool _rememberMe = false;
   String? _errorMessage;
 
   @override
@@ -57,9 +58,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (_rememberMe) {
         await box.put('remembered_email', _emailController.text.trim());
         await box.put('remember_me', true);
+        await box.put('session_persistent', true);
       } else {
         await box.delete('remembered_email');
         await box.put('remember_me', false);
+        await box.put('session_persistent', false);
       }
     } catch (_) {
       // Ignore errors saving credentials
@@ -92,51 +95,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
-      final supabaseService = ref.read(supabaseServiceProvider);
-      final result = await supabaseService.signIn(
+      // Use authNotifierProvider instead of supabaseService directly
+      // This ensures the auth state is properly updated for the sidebar
+      final authNotifier = ref.read(authNotifierProvider.notifier);
+      await authNotifier.signIn(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
 
       if (!mounted) return;
 
-      // Check if login was successful
-      if (result['success'] != true) {
-        String message = result['message'] as String? ?? 'Login failed';
-
-        // Make error messages more user-friendly
-        if (message.toLowerCase().contains('invalid login credentials')) {
-          message =
-              'The email or password you entered is incorrect. Please try again.';
-        } else if (message.toLowerCase().contains('email not confirmed')) {
-          message = 'Please verify your email address before signing in.';
-        } else if (message.toLowerCase().contains('user not found')) {
-          message = 'No account found with this email address.';
-        }
-
-        setState(() {
-          _errorMessage = message;
-          _isLoading = false;
-        });
-        // Auto-dismiss error after 2 seconds
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            setState(() => _errorMessage = null);
-          }
-        });
-        return;
-      }
-
       // Save credentials if remember me is checked
       await _saveCredentials();
 
       if (!mounted) return;
 
-      // Get user profile
-      final user = result['user'] as UserProfile?;
+      // Get the updated auth state
+      final authState = ref.read(authNotifierProvider);
+      final user = authState.userProfile;
+      
       if (user != null) {
-        // Check if user is active
-        if (!user.isActive && user.role != UserRole.owner) {
+        // Check if user is pending approval
+        if (authState.isPendingApproval) {
           // Navigate to pending approval screen
           context.go(
             '/auth/pending',
@@ -177,7 +157,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         children: [
           // Left side - Background image
           Expanded(
-            flex: 1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -219,7 +198,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           'assets/logos/app_logo.png',
                           width: 64,
                           height: 64,
-                          errorBuilder: (context, error, stackTrace) => Icon(
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
                             Icons.account_balance_wallet_rounded,
                             size: 48,
                             color: AppColors.primary,
@@ -265,7 +245,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           // Right side - Login form in Card
           Expanded(
-            flex: 1,
             child: Container(
               color: AppColors.surfaceAlt,
               child: Center(
@@ -318,7 +297,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.error_outline,
                                         color: AppColors.red,
                                         size: 20,
@@ -349,8 +328,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     return 'Please enter your email';
                                   }
                                   if (!RegExp(
-                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                      .hasMatch(value)) {
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -372,8 +351,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         : Icons.visibility_outlined,
                                     color: AppColors.textSecondary,
                                   ),
-                                  onPressed: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -403,7 +383,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                             });
                                           },
                                           activeColor: AppColors.primary,
-                                          side: BorderSide(
+                                          side: const BorderSide(
                                             color: AppColors.textSecondary,
                                           ),
                                         ),
@@ -490,7 +470,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.info_outline,
                                       color: AppColors.textSecondary,
                                       size: 18,

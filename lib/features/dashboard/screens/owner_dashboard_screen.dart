@@ -62,13 +62,15 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
 
       setState(() {
         _pendingManagers = pending
-            .map((org) => {
-                  'id': org.id,
-                  'name': org.managerName ?? 'Unknown',
-                  'email': org.managerEmail,
-                  'company': org.name,
-                  'date': org.createdAt,
-                })
+            .map(
+              (org) => {
+                'id': org.id,
+                'name': org.managerName ?? 'Unknown',
+                'email': org.managerEmail,
+                'company': org.name,
+                'date': org.createdAt,
+              },
+            )
             .toList();
         _totalCompanies = active.length; // approved status in DB
         _totalUsers = usersCount;
@@ -87,20 +89,96 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
   Future<void> _handleApprove(String orgId, String managerName) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Approve Manager'),
-        content: Text('Are you sure you want to approve $managerName?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        ),
+        child: Container(
+          width: 400,
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              // Title
+              Text(
+                'Approve Manager Request',
+                style: AppTextStyles.heading3.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              // Content
+              Text(
+                'Are you sure you want to approve $managerName?',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'They will be able to access the platform and manage their organization.',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              // Actions
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
+                        ),
+                      ),
+                      child: const Text('Approve'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Approve', style: TextStyle(color: Colors.white)),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -133,46 +211,118 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
   Future<void> _handleDelete(String orgId, String managerName) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Manager & Organization'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Are you sure you want to delete $managerName?'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+        ),
+        child: Container(
+          width: 400,
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.red,
+                  size: 32,
+                ),
               ),
-              child: const Row(
+              const SizedBox(height: AppSpacing.lg),
+              // Title
+              Text(
+                'Reject Manager Request',
+                style: AppTextStyles.heading3.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              // Content
+              Text(
+                "Are you sure you want to reject $managerName's request?",
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              // Warning box
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  border: Border.all(
+                    color: Colors.red.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.red.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        'This action cannot be undone. The organization and user account will be permanently deleted.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Colors.red.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              // Actions
+              Row(
                 children: [
-                  Icon(Icons.warning, color: Colors.red, size: 20),
-                  SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      'This action cannot be undone. The organization and user account will be permanently deleted.',
-                      style: TextStyle(fontSize: 12, color: Colors.red),
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      style: OutlinedButton.styleFrom(
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding:
+                            const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
+                        ),
+                      ),
+                      child: const Text('Reject'),
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
 
@@ -185,7 +335,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Organization and manager deleted'),
+            content: Text('Request rejected'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -345,7 +495,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
   }
 
   Widget _buildStatCard(
-      String title, String value, IconData icon, Color color) {
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -353,7 +507,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -365,11 +519,11 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, color: Colors.white.withOpacity(0.8), size: 28),
+              Icon(icon, color: Colors.white.withValues(alpha: 0.8), size: 28),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, color: Colors.white, size: 20),
@@ -389,7 +543,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -407,7 +561,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -431,12 +585,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${_recentOrganizations.length} active',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.primary,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -497,10 +651,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(
+          child: const Icon(
             Icons.business,
             color: AppColors.primary,
             size: 20,
@@ -537,12 +691,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
             vertical: 4,
           ),
           decoration: BoxDecoration(
-            color: AppColors.green.withOpacity(0.1),
+            color: AppColors.green.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Text(
             formattedDate,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.green,
               fontSize: 11,
               fontWeight: FontWeight.w500,
@@ -560,7 +714,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -577,10 +731,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.orange.withOpacity(0.1),
+                    color: AppColors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.pending_actions,
                     color: AppColors.orange,
                     size: 20,
@@ -683,12 +837,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: AppColors.primary.withOpacity(0.1),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 child: Text(
                   (manager['name'] as String? ?? 'U').isNotEmpty
                       ? (manager['name'] as String? ?? 'U')[0].toUpperCase()
                       : 'U',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -723,10 +877,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.orange.withOpacity(0.1),
+                  color: AppColors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text(
+                child: const Text(
                   'Pending',
                   style: TextStyle(
                     color: AppColors.orange,

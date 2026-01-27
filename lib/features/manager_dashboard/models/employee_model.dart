@@ -15,17 +15,6 @@ enum EmployeeStatus {
 
 /// Employee model representing a company employee
 class Employee {
-  final String id;
-  final String name;
-  final String role;
-  final String department;
-  final String email;
-  final String phone;
-  final DateTime hireDate;
-  final EmployeeStatus status;
-  final String? avatarUrl;
-  final String? organizationId;
-
   const Employee({
     required this.id,
     required this.name,
@@ -38,15 +27,6 @@ class Employee {
     this.avatarUrl,
     this.organizationId,
   });
-
-  /// Get initials from employee name for avatar display
-  String get initials {
-    final parts = name.split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.substring(0, 1).toUpperCase();
-  }
 
   /// Create Employee from JSON (robust, supports settings/department fallback)
   factory Employee.fromJson(Map<String, dynamic> json) {
@@ -71,14 +51,37 @@ class Employee {
       role: json['role'] as String,
       department: dept,
       email: json['email'] as String,
-      phone: json['phone'] as String? ?? '',
+      phone: json['phone'] as String? ??
+          settings['phone'] as String? ??
+          '',
       hireDate: json['hireDate'] != null || json['hire_date'] != null
           ? DateTime.parse((json['hire_date'] ?? json['hireDate']) as String)
-          : DateTime.now(),
+          : (settings['hire_date'] != null
+              ? DateTime.parse(settings['hire_date'] as String)
+              : DateTime.now()),
       status: _parseStatus(json['status']),
       avatarUrl: json['avatarUrl'] as String? ?? json['avatar_url'] as String?,
       organizationId: json['organization_id'] as String?,
     );
+  }
+  final String id;
+  final String name;
+  final String role;
+  final String department;
+  final String email;
+  final String phone;
+  final DateTime hireDate;
+  final EmployeeStatus status;
+  final String? avatarUrl;
+  final String? organizationId;
+
+  /// Get initials from employee name for avatar display
+  String get initials {
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.substring(0, 1).toUpperCase();
   }
 
   /// Parse employee status from various formats
@@ -98,10 +101,12 @@ class Employee {
       'id': id,
       'full_name': name,
       'role': role,
-      'settings': {'department': department},
+      'settings': {
+        'department': department,
+        'phone': phone,
+        'hire_date': hireDate.toIso8601String(),
+      },
       'email': email,
-      'phone': phone,
-      'hire_date': hireDate.toIso8601String(),
       'status': status.name,
       'avatar_url': avatarUrl,
       'organization_id': organizationId,

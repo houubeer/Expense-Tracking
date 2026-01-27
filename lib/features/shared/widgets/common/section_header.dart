@@ -3,16 +3,15 @@ import 'package:expense_tracking_desktop_app/constants/text_styles.dart';
 
 /// A reusable section header with optional action button
 class SectionHeader extends StatelessWidget {
-  final String title;
-  final String? actionText;
-  final VoidCallback? onActionPressed;
-
   const SectionHeader({
-    super.key,
     required this.title,
+    super.key,
     this.actionText,
     this.onActionPressed,
   });
+  final String title;
+  final String? actionText;
+  final VoidCallback? onActionPressed;
 
   @override
   Widget build(BuildContext context) {

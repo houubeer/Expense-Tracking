@@ -1,6 +1,5 @@
 /// Department budget model for tracking budget allocation and usage
 class DepartmentBudget {
-
   const DepartmentBudget({
     required this.departmentName,
     required this.totalBudget,

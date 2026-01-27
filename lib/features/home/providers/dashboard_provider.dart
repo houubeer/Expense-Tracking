@@ -7,7 +7,6 @@ import 'package:expense_tracking_desktop_app/features/home/view_models/dashboard
 
 /// Dashboard state model - holds all computed dashboard data
 class DashboardState {
-
   const DashboardState({
     required this.activeCategories,
     required this.totalBudget,

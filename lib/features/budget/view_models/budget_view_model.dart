@@ -15,7 +15,6 @@ import 'package:expense_tracking_desktop_app/core/exceptions.dart';
 
 /// Filter model for budget categories
 class BudgetFilter {
-
   const BudgetFilter({
     this.searchQuery = '',
     this.statusFilter = 'All',
@@ -40,9 +39,11 @@ class BudgetFilter {
 
 /// ViewModel for budget management - handles ALL business logic, DB operations, and state
 class BudgetViewModel extends ChangeNotifier {
-
   BudgetViewModel(
-      this._categoryReader, this._categoryWriter, this._errorReporting,);
+    this._categoryReader,
+    this._categoryWriter,
+    this._errorReporting,
+  );
   final ICategoryReader _categoryReader;
   final ICategoryWriter _categoryWriter;
   final ErrorReportingService _errorReporting;
@@ -112,8 +113,11 @@ class BudgetViewModel extends ChangeNotifier {
       );
       _logger.info('BudgetViewModel: Category added successfully - name=$name');
     } catch (e, stackTrace) {
-      _logger.error('BudgetViewModel: Failed to add category',
-          error: e, stackTrace: stackTrace,);
+      _logger.error(
+        'BudgetViewModel: Failed to add category',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       // Only report unexpected errors
       if (ErrorMapper.shouldReportError(e)) {
@@ -137,12 +141,14 @@ class BudgetViewModel extends ChangeNotifier {
       _logger.info('BudgetViewModel: Deleting category - id=$categoryId');
       await _categoryWriter.deleteCategory(categoryId);
       _logger.info(
-          'BudgetViewModel: Category deleted successfully - id=$categoryId',);
+        'BudgetViewModel: Category deleted successfully - id=$categoryId',
+      );
     } catch (e, stackTrace) {
       _logger.error(
-          'BudgetViewModel: Failed to delete category - id=$categoryId',
-          error: e,
-          stackTrace: stackTrace,);
+        'BudgetViewModel: Failed to delete category - id=$categoryId',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       // Only report unexpected errors
       if (ErrorMapper.shouldReportError(e)) {

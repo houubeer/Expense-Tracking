@@ -38,4 +38,3 @@ class LocaleNotifier extends StateNotifier<Locale> {
     }
   }
 }
-

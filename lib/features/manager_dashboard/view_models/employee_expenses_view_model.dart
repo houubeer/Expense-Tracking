@@ -7,7 +7,6 @@ import 'package:expense_tracking_desktop_app/features/manager_dashboard/services
 /// View model for Employee Expenses screen
 /// Manages expense data, filters, and analytics
 class EmployeeExpensesViewModel extends ChangeNotifier {
-
   EmployeeExpensesViewModel(
     this._expenseRepository,
     this._budgetRepository,
@@ -54,7 +53,8 @@ class EmployeeExpensesViewModel extends ChangeNotifier {
     // Apply date range filter
     if (_startDate != null && _endDate != null) {
       filtered = filtered.where((exp) {
-        return exp.date.isAfter(_startDate!.subtract(const Duration(days: 1))) &&
+        return exp.date
+                .isAfter(_startDate!.subtract(const Duration(days: 1))) &&
             exp.date.isBefore(_endDate!.add(const Duration(days: 1)));
       }).toList();
     }

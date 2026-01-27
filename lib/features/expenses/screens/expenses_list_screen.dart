@@ -47,7 +47,8 @@ class ExpensesListScreen extends ConsumerWidget {
                     onCategoryChanged: viewModel.setCategoryFilter,
                     onDateChanged: viewModel.setDateFilter,
                     onDateRangeChanged: viewModel.setDateRangeFilter,
-                    onReimbursableFilterChanged: viewModel.setReimbursableFilter,
+                    onReimbursableFilterChanged:
+                        viewModel.setReimbursableFilter,
                   ),
                 ),
               ],

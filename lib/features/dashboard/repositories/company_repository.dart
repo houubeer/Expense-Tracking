@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/company_m
 
 /// Repository for managing company data with in-memory mocked storage
 class CompanyRepository {
-
   CompanyRepository() {
     _initializeMockData();
   }

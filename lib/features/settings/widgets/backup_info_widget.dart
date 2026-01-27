@@ -6,9 +6,9 @@ import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// Widget showing information about the last successful backup
 class BackupInfoWidget extends StatelessWidget {
-
   const BackupInfoWidget({
-    required this.backupInfo, super.key,
+    required this.backupInfo,
+    super.key,
     this.onViewDetails,
   });
   final BackupInfo backupInfo;

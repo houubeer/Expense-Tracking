@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/repositories/pla
 /// Service for calculating platform-wide expense analytics
 /// Provides aggregated metrics and insights across all companies
 class ExpenseAnalyticsService {
-
   ExpenseAnalyticsService(this._expenseRepository);
   final PlatformExpenseRepository _expenseRepository;
 
@@ -22,11 +21,11 @@ class ExpenseAnalyticsService {
   Map<String, double> getCategoryPercentages() {
     final breakdown = getCategoryBreakdown();
     final total = breakdown.values.fold(0.0, (sum, amount) => sum + amount);
-    
+
     if (total == 0) return {};
-    
-    return breakdown.map((category, amount) => 
-      MapEntry(category, (amount / total) * 100),
+
+    return breakdown.map(
+      (category, amount) => MapEntry(category, (amount / total) * 100),
     );
   }
 
@@ -58,17 +57,17 @@ class ExpenseAnalyticsService {
   String getTopSpendingCategory() {
     final breakdown = getCategoryBreakdown();
     if (breakdown.isEmpty) return 'N/A';
-    
+
     var topCategory = '';
     var maxAmount = 0.0;
-    
+
     breakdown.forEach((category, amount) {
       if (amount > maxAmount) {
         maxAmount = amount;
         topCategory = category;
       }
     });
-    
+
     return topCategory;
   }
 
@@ -84,7 +83,7 @@ class ExpenseAnalyticsService {
     final growth = calculateMonthlyGrowth();
     final topCategory = getTopSpendingCategory();
     final categoryBreakdown = getCategoryBreakdown();
-    
+
     return ExpenseStatistics(
       totalExpenses: total,
       monthlyGrowth: growth,
@@ -96,7 +95,6 @@ class ExpenseAnalyticsService {
 
 /// Data class for expense statistics
 class ExpenseStatistics {
-
   const ExpenseStatistics({
     required this.totalExpenses,
     required this.monthlyGrowth,

@@ -5,9 +5,10 @@ import 'package:expense_tracking_desktop_app/constants/strings.dart';
 
 /// Confirmation dialog for deleting a category
 class DeleteCategoryDialog extends StatelessWidget {
-
   const DeleteCategoryDialog({
-    required this.category, required this.onConfirm, super.key,
+    required this.category,
+    required this.onConfirm,
+    super.key,
   });
   final Category category;
   final VoidCallback onConfirm;

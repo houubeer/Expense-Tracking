@@ -7,11 +7,10 @@ import 'package:expense_tracking_desktop_app/services/logger_service.dart';
 ///
 /// Handles uploading receipts to Supabase Storage and updating local database
 class ReceiptUploadService {
+  ReceiptUploadService(this._database, this._supabaseService);
   final AppDatabase _database;
   final SupabaseService _supabaseService;
   final _logger = LoggerService.instance;
-
-  ReceiptUploadService(this._database, this._supabaseService);
 
   /// Upload a single receipt to Supabase Storage
   ///
@@ -63,8 +62,11 @@ class ReceiptUploadService {
         return null;
       }
     } catch (e, stackTrace) {
-      _logger.error('Error uploading receipt $receiptId',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'Error uploading receipt $receiptId',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
       // Mark as failed
       try {
@@ -114,11 +116,15 @@ class ReceiptUploadService {
       }
 
       _logger.info(
-          'Uploaded ${uploadedUrls.length}/${receipts.length} receipts for expense $expenseId');
+        'Uploaded ${uploadedUrls.length}/${receipts.length} receipts for expense $expenseId',
+      );
       return uploadedUrls;
     } catch (e, stackTrace) {
-      _logger.error('Error uploading receipts for expense $expenseId',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'Error uploading receipts for expense $expenseId',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return [];
     }
   }
@@ -131,7 +137,8 @@ class ReceiptUploadService {
       final pendingReceipts = await _database.receiptDao.getPendingUploads();
       int successCount = 0;
 
-      _logger.info('Found ${pendingReceipts.length} pending receipts to upload');
+      _logger
+          .info('Found ${pendingReceipts.length} pending receipts to upload');
 
       for (final receipt in pendingReceipts) {
         if (receipt.localPath == null) continue;
@@ -147,11 +154,16 @@ class ReceiptUploadService {
         }
       }
 
-      _logger.info('Successfully uploaded $successCount/${pendingReceipts.length} pending receipts');
+      _logger.info(
+        'Successfully uploaded $successCount/${pendingReceipts.length} pending receipts',
+      );
       return successCount;
     } catch (e, stackTrace) {
-      _logger.error('Error uploading pending receipts',
-          error: e, stackTrace: stackTrace);
+      _logger.error(
+        'Error uploading pending receipts',
+        error: e,
+        stackTrace: stackTrace,
+      );
       return 0;
     }
   }

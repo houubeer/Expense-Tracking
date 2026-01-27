@@ -4,9 +4,13 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 
 /// A reusable expense list item widget
 class ExpenseListItem extends StatelessWidget {
-
   const ExpenseListItem({
-    required this.title, required this.category, required this.date, required this.amount, required this.iconColor, super.key,
+    required this.title,
+    required this.category,
+    required this.date,
+    required this.amount,
+    required this.iconColor,
+    super.key,
   });
   final String title;
   final String category;
@@ -25,17 +29,22 @@ class ExpenseListItem extends StatelessWidget {
             color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           ),
-          child: Icon(Icons.receipt_long_rounded,
-              color: iconColor, size: AppSpacing.iconSm,),
+          child: Icon(
+            Icons.receipt_long_rounded,
+            color: iconColor,
+            size: AppSpacing.iconSm,
+          ),
         ),
         const SizedBox(width: AppSpacing.lg),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: AppTextStyles.bodyLarge
-                      .copyWith(fontWeight: FontWeight.w600),),
+              Text(
+                title,
+                style: AppTextStyles.bodyLarge
+                    .copyWith(fontWeight: FontWeight.w600),
+              ),
               Text('$category • $date', style: AppTextStyles.caption),
             ],
           ),

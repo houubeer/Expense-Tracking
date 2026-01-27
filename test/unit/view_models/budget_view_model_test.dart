@@ -77,9 +77,15 @@ void main() {
     test('addCategory reports error on failure', () async {
       final error = Exception('Database error');
       when(mockCategoryWriter.insertCategory(any)).thenThrow(error);
-      when(mockErrorReporting.reportUIError(any, any, any,
-              stackTrace: anyNamed('stackTrace'), context: anyNamed('context')))
-          .thenAnswer((_) async {});
+      when(
+        mockErrorReporting.reportUIError(
+          any,
+          any,
+          any,
+          stackTrace: anyNamed('stackTrace'),
+          context: anyNamed('context'),
+        ),
+      ).thenAnswer((_) async {});
 
       expect(
         () => viewModel.addCategory(
@@ -91,9 +97,15 @@ void main() {
         throwsA(isA<Exception>()),
       );
 
-      verify(mockErrorReporting.reportUIError(any, any, any,
-              stackTrace: anyNamed('stackTrace'), context: anyNamed('context')))
-          .called(1);
+      verify(
+        mockErrorReporting.reportUIError(
+          any,
+          any,
+          any,
+          stackTrace: anyNamed('stackTrace'),
+          context: anyNamed('context'),
+        ),
+      ).called(1);
     });
 
     test('deleteCategory removes category', () async {
@@ -107,15 +119,27 @@ void main() {
     test('deleteCategory reports error on failure', () async {
       final error = Exception('Delete failed');
       when(mockCategoryWriter.deleteCategory(1)).thenThrow(error);
-      when(mockErrorReporting.reportUIError(any, any, any,
-              stackTrace: anyNamed('stackTrace'), context: anyNamed('context')))
-          .thenAnswer((_) async {});
+      when(
+        mockErrorReporting.reportUIError(
+          any,
+          any,
+          any,
+          stackTrace: anyNamed('stackTrace'),
+          context: anyNamed('context'),
+        ),
+      ).thenAnswer((_) async {});
 
       expect(() => viewModel.deleteCategory(1), throwsA(isA<Exception>()));
 
-      verify(mockErrorReporting.reportUIError(any, any, any,
-              stackTrace: anyNamed('stackTrace'), context: anyNamed('context')))
-          .called(1);
+      verify(
+        mockErrorReporting.reportUIError(
+          any,
+          any,
+          any,
+          stackTrace: anyNamed('stackTrace'),
+          context: anyNamed('context'),
+        ),
+      ).called(1);
     });
 
     test('watchFilteredCategories filters by search query', () async {
@@ -147,14 +171,16 @@ void main() {
       when(mockCategoryReader.watchAllCategories())
           .thenAnswer((_) => Stream.value(categories));
 
-      final filter = BudgetFilter(searchQuery: 'food');
+      const filter = BudgetFilter(searchQuery: 'food');
       final stream = viewModel.watchFilteredCategories(filter);
 
       await expectLater(
         stream,
-        emits(predicate<List<Category>>((list) {
-          return list.length == 1 && list.first.name == 'Food';
-        })),
+        emits(
+          predicate<List<Category>>((list) {
+            return list.length == 1 && list.first.name == 'Food';
+          }),
+        ),
       );
     });
 
@@ -187,14 +213,16 @@ void main() {
       when(mockCategoryReader.watchAllCategories())
           .thenAnswer((_) => Stream.value(categories));
 
-      final filter = BudgetFilter(statusFilter: 'Over Budget');
+      const filter = BudgetFilter(statusFilter: 'Over Budget');
       final stream = viewModel.watchFilteredCategories(filter);
 
       await expectLater(
         stream,
-        emits(predicate<List<Category>>((list) {
-          return list.length == 1 && list.first.name == 'Food';
-        })),
+        emits(
+          predicate<List<Category>>((list) {
+            return list.length == 1 && list.first.name == 'Food';
+          }),
+        ),
       );
     });
 
@@ -227,14 +255,16 @@ void main() {
       when(mockCategoryReader.watchAllCategories())
           .thenAnswer((_) => Stream.value(categories));
 
-      final filter = BudgetFilter(sortBy: 'Name');
+      const filter = BudgetFilter();
       final stream = viewModel.watchFilteredCategories(filter);
 
       await expectLater(
         stream,
-        emits(predicate<List<Category>>((list) {
-          return list.length == 2 && list.first.name == 'Food';
-        })),
+        emits(
+          predicate<List<Category>>((list) {
+            return list.length == 2 && list.first.name == 'Food';
+          }),
+        ),
       );
     });
 

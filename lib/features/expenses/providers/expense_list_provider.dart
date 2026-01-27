@@ -6,12 +6,6 @@ import 'package:expense_tracking_desktop_app/providers/app_providers.dart';
 
 /// Filter State
 class ExpenseFilters {
-  final String searchQuery;
-  final int? selectedCategoryId;
-  final DateTime? startDate; // Changed: date range support
-  final DateTime? endDate; // New: date range support
-  final ReimbursableFilter reimbursableFilter;
-
   const ExpenseFilters({
     this.searchQuery = '',
     this.selectedCategoryId,
@@ -19,6 +13,11 @@ class ExpenseFilters {
     this.endDate,
     this.reimbursableFilter = ReimbursableFilter.all,
   });
+  final String searchQuery;
+  final int? selectedCategoryId;
+  final DateTime? startDate; // Changed: date range support
+  final DateTime? endDate; // New: date range support
+  final ReimbursableFilter reimbursableFilter;
 
   ExpenseFilters copyWith({
     String? searchQuery,
@@ -89,55 +88,63 @@ class ExpenseFiltersNotifier extends StateNotifier<ExpenseFilters> {
 
 /// Provider for the filtered expenses list (Stream)
 final filteredExpensesProvider =
-    StreamProvider.autoDispose<List<ExpenseWithCategory>>((ref) {
-  final filters = ref.watch(expenseFiltersProvider);
-  final expenseService = ref.watch(expenseServiceProvider);
+    StreamProvider.autoDispose<List<ExpenseWithCategory>>(
+  (ref) {
+    final filters = ref.watch(expenseFiltersProvider);
+    final expenseService = ref.watch(expenseServiceProvider);
 
-  // Use the service layer which returns the domain-level ExpenseWithCategory
-  // Then apply client-side filtering
-  return expenseService.watchExpensesWithCategory().map((expenses) {
-    var filtered = expenses;
+    // Use the service layer which returns the domain-level ExpenseWithCategory
+    // Then apply client-side filtering
+    return expenseService.watchExpensesWithCategory().map((expenses) {
+      var filtered = expenses;
 
-    // Apply search query filter
-    if (filters.searchQuery.isNotEmpty) {
-      final query = filters.searchQuery.toLowerCase();
-      filtered = filtered.where((e) {
-        return e.expense.description.toLowerCase().contains(query) ||
-            e.category.name.toLowerCase().contains(query);
-      }).toList();
-    }
+      // Apply search query filter
+      if (filters.searchQuery.isNotEmpty) {
+        final query = filters.searchQuery.toLowerCase();
+        filtered = filtered.where((e) {
+          return e.expense.description.toLowerCase().contains(query) ||
+              e.category.name.toLowerCase().contains(query);
+        }).toList();
+      }
 
-    // Apply category filter
-    if (filters.selectedCategoryId != null) {
-      filtered = filtered.where((e) {
-        return e.expense.categoryId == filters.selectedCategoryId;
-      }).toList();
-    }
+      // Apply category filter
+      if (filters.selectedCategoryId != null) {
+        filtered = filtered.where((e) {
+          return e.expense.categoryId == filters.selectedCategoryId;
+        }).toList();
+      }
 
-    // Apply date range filter
-    if (filters.startDate != null || filters.endDate != null) {
-      filtered = filtered.where((e) {
-        final expenseDate = e.expense.date;
-        final afterStart = filters.startDate == null ||
-            expenseDate.isAfter(filters.startDate!.subtract(const Duration(milliseconds: 1)));
-        final beforeEnd = filters.endDate == null ||
-            expenseDate.isBefore(filters.endDate!.add(const Duration(days: 1)));
-        return afterStart && beforeEnd;
-      }).toList();
-    }
+      // Apply date range filter
+      if (filters.startDate != null || filters.endDate != null) {
+        filtered = filtered.where((e) {
+          final expenseDate = e.expense.date;
+          final afterStart = filters.startDate == null ||
+              expenseDate.isAfter(
+                filters.startDate!.subtract(
+                  const Duration(milliseconds: 1),
+                ),
+              );
+          final beforeEnd = filters.endDate == null ||
+              expenseDate.isBefore(
+                filters.endDate!.add(const Duration(days: 1)),
+              );
+          return afterStart && beforeEnd;
+        }).toList();
+      }
 
-    // Apply reimbursable filter
-    if (filters.reimbursableFilter != ReimbursableFilter.all) {
-      final isReimbursable =
-          filters.reimbursableFilter == ReimbursableFilter.reimbursable;
-      filtered = filtered.where((e) {
-        return e.expense.isReimbursable == isReimbursable;
-      }).toList();
-    }
+      // Apply reimbursable filter
+      if (filters.reimbursableFilter != ReimbursableFilter.all) {
+        final isReimbursable =
+            filters.reimbursableFilter == ReimbursableFilter.reimbursable;
+        filtered = filtered.where((e) {
+          return e.expense.isReimbursable == isReimbursable;
+        }).toList();
+      }
 
-    return filtered;
-  });
-});
+      return filtered;
+    });
+  },
+);
 
 // Legacy provider adapter to keep UI working with minimal changes if possible,
 // OR we update the UI to use the new providers.
@@ -145,6 +152,17 @@ final filteredExpensesProvider =
 // Let's recreate that structure but powered by the new providers.
 
 class ExpenseListState {
+  const ExpenseListState({
+    required this.searchQuery,
+    required this.selectedCategoryId,
+    required this.reimbursableFilter,
+    required this.filteredExpenses,
+    this.selectedDate,
+    this.startDate,
+    this.endDate,
+    this.isLoading = false,
+    this.error,
+  });
   final String searchQuery;
   final int? selectedCategoryId;
   final DateTime? selectedDate; // Deprecated: kept for backward compatibility
@@ -154,18 +172,6 @@ class ExpenseListState {
   final List<ExpenseWithCategory> filteredExpenses;
   final bool isLoading;
   final String? error;
-
-  const ExpenseListState({
-    required this.searchQuery,
-    required this.selectedCategoryId,
-    this.selectedDate,
-    this.startDate,
-    this.endDate,
-    required this.reimbursableFilter,
-    required this.filteredExpenses,
-    this.isLoading = false,
-    this.error,
-  });
 }
 
 final expenseListViewModelProvider =
@@ -179,22 +185,24 @@ final expenseListViewModelProvider =
 });
 
 class ExpenseListViewModel extends StateNotifier<ExpenseListState> {
-  final ExpenseFiltersNotifier _filtersNotifier;
-
   ExpenseListViewModel(
     ExpenseFilters filters,
     AsyncValue<List<ExpenseWithCategory>> expensesAsync,
     this._filtersNotifier,
-  ) : super(ExpenseListState(
-          searchQuery: filters.searchQuery,
-          selectedCategoryId: filters.selectedCategoryId,
-          startDate: filters.startDate,
-          endDate: filters.endDate,
-          reimbursableFilter: filters.reimbursableFilter,
-          filteredExpenses: expensesAsync.value ?? [],
-          isLoading: expensesAsync.isLoading,
-          error: expensesAsync.hasError ? expensesAsync.error.toString() : null,
-        ));
+  ) : super(
+          ExpenseListState(
+            searchQuery: filters.searchQuery,
+            selectedCategoryId: filters.selectedCategoryId,
+            startDate: filters.startDate,
+            endDate: filters.endDate,
+            reimbursableFilter: filters.reimbursableFilter,
+            filteredExpenses: expensesAsync.value ?? [],
+            isLoading: expensesAsync.isLoading,
+            error:
+                expensesAsync.hasError ? expensesAsync.error.toString() : null,
+          ),
+        );
+  final ExpenseFiltersNotifier _filtersNotifier;
 
   void setSearchQuery(String query) {
     _filtersNotifier.setSearchQuery(query);

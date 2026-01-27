@@ -18,17 +18,27 @@ void main() async {
   final logger = LoggerService.instance;
   await logger.initialize();
   logger.info(
-      'Application starting in ${EnvironmentConfig.environmentName} environment...');
+    'Application starting in ${EnvironmentConfig.environmentName} environment...',
+  );
 
-  // Initialize Supabase
+  // Initialize Supabase (allow offline mode if network unavailable)
   try {
     logger.info('Initializing Supabase...');
     await SupabaseService().initialize();
-    logger.info('Supabase initialized successfully');
+    if (SupabaseService().isOffline) {
+      logger.warning(
+        'Supabase initialized in offline mode - network unavailable',
+      );
+    } else {
+      logger.info('Supabase initialized successfully');
+    }
   } catch (e, stackTrace) {
-    logger.error('Failed to initialize Supabase',
-        error: e, stackTrace: stackTrace);
-    rethrow;
+    // Log the error but don't crash - app can work offline with local database
+    logger.error(
+      'Failed to initialize Supabase - continuing in offline mode',
+      error: e,
+      stackTrace: stackTrace,
+    );
   }
 
   // Initialize error reporting service
@@ -63,8 +73,11 @@ void main() async {
     logger.info('Database connection established successfully');
     connectivityService.markSuccessfulOperation();
   } catch (e, stackTrace) {
-    logger.fatal('FATAL: Failed to initialize database',
-        error: e, stackTrace: stackTrace);
+    logger.fatal(
+      'FATAL: Failed to initialize database',
+      error: e,
+      stackTrace: stackTrace,
+    );
     await errorReporting.reportError(
       'Fatal database initialization error',
       error: e,
@@ -113,9 +126,11 @@ void main() async {
   }
 
   logger.info('Launching application UI...');
-  runApp(ExpenseTrackerApp(
-    database: database,
-    connectivityService: connectivityService,
-    errorReportingService: errorReporting,
-  ));
+  runApp(
+    ExpenseTrackerApp(
+      database: database,
+      connectivityService: connectivityService,
+      errorReportingService: errorReporting,
+    ),
+  );
 }

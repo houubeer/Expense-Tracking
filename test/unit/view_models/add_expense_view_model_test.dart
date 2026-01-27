@@ -14,7 +14,7 @@ import 'add_expense_view_model_test.mocks.dart';
   IExpenseService,
   ErrorReportingService,
   BudgetValidationService,
-  AppDatabase
+  AppDatabase,
 ])
 void main() {
   late MockIExpenseService mockExpenseService;
@@ -50,7 +50,7 @@ void main() {
     });
 
     test('updateDate updates state', () {
-      final date = DateTime(2023, 1, 1);
+      final date = DateTime(2023);
       viewModel.updateDate(date);
       expect(viewModel.state.selectedDate, date);
     });
@@ -104,13 +104,15 @@ void main() {
       when(mockExpenseService.createExpense(any)).thenThrow(error);
 
       // Mock error reporting
-      when(mockErrorReportingService.reportUIError(
-        any,
-        any,
-        any,
-        stackTrace: anyNamed('stackTrace'),
-        context: anyNamed('context'),
-      )).thenAnswer((_) async {});
+      when(
+        mockErrorReportingService.reportUIError(
+          any,
+          any,
+          any,
+          stackTrace: anyNamed('stackTrace'),
+          context: anyNamed('context'),
+        ),
+      ).thenAnswer((_) async {});
 
       await viewModel.submitExpense();
 

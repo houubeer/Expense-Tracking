@@ -10,9 +10,9 @@ import 'package:expense_tracking_desktop_app/features/home/widgets/expense_list_
 import 'package:expense_tracking_desktop_app/utils/formatters/date_formatters.dart';
 
 class RecentExpensesCard extends StatelessWidget {
-
   const RecentExpensesCard({
-    required this.recentExpenses, super.key,
+    required this.recentExpenses,
+    super.key,
   });
   final List<ExpenseWithCategory> recentExpenses;
 
@@ -42,19 +42,21 @@ class RecentExpensesCard extends StatelessWidget {
                         for (int i = 0; i < recentExpenses.length; i++) ...[
                           ExpenseListItem(
                             title: DateFormatters.truncateDescription(
-                                recentExpenses[i].expense.description,),
+                              recentExpenses[i].expense.description,
+                            ),
                             category: recentExpenses[i].category.name,
                             date: DateFormatters.formatShortDate(
-                                recentExpenses[i].expense.date,),
+                              recentExpenses[i].expense.date,
+                            ),
                             amount: recentExpenses[i].expense.amount,
                             iconColor: Color(recentExpenses[i].category.color),
                           ),
                           if (i < recentExpenses.length - 1)
                             Divider(
-                                height: AppSpacing.xl,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outlineVariant,),
+                              height: AppSpacing.xl,
+                              color:
+                                  Theme.of(context).colorScheme.outlineVariant,
+                            ),
                         ],
                       ],
                     ),

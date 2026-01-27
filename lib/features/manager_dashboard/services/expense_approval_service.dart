@@ -1,13 +1,14 @@
-
-import '../repositories/expense_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/expense_repository.dart';
 
 class ExpenseApprovalService {
+  ExpenseApprovalService(this._expenseRepository);
   final ExpenseRepository _expenseRepository;
 
-  ExpenseApprovalService(this._expenseRepository);
-
-  Future<bool> approveExpense(String expenseId, String managerId,
-      {String managerName = 'Manager'}) async {
+  Future<bool> approveExpense(
+    String expenseId,
+    String managerId, {
+    String managerName = 'Manager',
+  }) async {
     try {
       await _expenseRepository.approveExpense(expenseId);
       return true;

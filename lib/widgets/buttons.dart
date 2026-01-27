@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 /// Primary action button using Material 3 FilledButton
 /// Use this for the main call-to-action on a screen
 class PrimaryButton extends StatelessWidget {
+  const PrimaryButton({
+    required this.onPressed,
+    required this.child,
+    super.key,
+    this.isLoading = false,
+    this.icon,
+  });
   final VoidCallback? onPressed;
   final Widget child;
   final bool isLoading;
   final IconData? icon;
-
-  const PrimaryButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.isLoading = false,
-    this.icon,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +57,17 @@ class PrimaryButton extends StatelessWidget {
 /// Secondary action button using Material 3 FilledButton.tonal
 /// Use this for secondary actions on a screen
 class SecondaryButton extends StatelessWidget {
+  const SecondaryButton({
+    required this.onPressed,
+    required this.child,
+    super.key,
+    this.isLoading = false,
+    this.icon,
+  });
   final VoidCallback? onPressed;
   final Widget child;
   final bool isLoading;
   final IconData? icon;
-
-  const SecondaryButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.isLoading = false,
-    this.icon,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -113,18 +111,17 @@ class SecondaryButton extends StatelessWidget {
 /// Tertiary action button using OutlinedButton
 /// Use this for less prominent actions
 class TertiaryButton extends StatelessWidget {
+  const TertiaryButton({
+    required this.onPressed,
+    required this.child,
+    super.key,
+    this.isLoading = false,
+    this.icon,
+  });
   final VoidCallback? onPressed;
   final Widget child;
   final bool isLoading;
   final IconData? icon;
-
-  const TertiaryButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.isLoading = false,
-    this.icon,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -168,18 +165,17 @@ class TertiaryButton extends StatelessWidget {
 /// Danger/Destructive action button
 /// Use this for destructive actions like delete
 class DangerButton extends StatelessWidget {
+  const DangerButton({
+    required this.onPressed,
+    required this.child,
+    super.key,
+    this.isLoading = false,
+    this.icon,
+  });
   final VoidCallback? onPressed;
   final Widget child;
   final bool isLoading;
   final IconData? icon;
-
-  const DangerButton({
-    super.key,
-    required this.onPressed,
-    required this.child,
-    this.isLoading = false,
-    this.icon,
-  });
 
   @override
   Widget build(BuildContext context) {

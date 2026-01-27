@@ -5,9 +5,12 @@ import 'package:intl/intl.dart';
 
 /// Table widget for displaying pending manager requests
 class PendingManagerTable extends StatelessWidget {
-
   const PendingManagerTable({
-    required this.managers, required this.onApprove, required this.onReject, required this.onView, super.key,
+    required this.managers,
+    required this.onApprove,
+    required this.onReject,
+    required this.onView,
+    super.key,
   });
   final List<Manager> managers;
   final void Function(String managerId) onApprove;
@@ -112,7 +115,6 @@ class PendingManagerTable extends StatelessWidget {
 }
 
 class _ManagerRow extends StatelessWidget {
-
   const _ManagerRow({
     required this.manager,
     required this.onApprove,

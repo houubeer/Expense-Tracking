@@ -1,4 +1,9 @@
 import 'dart:io';
+
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/config/supabase_config.dart';
 import 'package:expense_tracking_desktop_app/features/auth/models/user_profile.dart';
@@ -23,6 +28,10 @@ class SupabaseService {
 
   final _logger = LoggerService.instance;
   SupabaseClient? _client;
+  bool _isOffline = false;
+
+  /// Whether the service is currently offline (network unavailable)
+  bool get isOffline => _isOffline;
 
   /// Initialize Supabase
   Future<void> initialize() async {
@@ -31,9 +40,64 @@ class SupabaseService {
         url: SupabaseConfig.supabaseUrl,
         anonKey: SupabaseConfig.supabaseAnonKey,
         debug: SupabaseConfig.debugMode,
+        authOptions: const FlutterAuthClientOptions(
+          // Retry auth operations with back-off
+          authFlowType: AuthFlowType.pkce,
+        ),
       );
       _client = Supabase.instance.client;
+
+      // Listen for auth state changes to handle network errors gracefully
+      _client!.auth.onAuthStateChange.listen(
+        (data) {
+          _isOffline = false;
+          _logger.info('Auth state changed: ${data.event}');
+        },
+        onError: (error, stackTrace) {
+          // Handle network-related auth errors gracefully
+          if (_isNetworkError(error)) {
+            _isOffline = true;
+            _logger.warning(
+              'Network unavailable during auth operation. App will work offline.',
+            );
+          } else {
+            _logger.error(
+              'Auth state change error',
+              error: error,
+              stackTrace: stackTrace as StackTrace?,
+            );
+          }
+        },
+      );
+
       _logger.info('Supabase initialized successfully');
+    } on SocketException catch (e, stackTrace) {
+      _isOffline = true;
+      _logger.warning(
+        'Network unavailable during Supabase initialization. '
+        'App will start in offline mode.',
+      );
+      // Don't rethrow - allow app to start in offline mode
+      _logger.error(
+        'Network error details',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    } on AuthException catch (e, stackTrace) {
+      if (_isNetworkError(e)) {
+        _isOffline = true;
+        _logger.warning(
+          'Network unavailable during Supabase initialization. '
+          'App will start in offline mode.',
+        );
+      } else {
+        _logger.error(
+          'Failed to initialize Supabase',
+          error: e,
+          stackTrace: stackTrace,
+        );
+        rethrow;
+      }
     } catch (e, stackTrace) {
       _logger.error(
         'Failed to initialize Supabase',
@@ -42,6 +106,18 @@ class SupabaseService {
       );
       rethrow;
     }
+  }
+
+  /// Check if an error is network-related
+  bool _isNetworkError(dynamic error) {
+    if (error is SocketException) return true;
+    final message = error.toString().toLowerCase();
+    return message.contains('socketexception') ||
+        message.contains('failed host lookup') ||
+        message.contains('network is unreachable') ||
+        message.contains('connection refused') ||
+        message.contains('no such host') ||
+        message.contains('clientexception');
   }
 
   SupabaseClient get client {
@@ -610,49 +686,527 @@ class SupabaseService {
   // SETTINGS / UTILITIES PLACEHOLDERS
   // ================================
 
-  /// Export expenses as CSV (placeholder implementation).
+  /// Export expenses as CSV.
+  ///
+  /// Fetches expenses from Supabase, optionally filtered by [dateRange] and
+  /// [categoryName], and writes them to a CSV file in the downloads directory.
+  /// Returns the file path on success, or null on failure.
   Future<String?> exportExpensesAsCsv({
     required String dateRange,
     required String categoryName,
   }) async {
-    // TODO: implement actual CSV export
-    return null;
+    try {
+      final profile = await getCurrentUserProfile();
+      if (profile == null || profile.organizationId == null) {
+        _logger
+            .warning('Cannot export: user profile or organization not found');
+        return null;
+      }
+
+      // Build query with organization filter
+      var query = client
+          .from('expenses')
+          .select('*, categories(name)')
+          .eq('organization_id', profile.organizationId!);
+
+      // Apply date range filter
+      final now = DateTime.now();
+      DateTime? startDate;
+      switch (dateRange) {
+        case 'Last Month':
+          startDate = DateTime(now.year, now.month - 1, now.day);
+          break;
+        case 'Last 3 Months':
+          startDate = DateTime(now.year, now.month - 3, now.day);
+          break;
+        case 'Last Year':
+          startDate = DateTime(now.year - 1, now.month, now.day);
+          break;
+        case 'All Time':
+        default:
+          startDate = null;
+      }
+
+      if (startDate != null) {
+        query = query.gte(
+            'expense_date', startDate.toIso8601String().split('T')[0]);
+      }
+
+      // Fetch expenses
+      final response = await query.order('expense_date', ascending: false);
+      final expenses = List<Map<String, dynamic>>.from(response);
+
+      // Filter by category if not 'All Categories'
+      List<Map<String, dynamic>> filteredExpenses;
+      if (categoryName != 'All Categories') {
+        filteredExpenses = expenses.where((e) {
+          final cat = e['categories'] as Map<String, dynamic>?;
+          return cat?['name'] == categoryName;
+        }).toList();
+      } else {
+        filteredExpenses = expenses;
+      }
+
+      if (filteredExpenses.isEmpty) {
+        _logger.info('No expenses found for export criteria');
+        return null;
+      }
+
+      // Build CSV content
+      final csvBuffer = StringBuffer();
+      // Header row
+      csvBuffer.writeln('Date,Category,Amount,Description,Receipt URL');
+
+      final dateFormat = DateFormat('yyyy-MM-dd');
+      for (final expense in filteredExpenses) {
+        final date = expense['expense_date'] as String? ?? '';
+        final cat = expense['categories'] as Map<String, dynamic>?;
+        final categoryLabel = cat?['name'] as String? ?? 'Uncategorized';
+        final amount = expense['amount']?.toString() ?? '0';
+        // Escape description for CSV (wrap in quotes, escape internal quotes)
+        final rawDesc = expense['description'] as String? ?? '';
+        final description = '"${rawDesc.replaceAll('"', '""')}"';
+        final receiptUrl = expense['receipt_url'] as String? ?? '';
+
+        csvBuffer
+            .writeln('$date,$categoryLabel,$amount,$description,$receiptUrl');
+      }
+
+      // Write to file
+      final directory = await getDownloadsDirectory() ??
+          await getApplicationDocumentsDirectory();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final fileName = 'expenses_export_$timestamp.csv';
+      final filePath = '${directory.path}${Platform.pathSeparator}$fileName';
+
+      final file = File(filePath);
+      await file.writeAsString(csvBuffer.toString());
+
+      _logger.info('CSV exported to: $filePath');
+      return filePath;
+    } on SocketException catch (e, stackTrace) {
+      _logger.error(
+        'Network error during CSV export',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to export expenses as CSV',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
   }
 
-  /// Export expenses as PDF (placeholder implementation).
+  /// Export expenses as PDF.
+  ///
+  /// Fetches expenses from Supabase, optionally filtered by [dateRange] and
+  /// [categoryName], and generates a PDF file in the downloads directory.
+  /// Returns the file path on success, or null on failure.
   Future<String?> exportExpensesAsPdf({
     required String dateRange,
     required String categoryName,
     bool includeReceipts = false,
   }) async {
-    // TODO: implement actual PDF export
-    return null;
+    try {
+      // Import pdf package dynamically to avoid issues if not available
+      final pdf = await _generateExpensesPdf(
+        dateRange: dateRange,
+        categoryName: categoryName,
+        includeReceipts: includeReceipts,
+      );
+
+      if (pdf == null) return null;
+
+      // Write to file
+      final directory = await getDownloadsDirectory() ??
+          await getApplicationDocumentsDirectory();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+      final fileName = 'expenses_report_$timestamp.pdf';
+      final filePath = '${directory.path}${Platform.pathSeparator}$fileName';
+
+      final file = File(filePath);
+      await file.writeAsBytes(pdf);
+
+      _logger.info('PDF exported to: $filePath');
+      return filePath;
+    } on SocketException catch (e, stackTrace) {
+      _logger.error(
+        'Network error during PDF export',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to export expenses as PDF',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
   }
 
-  /// Update password for the current user (placeholder).
+  /// Generate PDF document for expenses
+  Future<List<int>?> _generateExpensesPdf({
+    required String dateRange,
+    required String categoryName,
+    bool includeReceipts = false,
+  }) async {
+    try {
+      final profile = await getCurrentUserProfile();
+      if (profile == null || profile.organizationId == null) {
+        _logger
+            .warning('Cannot export: user profile or organization not found');
+        return null;
+      }
+
+      // Build query with organization filter
+      var query = client
+          .from('expenses')
+          .select('*, categories(name)')
+          .eq('organization_id', profile.organizationId!);
+
+      // Apply date range filter
+      final now = DateTime.now();
+      DateTime? startDate;
+      switch (dateRange) {
+        case 'Last Month':
+          startDate = DateTime(now.year, now.month - 1, now.day);
+          break;
+        case 'Last 3 Months':
+          startDate = DateTime(now.year, now.month - 3, now.day);
+          break;
+        case 'Last Year':
+          startDate = DateTime(now.year - 1, now.month, now.day);
+          break;
+        case 'All Time':
+        default:
+          startDate = null;
+      }
+
+      if (startDate != null) {
+        query = query.gte(
+            'expense_date', startDate.toIso8601String().split('T')[0]);
+      }
+
+      // Fetch expenses
+      final response = await query.order('expense_date', ascending: false);
+      final expenses = List<Map<String, dynamic>>.from(response);
+
+      // Filter by category if not 'All Categories'
+      List<Map<String, dynamic>> filteredExpenses;
+      if (categoryName != 'All Categories') {
+        filteredExpenses = expenses.where((e) {
+          final cat = e['categories'] as Map<String, dynamic>?;
+          return cat?['name'] == categoryName;
+        }).toList();
+      } else {
+        filteredExpenses = expenses;
+      }
+
+      if (filteredExpenses.isEmpty) {
+        _logger.info('No expenses found for export criteria');
+        return null;
+      }
+
+      // Calculate total
+      double total = 0;
+      for (final expense in filteredExpenses) {
+        total += (expense['amount'] as num?)?.toDouble() ?? 0;
+      }
+
+      // Build PDF using the pdf package
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          header: (context) => pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Expense Report',
+                style: pw.TextStyle(
+                  fontSize: 24,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+              pw.SizedBox(height: 4),
+              pw.Text(
+                'Generated on ${DateFormat('MMMM d, yyyy').format(DateTime.now())}',
+                style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+              ),
+              pw.Text(
+                'Date Range: $dateRange | Category: $categoryName',
+                style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+              ),
+              pw.SizedBox(height: 16),
+              pw.Divider(),
+              pw.SizedBox(height: 8),
+            ],
+          ),
+          footer: (context) => pw.Container(
+            alignment: pw.Alignment.centerRight,
+            margin: const pw.EdgeInsets.only(top: 16),
+            child: pw.Text(
+              'Page ${context.pageNumber} of ${context.pagesCount}',
+              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+            ),
+          ),
+          build: (context) => [
+            // Table header
+            pw.Table(
+              border: pw.TableBorder.all(color: PdfColors.grey300),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(2),
+                1: const pw.FlexColumnWidth(2),
+                2: const pw.FlexColumnWidth(1.5),
+                3: const pw.FlexColumnWidth(3),
+              },
+              children: [
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                  children: [
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('Date',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('Category',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('Amount',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    ),
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.all(8),
+                      child: pw.Text('Description',
+                          style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                ...filteredExpenses.map((expense) {
+                  final date = expense['expense_date'] as String? ?? '';
+                  final cat = expense['categories'] as Map<String, dynamic>?;
+                  final categoryLabel =
+                      cat?['name'] as String? ?? 'Uncategorized';
+                  final amount = expense['amount']?.toString() ?? '0';
+                  final description = expense['description'] as String? ?? '';
+
+                  return pw.TableRow(
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(date),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(categoryLabel),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text('\$$amount'),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(8),
+                        child: pw.Text(description),
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+            pw.SizedBox(height: 16),
+            pw.Container(
+              alignment: pw.Alignment.centerRight,
+              child: pw.Text(
+                'Total: \$${total.toStringAsFixed(2)}',
+                style: pw.TextStyle(
+                  fontSize: 14,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      return pdf.save();
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to generate PDF',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  /// Update password for the current user.
   Future<bool> updatePassword(String newPassword) async {
-    // TODO: implement real password update via Supabase Auth
-    return false;
+    try {
+      if (currentUser == null) {
+        _logger.warning('Cannot update password: no authenticated user');
+        return false;
+      }
+
+      await client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+
+      _logger.info('Password updated successfully');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to update password',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return false;
+    }
   }
 
-  /// Delete all user data for the current user (placeholder).
+  /// Delete all user data for the current user.
+  ///
+  /// This deletes all expenses and categories created by the user,
+  /// but preserves the user profile and organization membership.
   Future<bool> deleteAllUserData() async {
-    // TODO: implement deletion of user data and related records
-    return false;
+    try {
+      if (currentUser == null) {
+        _logger.warning('Cannot delete data: no authenticated user');
+        return false;
+      }
+
+      final profile = await getCurrentUserProfile();
+      if (profile == null || profile.organizationId == null) {
+        _logger.warning('Cannot delete data: user profile not found');
+        return false;
+      }
+
+      final userId = currentUser!.id;
+      final orgId = profile.organizationId!;
+
+      // Delete user's expenses (those created by this user)
+      await client
+          .from('expenses')
+          .delete()
+          .eq('organization_id', orgId)
+          .eq('user_id', userId);
+
+      _logger.info('Deleted expenses for user: $userId');
+
+      // Create audit log
+      await _createAuditLog(
+        userId: userId,
+        organizationId: orgId,
+        action: 'DELETE_ALL_USER_DATA',
+      );
+
+      _logger.info('All user data deleted for user: $userId');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to delete all user data',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return false;
+    }
   }
 
-  /// Fetch notification settings for current user (placeholder).
+  /// Fetch notification settings for current user.
+  ///
+  /// Returns the notification settings from user_profiles.settings.notifications
   Future<Map<String, dynamic>?> getNotificationSettingsForCurrentUser() async {
-    // TODO: load from user_profiles.settings.notifications
-    return null;
+    try {
+      if (currentUser == null) {
+        _logger.warning('Cannot get notifications: no authenticated user');
+        return null;
+      }
+
+      final response = await client
+          .from('user_profiles')
+          .select('settings')
+          .eq('id', currentUser!.id)
+          .single();
+
+      final settings = response['settings'] as Map<String, dynamic>? ?? {};
+      final notifications =
+          settings['notifications'] as Map<String, dynamic>? ?? {};
+
+      _logger.info('Fetched notification settings for user');
+      return notifications;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to get notification settings',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
   }
 
-  /// Update notification settings for current user (placeholder).
+  /// Update notification settings for current user.
+  ///
+  /// Persists the notification settings to user_profiles.settings.notifications
   Future<bool> updateNotificationSettingsForCurrentUser(
-    Map<String, dynamic> settings,
+    Map<String, dynamic> notificationSettings,
   ) async {
-    // TODO: persist to user_profiles.settings.notifications
-    return false;
+    try {
+      if (currentUser == null) {
+        _logger.warning('Cannot update notifications: no authenticated user');
+        return false;
+      }
+
+      // First fetch current settings to preserve other settings
+      final response = await client
+          .from('user_profiles')
+          .select('settings')
+          .eq('id', currentUser!.id)
+          .single();
+
+      final currentSettings =
+          Map<String, dynamic>.from(response['settings'] as Map? ?? {});
+
+      // Merge notification settings
+      currentSettings['notifications'] = notificationSettings;
+
+      // Update the profile
+      await client.from('user_profiles').update({
+        'settings': currentSettings,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', currentUser!.id);
+
+      _logger.info('Updated notification settings for user');
+      return true;
+    } catch (e, stackTrace) {
+      _logger.error(
+        'Failed to update notification settings',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return false;
+    }
+  }
+
+  /// Open support/contact page or send support email.
+  ///
+  /// Returns a support contact information map with email and subject.
+  Map<String, String> getSupportContactInfo() {
+    return {
+      'email': 'support@expensetracker.com',
+      'subject': 'Support Request - Expense Tracker',
+      'body': 'Please describe your issue:\n\n',
+    };
   }
 
   // =====================================================

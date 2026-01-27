@@ -1,11 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
-import '../models/budget_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/budget_model.dart';
 
 class BudgetRepository {
-  final SupabaseService _supabaseService;
-
   BudgetRepository(this._supabaseService);
+  final SupabaseService _supabaseService;
 
   SupabaseClient get _client => _supabaseService.client;
   User? get _currentUser => _supabaseService.currentUser;
@@ -49,7 +48,7 @@ class BudgetRepository {
           .from('user_profiles')
           .select('id, settings')
           .filter('id', 'in', userIds);
-      
+
       for (final profile in profilesResponse as List) {
         final id = profile['id'] as String;
         final rawSettings = profile['settings'];
@@ -59,16 +58,14 @@ class BudgetRepository {
       }
     }
 
-    final budgetsResponse = await _client
-        .from('budgets')
-        .select()
-        .eq('organization_id', orgId);
+    final budgetsResponse =
+        await _client.from('budgets').select().eq('organization_id', orgId);
 
     final departmentSpending = <String, double>{};
     for (final expense in expensesResponse) {
       final userId = expense['created_by'] as String?;
       final settings = userSettingsMap[userId] ?? {};
-      
+
       final dept = settings['department'] as String? ?? 'General';
       final amount = (expense['amount'] as num?)?.toDouble() ?? 0.0;
       departmentSpending[dept] = (departmentSpending[dept] ?? 0.0) + amount;
@@ -76,33 +73,35 @@ class BudgetRepository {
 
     final budgetsByDept = <String, double>{};
     for (final budget in budgetsResponse as List) {
-      final totalBudget = (budget['total_budget'] as num?)?.toDouble() ?? 100000.0;
-      // Budget doesn't always have a department field in the schema we saw earlier, 
-      // but usually budgets are PER department. 
+      final totalBudget =
+          (budget['total_budget'] as num?)?.toDouble() ?? 100000.0;
+      // Budget doesn't always have a department field in the schema we saw earlier,
+      // but usually budgets are PER department.
       // Assuming 'department' column exists in budgets table or we use 'General' if missing.
       // Checking local schema for budgets would be good, but for now assuming this loop was roughly correct before.
-      // Wait, previous code: budgetsByDept['General'] = ... 
-      // It seems previous code was hardcoding 'General'. 
+      // Wait, previous code: budgetsByDept['General'] = ...
+      // It seems previous code was hardcoding 'General'.
       // FIX: The previous code was:
       // budgetsByDept['General'] = (budgetsByDept['General'] ?? 0.0) + totalBudget;
-      // This implies all budgets were treated as 'General'. 
-      // If the budgets table has a 'department' column, we should use it. 
+      // This implies all budgets were treated as 'General'.
+      // If the budgets table has a 'department' column, we should use it.
       // But preserving previous logic for now to minimize risk suitable for this task.
-      
-      // However, if the user wants "Budget Monitoring" to work per department, simply summing to 'General' is wrong 
-      // unless there's only one global budget. 
-      // Let's stick to the previous logic for budgets part to avoid scope creep, 
+
+      // However, if the user wants "Budget Monitoring" to work per department, simply summing to 'General' is wrong
+      // unless there's only one global budget.
+      // Let's stick to the previous logic for budgets part to avoid scope creep,
       // only fixing the expenses/profiles relationship.
-      
-      budgetsByDept['General'] = (budgetsByDept['General'] ?? 0.0) + totalBudget;
+
+      budgetsByDept['General'] =
+          (budgetsByDept['General'] ?? 0.0) + totalBudget;
     }
 
     final departments = {...departmentSpending.keys, ...budgetsByDept.keys};
-    
+
     return departments.map((dept) {
       final totalBudget = budgetsByDept[dept] ?? 100000.0;
       final usedBudget = departmentSpending[dept] ?? 0.0;
-      
+
       return DepartmentBudget(
         departmentName: dept,
         totalBudget: totalBudget,
@@ -133,7 +132,9 @@ class BudgetRepository {
   Future<double> getTotalRemainingBudget() async {
     final budgets = await getDepartmentBudgets();
     return budgets.fold<double>(
-        0.0, (sum, budget) => sum + budget.remainingBudget);
+      0.0,
+      (sum, budget) => sum + budget.remainingBudget,
+    );
   }
 
   Future<Map<String, double>> getCategoryBreakdown() async {

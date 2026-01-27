@@ -5,6 +5,29 @@ import 'package:equatable/equatable.dart';
 /// Represents a single receipt file (image or PDF) attached to an expense.
 /// Supports both local files (not yet uploaded) and remote files (uploaded to Supabase).
 class ReceiptAttachment extends Equatable {
+  const ReceiptAttachment({
+    required this.fileName,
+    required this.fileType,
+    this.id,
+    this.localPath,
+    this.remoteUrl,
+    this.fileSize,
+    this.uploadStatus = 'local',
+  });
+
+  /// Create from file path
+  factory ReceiptAttachment.fromFilePath(String path) {
+    final parts = path.split(RegExp(r'[/\\]'));
+    final fileName = parts.isNotEmpty ? parts.last : path;
+    final fileType = fileName.split('.').last;
+
+    return ReceiptAttachment(
+      localPath: path,
+      fileName: fileName,
+      fileType: fileType,
+    );
+  }
+
   /// Unique identifier (database ID, null for new receipts)
   final int? id;
 
@@ -25,16 +48,6 @@ class ReceiptAttachment extends Equatable {
 
   /// Upload status: local, uploading, uploaded, failed
   final String uploadStatus;
-
-  const ReceiptAttachment({
-    this.id,
-    this.localPath,
-    this.remoteUrl,
-    required this.fileName,
-    required this.fileType,
-    this.fileSize,
-    this.uploadStatus = 'local',
-  });
 
   /// Check if receipt is only stored locally
   bool get isLocal => uploadStatus == 'local' && remoteUrl == null;
@@ -92,19 +105,6 @@ class ReceiptAttachment extends Equatable {
       fileType: fileType ?? this.fileType,
       fileSize: fileSize ?? this.fileSize,
       uploadStatus: uploadStatus ?? this.uploadStatus,
-    );
-  }
-
-  /// Create from file path
-  factory ReceiptAttachment.fromFilePath(String path) {
-    final parts = path.split(RegExp(r'[/\\]'));
-    final fileName = parts.isNotEmpty ? parts.last : path;
-    final fileType = fileName.split('.').last;
-
-    return ReceiptAttachment(
-      localPath: path,
-      fileName: fileName,
-      fileType: fileType,
     );
   }
 

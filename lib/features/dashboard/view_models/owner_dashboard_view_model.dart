@@ -12,7 +12,6 @@ import 'package:expense_tracking_desktop_app/features/dashboard/models/manager_m
 /// ViewModel for Owner Dashboard
 /// Manages dashboard state, KPIs, and user interactions
 class OwnerDashboardViewModel extends ChangeNotifier {
-
   OwnerDashboardViewModel({
     required CompanyRepository companyRepository,
     required ManagerRepository managerRepository,

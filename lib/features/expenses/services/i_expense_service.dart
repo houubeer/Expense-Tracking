@@ -19,7 +19,6 @@ abstract class IExpenseService {
 /// Data class representing an expense with its associated category
 /// Decouples higher layers from DAO-specific implementations
 class ExpenseWithCategory {
-
   ExpenseWithCategory({
     required this.expense,
     required this.category,

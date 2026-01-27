@@ -6,9 +6,10 @@ import 'package:expense_tracking_desktop_app/services/i_backup_service.dart';
 
 /// Dialog widget for confirming restore operation with backup details
 class RestoreConfirmationDialog extends StatelessWidget {
-
   const RestoreConfirmationDialog({
-    required this.onConfirm, required this.onCancel, super.key,
+    required this.onConfirm,
+    required this.onCancel,
+    super.key,
     this.backupInfo,
   });
   final BackupInfo? backupInfo;
@@ -136,14 +137,23 @@ class RestoreConfirmationDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          _buildInfoRow(Icons.insert_drive_file_outlined, 'File',
-              backupInfo!.fileName,),
+          _buildInfoRow(
+            Icons.insert_drive_file_outlined,
+            'File',
+            backupInfo!.fileName,
+          ),
           const SizedBox(height: AppSpacing.xs),
-          _buildInfoRow(Icons.storage_outlined, 'Size',
-              backupInfo!.formattedSize,),
+          _buildInfoRow(
+            Icons.storage_outlined,
+            'Size',
+            backupInfo!.formattedSize,
+          ),
           const SizedBox(height: AppSpacing.xs),
-          _buildInfoRow(Icons.calendar_today_outlined, 'Created',
-              _formatDate(backupInfo!.createdAt),),
+          _buildInfoRow(
+            Icons.calendar_today_outlined,
+            'Created',
+            _formatDate(backupInfo!.createdAt),
+          ),
           const SizedBox(height: AppSpacing.xs),
           _buildInfoRow(
             backupInfo!.isValid

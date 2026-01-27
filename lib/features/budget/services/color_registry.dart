@@ -31,9 +31,7 @@ class ColorRegistry {
 
   /// Register multiple colors
   void registerColors(List<Color> colors) {
-    for (final color in colors) {
-      registerColor(color);
-    }
+    colors.forEach(registerColor);
   }
 
   /// Clear all colors (useful for testing)

@@ -1,7 +1,8 @@
 import 'package:expense_tracking_desktop_app/database/app_database.dart';
 import 'package:expense_tracking_desktop_app/database/daos/expense_dao.dart';
 import 'package:expense_tracking_desktop_app/features/expenses/repositories/i_expense_repository.dart';
-import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart' show ExpenseService;
+import 'package:expense_tracking_desktop_app/features/expenses/services/expense_service.dart'
+    show ExpenseService;
 import 'package:expense_tracking_desktop_app/features/expenses/services/i_expense_service.dart'
     as domain;
 
@@ -27,7 +28,6 @@ import 'package:expense_tracking_desktop_app/features/expenses/services/i_expens
 /// await repository.insertExpense(expenseData);
 /// ```
 class ExpenseRepository implements IExpenseRepository {
-
   /// Creates an instance of [ExpenseRepository].
   ///
   /// [database] The application database instance.

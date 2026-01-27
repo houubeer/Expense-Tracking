@@ -7,7 +7,6 @@ import 'package:expense_tracking_desktop_app/features/budget/repositories/i_budg
 /// Repository that combines category and expense data to provide
 /// a reactive stream of budget information for the UI
 class BudgetRepository implements IBudgetRepository {
-
   BudgetRepository(this._database);
   final AppDatabase _database;
 
@@ -37,7 +36,8 @@ class BudgetRepository implements IBudgetRepository {
   /// Watch category budgets filtered by status
   @override
   Stream<List<CategoryBudgetView>> watchCategoryBudgetsByStatus(
-      BudgetStatus status,) {
+    BudgetStatus status,
+  ) {
     return watchCategoryBudgets().map((budgets) {
       return budgets.where((budget) => budget.status == status).toList();
     });

@@ -3,7 +3,6 @@ import 'package:expense_tracking_desktop_app/database/app_database.dart';
 /// View model that combines category information with calculated spending data
 /// This provides a complete picture of budget status for UI rendering
 class CategoryBudgetView {
-
   CategoryBudgetView({
     required this.category,
     required this.totalSpent,

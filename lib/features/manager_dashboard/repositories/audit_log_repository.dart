@@ -1,11 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
-import '../models/audit_log_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/audit_log_model.dart';
 
 class AuditLogRepository {
-  final SupabaseService _supabaseService;
-
   AuditLogRepository(this._supabaseService);
+  final SupabaseService _supabaseService;
 
   SupabaseClient get _client => _supabaseService.client;
   User? get _currentUser => _supabaseService.currentUser;
@@ -56,8 +55,10 @@ class AuditLogRepository {
         .toList();
   }
 
-  Future<List<AuditLog>> getRecentAuditLogs(String organizationId,
-      {int limit = 10}) async {
+  Future<List<AuditLog>> getRecentAuditLogs(
+    String organizationId, {
+    int limit = 10,
+  }) async {
     final response = await _client
         .from('audit_logs')
         .select()

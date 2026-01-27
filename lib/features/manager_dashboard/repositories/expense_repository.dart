@@ -1,13 +1,12 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:expense_tracking_desktop_app/services/supabase_service.dart';
-import '../models/expense_model.dart';
-import 'audit_log_repository.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/repositories/audit_log_repository.dart';
 
 class ExpenseRepository {
+  ExpenseRepository(this._supabaseService, this._auditLogRepository);
   final SupabaseService _supabaseService;
   final AuditLogRepository _auditLogRepository;
-
-  ExpenseRepository(this._supabaseService, this._auditLogRepository);
 
   SupabaseClient get _client => _supabaseService.client;
   User? get _currentUser => _supabaseService.currentUser;
@@ -131,7 +130,9 @@ class ExpenseRepository {
   }
 
   Future<List<ManagerExpense>> getExpensesByDateRange(
-      DateTime start, DateTime end) async {
+    DateTime start,
+    DateTime end,
+  ) async {
     final orgId = await _getCurrentOrgId();
 
     final response = await _client

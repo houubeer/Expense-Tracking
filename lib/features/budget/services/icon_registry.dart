@@ -71,9 +71,7 @@ class IconRegistry {
 
   /// Register multiple icons
   void registerIcons(List<IconData> icons) {
-    for (final icon in icons) {
-      registerIcon(icon);
-    }
+    icons.forEach(registerIcon);
   }
 
   /// Clear all icons (useful for testing)

@@ -50,9 +50,7 @@ void main() {
       });
 
       test('includes all statuses when filter is null', () async {
-        final stream = expenseDao.watchExpensesWithCategory(
-          isReimbursable: null,
-        );
+        final stream = expenseDao.watchExpensesWithCategory();
 
         expect(stream, isNotNull);
       });

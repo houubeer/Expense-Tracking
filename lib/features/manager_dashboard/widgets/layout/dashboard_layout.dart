@@ -4,9 +4,9 @@ import 'package:expense_tracking_desktop_app/constants/spacing.dart';
 /// Dashboard layout wrapper providing consistent padding
 /// Note: Sidebar is already provided by the router, so we only wrap content
 class DashboardLayout extends StatelessWidget {
-
   const DashboardLayout({
-    required this.child, super.key,
+    required this.child,
+    super.key,
   });
   final Widget child;
 

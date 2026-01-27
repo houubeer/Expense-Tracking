@@ -1,5 +1,5 @@
 import 'package:expense_tracking_desktop_app/utils/budget_status_calculator.dart';
-import '../models/expense_model.dart';
+import 'package:expense_tracking_desktop_app/features/manager_dashboard/models/expense_model.dart';
 
 /// Service for budget-related calculations and analysis
 class BudgetCalculationService {
@@ -59,12 +59,12 @@ class BudgetCalculationService {
 
   /// Get expenses count by status
   Map<ExpenseStatus, int> getExpenseCountByStatus(
-      List<ManagerExpense> expenses) {
+    List<ManagerExpense> expenses,
+  ) {
     final counts = <ExpenseStatus, int>{};
 
     for (final status in ExpenseStatus.values) {
-      counts[status] =
-          expenses.where((exp) => exp.status == status).length;
+      counts[status] = expenses.where((exp) => exp.status == status).length;
     }
 
     return counts;
@@ -72,7 +72,8 @@ class BudgetCalculationService {
 
   /// Get total amount by status
   Map<ExpenseStatus, double> getTotalAmountByStatus(
-      List<ManagerExpense> expenses) {
+    List<ManagerExpense> expenses,
+  ) {
     final totals = <ExpenseStatus, double>{};
 
     for (final status in ExpenseStatus.values) {
@@ -118,7 +119,7 @@ class BudgetCalculationService {
 
     if (previousTotal == 0) return 'N/A';
 
-    final changePercentage = ((currentTotal - previousTotal) / previousTotal);
+    final changePercentage = (currentTotal - previousTotal) / previousTotal;
 
     if (changePercentage > 0.1) return 'Increasing';
     if (changePercentage < -0.1) return 'Decreasing';
@@ -139,7 +140,7 @@ class BudgetCalculationService {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }

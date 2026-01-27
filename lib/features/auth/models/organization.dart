@@ -4,7 +4,6 @@ enum OrganizationStatus {
   approved('approved'),
   rejected('rejected');
 
-  final String value;
   const OrganizationStatus(this.value);
 
   factory OrganizationStatus.fromString(String value) {
@@ -13,31 +12,22 @@ enum OrganizationStatus {
       orElse: () => OrganizationStatus.pending,
     );
   }
+
+  final String value;
 }
 
 /// Organization model
 class Organization {
-  final String id; // Supabase UUID
-  final String name;
-  final String managerEmail;
-  final String? managerName;
-  final OrganizationStatus status;
-  final DateTime? approvedAt;
-  final int? fiscalYearStart;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final String? createdBy;
-
   Organization({
     required this.id,
     required this.name,
     required this.managerEmail,
-    this.managerName,
     required this.status,
-    this.approvedAt,
-    this.fiscalYearStart,
     required this.createdAt,
     required this.updatedAt,
+    this.managerName,
+    this.approvedAt,
+    this.fiscalYearStart,
     this.createdBy,
   });
 
@@ -58,6 +48,16 @@ class Organization {
       createdBy: json['created_by'] as String?,
     );
   }
+  final String id; // Supabase UUID
+  final String name;
+  final String managerEmail;
+  final String? managerName;
+  final OrganizationStatus status;
+  final DateTime? approvedAt;
+  final int? fiscalYearStart;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String? createdBy;
 
   Map<String, dynamic> toJson() {
     return {

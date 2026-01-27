@@ -18,7 +18,6 @@ enum CompanyStatus {
 
 /// Company model representing a registered company in the platform
 class Company {
-
   const Company({
     required this.id,
     required this.name,

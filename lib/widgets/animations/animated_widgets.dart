@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 
 /// Animated container with scale and elevation effects on hover
 class AnimatedHoverCard extends StatefulWidget {
-  final Widget child;
-  final double scale;
-  final Duration duration;
-  final Curve curve;
-  final VoidCallback? onTap;
-  final bool enableHoverEffect;
-
   const AnimatedHoverCard({
-    super.key,
     required this.child,
+    super.key,
     this.scale = 1.02,
     this.duration = const Duration(milliseconds: 200),
     this.curve = Curves.easeOutCubic,
     this.onTap,
     this.enableHoverEffect = true,
   });
+  final Widget child;
+  final double scale;
+  final Duration duration;
+  final Curve curve;
+  final VoidCallback? onTap;
+  final bool enableHoverEffect;
 
   @override
   State<AnimatedHoverCard> createState() => _AnimatedHoverCardState();
@@ -78,18 +77,17 @@ class _AnimatedHoverCardState extends State<AnimatedHoverCard>
 
 /// Animated icon with pulse effect
 class PulseIcon extends StatefulWidget {
-  final IconData icon;
-  final Color? color;
-  final double size;
-  final Duration duration;
-
   const PulseIcon({
-    super.key,
     required this.icon,
+    super.key,
     this.color,
     this.size = 24.0,
     this.duration = const Duration(milliseconds: 1500),
   });
+  final IconData icon;
+  final Color? color;
+  final double size;
+  final Duration duration;
 
   @override
   State<PulseIcon> createState() => _PulseIconState();
@@ -134,18 +132,17 @@ class _PulseIconState extends State<PulseIcon>
 
 /// Shimmer loading effect
 class ShimmerLoading extends StatefulWidget {
-  final Widget child;
-  final Duration duration;
-  final Color? baseColor;
-  final Color? highlightColor;
-
   const ShimmerLoading({
-    super.key,
     required this.child,
+    super.key,
     this.duration = const Duration(milliseconds: 1500),
     this.baseColor,
     this.highlightColor,
   });
+  final Widget child;
+  final Duration duration;
+  final Color? baseColor;
+  final Color? highlightColor;
 
   @override
   State<ShimmerLoading> createState() => _ShimmerLoadingState();

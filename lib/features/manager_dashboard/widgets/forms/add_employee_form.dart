@@ -114,10 +114,10 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                 // Phone
                 TextFormField(
                   controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: '${AppLocalizations.of(context)!.location} *',
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number *',
                     hintText: '+213 555-0123',
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
@@ -148,7 +148,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 
                 // Department
                 DropdownButtonFormField<String>(
-                  value: _selectedDepartment,
+                  initialValue: _selectedDepartment,
                   decoration: InputDecoration(
                     labelText:
                         '${AppLocalizations.of(context)!.labelDepartment} *',
@@ -198,7 +198,7 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
 
                 // Status
                 DropdownButtonFormField<EmployeeStatus>(
-                  value: _selectedStatus,
+                  initialValue: _selectedStatus,
                   decoration: InputDecoration(
                     labelText: '${AppLocalizations.of(context)!.labelStatus} *',
                     border: const OutlineInputBorder(),
@@ -206,9 +206,11 @@ class _AddEmployeeFormState extends State<AddEmployeeForm> {
                   items: EmployeeStatus.values.map((status) {
                     return DropdownMenuItem(
                       value: status,
-                      child: Text(status == EmployeeStatus.suspended
-                          ? AppLocalizations.of(context)!.labelStatusSuspended
-                          : status.displayName),
+                      child: Text(
+                        status == EmployeeStatus.suspended
+                            ? AppLocalizations.of(context)!.labelStatusSuspended
+                            : status.displayName,
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) {

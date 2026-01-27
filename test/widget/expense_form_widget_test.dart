@@ -17,8 +17,7 @@ void main() {
       );
     }
 
-    testWidgets('displays reimbursable checkbox', 
-      (WidgetTester tester) async {
+    testWidgets('displays reimbursable checkbox', (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -35,7 +34,6 @@ void main() {
             onCategoryChanged: (_) {},
             onSubmit: null,
             onReset: () {},
-            isReimbursable: false,
             onReimbursableChanged: (_) {},
           ),
         ),
@@ -45,8 +43,8 @@ void main() {
       expect(find.byType(CheckboxListTile), findsWidgets);
     });
 
-    testWidgets('can toggle reimbursable checkbox', 
-      (WidgetTester tester) async {
+    testWidgets('can toggle reimbursable checkbox',
+        (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -76,8 +74,8 @@ void main() {
       expect(find.byType(CheckboxListTile), findsWidgets);
     });
 
-    testWidgets('displays receipt attachment section', 
-      (WidgetTester tester) async {
+    testWidgets('displays receipt attachment section',
+        (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -94,7 +92,6 @@ void main() {
             onCategoryChanged: (_) {},
             onSubmit: null,
             onReset: () {},
-            receiptPath: null,
             onAttachReceipt: () {},
           ),
         ),
@@ -104,8 +101,8 @@ void main() {
       expect(find.byIcon(Icons.upload_file), findsWidgets);
     });
 
-    testWidgets('shows receipt file name when attached', 
-      (WidgetTester tester) async {
+    testWidgets('shows receipt file name when attached',
+        (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -133,8 +130,7 @@ void main() {
       expect(find.byIcon(Icons.attachment), findsWidgets);
     });
 
-    testWidgets('can remove receipt attachment', 
-      (WidgetTester tester) async {
+    testWidgets('can remove receipt attachment', (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -169,8 +165,8 @@ void main() {
       }
     });
 
-    testWidgets('displays upload prompt when no receipt', 
-      (WidgetTester tester) async {
+    testWidgets('displays upload prompt when no receipt',
+        (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -187,7 +183,6 @@ void main() {
             onCategoryChanged: (_) {},
             onSubmit: null,
             onReset: () {},
-            receiptPath: null,
             onAttachReceipt: () {},
           ),
         ),
@@ -197,8 +192,7 @@ void main() {
       expect(find.byIcon(Icons.upload_file), findsWidgets);
     });
 
-    testWidgets('renders all form fields', 
-      (WidgetTester tester) async {
+    testWidgets('renders all form fields', (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -215,9 +209,7 @@ void main() {
             onCategoryChanged: (_) {},
             onSubmit: null,
             onReset: () {},
-            isReimbursable: false,
             onReimbursableChanged: (_) {},
-            receiptPath: null,
             onAttachReceipt: () {},
           ),
         ),
@@ -230,8 +222,7 @@ void main() {
       expect(find.byIcon(Icons.upload_file), findsWidgets);
     });
 
-    testWidgets('handles validation correctly', 
-      (WidgetTester tester) async {
+    testWidgets('handles validation correctly', (WidgetTester tester) async {
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
       final descriptionController = TextEditingController();
@@ -258,10 +249,9 @@ void main() {
       expect(formKey.currentState, isNotNull);
     });
 
-    testWidgets('scrollable for smaller screens', 
-      (WidgetTester tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(400, 600);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+    testWidgets('scrollable for smaller screens', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 600);
+      addTearDown(tester.view.resetPhysicalSize);
 
       final formKey = GlobalKey<FormState>();
       final amountController = TextEditingController();
@@ -279,7 +269,6 @@ void main() {
             onCategoryChanged: (_) {},
             onSubmit: null,
             onReset: () {},
-            receiptPath: null,
             onAttachReceipt: () {},
           ),
         ),

@@ -7,9 +7,9 @@ import 'package:expense_tracking_desktop_app/constants/app_config.dart';
 import 'package:expense_tracking_desktop_app/l10n/app_localizations.dart';
 
 class DashboardStatsGrid extends StatelessWidget {
-
   const DashboardStatsGrid({
-    required this.state, super.key,
+    required this.state,
+    super.key,
   });
   final DashboardState state;
 
@@ -68,4 +68,3 @@ class DashboardStatsGrid extends StatelessWidget {
     );
   }
 }
-
