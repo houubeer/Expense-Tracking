@@ -14,6 +14,7 @@ A desktop expense tracking app for small businesses. Built with Flutter and Supa
 We built this app to help small businesses track expenses without the headache. It works offline, syncs when you're connected, and runs on Windows, macOS, and Linux.
 
 **Why we made it:**
+
 - Most expense trackers are either too simple or way too complex
 - Small businesses need something in between
 - We wanted offline-first with optional cloud sync
@@ -42,14 +43,14 @@ We built this app to help small businesses track expenses without the headache. 
 
 ## Tech Stack
 
-| What | Why |
-|------|-----|
-| Flutter | Cross-platform desktop UI |
-| Supabase | Auth, database, storage, real-time |
-| Drift + SQLite | Local offline storage |
-| Riverpod | State management |
-| fl_chart | Charts and graphs |
-| go_router | Navigation |
+| What           | Why                                |
+| -------------- | ---------------------------------- |
+| Flutter        | Cross-platform desktop UI          |
+| Supabase       | Auth, database, storage, real-time |
+| Drift + SQLite | Local offline storage              |
+| Riverpod       | State management                   |
+| fl_chart       | Charts and graphs                  |
+| go_router      | Navigation                         |
 
 ## Getting Started
 
@@ -61,8 +62,8 @@ We built this app to help small businesses track expenses without the headache. 
 
 **Platform-specific:**
 
-| Windows | macOS | Linux |
-|---------|-------|-------|
+| Windows                           | macOS     | Linux                 |
+| --------------------------------- | --------- | --------------------- |
 | Visual Studio 2022 with C++ tools | Xcode 14+ | GTK 3.0, clang, CMake |
 
 ### Setup
@@ -242,11 +243,11 @@ Data flows down through user actions, back up through streams and callbacks.
 
 ## User Roles
 
-| Role | What they can do |
-|------|------------------|
-| **Owner** | Approve/reject organizations, manage all data |
-| **Manager** | Manage their org, add employees, view reports |
-| **Employee** | Submit expenses, view own data |
+| Role         | What they can do                              |
+| ------------ | --------------------------------------------- |
+| **Owner**    | Approve/reject organizations, manage all data |
+| **Manager**  | Manage their org, add employees, view reports |
+| **Employee** | Submit expenses, view own data                |
 
 ## Running Tests
 
@@ -286,17 +287,18 @@ Please follow [Effective Dart](https://dart.dev/guides/language/effective-dart) 
 
 ## Team
 
-| Name | GitHub |
-|------|--------|
-| Beradai Houssameddine Diaelhak | [@houubeer](https://github.com/houubeer) |
-| Cilia Mouhoun | [@cilia-mouhoun](https://github.com/cilia-mouhoun) |
-| Mohamed Islam Sahli | [@Mohamedislam19](https://github.com/Mohamedislam19) |
-| Aya Brahimi | [@Aya-Brahimi](https://github.com/Aya-Brahimi) |
-| Enzo Chaabnia | [@ENZOdz23](https://github.com/ENZOdz23) |
+| Name                           | GitHub                                               |
+| ------------------------------ | ---------------------------------------------------- |
+| Beradai Houssameddine Diaelhak | [@houubeer](https://github.com/houubeer)             |
+| Cilia Mouhoun                  | [@cilia-mouhoun](https://github.com/cilia-mouhoun)   |
+| Mohamed Islam Sahli            | [@Mohamedislam19](https://github.com/Mohamedislam19) |
+| Aya Brahimi                    | [@Aya-Brahimi](https://github.com/Aya-Brahimi)       |
+| Enzo Chaabnia                  | [@ENZOdz23](https://github.com/ENZOdz23)             |
 
 ## Troubleshooting
 
 **Drift code generation fails?**
+
 ```bash
 flutter clean
 dart run build_runner clean
@@ -304,10 +306,12 @@ dart run build_runner build --delete-conflicting-outputs
 ```
 
 **Windows build fails?**
+
 - Install Visual Studio 2022 with "Desktop development with C++" workload
 - Run `flutter doctor` to check
 
 **Database issues?**
+
 - Delete the database file and restart (it'll recreate on launch)
 - Windows: `%APPDATA%/expense_tracker/database.sqlite`
 
