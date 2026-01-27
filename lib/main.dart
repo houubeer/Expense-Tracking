@@ -21,18 +21,24 @@ void main() async {
     'Application starting in ${EnvironmentConfig.environmentName} environment...',
   );
 
-  // Initialize Supabase
+  // Initialize Supabase (allow offline mode if network unavailable)
   try {
     logger.info('Initializing Supabase...');
     await SupabaseService().initialize();
-    logger.info('Supabase initialized successfully');
+    if (SupabaseService().isOffline) {
+      logger.warning(
+        'Supabase initialized in offline mode - network unavailable',
+      );
+    } else {
+      logger.info('Supabase initialized successfully');
+    }
   } catch (e, stackTrace) {
+    // Log the error but don't crash - app can work offline with local database
     logger.error(
-      'Failed to initialize Supabase',
+      'Failed to initialize Supabase - continuing in offline mode',
       error: e,
       stackTrace: stackTrace,
     );
-    rethrow;
   }
 
   // Initialize error reporting service
